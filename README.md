@@ -1,9 +1,3 @@
-Perfect choice 👏 — **`srd-builder`** it is. That name will age beautifully and scale with whatever output formats you add later.
-
-Here’s your **starter pack** — designed so you can drop this straight into the new repo and be ready to go public when you’re ready.
-
----
-
 ## 🧱 `README.md` (scaffold)
 
 ````markdown
