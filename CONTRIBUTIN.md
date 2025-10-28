@@ -9,7 +9,7 @@ It’s mainly a personal tool for building structured SRD data, but contribution
 
 * **Don’t commit source PDFs or SRD text.**
   If you’re working with SRD material locally, keep it outside the repo or in a private folder that isn’t committed.
-  (You can add `rulesets/srd_xx/raw/` to your `.gitignore` if you want a local place for those files.)
+  (You can add `rulesets/srd_xx/` to your `.gitignore` if you want a local place for those files.)
 
 * **Code style**
   Run this before committing to fix formatting and lint errors:

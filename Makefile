@@ -1,4 +1,4 @@
-.PHONY: init lint test format ci
+.PHONY: init lint test format pre-commit ci
 
 init:
 	pip install -e ".[dev]"
@@ -16,5 +16,8 @@ format:
 
 test:
 	pytest -q
+
+pre-commit:
+	pre-commit run --all-files
 
 ci: lint test

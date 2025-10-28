@@ -27,3 +27,13 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: []
+  - repo: local
+    hooks:
+      - id: no-srd-files
+        name: No SRD PDFs or raw text
+        entry: >
+          bash -c "if git diff --cached --name-only |
+          grep -E 'rulesets/.+\\.(pdf|docx|txt)$'; then
+          echo 'Error: SRD source files should not be committed.'; exit 1; fi"
+        language: system
+        pass_filenames: false
