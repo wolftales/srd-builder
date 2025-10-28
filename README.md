@@ -1,144 +1,67 @@
-# **srd-builder**
+# srd-builder
 
-**srd-builder** is a reproducible extraction and normalization pipeline for the *System Reference Document* (SRD) rulesets — starting with **D&D 5.1 (2014)** AKA *5e* and expanding to **5.2.1 (2024)** and beyond.
+[![CI](https://github.com/wolftales/srd-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/wolftales/srd-builder/actions/workflows/ci.yml)
 
-It builds structured, license-compliant datasets directly from the official PDF releases under *Creative Commons BY 4.0*, producing clean, machine-readable outputs such as:
+A boring-by-design toolkit for rebuilding System Reference Document (SRD) rulebooks into
+structured data. The repository focuses on reliable automation and validation pipelines so
+you can reproduce datasets locally without shipping proprietary PDFs.
 
-- `monsters.json`
-- `equipment.json`
-- `spells.json`
-- `rules.json`
-- `index.json`
+## Project scope
 
-Future outputs may include **YAML**, **SQLite**, or **Markdown** formats.
+This project is a personal, reproducible SRD builder. It is **not** a dataset mirror. Future
+iterations will support multiple rulesets (5.2.1, OGL/ORC material, Pathfinder) once the
+scaffolding here is hardened.
 
----
-
-## Quick Start
+## Getting started
 
 ```bash
-# Clone
+# clone
 git clone https://github.com/wolftales/srd-builder.git
 cd srd-builder
 
-# Install dependencies
-pip install -r requirements.txt
+# install developer tooling
+pip install -e ".[dev]"
+pre-commit install
 
-# Build SRD 5.1 (PDF must be placed in rulesets/srd_5_1/raw/)
-python scripts/build.py --ruleset srd_5_1 --out rulesets/srd_5_1/data
-
-# Validate and inspect
-python scripts/validate.py --ruleset srd_5_1
-python scripts/diff_report.py --a srd_5_1 --b srd_5_2_1
-````
-
----
-
-## Repository Structure
-
-```
-srd-builder/
-├── rulesets/
-│   ├── srd_5_1/
-│   │   ├── raw/                # PDFs (ignored in git)
-│   │   ├── manifest.json
-│   │   └── data/
-│   └── srd_5_2_1/
-│       ├── raw/
-│       ├── manifest.json
-│       └── data/
-├── scripts/                    # Core pipeline
-│   ├── build.py
-│   ├── pdf_segment.py
-│   ├── parse_monsters.py
-│   ├── parse_spells.py
-│   ├── parse_equipment.py
-│   ├── parse_rules.py
-│   ├── postprocess.py
-│   ├── validate.py
-│   └── diff_report.py
-├── schemas/                    # JSON Schema definitions
-├── tests/                      # Golden fixtures and CI validations
-└── .github/workflows/build.yml # CI: validate + package artifacts
+# run checks
+pre-commit run --all-files
+pytest
 ```
 
----
+### Build scaffold
 
-## Project Goals
+The current build entry point only prepares output directories and metadata, leaving room for
+future extraction logic.
 
-| Goal                        | Description                                                |
-| --------------------------- | ---------------------------------------------------------- |
-| **Reproducible Extraction** | Deterministically build SRD datasets from official PDFs    |
-| **License Compliance**      | Maintain CC-BY attribution and metadata provenance         |
-| **Format Flexibility**      | Output JSON, YAML, SQLite, or Parquet via a unified schema |
-| **Edition Awareness**       | Configurable per-edition manifests (5.1, 5.2.1, etc.)      |
-| **Transparency**            | Publish build logs, PDF hashes, and diff reports           |
-| **Community Friendly**      | Modular, inspectable, and scriptable for other projects    |
-
----
-
-## Licensing
-
-| Component                 | License   | Notes                                        |
-| ------------------------- | --------- | -------------------------------------------- |
-| **Code**                  | MIT       | See [LICENSE](LICENSE)                       |
-| **Extracted SRD Content** | CC-BY 4.0 | Includes attribution to Wizards of the Coast |
-| **Generated Datasets**    | CC-BY 4.0 | Redistributable with attribution             |
-
----
-
-## Attribution Example
-
-```text
-Portions of the materials used are © Wizards of the Coast LLC
-and released under the Creative Commons Attribution 4.0 International License.
-See https://dnd.wizards.com/resources/systems-reference-document
+```bash
+python -m srd_builder.build --ruleset srd_5_1 --format json --out dist
 ```
 
----
+This produces `dist/srd_5_1/build_report.json` with version metadata and a timestamp. Actual
+content generation remains deterministic: leave timestamps out of dataset files.
 
-## Roadmap
+### Validation helpers
 
-| Milestone  | Description                                | Status        |
-| ---------- | ------------------------------------------ | ------------- |
-| **v0.1.0** | Base schema + SRD 5.1 parser + JSON output | ✅ In progress |
-| **v0.2.0** | SRD 5.2.1 support + diff reporting         | ⏳ Next        |
-| **v0.3.0** | SQLite output + schema validation          | ⏳ Planned     |
-| **v1.0.0** | Public API + dataset release automation    | 🔮 Future     |
+Validation routines use JSON Schema and skip gracefully if sample data is missing.
 
----
+```bash
+python -m srd_builder.validate --ruleset srd_5_1
+```
 
-## Contributing
+If `rulesets/srd_5_1/data/monsters.json` is present the validator checks it against
+`schemas/monster.schema.json`. Otherwise it simply reports the missing dataset.
 
-Pull requests are welcome!
-Please review the [CONTRIBUTING.md](CONTRIBUTING.md) and ensure that:
+## Repository layout
 
-* You do **not** commit SRD PDFs.
-* All code passes `pytest` and `validate.py`.
-* JSON outputs remain deterministic across runs.
+```
+src/srd_builder/    # Build + validation entry points
+schemas/            # JSON Schema definitions (monsters live, others stubbed)
+tests/              # Minimal sanity and schema tests
+rulesets/*/raw/     # Ignored: place local source PDFs here when developing
+```
 
----
+## License
 
-## Inspiration
-
-Born out of the need for *structured, open, and rebuildable SRD data* — powering solo play engines, virtual tabletops, and AI-assisted narrative systems.
-
----
-
-> “Build once. Verify always. Share freely.”
-> — *The srd-builder ethos*
-
----
-
-## `LICENSE`
-
-[MIT LICENSE](LICENSE)
-
----
-
-## `LICENSE-CC-BY-4.0.txt` (for datasets)
-
-*(Place this alongside generated datasets or releases)*
-→ include the plain text of [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.txt).
-
----
+Code is MIT licensed (see [LICENSE](LICENSE)). Generated datasets inherit the license of the
+source documents (e.g. CC-BY 4.0 for Wizards of the Coast SRDs); document attribution in any
+outputs you share.

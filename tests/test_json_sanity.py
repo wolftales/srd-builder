@@ -1,23 +1,23 @@
+from __future__ import annotations
+
 import json
+from itertools import islice
 from pathlib import Path
 
+import pytest
 
-def test_monsters_json_loads():
-    p = Path("schemas/monster.schema.json")
-    assert p.exists(), "monster.schema.json missing"
-    data = json.loads(p.read_text(encoding="utf-8"))
-    assert isinstance(data, dict), "monster.schema.json should be a valid JSON object"
-    assert (
-        "type" in data and data["type"] == "object"
-    ), "monster.schema.json should define an object schema"
-    assert "properties" in data, "monster.schema.json should define properties"
-    for prop in [
-        "id",
-        "name",
-        "page",
-        "src",
-        "armor_class",
-        "hit_points",
-        "ability_scores",
-    ]:
-        assert prop in data["properties"], f"monster.schema.json is missing property: {prop}"
+MONSTER_DATA = Path("rulesets/srd_5_1/data/monsters.json")
+REQUIRED_FIELDS = ["id", "name", "page", "src"]
+SAMPLE_SIZE = 5
+
+
+@pytest.mark.skipif(not MONSTER_DATA.exists(), reason="No SRD monster data present")
+def test_monsters_json_sanity() -> None:
+    monsters = json.loads(MONSTER_DATA.read_text(encoding="utf-8"))
+    assert isinstance(monsters, list), "monsters.json should contain a list"
+    assert monsters, "monsters.json should not be empty"
+
+    for monster in islice(monsters, SAMPLE_SIZE):
+        assert isinstance(monster, dict), "monster entries should be objects"
+        missing = [field for field in REQUIRED_FIELDS if field not in monster]
+        assert not missing, f"missing fields in monster entry: {missing}"
