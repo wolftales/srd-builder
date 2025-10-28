@@ -1,6 +1,6 @@
 # **srd-builder**
 
-**srd-builder** is a reproducible extraction and normalization pipeline for the *System Reference Document* (SRD) rulesets — starting with **D&D 5.1** and expanding to **5.2.1 (2024)** and beyond.
+**srd-builder** is a reproducible extraction and normalization pipeline for the *System Reference Document* (SRD) rulesets — starting with **D&D 5.1 (2014)** AKA *5e* and expanding to **5.2.1 (2024)** and beyond.
 
 It builds structured, license-compliant datasets directly from the official PDF releases under *Creative Commons BY 4.0*, producing clean, machine-readable outputs such as:
 
