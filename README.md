@@ -10,7 +10,7 @@ It builds structured, license-compliant datasets directly from the official PDF 
 - `rules.json`
 - `index.json`
 
-Future outputs may include **YAML**, **SQLite**, or **Parquet** formats.
+Future outputs may include **YAML**, **SQLite**, or **Markdown** formats.
 
 ---
 
