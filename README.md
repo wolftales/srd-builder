@@ -132,7 +132,7 @@ Born out of the need for *structured, open, and rebuildable SRD data* — poweri
 
 ## `LICENSE`
 
-[MIT LICENSE](LICENSE.md)
+[MIT LICENSE](LICENSE)
 
 ---
 
