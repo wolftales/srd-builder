@@ -1,7 +1,7 @@
-## 🧱 `README.md` (scaffold)
+## `README.md` (scaffold)
 
 ````markdown
-# 🧰 srd-builder
+# srd-builder
 
 **srd-builder** is a reproducible extraction and normalization pipeline for the *System Reference Document* (SRD) rulesets — starting with **D&D 5.1** and expanding to **5.2.1 (2024)** and beyond.
 
@@ -17,7 +17,7 @@ Future outputs may include **YAML**, **SQLite**, or **Parquet** formats.
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # Clone
@@ -37,7 +37,7 @@ python scripts/diff_report.py --a srd_5_1 --b srd_5_2_1
 
 ---
 
-## 📦 Repository Structure
+## Repository Structure
 
 ```
 srd-builder/
@@ -67,7 +67,7 @@ srd-builder/
 
 ---
 
-## 🧭 Project Goals
+## Project Goals
 
 | Goal                        | Description                                                |
 | --------------------------- | ---------------------------------------------------------- |
@@ -80,7 +80,7 @@ srd-builder/
 
 ---
 
-## ⚖️ Licensing
+## Licensing
 
 | Component                 | License   | Notes                                        |
 | ------------------------- | --------- | -------------------------------------------- |
@@ -90,7 +90,7 @@ srd-builder/
 
 ---
 
-## 🧩 Attribution Example
+## Attribution Example
 
 ```text
 Portions of the materials used are © Wizards of the Coast LLC
@@ -100,7 +100,7 @@ See https://dnd.wizards.com/resources/systems-reference-document
 
 ---
 
-## 🛠️ Roadmap
+## Roadmap
 
 | Milestone  | Description                                | Status        |
 | ---------- | ------------------------------------------ | ------------- |
@@ -111,7 +111,7 @@ See https://dnd.wizards.com/resources/systems-reference-document
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome!
 Please review the [CONTRIBUTING.md](CONTRIBUTING.md) and ensure that:
@@ -122,7 +122,7 @@ Please review the [CONTRIBUTING.md](CONTRIBUTING.md) and ensure that:
 
 ---
 
-## 🧠 Inspiration
+## Inspiration
 
 Born out of the need for *structured, open, and rebuildable SRD data* — powering solo play engines, virtual tabletops, and AI-assisted narrative systems.
 
@@ -131,11 +131,10 @@ Born out of the need for *structured, open, and rebuildable SRD data* — poweri
 > “Build once. Verify always. Share freely.”
 > — *The srd-builder ethos*
 
-````
-
 ---
 
-## ⚖️ `LICENSE` (MIT)
+## `LICENSE` (MIT)
+
 ```text
 MIT License
 
@@ -162,7 +161,7 @@ SOFTWARE.
 
 ---
 
-## 📘 `LICENSE-CC-BY-4.0.txt` (for datasets)
+## `LICENSE-CC-BY-4.0.txt` (for datasets)
 
 *(Place this alongside generated datasets or releases)*
 → include the plain text of [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.txt).
