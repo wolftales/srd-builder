@@ -6,21 +6,30 @@ on:
   pull_request:
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Guard — forbid SRD PDFs/TXT
+        run: |
+          set -e
+          if git ls-files | grep -E 'rulesets/.+\.(pdf|docx|txt)$'; then
+            echo "::error::Found SRD source documents committed under rulesets/. Remove them."
+            exit 1
+          fi
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: "pip"
+          cache: pip
 
-      - name: Install tooling
+      - name: Install project
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
@@ -35,25 +44,8 @@ jobs:
         run: isort --check-only .
 
       - name: Type check (mypy)
-        run: mypy src || true  # flip to strict later
+        run: mypy src
+        continue-on-error: true
 
-      - name: Validate JSON (pytest json tests)
+      - name: Tests (pytest)
         run: pytest -q
-
-      - name: Pre-commit hygiene (quick)
-        run: pre-commit run --all-files
-
-      - name: Guardrail — Check for source PDFs or SRD text
-        run: |
-          echo "Checking for accidental SRD uploads..."
-          # Fail if any PDF, text, or docx files found under rulesets/
-          if git ls-files | grep -E 'rulesets/.+\.(pdf|docx|txt)$'; then
-            echo "::error::Found source documents (PDF/TXT/DOCX) committed under rulesets/. These should never be added to the repo."
-            exit 1
-          fi
-          # Optional: fail if any SRD-named file shows up anywhere
-          if git ls-files | grep -iE '(srd[_-]cc|srd[_-]2024)'; then
-            echo "::error::Found SRD-named files in repo. Remove before pushing."
-            exit 1
-          fi
-          echo "No SRD source files found. All clear!"

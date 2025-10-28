@@ -1,64 +1,38 @@
 # Contributing to srd-builder
 
-Thanks for checking out **srd-builder**.
-It’s mainly a personal tool for building structured SRD data, but contributions and small improvements are welcome.
-
----
+Thanks for taking a look! This project keeps things intentionally small and predictable so we
+can iterate on the extraction pipeline safely. A few friendly guardrails:
 
 ## Basics
 
-* **Don’t commit source PDFs or SRD text.**
-  If you’re working with SRD material locally, keep it outside the repo or in a private folder that isn’t committed.
-  (You can add `rulesets/srd_xx/` to your `.gitignore` if you want a local place for those files.)
+- **Never commit SRD PDFs or raw text.** Keep source documents in `rulesets/*/raw/` locally —
+  that path is ignored by git and blocked by CI/pre-commit.
+- **Stay boring.** Small, focused pull requests are easiest to review.
+- **Deterministic outputs.** Avoid timestamps or random ordering in generated datasets.
 
-* **Code style**
-  Run this before committing to fix formatting and lint errors:
-
-  ```bash
-  pre-commit run --all-files
-  ```
-
-  It handles things like Ruff, Black, and JSON checks.
-
-* **Testing**
-  Every new feature or parser should have a test in `tests/`.
-  Run:
-
-  ```bash
-  pytest
-  ```
-
-  All tests should pass before pushing.
-
-* **Repeatable outputs**
-  The same input should always create the same output files — no timestamps or random ordering.
-
-* **Licenses**
-  Code is under MIT.
-  Data you generate follows the license of its source (CC-BY, OGL, ORC, etc.).
-  Include proper attribution in any exported metadata.
-
-* **Keep changes small**
-  Focused pull requests are easier to review and merge.
-  Use simple branch names like `feat/parser-update` or `fix/validation`.
-
----
-
-## Local Setup
+## Local setup
 
 ```bash
 git clone https://github.com/wolftales/srd-builder.git
 cd srd-builder
 pip install -e ".[dev]"
 pre-commit install
+```
+
+Run the full check suite before pushing:
+
+```bash
+pre-commit run --all-files
 pytest
 ```
 
----
+## Style & tests
 
-## Questions
+- Ruff, Black, and isort keep formatting in check via pre-commit.
+- Add or update tests for any new parsing/validation behavior.
+- Missing sample data is fine — tests and validators should skip gracefully when files are absent.
 
-If something doesn’t work or you’re unsure how to approach it, open an issue.
-A short, clear description (and an example if you can) is all that’s needed.
+## Licensing
 
----
+Code is MIT. Data generated from SRD sources inherits the source license (for example, CC-BY
+4.0). Please keep attribution metadata intact when you ship outputs.

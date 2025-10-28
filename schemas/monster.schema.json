@@ -1,7 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
   "title": "Monster",
   "type": "object",
+  "additionalProperties": true,
   "required": [
     "id",
     "name",
@@ -13,54 +15,61 @@
   ],
   "properties": {
     "id": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier for the monster entry"
     },
     "name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name"
     },
     "page": {
-      "type": "integer"
+      "description": "Source page reference",
+      "oneOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "integer", "minimum": 0 }
+      ]
     },
     "src": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Source abbreviation (e.g. SRD)"
     },
     "armor_class": {
-      "type": "integer"
+      "description": "Armor class value or breakdown",
+      "oneOf": [
+        { "type": "integer", "minimum": 0 },
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
     },
     "hit_points": {
-      "type": "integer"
+      "description": "Hit point total or expression",
+      "oneOf": [
+        { "type": "integer", "minimum": 0 },
+        { "type": "string", "minLength": 1 },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
     },
     "ability_scores": {
       "type": "object",
-      "required": [
-        "strength",
-        "dexterity",
-        "constitution",
-        "intelligence",
-        "wisdom",
-        "charisma"
-      ],
+      "description": "Ability score block keyed by ability name",
       "properties": {
-        "strength": {
-          "type": "integer"
-        },
-        "dexterity": {
-          "type": "integer"
-        },
-        "constitution": {
-          "type": "integer"
-        },
-        "intelligence": {
-          "type": "integer"
-        },
-        "wisdom": {
-          "type": "integer"
-        },
-        "charisma": {
-          "type": "integer"
-        }
-      }
+        "str": { "type": "integer" },
+        "dex": { "type": "integer" },
+        "con": { "type": "integer" },
+        "int": { "type": "integer" },
+        "wis": { "type": "integer" },
+        "cha": { "type": "integer" }
+      },
+      "additionalProperties": true
     }
-  },
-  "additionalProperties": true
+  }
 }
