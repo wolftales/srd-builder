@@ -1,6 +1,3 @@
-## `README.md`
-
-````markdown
 # srd-builder
 
 **srd-builder** is a reproducible extraction and normalization pipeline for the *System Reference Document* (SRD) rulesets — starting with **D&D 5.1** and expanding to **5.2.1 (2024)** and beyond.
