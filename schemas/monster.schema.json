@@ -2,24 +2,63 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Monster",
   "type": "object",
-  "required": ["id","name","page","src","armor_class","hit_points","ability_scores"],
+  "required": [
+    "id",
+    "name",
+    "page",
+    "src",
+    "armor_class",
+    "hit_points",
+    "ability_scores"
+  ],
   "properties": {
-    "id": {"type":"string"},
-    "name": {"type":"string"},
-    "page": {"type":"integer"},
-    "src": {"type":"string"},
-    "armor_class": {"type":"integer"},
-    "hit_points": {"type":"integer"},
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "page": {
+      "type": "integer"
+    },
+    "src": {
+      "type": "string"
+    },
+    "armor_class": {
+      "type": "integer"
+    },
+    "hit_points": {
+      "type": "integer"
+    },
     "ability_scores": {
-      "type":"object",
-      "required":["strength","dexterity","constitution","intelligence","wisdom","charisma"],
-      "properties":{
-        "strength":{"type":"integer"},
-        "dexterity":{"type":"integer"},
-        "constitution":{"type":"integer"},
-        "intelligence":{"type":"integer"},
-        "wisdom":{"type":"integer"},
-        "charisma":{"type":"integer"}
+      "type": "object",
+      "required": [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma"
+      ],
+      "properties": {
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "constitution": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "wisdom": {
+          "type": "integer"
+        },
+        "charisma": {
+          "type": "integer"
+        }
       }
     }
   },
