@@ -27,8 +27,14 @@
     "page": {
       "description": "Source page reference",
       "oneOf": [
-        { "type": "string", "minLength": 1 },
-        { "type": "integer", "minimum": 0 }
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
       ]
     },
     "src": {
@@ -39,8 +45,14 @@
     "armor_class": {
       "description": "Armor class value or breakdown",
       "oneOf": [
-        { "type": "integer", "minimum": 0 },
-        { "type": "string", "minLength": 1 },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        },
         {
           "type": "object",
           "additionalProperties": true
@@ -50,8 +62,14 @@
     "hit_points": {
       "description": "Hit point total or expression",
       "oneOf": [
-        { "type": "integer", "minimum": 0 },
-        { "type": "string", "minLength": 1 },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        },
         {
           "type": "object",
           "additionalProperties": true
@@ -62,12 +80,24 @@
       "type": "object",
       "description": "Ability score block keyed by ability name",
       "properties": {
-        "str": { "type": "integer" },
-        "dex": { "type": "integer" },
-        "con": { "type": "integer" },
-        "int": { "type": "integer" },
-        "wis": { "type": "integer" },
-        "cha": { "type": "integer" }
+        "str": {
+          "type": "integer"
+        },
+        "dex": {
+          "type": "integer"
+        },
+        "con": {
+          "type": "integer"
+        },
+        "int": {
+          "type": "integer"
+        },
+        "wis": {
+          "type": "integer"
+        },
+        "cha": {
+          "type": "integer"
+        }
       },
       "additionalProperties": true
     }

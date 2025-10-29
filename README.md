@@ -53,11 +53,34 @@ If `rulesets/srd_5_1/data/monsters.json` is present the validator checks it agai
 
 ## Repository layout
 
-```
-src/srd_builder/    # Build + validation entry points
-schemas/            # JSON Schema definitions (monsters live, others stubbed)
-tests/              # Minimal sanity and schema tests
-rulesets/*/raw/     # Ignored: place local source PDFs here when developing
+```shell
+srd-builder/                # Build + validation entry points
+├── src/srd_builder/
+│   ├── __init__.py
+│   ├── build.py             # CLI orchestrator: --ruleset, --format, --out
+│   ├── validate.py          # JSON Schema + sanity checks
+│   ├── postprocess.py       # (from polish_data.py; pure functions)
+│   ├── indexer.py           # builds index maps (ByName/CR/Type/Size)
+│   ├── pdf_segment.py       # (next PR) PyMuPDF blocks/lines
+│   ├── parse_equipment.py   # (next PR)
+│   └── parse_monsters.py    # (later)
+├── rulesets/
+│   └── srd_5_1/
+│       ├── manifest.json    # edition config (anchors, license, etc.)
+│       ├── data/            # output JSON
+│       └── raw/             # (ignored) local PDFs only
+├── schemas/                 # JSON Schema definitions
+│   ├── monster.schema.json
+│   ├── equipment.schema.json
+│   └── meta.template.json
+├── tests/                    # code and schema tests
+│   ├── test_json_sanity.py
+│   └── test_schema_monster.py
+├── .github/workflows/ci.yml
+├── pyproject.toml
+├── CONTRIBUTING.md
+├── README.md
+└── .gitignore
 ```
 
 ## License
