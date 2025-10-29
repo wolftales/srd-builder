@@ -11,7 +11,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
-RULESETS_DIR = Path(__file__).resolve().parents[2] / "rulesets"
+DIST_DIR = Path(__file__).resolve().parents[2] / "dist"
 
 
 def load_json(path: Path) -> object:
@@ -19,7 +19,7 @@ def load_json(path: Path) -> object:
 
 
 def validate_monsters(ruleset: str, limit: int | None = None) -> int:
-    data_file = RULESETS_DIR / ruleset / "data" / "monsters.json"
+    data_file = DIST_DIR / ruleset / "data" / "monsters.json"
     if not data_file.exists():
         print(f"No monsters.json found for ruleset '{ruleset}'. Skipping validation.")
         return 0
