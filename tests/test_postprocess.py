@@ -11,7 +11,10 @@ def test_clean_monster_record_basic():
                 "text": "H it: 10 (2d6 + 3). The creature can take 3 legendary actions...",
             }
         ],
-        "damage_resistances": ["radiant", "piercing"],
+        "damage_resistances": [
+            "radiant",
+            "bludgeoning, piercing, and slashing from nonmagical attacks",
+        ],
     }
     out = clean_monster_record(m)
     assert out["name"] == "Solar"
