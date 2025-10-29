@@ -1,0 +1,48 @@
+{
+  "id": "class:fighter",
+  "name": "Fighter",
+  "hit_die": "d10",
+  "primary_abilities": [
+    "Str",
+    "Dex"
+  ],
+  "saves": [
+    "Str",
+    "Con"
+  ],
+  "proficiencies": {
+    "armor": [
+      "all"
+    ],
+    "weapons": [
+      "simple",
+      "martial"
+    ],
+    "tools": []
+  },
+  "features": [
+    "feature:fighting-style",
+    "feature:second-wind",
+    "..."
+  ],
+  "subclasses": [
+    "subclass:champion"
+  ],
+  "progression": [
+    {
+      "level": 1,
+      "features": [
+        "feature:fighting-style",
+        "feature:second-wind"
+      ]
+    },
+    {
+      "level": 2,
+      "features": [
+        "feature:action-surge"
+      ]
+    }
+  ],
+  "page": 70,
+  "src": "SRD_CC_v5.1"
+}

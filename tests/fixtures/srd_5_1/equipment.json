@@ -1,0 +1,16 @@
+{
+  "id": "item:longsword",
+  "name": "Longsword",
+  "category": "weapon",
+  "cost": "15 gp",
+  "weight": 3,
+  "properties": [
+    "versatile(1d10)"
+  ],
+  "damage": {
+    "normal": "1d8",
+    "type": "slashing"
+  },
+  "page": 149,
+  "src": "SRD_CC_v5.1"
+}

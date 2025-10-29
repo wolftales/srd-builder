@@ -1,0 +1,96 @@
+{
+  "_comment": "Template showing the normalized monster structure (v0.4.0)",
+  "_note": "This is NOT real data - it's a template for extraction scripts",
+  "id": "monster:example-monster",
+  "simple_name": "example_monster",
+  "name": "Example Monster",
+  "summary": "One-sentence description for tooltips and breadcrumbs",
+  "size": "Medium",
+  "type": "beast",
+  "alignment": "unaligned",
+  "armor_class": 13,
+  "hit_points": 22,
+  "hit_dice": "4d8+4",
+  "speed": {
+    "walk": 30,
+    "swim": 20,
+    "fly": 60
+  },
+  "ability_scores": {
+    "strength": 16,
+    "dexterity": 14,
+    "constitution": 12,
+    "intelligence": 10,
+    "wisdom": 13,
+    "charisma": 8
+  },
+  "saving_throws": {
+    "strength": 5,
+    "constitution": 3
+  },
+  "skills": {
+    "perception": 5,
+    "stealth": 4
+  },
+  "traits": [
+    {
+      "simple_name": "example_ability",
+      "name": "Example Ability",
+      "text": "Description of passive ability or trait"
+    }
+  ],
+  "actions": [
+    {
+      "simple_name": "example_attack",
+      "name": "Example Attack",
+      "text": "Full description from SRD",
+      "damage_type": "slashing",
+      "damage_dice": "1d8+3",
+      "to_hit": 5,
+      "reach": 5,
+      "saving_throw": "DC 13 Dexterity"
+    }
+  ],
+  "legendary_actions": [
+    {
+      "simple_name": "detect",
+      "name": "Detect",
+      "text": "The monster makes a Wisdom (Perception) check."
+    },
+    {
+      "simple_name": "special_attack",
+      "name": "Special Attack (Costs 2 Actions)",
+      "text": "Description of legendary action that costs 2 actions."
+    }
+  ],
+  "challenge_rating": 2,
+  "xp_value": 450,
+  "senses": {
+    "darkvision": 60,
+    "passive_perception": 15
+  },
+  "damage_resistances": [
+    {
+      "type": "fire"
+    },
+    {
+      "type": "cold"
+    }
+  ],
+  "damage_immunities": [
+    {
+      "type": "poison"
+    }
+  ],
+  "damage_vulnerabilities": [],
+  "condition_immunities": [
+    {
+      "type": "poisoned"
+    },
+    {
+      "type": "charmed"
+    }
+  ],
+  "page": 123,
+  "src": "SRD_CC_v5.1"
+}

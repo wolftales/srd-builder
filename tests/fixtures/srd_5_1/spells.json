@@ -1,0 +1,25 @@
+{
+  "id": "spell:fireball",
+  "name": "Fireball",
+  "level": 3,
+  "school": "Evocation",
+  "casting_time": "1 action",
+  "range": "150 feet",
+  "components": [
+    "V",
+    "S",
+    "M"
+  ],
+  "materials": "a tiny ball of bat guano and sulfur",
+  "duration": "Instantaneous",
+  "classes": [
+    "Wizard",
+    "Sorcerer"
+  ],
+  "text": [
+    "A bright streak flashes...",
+    "..."
+  ],
+  "page": 241,
+  "src": "SRD_CC_v5.1"
+}

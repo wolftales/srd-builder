@@ -1,0 +1,49 @@
+{
+  "_comment": "Template showing the lineage (race) structure for extraction",
+  "version": "5.1",
+  "source": "SRD_CC_v5.1",
+  "lineages": [
+    {
+      "id": "lineage:hill-dwarf",
+      "simple_name": "hill_dwarf",
+      "name": "Hill Dwarf",
+      "summary": "One-sentence description",
+      "base_lineage": "dwarf",
+      "ability_score_increases": {
+        "constitution": 2,
+        "wisdom": 1
+      },
+      "size": "Medium",
+      "speed": 25,
+      "traits": [
+        {
+          "simple_name": "darkvision",
+          "name": "Darkvision",
+          "text": "Full trait description from SRD",
+          "range": 60
+        },
+        {
+          "simple_name": "dwarven_resilience",
+          "name": "Dwarven Resilience",
+          "text": "Full trait description from SRD"
+        }
+      ],
+      "languages": [
+        "Common",
+        "Dwarvish"
+      ],
+      "proficiencies": {
+        "tools": {
+          "choose": 1,
+          "from": [
+            "smith_tools",
+            "brewer_supplies",
+            "mason_tools"
+          ]
+        }
+      },
+      "page": 18,
+      "src": "SRD_CC_v5.1"
+    }
+  ]
+}

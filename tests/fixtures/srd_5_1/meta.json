@@ -1,0 +1,14 @@
+{
+  "source": "SRD_CC_v5.1",
+  "license": "CC-BY-4.0",
+  "attribution": "\u00a9 Wizards of the Coast. Licensed under CC BY 4.0.",
+  "pdf_sha256": "<hash-of-SRD_CC_v5.1.pdf>",
+  "built_at": "2025-10-27T21:00:00Z",
+  "page_index": {
+    "fireball": 241,
+    "adult-black-dragon": 104
+  },
+  "aliases": {
+    "races.json": "lineages.json"
+  }
+}

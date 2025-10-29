@@ -1,0 +1,19 @@
+{
+  "id": "rule:resting",
+  "title": "Resting",
+  "level": 2,
+  "path": [
+    "Adventuring",
+    "Resting"
+  ],
+  "blocks": [
+    "Short Rests: ...",
+    "Long Rests: ..."
+  ],
+  "crossrefs": [
+    "condition:exhaustion",
+    "feature:hit-dice"
+  ],
+  "page": 186,
+  "src": "SRD_CC_v5.1"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "lineage:human",
+  "name": "Human",
+  "ability_increase": {
+    "any": 2
+  },
+  "traits": [
+    "feature:extra-language"
+  ],
+  "speed": 30,
+  "languages": [
+    "Common"
+  ],
+  "page": 31,
+  "src": "SRD_CC_v5.1"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "table:equipment-armor",
+  "title": "Armor",
+  "headers": [
+    "Armor",
+    "Cost",
+    "Armor Class",
+    "Strength",
+    "Stealth",
+    "Weight"
+  ],
+  "rows": [
+    [
+      "Padded",
+      "5 gp",
+      "11 + Dex mod",
+      "\u2014",
+      "Disadvantage",
+      "8 lb."
+    ]
+  ],
+  "page": 145,
+  "src": "SRD_CC_v5.1"
+}

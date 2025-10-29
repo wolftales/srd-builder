@@ -1,0 +1,67 @@
+{
+  "_comment": "Template showing the equipment structure for extraction",
+  "version": "5.1",
+  "source": "SRD_CC_v5.1",
+  "weapons": [
+    {
+      "id": "item:longsword",
+      "simple_name": "longsword",
+      "name": "Longsword",
+      "summary": "One-sentence description",
+      "category": "martial",
+      "type": "melee",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "versatile_damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "weight": 3,
+      "properties": [
+        "versatile"
+      ],
+      "page": 149,
+      "src": "SRD_CC_v5.1"
+    }
+  ],
+  "armor": [
+    {
+      "id": "item:chain-mail",
+      "simple_name": "chain_mail",
+      "name": "Chain Mail",
+      "summary": "One-sentence description",
+      "category": "heavy",
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      },
+      "armor_class": 16,
+      "strength_requirement": 13,
+      "stealth_disadvantage": true,
+      "weight": 55,
+      "page": 145,
+      "src": "SRD_CC_v5.1"
+    }
+  ],
+  "gear": [
+    {
+      "id": "item:rope-hempen-50ft",
+      "simple_name": "rope_hempen_50ft",
+      "name": "Rope, hempen (50 feet)",
+      "summary": "One-sentence description",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight": 10,
+      "page": 150,
+      "src": "SRD_CC_v5.1"
+    }
+  ]
+}
