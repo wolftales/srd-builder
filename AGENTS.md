@@ -1,10 +1,17 @@
 # AGENTS.md — SRD-Builder guardrails
 
 ## Workflow
-- One feature per PR; never commit to main.
-- Before commit: `pre-commit run -a` and `pytest -q`.
+- Branch: one feature per PR. Never commit to main.
+- Run locally before commit:
+  - pre-commit run -a
+  - pytest -q
+- Run in CI or Codex containers (no pre-commit available):
+  - ruff check
+  - ruff format --check
+  - black --check
+  - pytest -q
 - Always ensure formatting and linting pass locally with `black .` and `ruff check src tests` prior to committing.
-- Determinism: no timestamps/env-dependent values in dataset files.
+- Determinism: No timestamps or environment-dependent values in dataset files.
 
 ## Boundaries
 - parse_monsters.py: pure parsing/mapping only (no I/O/logging).
