@@ -96,7 +96,7 @@ Those categories remain valid — but the next step is turning each into an **en
 - What font size threshold? (Need to analyze PDF to determine)
 - What if monster name uses same font as body text? (Some PDFs do this)
 - How to handle variants like "Adult Black Dragon (Variant)"?
-- Do all monsters have the "size, type, alignment" pattern? (Need verification)
+- Do all monsters have the type-line ("size, type, alignment") pattern? (Need verification)
 - Fallback strategy if both methods fail?
 
 **Action Required:** Write exploratory script to analyze font sizes/styles in monsters section.
@@ -654,7 +654,7 @@ if __name__ == "__main__":
 4. What font size threshold distinguishes monster names from body text? — **Status:** Pending measurement. **Expectation:** Header spans ≈13–16 pt vs body 8–9 pt; confirm via `scripts/explore_pdf.py`.
 5. What if monster names use same font as body text? — **Status:** Resolved. **Guidance:** Combine type-line detection with uppercase/no-indent heuristics; fall back to keyword anchors.
 6. How to handle monster name variants like "Adult Black Dragon (Variant)"? — **Status:** Resolved. **Guidance:** Treat entire first span before type-line as header; parser can trim variant notes later.
-7. Do ALL monsters have the "size, type, alignment" pattern? — **Status:** High confidence. **Guidance:** Expect yes; record warning if missing to catch anomalies.
+7. Do ALL monsters have the type-line ("size, type, alignment") pattern? — **Status:** High confidence. **Guidance:** Expect yes; record warning if missing to catch anomalies.
 8. Fallback strategy if both font-size AND pattern matching fail? — **Status:** Resolved. **Guidance:** Default to previous header boundary + keyword search (`Armor Class`) and emit warning.
 
 ### C. Two-Column Layout
