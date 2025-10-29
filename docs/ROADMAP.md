@@ -57,7 +57,7 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 
 ---
 
-## **v0.2.0 — End-to-End Pipeline** 🚧
+## **v0.2.0 — End-to-End Pipeline** ✅
 
 **Goal:** prove the full build pipeline works with **fixture data** (not PDF extraction yet).
 
@@ -107,6 +107,8 @@ python -m srd_builder.validate --ruleset srd_5_1
 ✅ schema validation passes
 ✅ CI green (ruff, black, pytest)
 ```
+
+*Status:* **COMPLETE** - All objectives achieved. Pipeline produces deterministic, validated output with metadata wrapper and expanded test coverage.
 
 ---
 
