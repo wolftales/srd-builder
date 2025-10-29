@@ -477,22 +477,25 @@ def inspect_page(page: fitz.Page) -> dict:
     textpage = page.get_textpage()
     data = page.get_text("dict", textpage=textpage)
     fonts = Counter()
-    spans: list[dict[str, float | str]] = []
+    spans: list[dict[str, object]] = []
     for block in data["blocks"]:
         for line in block.get("lines", []):
             for span in line.get("spans", []):
-                fonts[(span.get("font", ""), round(span.get("size", 0.0), 2))] += len(
-                    span.get("text", "")
-                )
+                text = span.get("text", "")
+                font = span.get("font", "")
+                size = span.get("size", 0.0)
+                fonts[(font, round(size, 2))] += len(text)
+                if not (bbox := span.get("bbox")):
+                    continue
                 spans.append(
                     {
-                        "text": span.get("text", ""),
-                        "bbox": span.get("bbox"),
-                        "font": span.get("font", ""),
-                        "size": span.get("size", 0.0),
+                        "text": text,
+                        "bbox": bbox,
+                        "font": font,
+                        "size": size,
                     }
                 )
-    widths = [bbox[0] for span in spans if (bbox := span.get("bbox"))]
+    widths = [span["bbox"][0] for span in spans]
     midpoint = page.rect.width / 2
     left = [value for value in widths if value < midpoint]
     right = [value for value in widths if value >= midpoint]
