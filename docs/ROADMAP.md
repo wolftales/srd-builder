@@ -39,6 +39,19 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 
 *Status:* **COMPLETE** - Infrastructure and tooling in place.
 
+### **v0.1.1 — Enhanced Build & Validation** ✅
+
+**Improvements:**
+
+* Build now ensures proper directory layout (`raw/`, `raw/extracted/`, `dist/data/`)
+* PDF hash tracking - computes SHA256 and stores in `rulesets/<ruleset>/raw/meta.json`
+* Validation confirms `build_report.json` exists before checking datasets
+* PDF integrity verification - validates hash when PDF present
+* Added smoke test for basic build functionality
+* Better error messages and graceful handling of missing files
+
+*All changes backwards compatible with v0.1.0.*
+
 ---
 
 ## **v0.2.0 — End-to-End Pipeline** 🚧
