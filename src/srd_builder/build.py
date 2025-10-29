@@ -108,7 +108,10 @@ def _update_pdf_metadata(raw_dir: Path) -> None:
     meta: dict[str, object]
     if meta_path.exists():
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
-        if not isinstance(meta, dict):  # pragma: no cover - defensive
+        if not isinstance(meta, dict):
+            print(
+                f"Warning: {meta_path} contains JSON that is not an object (got {type(meta).__name__}); resetting to empty dict."
+            )
             meta = {}
     else:
         meta = {}

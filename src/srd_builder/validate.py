@@ -67,7 +67,12 @@ def _check_pdf_hash(ruleset: str) -> None:
     pdf_files = sorted(raw_dir.glob("*.pdf")) if raw_dir.exists() else []
 
     meta_path = raw_dir / "meta.json"
-    if pdf_files and meta_path.exists():
+    if pdf_files:
+        if not meta_path.exists():
+            raise FileNotFoundError(
+                f"PDF file(s) found in '{raw_dir}' but meta.json is missing. Cannot validate PDF hash."
+            )
+
         meta_obj = load_json(meta_path)
         if not isinstance(meta_obj, dict) or "pdf_sha256" not in meta_obj:
             print("PDF/hash not present — OK for v0.1.0.")
