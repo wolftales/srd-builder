@@ -311,7 +311,9 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
     return patched
 
 
-def _dedup_list_of_dicts(items: Iterable[dict[str, Any]] | None, *, key: str) -> list[dict[str, Any]]:
+def _dedup_list_of_dicts(
+    items: Iterable[dict[str, Any]] | None, *, key: str
+) -> list[dict[str, Any]]:
     seen: set[tuple[str, str]] = set()
     deduped: list[dict[str, Any]] = []
     for entry in items or []:

@@ -114,9 +114,7 @@ def build_indexes(
     """Aggregate monster and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
-    by_name, name_conflicts = _build_by_name_map(
-        monsters, display_normalizer=display_normalizer
-    )
+    by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
     if by_name:
         monster_indexes["by_name"] = by_name
     entity_index = _build_entity_index(monsters)

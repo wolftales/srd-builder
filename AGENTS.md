@@ -3,6 +3,7 @@
 ## Workflow
 - One feature per PR; never commit to main.
 - Before commit: `pre-commit run -a` and `pytest -q`.
+- Always ensure formatting and linting pass locally with `black .` and `ruff check src tests` prior to committing.
 - Determinism: no timestamps/env-dependent values in dataset files.
 
 ## Boundaries
