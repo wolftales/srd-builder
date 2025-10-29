@@ -19,6 +19,10 @@ __all__ = [
 ]
 
 
+# Normalized IDs are restricted to lowercase letters, digits, and underscores.
+# Hyphens and spaces are converted to underscores before other characters are
+# stripped. This ensures compatibility with systems that require strict
+# identifier formats.
 _ID_CLEAN_RE = re.compile(r"[^0-9a-z_]+")
 _LEGENDARY_HEADER_RE = re.compile(
     r"can take\s+(?:\w+\s+)?legendary actions", re.IGNORECASE
