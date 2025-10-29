@@ -9,7 +9,7 @@ __all__ = ["build_monster_index", "build_indexes"]
 
 
 def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> Dict[str, list[str]]:
-    return {key: sorted(ids) for key, ids in values}
+    return {key: ids for key, ids in values}
 
 
 def build_monster_index(monsters: list[dict[str, Any]]) -> dict[str, Any]:
