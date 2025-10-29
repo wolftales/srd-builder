@@ -15,6 +15,7 @@ __all__ = [
     "standardize_challenge",
     "polish_text",
     "polish_text_fields",
+    "clean_monster_record",
 ]
 
 
@@ -284,5 +285,23 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
             formatted.append(item)
         patched[key] = formatted
 
+    return patched
+
+
+def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
+    """Run the canonical post-processing pipeline over a monster record."""
+
+    pipeline = (
+        unify_simple_name,
+        rename_abilities_to_traits,
+        split_legendary,
+        structure_defenses,
+        standardize_challenge,
+        polish_text_fields,
+    )
+
+    patched = monster
+    for step in pipeline:
+        patched = step(patched)
     return patched
 
