@@ -166,7 +166,12 @@ def normalize_damage_list(damage_str: str) -> list[dict[str, str]]:
         elif "that aren't" in lowered:
             match = re.search(r"that\s+aren't\s+(\w+)", working, flags=re.IGNORECASE)
             if match:
-                qualifier = f"not_{match.group(1).lower()}"
+                allowed_qualifiers = {"magical", "silvered", "adamantine"}
+                matched_word = match.group(1).lower()
+                if matched_word in allowed_qualifiers:
+                    qualifier = f"not_{matched_word}"
+                else:
+                    qualifier = None
                 working = re.sub(r"\s+that\s+aren't\s+\w+", "", working, flags=re.IGNORECASE)
         elif "while in" in lowered:
             match = re.search(r"while\s+in\s+(.+)$", working, flags=re.IGNORECASE)
