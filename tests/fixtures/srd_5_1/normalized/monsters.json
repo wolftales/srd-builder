@@ -338,7 +338,7 @@
     {
       "id": "monster:swarm_of_insects",
       "simple_name": "swarm_of_insects",
-      "name": "Swarm of Insects (Beetles)",
+      "name": "Swarm of Insects",
       "size": "Medium",
       "type": "swarm of Tiny beasts",
       "alignment": "unaligned",

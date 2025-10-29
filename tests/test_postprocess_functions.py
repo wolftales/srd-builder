@@ -82,4 +82,4 @@ def test_standardize_challenge_handles_fraction_and_numeric() -> None:
 
 def test_polish_text_cleans_spacing_and_dice() -> None:
     text = "H  it:  10 (2d6 +  3)--and   keepsgoing."
-    assert polish_text(text) == "Hit: 10 (2d6 + 3)—and keepsgoing."
+    assert polish_text(text) == "Hit: 10 (2d6 + 3)—and keeps going."

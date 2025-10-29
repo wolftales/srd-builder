@@ -279,6 +279,7 @@ def polish_text(text: str | None) -> str | None:
     cleaned = re.sub(r"\bH\s*it\b", "Hit", cleaned)
     cleaned = re.sub(r"Hit:\s*(\d)", r"Hit: \1", cleaned)
     cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1 \2 \3", cleaned)
+    cleaned = cleaned.replace("keepsgoing", "keeps going")
     cleaned = re.sub(r"\s+", " ", cleaned)
     cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
     cleaned = cleaned.strip()
