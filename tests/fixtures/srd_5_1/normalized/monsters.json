@@ -18,11 +18,6 @@
     "alignment": "chaotic evil",
     "armor_class": 19,
     "challenge_rating": 14,
-    "condition_immunities": [],
-    "damage_immunities": [],
-    "damage_resistances": [],
-    "damage_vulnerabilities": [],
-    "hit_dice": "",
     "hit_points": 195,
     "id": "monster:adult_black_dragon",
     "legendary_actions": [
@@ -56,7 +51,6 @@
       "walk": 40
     },
     "src": "SRD_CC_v5.1",
-    "summary": "",
     "traits": [
       {
         "name": "Amphibious",

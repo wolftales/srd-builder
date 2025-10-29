@@ -10,6 +10,7 @@
   - ruff format --check
   - black --check
   - pytest -q
+- Always ensure formatting and linting pass locally with `black .` and `ruff check src tests` prior to committing.
 - Determinism: No timestamps or environment-dependent values in dataset files.
 
 ## Boundaries

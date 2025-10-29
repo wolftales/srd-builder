@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable
-from copy import deepcopy
 from typing import Any
 
 __all__ = [
@@ -17,6 +16,8 @@ __all__ = [
     "polish_text",
     "polish_text_fields",
     "clean_monster_record",
+    "dedup_defensive_lists",
+    "prune_empty_fields",
 ]
 
 
@@ -44,14 +45,14 @@ def normalize_id(value: str) -> str:
 
 
 def _copy_entries(entries: Iterable[dict[str, Any]] | None) -> list[dict[str, Any]]:
-    return [deepcopy(entry) for entry in entries or []]
+    return [{**entry} for entry in entries or []]
 
 
 def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
     """Ensure IDs and nested records use a consistent normalized identifier."""
 
-    patched = deepcopy(monster)
-    patched_name = patched.get("name", "").rstrip(".")
+    patched = {**monster}
+    patched_name = str(patched.get("name", "")).rstrip(".")
     if patched_name:
         patched["name"] = patched_name
     simple_name = normalize_id(patched.get("name", patched.get("simple_name", "")))
@@ -60,11 +61,14 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
         patched["id"] = f"monster:{simple_name}"
 
     for key in ("abilities", "traits", "actions", "legendary_actions"):
-        if key not in patched:
+        if key not in monster:
             continue
         entries: list[dict[str, Any]] = []
-        for entry in patched.get(key, []):
-            item = deepcopy(entry)
+        for entry in monster.get(key, []):
+            if not isinstance(entry, dict):
+                entries.append(entry)
+                continue
+            item = {**entry}
             name = item.get("name")
             if isinstance(name, str):
                 item["name"] = name.rstrip(".")
@@ -78,17 +82,20 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
 def rename_abilities_to_traits(monster: dict[str, Any]) -> dict[str, Any]:
     """Rename legacy ability fields to the canonical trait structure."""
 
-    patched = deepcopy(monster)
-    if "abilities" in patched and "traits" not in patched:
-        patched["traits"] = _copy_entries(patched.get("abilities"))
+    patched = {**monster}
+    if "abilities" in monster and "traits" not in monster:
+        patched["traits"] = _copy_entries(monster.get("abilities"))
         patched.pop("abilities", None)
 
     for key in ("traits", "actions", "legendary_actions"):
-        if key not in patched:
+        if key not in monster:
             continue
         converted: list[dict[str, Any]] = []
-        for entry in patched[key]:
-            item = deepcopy(entry)
+        for entry in monster.get(key, []):
+            if not isinstance(entry, dict):
+                converted.append(entry)
+                continue
+            item = {**entry}
             if "description" in item and "text" not in item:
                 item["text"] = item.pop("description")
             converted.append(item)
@@ -114,10 +121,10 @@ def _is_legendary_action(entry: dict[str, Any]) -> bool:
 def split_legendary(monster: dict[str, Any]) -> dict[str, Any]:
     """Move legendary actions from the main action list into their own field."""
 
-    patched = deepcopy(monster)
-    actions = _copy_entries(patched.get("actions"))
+    patched = {**monster}
+    actions = _copy_entries(monster.get("actions"))
     regular: list[dict[str, Any]] = []
-    legendary: list[dict[str, Any]] = _copy_entries(patched.get("legendary_actions"))
+    legendary: list[dict[str, Any]] = _copy_entries(monster.get("legendary_actions"))
     seen_header = False
 
     for action in actions:
@@ -198,9 +205,9 @@ def normalize_damage_list(damage_str: str) -> list[dict[str, str]]:
 def structure_defenses(monster: dict[str, Any]) -> dict[str, Any]:
     """Normalize damage and condition defenses into structured dictionaries."""
 
-    patched = deepcopy(monster)
+    patched = {**monster}
     for key in ("damage_resistances", "damage_immunities", "damage_vulnerabilities"):
-        value = patched.get(key)
+        value = monster.get(key)
         if not value:
             patched[key] = []
             continue
@@ -215,7 +222,7 @@ def structure_defenses(monster: dict[str, Any]) -> dict[str, Any]:
                 structured.extend(normalize_damage_list(entry))
         patched[key] = structured
 
-    condition_value = patched.get("condition_immunities")
+    condition_value = monster.get("condition_immunities")
     if condition_value:
         patched["condition_immunities"] = [
             entry if isinstance(entry, dict) else {"type": str(entry).strip().lower()}
@@ -250,7 +257,7 @@ def _normalize_challenge(value: Any) -> Any:
 def standardize_challenge(monster: dict[str, Any]) -> dict[str, Any]:
     """Standardize the challenge rating representation."""
 
-    patched = deepcopy(monster)
+    patched = {**monster}
     patched["challenge_rating"] = _normalize_challenge(patched.get("challenge_rating"))
     return patched
 
@@ -278,17 +285,20 @@ def polish_text(text: str | None) -> str | None:
 def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
     """Apply :func:`polish_text` to summary, traits, actions, and legendary actions."""
 
-    patched = deepcopy(monster)
+    patched = {**monster}
 
     if "summary" in patched and isinstance(patched["summary"], str):
         patched["summary"] = polish_text(patched["summary"]) or ""
 
     for key in ("traits", "actions", "legendary_actions"):
-        if key not in patched:
+        if key not in monster:
             continue
         formatted: list[dict[str, Any]] = []
-        for entry in patched[key]:
-            item = deepcopy(entry)
+        for entry in monster.get(key, []):
+            if not isinstance(entry, dict):
+                formatted.append(entry)
+                continue
+            item = {**entry}
             if "text" in item:
                 polished = polish_text(item["text"])
                 if polished is not None:
@@ -298,6 +308,78 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
             formatted.append(item)
         patched[key] = formatted
 
+    return patched
+
+
+def _dedup_list_of_dicts(
+    items: Iterable[dict[str, Any]] | None, *, key: str
+) -> list[dict[str, Any]]:
+    seen: set[tuple[str, str]] = set()
+    deduped: list[dict[str, Any]] = []
+    for entry in items or []:
+        if not isinstance(entry, dict):
+            deduped.append(entry)
+            continue
+        item = {**entry}
+        raw_type = item.get(key)
+        if not isinstance(raw_type, str):
+            deduped.append(item)
+            continue
+        normalized_type = raw_type.strip().lower()
+        if not normalized_type:
+            deduped.append(item)
+            continue
+        raw_qualifier = item.get("qualifier", "")
+        qualifier = str(raw_qualifier).strip().lower() if raw_qualifier is not None else ""
+        signature = (normalized_type, qualifier)
+        if signature in seen:
+            continue
+        seen.add(signature)
+        item[key] = normalized_type
+        if qualifier:
+            item["qualifier"] = qualifier
+        elif "qualifier" in item:
+            item.pop("qualifier")
+        deduped.append(item)
+    return deduped
+
+
+def dedup_defensive_lists(monster: dict[str, Any]) -> dict[str, Any]:
+    """Deduplicate defensive entries case-insensitively while preserving order."""
+
+    patched = {**monster}
+    for key in ("damage_resistances", "damage_immunities", "damage_vulnerabilities"):
+        value = monster.get(key)
+        if isinstance(value, list):
+            patched[key] = _dedup_list_of_dicts(value, key="type")
+    value = monster.get("condition_immunities")
+    if isinstance(value, list):
+        patched["condition_immunities"] = _dedup_list_of_dicts(value, key="type")
+    return patched
+
+
+_REQUIRED_FIELDS = {"id", "name", "page", "src", "armor_class", "hit_points", "ability_scores"}
+_OPTIONAL_ARRAY_FIELDS = {
+    "traits",
+    "reactions",
+    "legendary_actions",
+    "condition_immunities",
+    "damage_resistances",
+    "damage_immunities",
+    "damage_vulnerabilities",
+}
+
+
+def prune_empty_fields(monster: dict[str, Any]) -> dict[str, Any]:
+    """Remove empty optional arrays or strings from monster records."""
+
+    patched = {**monster}
+    for key, value in list(patched.items()):
+        if key in _OPTIONAL_ARRAY_FIELDS and isinstance(value, list) and not value:
+            patched.pop(key)
+            continue
+        if isinstance(value, str) and not value.strip():
+            patched.pop(key)
     return patched
 
 
@@ -311,6 +393,8 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
         structure_defenses,
         standardize_challenge,
         polish_text_fields,
+        dedup_defensive_lists,
+        prune_empty_fields,
     )
 
     patched = monster
