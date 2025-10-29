@@ -1,406 +1,263 @@
-#!/usr/bin/env python3
-"""
-SRD 5.1 Monster Normalization Script
+"""Utilities for normalizing raw SRD monster payloads."""
 
-Reads: raw/srd_cc_v5.1_monsters.json
-Writes: data/monsters.json
+from __future__ import annotations
 
-Changes:
-- Add simple_name (normalized ID)
-- Add summary (one-sentence description)
-- Parse ability scores to integers
-- Parse armor class to integer
-- Parse hit points to integer
-- Parse speed to structured format
-- Parse saving throws to dict
-- Parse skills to dict
-- Parse challenge rating and XP value
-- Normalize action damage/to_hit
-- Add three-level naming to abilities/actions
-"""
-
-import json
 import re
-from pathlib import Path
+from collections.abc import Iterable
+from copy import deepcopy
+from typing import Any
+
+__all__ = ["normalize_monster", "parse_monster_records"]
+
+_ABILITY_MAP = {
+    "str": "strength",
+    "dex": "dexterity",
+    "con": "constitution",
+    "int": "intelligence",
+    "wis": "wisdom",
+    "cha": "charisma",
+}
+
+_DISTANCE_RE = re.compile(r"(?P<value>\d+)\s*ft\.?")
+_PASSIVE_PERCEPTION_RE = re.compile(r"passive\s+perception\s+(?P<value>\d+)", re.IGNORECASE)
+_SENSE_NAME_RE = re.compile(r"^(?P<name>[a-zA-Z ]+?)\s*\d+\s*ft", re.IGNORECASE)
+_SPEED_PATTERN = re.compile(r"(?:(?P<mode>[a-z ]+)\s+)?(?P<value>\d+)\s*ft\.?", re.IGNORECASE)
+_XP_RE = re.compile(r"([\d,]+)\s*XP", re.IGNORECASE)
 
 
-def normalize_string_to_id(name: str) -> str:
-    """Convert name to simple_name ID format.
-
-    Examples:
-        "Aboleth" -> "aboleth"
-        "Ancient Red Dragon" -> "ancient_red_dragon"
-        "Gelatinous Cube" -> "gelatinous_cube"
-    """
-    return name.lower().replace(" ", "_").replace("-", "_")
-
-
-def generate_summary(monster: dict) -> str:
-    """Generate one-sentence summary from monster data.
-
-    Priority:
-    1. Use first ability description (usually most characteristic)
-    2. Use first action description
-    3. Use generic template
-    """
-    # Try first ability
-    if monster.get("abilities") and len(monster["abilities"]) > 0:
-        first_ability = monster["abilities"][0]
-        desc = first_ability.get("description", "")
-        # Take first sentence
-        first_sentence = desc.split(".")[0] + "." if "." in desc else desc
-        if len(first_sentence) < 200:
-            return first_sentence
-
-    # Try first action
-    if monster.get("actions") and len(monster["actions"]) > 0:
-        first_action = monster["actions"][0]
-        desc = first_action.get("description", "")
-        # Take first sentence
-        first_sentence = desc.split(".")[0] + "." if "." in desc else desc
-        if len(first_sentence) < 200:
-            return first_sentence
-
-    # Generic template
-    return f"A {monster['size'].lower()} {monster['type']} with CR {parse_challenge_rating(monster['challenge'])[0]}"
-
-
-def parse_armor_class(ac_str: str) -> int:
-    """Parse armor class from string.
-
-    Examples:
-        "17 (natural armor)" -> 17
-        "15" -> 15
-        "10 in humanoid form, 11 in bear form" -> 10 (use first value)
-    """
-    # Handle multiple AC values (take first)
-    if "," in ac_str:
-        ac_str = ac_str.split(",")[0]
-
-    # Remove parenthetical descriptions
-    ac_str = ac_str.split("(")[0].strip()
-
-    # Extract first number
-    match = re.search(r"\d+", ac_str)
+def _coerce_int(value: Any) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, int | float):
+        return int(value)
+    stripped = str(value).strip()
+    if not stripped:
+        return None
+    if "(" in stripped:
+        stripped = stripped.split("(", 1)[0].strip()
+    if "/" in stripped:
+        return None
+    stripped = stripped.replace(",", "")
+    match = re.search(r"-?\d+", stripped)
     if match:
-        return int(match.group())
-
-    return 10  # Default AC if can't parse
-
-
-def parse_hit_points(hp_str: str) -> tuple[int, str]:
-    """Parse hit points and hit dice.
-
-    Examples:
-        "135 (18d10 + 36)" -> (135, "18d10 + 36")
-        "45" -> (45, "")
-    """
-    if "(" in hp_str:
-        hp, dice = hp_str.split("(")
-        return int(hp.strip()), dice.strip(")")
-    return int(hp_str.strip()), ""
+        try:
+            return int(match.group())
+        except ValueError:
+            return None
+    return None
 
 
-def parse_speed(speed_str: str) -> dict[str, int]:
-    """Parse speed string to structured format.
-
-    Examples:
-        "10 ft., swim 40 ft." -> {"walk": 10, "swim": 40}
-        "30 ft., fly 90 ft." -> {"walk": 30, "fly": 90}
-        "40 ft." -> {"walk": 40}
-        "burrow 40ft., swim 40 ft." -> {"burrow": 40, "swim": 40}
-    """
-    speeds = {}
-
-    # Use regex to find all speed patterns
-    # Matches: "40 ft." or "swim 40 ft." or "fly 60ft."
-    pattern = r"(?:(\w+)\s+)?(\d+)\s*ft"
-    matches = re.findall(pattern, speed_str)
-
-    for match in matches:
-        speed_type, speed_value = match
-        if not speed_type:
-            # No type specified, assume walk
-            speed_type = "walk"
-        speeds[speed_type] = int(speed_value)
-
-    return speeds if speeds else {"walk": 0}
-
-
-def parse_ability_scores(stats: dict) -> dict[str, int]:
-    """Parse ability scores from string to int.
-
-    Input: {"str": "21", "dex": "9", ...}
-    OR: {"str": "29(+9)", "dex": "10", ...}  (with modifier)
-    Output: {"strength": 21, "dexterity": 9, ...}
-    """
-    ability_map = {
-        "str": "strength",
-        "dex": "dexterity",
-        "con": "constitution",
-        "int": "intelligence",
-        "wis": "wisdom",
-        "cha": "charisma",
-    }
-
-    result = {}
-    for key, value in stats.items():
-        # Handle "29(+9)" format - extract just the score
-        if "(" in str(value):
-            value = str(value).split("(")[0]
-        result[ability_map[key]] = int(value)
-
-    return result
-
-
-def parse_proficiencies(prof_str: str) -> dict[str, int]:
-    """Parse saving throws or skills string to dict.
-
-    Examples:
-        "Con +6, Int +8, Wis +6" -> {"constitution": 6, "intelligence": 8, "wisdom": 6}
-        "History +12, Perception +10" -> {"history": 12, "perception": 10}
-    """
-    if not prof_str:
+def _expand_scores(raw_scores: dict[str, Any] | None) -> dict[str, int]:
+    if not raw_scores:
         return {}
+    expanded: dict[str, int] = {}
+    for short, full in _ABILITY_MAP.items():
+        score = raw_scores.get(short)
+        coerced = _coerce_int(score)
+        if coerced is not None:
+            expanded[full] = coerced
+    return expanded
 
-    profs = {}
-    parts = prof_str.split(",")
 
-    for part in parts:
-        part = part.strip()
-        # Match "Con +6" or "History +12"
-        match = re.match(r"(\w+)\s+([+-]\d+)", part)
+def _expand_proficiencies(raw_profs: dict[str, Any] | None) -> dict[str, int]:
+    if not raw_profs:
+        return {}
+    expanded: dict[str, int] = {}
+    if isinstance(raw_profs, dict):
+        items = raw_profs.items()
+    else:
+        entries: list[tuple[str, Any]] = []
+        for part in str(raw_profs).split(","):
+            stripped = part.strip()
+            if not stripped:
+                continue
+            match = re.match(r"([A-Za-z ]+)\s*([+-]?\d+)", stripped)
+            if match:
+                entries.append((match.group(1), match.group(2)))
+        items = entries
+    for short, bonus in items:
+        key = _ABILITY_MAP.get(str(short).strip().lower(), str(short).strip().lower())
+        coerced = _coerce_int(bonus)
+        if coerced is not None:
+            expanded[key] = coerced
+    return expanded
+
+
+def _normalize_list_of_dicts(entries: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    if not entries:
+        return []
+    return [deepcopy(entry) for entry in entries]
+
+
+def _normalize_speed(raw_speed: Any) -> dict[str, int]:
+    if isinstance(raw_speed, str):
+        normalized: dict[str, int] = {}
+        for match in _SPEED_PATTERN.finditer(raw_speed):
+            mode = match.group("mode") or "walk"
+            normalized[mode.strip().lower().replace(" ", "_")] = int(match.group("value"))
+        return normalized
+    if not isinstance(raw_speed, dict):
+        return {}
+    normalized: dict[str, int] = {}
+    for mode, value in raw_speed.items():
+        coerced = _coerce_int(value)
+        if coerced is not None:
+            normalized[str(mode).strip().lower().replace(" ", "_")] = coerced
+    return normalized
+
+
+def _normalize_defense_entries(value: Any) -> list[Any]:
+    if not value:
+        return []
+    if isinstance(value, list | tuple):
+        return [deepcopy(entry) for entry in value]
+    return [str(value)]
+
+
+def _add_sense_entry(senses: dict[str, int], entry: str) -> None:
+    passive_match = _PASSIVE_PERCEPTION_RE.search(entry)
+    if passive_match:
+        senses["passive_perception"] = int(passive_match.group("value"))
+    distance_match = _DISTANCE_RE.search(entry)
+    name_match = _SENSE_NAME_RE.search(entry)
+    if distance_match and name_match:
+        sense_name = name_match.group("name").strip().lower().replace(" ", "_")
+        senses[sense_name] = int(distance_match.group("value"))
+
+
+def _normalize_sense_mapping(mapping: dict[Any, Any]) -> dict[str, int]:
+    senses: dict[str, int] = {}
+    for name, distance in mapping.items():
+        coerced = _coerce_int(distance)
+        if coerced is not None:
+            senses[str(name).lower()] = coerced
+    return senses
+
+
+def _iter_sense_fragments(raw_senses: Any) -> Iterable[str]:
+    if isinstance(raw_senses, list | tuple):
+        for entry in raw_senses:
+            yield from str(entry).split(",")
+    else:
+        yield from str(raw_senses).split(",")
+
+
+def _normalize_senses(raw_senses: Any) -> dict[str, int]:
+    if not raw_senses:
+        return {}
+    if isinstance(raw_senses, dict):
+        return _normalize_sense_mapping(raw_senses)
+
+    senses: dict[str, int] = {}
+    for fragment in _iter_sense_fragments(raw_senses):
+        text = str(fragment).strip()
+        if text:
+            _add_sense_entry(senses, text)
+    return senses
+
+
+def _infer_simple_name(raw: dict[str, Any]) -> str:
+    if simple := raw.get("simple_name"):
+        return str(simple)
+    if identifier := raw.get("id"):
+        _, _, slug = str(identifier).partition(":")
+        if slug:
+            return slug.replace("-", "_")
+    if name := raw.get("name"):
+        return re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
+    return ""
+
+
+def _parse_hit_point_values(raw_hp: Any, raw_dice: Any) -> tuple[int, str]:
+    dice_text = "" if raw_dice is None else str(raw_dice)
+    if raw_hp is None:
+        return 0, dice_text
+    if isinstance(raw_hp, int | float):
+        return int(raw_hp), dice_text
+    text = str(raw_hp)
+    if not dice_text and "(" in text and ")" in text:
+        dice_text = text.split("(", 1)[1].split(")", 1)[0].strip()
+    points = _coerce_int(text) or 0
+    return points, dice_text
+
+
+def _parse_challenge_value(raw_challenge: Any) -> Any:
+    if raw_challenge is None:
+        return 0
+    if isinstance(raw_challenge, int | float):
+        return raw_challenge
+    text = str(raw_challenge).strip()
+    if not text:
+        return 0
+    token = text.split()[0]
+    return token
+
+
+def _extract_xp_value(monster: dict[str, Any]) -> int:
+    for source in (monster.get("xp"), monster.get("xp_value"), monster.get("challenge")):
+        if not source:
+            continue
+        if isinstance(source, int | float):
+            return int(source)
+        match = _XP_RE.search(str(source))
         if match:
-            ability_or_skill = match.group(1).lower()
-            bonus = int(match.group(2))
-
-            # Normalize ability names
-            ability_map = {
-                "str": "strength",
-                "dex": "dexterity",
-                "con": "constitution",
-                "int": "intelligence",
-                "wis": "wisdom",
-                "cha": "charisma",
-            }
-
-            if ability_or_skill in ability_map:
-                profs[ability_map[ability_or_skill]] = bonus
-            else:
-                profs[ability_or_skill] = bonus
-
-    return profs
+            return int(match.group(1).replace(",", ""))
+        stripped = str(source).strip()
+        if stripped.isdigit():
+            return int(stripped)
+    return 0
 
 
-def parse_challenge_rating(cr_str: str) -> tuple[float, int]:
-    """Parse challenge rating and XP value.
+def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
+    """Map a raw monster payload into the canonical monster template."""
 
-    Examples:
-        "10 (5,900 XP)" -> (10.0, 5900)
-        "1/2 (100 XP)" -> (0.5, 100)
-        "1/4 (50 XP)" -> (0.25, 50)
-    """
-    # Match "10 (5,900 XP)" or "1/2 (100 XP)"
-    match = re.match(r"([\d/]+)\s+\(([,\d]+)\s+XP\)", cr_str)
-    if match:
-        cr_part = match.group(1)
-        xp_part = match.group(2).replace(",", "")
+    monster = deepcopy(raw)
+    ability_scores = _expand_scores(monster.get("stats"))
+    saving_throws = _expand_proficiencies(monster.get("saves"))
+    skills = _expand_proficiencies(monster.get("skills"))
+    senses = _normalize_senses(monster.get("senses"))
 
-        # Handle fractions
-        if "/" in cr_part:
-            num, denom = cr_part.split("/")
-            cr = int(num) / int(denom)
-        else:
-            cr = float(cr_part)
+    simple_name = _infer_simple_name(monster)
+    challenge_value = _parse_challenge_value(monster.get("cr") or monster.get("challenge"))
 
-        return cr, int(xp_part)
+    raw_hp = monster.get("hp") if monster.get("hp") is not None else monster.get("hit_points")
+    hit_points, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
 
-    return 0.0, 0
+    monster_id = monster.get("id")
 
-
-def normalize_ability(ability: dict) -> dict:
-    """Add three-level naming to ability."""
-    return {
-        "simple_name": normalize_string_to_id(ability["name"]),
-        "name": ability["name"],
-        "description": ability["description"],
-    }
-
-
-def normalize_action(action: dict) -> dict:
-    """Add three-level naming and parse action data."""
     normalized = {
-        "simple_name": normalize_string_to_id(action["name"]),
-        "name": action["name"],
-        "description": action["description"],
+        "id": str(monster_id) if monster_id else f"monster:{simple_name}",
+        "simple_name": simple_name,
+        "name": str(monster.get("name", "")),
+        "summary": str(monster.get("summary", "")),
+        "size": str(monster.get("size", "")),
+        "type": str(monster.get("type", "")),
+        "alignment": str(monster.get("alignment", "")),
+        "armor_class": _coerce_int(monster.get("ac") or monster.get("armor_class")) or 0,
+        "hit_points": hit_points,
+        "hit_dice": hit_dice_text,
+        "speed": _normalize_speed(monster.get("speed")),
+        "ability_scores": ability_scores,
+        "saving_throws": saving_throws,
+        "skills": skills,
+        "traits": _normalize_list_of_dicts(monster.get("traits")),
+        "actions": _normalize_list_of_dicts(monster.get("actions")),
+        "legendary_actions": _normalize_list_of_dicts(monster.get("legendary_actions")),
+        "challenge_rating": challenge_value,
+        "xp_value": _extract_xp_value(monster),
+        "senses": senses,
+        "damage_resistances": _normalize_defense_entries(monster.get("damage_resistances")),
+        "damage_immunities": _normalize_defense_entries(monster.get("damage_immunities")),
+        "damage_vulnerabilities": _normalize_defense_entries(monster.get("damage_vulnerabilities")),
+        "condition_immunities": _normalize_defense_entries(monster.get("condition_immunities")),
+        "page": _coerce_int(monster.get("page")) or 0,
+        "src": str(monster.get("src", "")),
     }
-
-    # Add optional fields if present
-    if "damage_type" in action:
-        normalized["damage_type"] = action["damage_type"]
-    if "damage_dice" in action:
-        normalized["damage_dice"] = action["damage_dice"]
-    if "to_hit" in action:
-        normalized["to_hit"] = int(action["to_hit"].replace("+", ""))
-    if "reach" in action:
-        reach_match = re.match(r"(\d+)", action["reach"])
-        if reach_match:
-            normalized["reach"] = int(reach_match.group(1))
-    if "saving_throw" in action:
-        normalized["saving_throw"] = action["saving_throw"]
 
     return normalized
 
 
-def parse_senses(senses_str: str) -> dict:
-    """Parse senses string to structured format.
+def parse_monster_records(monsters: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Normalize a list of raw monster dictionaries."""
 
-    Examples:
-        "darkvision 120 ft., passive Perception 20" ->
-        {
-            "darkvision": 120,
-            "passive_perception": 20
-        }
-    """
-    parsed = {}
-    parts = senses_str.split(",")
-
-    for part in parts:
-        part = part.strip()
-
-        # Match "darkvision 120 ft."
-        if "darkvision" in part.lower():
-            match = re.search(r"(\d+)", part)
-            if match:
-                parsed["darkvision"] = int(match.group(1))
-
-        # Match "passive Perception 20"
-        if "passive perception" in part.lower():
-            match = re.search(r"(\d+)", part)
-            if match:
-                parsed["passive_perception"] = int(match.group(1))
-
-    return parsed
-
-
-def normalize_monster(monster: dict) -> dict:
-    """Normalize a single monster to our format."""
-
-    # Parse basic fields
-    simple_name = normalize_string_to_id(monster["name"])
-    summary = generate_summary(monster)
-    ac = parse_armor_class(monster["armor_class"])
-    hp, hit_dice = parse_hit_points(monster["hit_points"])
-    speed = parse_speed(monster["speed"])
-    ability_scores = parse_ability_scores(monster["stats"])
-    cr, xp = parse_challenge_rating(monster["challenge"])
-    senses = parse_senses(monster.get("senses", ""))
-
-    # Parse proficiencies
-    saving_throws = parse_proficiencies(monster.get("saving_throws", ""))
-    skills = parse_proficiencies(monster.get("skills", ""))
-
-    # Normalize abilities and actions
-    abilities = [normalize_ability(a) for a in monster.get("abilities", [])]
-    actions = [normalize_action(a) for a in monster.get("actions", [])]
-
-    # Parse resistances/immunities
-    damage_resistances = (
-        monster.get("damage_resistances", "").split(";")
-        if monster.get("damage_resistances")
-        else []
-    )
-    damage_immunities = (
-        monster.get("damage_immunities", "").split(";") if monster.get("damage_immunities") else []
-    )
-    condition_immunities = (
-        monster.get("condition_immunities", "").split(",")
-        if monster.get("condition_immunities")
-        else []
-    )
-
-    # Clean up lists
-    damage_resistances = [r.strip() for r in damage_resistances if r.strip()]
-    damage_immunities = [i.strip() for i in damage_immunities if i.strip()]
-    condition_immunities = [c.strip() for c in condition_immunities if c.strip()]
-
-    return {
-        # Identity (four-level naming with namespaced ID)
-        "id": f"monster:{simple_name}",
-        "simple_name": simple_name,
-        "name": monster["name"],
-        "summary": summary,
-        # Basic Stats
-        "size": monster["size"],
-        "type": monster["type"],
-        "alignment": monster.get("alignment", "unaligned"),
-        # Combat Stats
-        "armor_class": ac,
-        "hit_points": hp,
-        "hit_dice": hit_dice,
-        "speed": speed,
-        # Ability Scores
-        "ability_scores": ability_scores,
-        # Proficiencies
-        "saving_throws": saving_throws,
-        "skills": skills,
-        # Abilities & Actions
-        "abilities": abilities,
-        "actions": actions,
-        # Challenge
-        "challenge_rating": cr,
-        "xp_value": xp,
-        # Senses
-        "senses": senses,
-        # Resistances/Immunities
-        "damage_resistances": damage_resistances,
-        "damage_immunities": damage_immunities,
-        "condition_immunities": condition_immunities,
-    }
-
-
-def main():
-    """Main extraction process."""
-    # Paths
-    project_root = Path(__file__).parent.parent
-    raw_file = project_root / "raw" / "srd_cc_v5.1_monsters.json"
-    output_file = project_root / "data" / "monsters.json"
-
-    print(f"Reading raw monsters from: {raw_file}")
-
-    # Load raw data
-    with open(raw_file) as f:
-        raw_data = json.load(f)
-
-    print(f"Found {len(raw_data['monsters'])} monsters")
-
-    # Normalize all monsters
-    normalized_monsters = []
-    for monster in raw_data["monsters"]:
-        try:
-            normalized = normalize_monster(monster)
-            normalized_monsters.append(normalized)
-        except Exception as e:
-            print(f"ERROR normalizing {monster['name']}: {e}")
-            raise
-
-    # Build output
-    output = {
-        "version": "5.1",
-        "source": "SRD_CC_v5.1",
-        "count": len(normalized_monsters),
-        "monsters": normalized_monsters,
-    }
-
-    # Write output
-    print(f"Writing {len(normalized_monsters)} normalized monsters to: {output_file}")
-    with open(output_file, "w") as f:
-        json.dump(output, f, indent=2)
-
-    print("✅ Monster normalization complete!")
-    print(f"   Total monsters: {len(normalized_monsters)}")
-    print(f"   Output: {output_file}")
-
-
-if __name__ == "__main__":
-    main()
+    return [normalize_monster(monster) for monster in monsters]
