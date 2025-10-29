@@ -375,8 +375,6 @@ def prune_empty_fields(monster: dict[str, Any]) -> dict[str, Any]:
 
     patched = {**monster}
     for key, value in list(patched.items()):
-        if key in _REQUIRED_FIELDS:
-            continue
         if key in _OPTIONAL_ARRAY_FIELDS and isinstance(value, list) and not value:
             patched.pop(key)
             continue

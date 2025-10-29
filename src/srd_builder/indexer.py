@@ -37,8 +37,8 @@ def _build_by_name_map(
     conflicts: dict[str, list[str]] = {}
     for monster in monsters:
         name = str(monster.get("name", ""))
-        key = display_normalizer(name) if display_normalizer else name.lower()
-        key = key or name.lower()
+        normalized = display_normalizer(name) if display_normalizer else None
+        key = normalized or name.lower()
         monster_id = fallback_id(monster)
         existing = by_name.get(key)
         if existing is not None and existing != monster_id:
