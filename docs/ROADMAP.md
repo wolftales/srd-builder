@@ -1,7 +1,11 @@
 # 🧭 SRD-Builder — Roadmap (PDF ➜ JSON)
 
-The builder ingests **source PDFs** under `rulesets/<ruleset>/raw/*.pdf`
-and produces **deterministic JSON datasets** in multiple stages.
+As of **v0.1.0**, the builder guarantees a stable directory layout,
+writes a deterministic `build_report.json`, and records an optional
+`pdf_sha256` when a source PDF is present. Data extraction begins in v0.2.0,
+but the long-term vision remains: ingest **source PDFs** under
+`rulesets/<ruleset>/raw/*.pdf` and produce **deterministic JSON datasets** in
+multiple stages.
 
 ```
 PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)

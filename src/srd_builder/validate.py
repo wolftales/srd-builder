@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections.abc import Iterable
 from itertools import islice
@@ -12,6 +13,7 @@ from jsonschema import Draft202012Validator
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
 DIST_DIR = Path(__file__).resolve().parents[2] / "dist"
+RULESETS_DIR = Path(__file__).resolve().parents[2] / "rulesets"
 
 
 def load_json(path: Path) -> object:
@@ -50,6 +52,56 @@ def validate_monsters(ruleset: str, limit: int | None = None) -> int:
     return count
 
 
+def _ensure_build_report(ruleset: str) -> None:
+    report_path = DIST_DIR / ruleset / "build_report.json"
+    if not report_path.exists():
+        raise FileNotFoundError(
+            f"build_report.json missing for ruleset '{ruleset}'. Did you run build?"
+        )
+
+    print(f"OK: build_report.json present for {ruleset}.")
+
+
+def _check_pdf_hash(ruleset: str) -> None:
+    raw_dir = RULESETS_DIR / ruleset / "raw"
+    pdf_files = sorted(raw_dir.glob("*.pdf")) if raw_dir.exists() else []
+
+    meta_path = raw_dir / "meta.json"
+    if pdf_files:
+        if not meta_path.exists():
+            raise FileNotFoundError(
+                f"PDF file(s) found in '{raw_dir}' but meta.json is missing. Cannot validate PDF hash."
+            )
+
+        meta_obj = load_json(meta_path)
+        if not isinstance(meta_obj, dict) or "pdf_sha256" not in meta_obj:
+            print("PDF/hash not present — OK for v0.1.0.")
+            return
+
+        recorded_hash = meta_obj["pdf_sha256"]
+        if not isinstance(recorded_hash, str):
+            raise TypeError("meta.json pdf_sha256 must be a string")
+
+        pdf_path = pdf_files[0]
+        computed_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+        if computed_hash != recorded_hash:
+            raise ValueError(
+                "PDF hash mismatch: meta.json pdf_sha256 does not match the current file"
+            )
+
+        print("OK: PDF hash matches meta.json.")
+        return
+
+    print("PDF/hash not present — OK for v0.1.0.")
+
+
+def validate_ruleset(ruleset: str, limit: int | None = None) -> None:
+    _ensure_build_report(ruleset)
+    _check_pdf_hash(ruleset)
+
+    validate_monsters(ruleset=ruleset, limit=limit)
+
+
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Validate SRD dataset files")
     parser.add_argument("--ruleset", required=True, help="Ruleset identifier (e.g. srd_5_1)")
@@ -64,7 +116,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    validate_monsters(ruleset=args.ruleset, limit=args.limit)
+    validate_ruleset(ruleset=args.ruleset, limit=args.limit)
     return 0
 
 
