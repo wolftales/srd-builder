@@ -5,6 +5,7 @@
     "size": "Huge",
     "type": "dragon",
     "alignment": "chaotic evil",
+    "cr": "14",
     "ac": 19,
     "hp": 195,
     "speed": {
@@ -30,35 +31,395 @@
       "perception": 10,
       "stealth": 7
     },
+    "damage_immunities": [
+      "Acid"
+    ],
+    "condition_immunities": [],
     "senses": [
       "blindsight 60 ft.",
-      "darkvision 120 ft."
+      "darkvision 120 ft.",
+      "passive Perception 20"
     ],
     "languages": [
       "Common",
       "Draconic"
     ],
-    "cr": 14,
     "traits": [
       {
         "name": "Amphibious",
-        "text": "..."
+        "text": "The dragon can breathe air and water."
+      },
+      {
+        "name": "Legendary Resistance (3/Day)",
+        "text": "If the dragon fails a saving throw, it can choose to succeed instead."
       }
     ],
     "actions": [
       {
         "name": "Multiattack",
-        "text": "..."
+        "text": "The dragon can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws."
+      },
+      {
+        "name": "Bite",
+        "text": "Melee Weapon Attack: +11 to hit, reach 10 ft., one target. Hit: 17 (2d10 + 6) piercing damage plus 4 (1d8) acid damage."
+      },
+      {
+        "name": "Claw",
+        "text": "Melee Weapon Attack: +11 to hit, reach 5 ft., one target. Hit: 13 (2d6 + 6) slashing damage."
+      },
+      {
+        "name": "Tail",
+        "text": "Melee Weapon Attack: +11 to hit, reach 15 ft., one target. Hit: 15 (2d8 + 6) bludgeoning damage."
+      },
+      {
+        "name": "Frightful Presence",
+        "text": "Each creature of the dragon's choice that is within 120 feet of the dragon and aware of it must succeed on a DC 16 Wisdom saving throw or become frightened for 1 minute."
+      },
+      {
+        "name": "Acid Breath",
+        "text": "The dragon exhales acid in a 60-foot line that is 5 feet wide. Each creature in that line must make a DC 18 Dexterity saving throw, taking 54 (12d8) acid damage on a failed save, or half as much damage on a successful one."
       }
     ],
     "reactions": [],
     "legendary_actions": [
       {
         "name": "Detect",
-        "text": "..."
+        "text": "The dragon makes a Wisdom (Perception) check."
+      },
+      {
+        "name": "Tail Attack",
+        "text": "The dragon makes a tail attack."
+      },
+      {
+        "name": "Wing Attack (Costs 2 Actions)",
+        "text": "The dragon beats its wings. Each creature within 10 feet of the dragon must succeed on a DC 19 Dexterity saving throw or take 13 (2d6 + 6) bludgeoning damage and be knocked prone. The dragon can then fly up to half its flying speed."
       }
     ],
-    "page": 104,
-    "src": "SRD_CC_v5.1"
+    "page": 88,
+    "src": "SRD 5.1"
+  },
+  {
+    "id": "monster:goblin",
+    "name": "Goblin",
+    "size": "Small",
+    "type": "humanoid (goblinoid)",
+    "alignment": "neutral evil",
+    "cr": "1/4",
+    "ac": 15,
+    "hp": 7,
+    "speed": {
+      "walk": 30
+    },
+    "stats": {
+      "str": 8,
+      "dex": 14,
+      "con": 10,
+      "int": 10,
+      "wis": 8,
+      "cha": 8
+    },
+    "saves": {},
+    "skills": {
+      "stealth": 6
+    },
+    "damage_resistances": [],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": [
+      "darkvision 60 ft.",
+      "passive Perception 9"
+    ],
+    "languages": [
+      "Common",
+      "Goblin"
+    ],
+    "traits": [
+      {
+        "name": "Nimble Escape",
+        "text": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Scimitar",
+        "text": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
+      },
+      {
+        "name": "Shortbow",
+        "text": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+      }
+    ],
+    "legendary_actions": [],
+    "page": 166,
+    "src": "SRD 5.1"
+  },
+  {
+    "id": "monster:fire-elemental",
+    "name": "Fire Elemental",
+    "size": "Large",
+    "type": "elemental",
+    "alignment": "neutral",
+    "cr": "5",
+    "ac": 13,
+    "hp": 102,
+    "speed": {
+      "walk": 50
+    },
+    "stats": {
+      "str": 10,
+      "dex": 17,
+      "con": 16,
+      "int": 6,
+      "wis": 10,
+      "cha": 7
+    },
+    "saves": {},
+    "skills": {},
+    "damage_resistances": [
+      "bludgeoning (nonmagical)",
+      "piercing (nonmagical)",
+      "slashing (nonmagical)"
+    ],
+    "damage_immunities": [
+      "Fire",
+      "poison"
+    ],
+    "condition_immunities": [
+      "exhaustion",
+      "grappled",
+      "paralyzed",
+      "petrified",
+      "poisoned",
+      "prone",
+      "restrained",
+      "unconscious"
+    ],
+    "senses": [
+      "darkvision 60 ft.",
+      "passive Perception 10"
+    ],
+    "languages": [
+      "Ignan"
+    ],
+    "traits": [
+      {
+        "name": "Fire Form",
+        "text": "The elemental can move through a space as narrow as 1 inch wide without squeezing. A creature that touches the elemental or hits it with a melee attack while within 5 feet of it takes 5 (1d10) fire damage."
+      },
+      {
+        "name": "Illumination",
+        "text": "The elemental sheds bright light in a 30-foot radius and dim light in an additional 30 feet."
+      },
+      {
+        "name": "Water Susceptibility",
+        "text": "For every 5 feet the elemental moves in water, or for every gallon of water splashed on it, it takes 1 cold damage."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "text": "The elemental makes two touch attacks."
+      },
+      {
+        "name": "Touch",
+        "text": "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) fire damage, and the target catches fire."
+      }
+    ],
+    "legendary_actions": [],
+    "page": 126,
+    "src": "SRD 5.1"
+  },
+  {
+    "id": "monster:skeleton",
+    "name": "Skeleton",
+    "size": "Medium",
+    "type": "undead",
+    "alignment": "lawful evil",
+    "cr": "1/4",
+    "ac": 13,
+    "hp": 13,
+    "speed": {
+      "walk": 30
+    },
+    "stats": {
+      "str": 10,
+      "dex": 14,
+      "con": 15,
+      "int": 6,
+      "wis": 8,
+      "cha": 5
+    },
+    "skills": {
+      "perception": 2
+    },
+    "damage_vulnerabilities": [
+      "bludgeoning"
+    ],
+    "damage_resistances": [],
+    "damage_immunities": [
+      "Poison"
+    ],
+    "condition_immunities": [
+      "exhaustion",
+      "poisoned"
+    ],
+    "senses": [
+      "darkvision 60 ft.",
+      "passive Perception 12"
+    ],
+    "languages": [
+      "understands the languages it knew in life but can't speak"
+    ],
+    "traits": [],
+    "actions": [
+      {
+        "name": "Shortsword",
+        "text": "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+      },
+      {
+        "name": "Shortbow",
+        "text": "Ranged Weapon Attack: +4 to hit, range 80/320 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+      }
+    ],
+    "legendary_actions": [],
+    "page": 272,
+    "src": "SRD 5.1"
+  },
+  {
+    "id": "monster:swarm-of-insects",
+    "name": "Swarm of Insects (Beetles)",
+    "size": "Medium",
+    "type": "swarm of Tiny beasts",
+    "alignment": "unaligned",
+    "cr": "1/2",
+    "ac": 12,
+    "hp": 22,
+    "speed": {
+      "walk": 20,
+      "climb": 20
+    },
+    "stats": {
+      "str": 3,
+      "dex": 13,
+      "con": 10,
+      "int": 1,
+      "wis": 7,
+      "cha": 1
+    },
+    "saves": {},
+    "skills": {},
+    "damage_resistances": [
+      "bludgeoning",
+      "piercing",
+      "slashing"
+    ],
+    "damage_immunities": [],
+    "condition_immunities": [
+      "charmed",
+      "frightened",
+      "grappled",
+      "paralyzed",
+      "petrified",
+      "prone",
+      "restrained",
+      "stunned"
+    ],
+    "senses": [
+      "blindsight 10 ft.",
+      "passive Perception 8"
+    ],
+    "languages": [],
+    "traits": [
+      {
+        "name": "Swarm",
+        "text": "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny insect."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Bites",
+        "text": "Melee Weapon Attack: +3 to hit, reach 0 ft., one target in the swarm's space. Hit: 12 (4d6) piercing damage, or 6 (2d6) piercing damage if the swarm has half of its hit points or fewer."
+      }
+    ],
+    "legendary_actions": [],
+    "page": 338,
+    "src": "SRD 5.1"
+  },
+  {
+    "id": "monster:vampire-spawn",
+    "name": "Vampire Spawn",
+    "size": "Medium",
+    "type": "undead",
+    "alignment": "neutral evil",
+    "cr": "5",
+    "ac": 15,
+    "hp": 82,
+    "speed": {
+      "walk": 30,
+      "climb": 30
+    },
+    "stats": {
+      "str": 16,
+      "dex": 16,
+      "con": 16,
+      "int": 11,
+      "wis": 10,
+      "cha": 12
+    },
+    "saves": {
+      "dex": 6,
+      "wis": 3
+    },
+    "skills": {
+      "perception": 3,
+      "stealth": 6
+    },
+    "damage_resistances": [
+      "necrotic",
+      "bludgeoning (nonmagical)",
+      "piercing (nonmagical)",
+      "slashing (nonmagical)"
+    ],
+    "damage_immunities": [],
+    "condition_immunities": [],
+    "senses": [
+      "darkvision 60 ft.",
+      "passive Perception 13"
+    ],
+    "languages": [
+      "Common"
+    ],
+    "traits": [
+      {
+        "name": "Regeneration",
+        "text": "The vampire regains 10 hit points at the start of its turn if it has at least 1 hit point and isn't in sunlight or running water."
+      },
+      {
+        "name": "Spider Climb",
+        "text": "The vampire can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Multiattack",
+        "text": "The vampire makes two attacks, only one of which can be a bite attack."
+      },
+      {
+        "name": "Claws",
+        "text": "Melee Weapon Attack: +6 to hit, reach 5 ft., one creature. Hit: 8 (2d4 + 3) slashing damage. Instead of dealing damage, the vampire can grapple the target (escape DC 13)."
+      },
+      {
+        "name": "Bite",
+        "text": "Melee Weapon Attack: +6 to hit, reach 5 ft., one willing creature, or a creature that is grappled by the vampire. Hit: 6 (1d6 + 3) piercing damage plus 7 (2d6) necrotic damage."
+      }
+    ],
+    "legendary_actions": [
+      {
+        "name": "Blood Frenzy (Costs 2 Actions)",
+        "text": "The vampire spawn makes one bite attack against a creature it has grappled."
+      }
+    ],
+    "page": 298,
+    "src": "SRD 5.1"
   }
 ]
