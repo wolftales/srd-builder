@@ -9,23 +9,15 @@ with real extraction logic.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import platform
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Final
 
 from . import __version__
-from .indexer import build_indexes
-from .parse_monsters import normalize_monster
-from .postprocess import (
-    polish_text_fields,
-    rename_abilities_to_traits,
-    split_legendary,
-    standardize_challenge,
-    structure_defenses,
-    unify_simple_name,
-)
 
 
 @dataclass
@@ -76,50 +68,66 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+RULESETS_DIRNAME: Final = "rulesets"
+
+
+def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
+    """Create the directory layout expected for a ruleset build.
+
+    Returns a mapping of key directory names to their resolved paths.
+    """
+
+    dist_ruleset_dir = out_dir / ruleset
+    data_dir = dist_ruleset_dir / "data"
+    raw_dir = Path(RULESETS_DIRNAME) / ruleset / "raw"
+    extracted_dir = raw_dir / "extracted"
+
+    dist_ruleset_dir.mkdir(parents=True, exist_ok=True)
+    data_dir.mkdir(exist_ok=True)
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    extracted_dir.mkdir(exist_ok=True)
+
+    return {
+        "dist_ruleset": dist_ruleset_dir,
+        "data": data_dir,
+        "raw": raw_dir,
+        "extracted": extracted_dir,
+    }
+
+
+def _update_pdf_metadata(raw_dir: Path) -> None:
+    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    if not pdf_files:
+        print("No PDF found; v0.2.0 extractor will skip.")
+        return
+
+    pdf_path = pdf_files[0]
+    sha256 = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+
+    meta_path = raw_dir / "meta.json"
+    meta: dict[str, object]
+    if meta_path.exists():
+        meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        if not isinstance(meta, dict):  # pragma: no cover - defensive
+            meta = {}
+    else:
+        meta = {}
+
+    meta["pdf_sha256"] = sha256
+    meta_path.write_text(json.dumps(meta, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    print("Found PDF; v0.2.0 will extract raw JSON.")
+
+
 def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
-    target_dir = out_dir / ruleset
-    target_dir.mkdir(parents=True, exist_ok=True)
+    layout = ensure_ruleset_layout(ruleset=ruleset, out_dir=out_dir)
+    target_dir = layout["dist_ruleset"]
 
     report = BuildReport.create(ruleset=ruleset, output_format=output_format)
     report_path = target_dir / "build_report.json"
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
 
-    raw_path = Path("rulesets") / ruleset / "raw" / "monsters.json"
-    if not raw_path.exists():
-        print(f"No raw monsters found at {raw_path}, skipping dataset build.")
-        return report_path
-
-    monsters_raw = json.loads(raw_path.read_text(encoding="utf-8"))
-    monsters_norm = [normalize_monster(monster) for monster in monsters_raw]
-
-    def compose(*fns):
-        def inner(value):
-            for fn in fns:
-                value = fn(value)
-            return value
-
-        return inner
-
-    postprocess = compose(
-        unify_simple_name,
-        rename_abilities_to_traits,
-        split_legendary,
-        structure_defenses,
-        standardize_challenge,
-        polish_text_fields,
-    )
-    monsters_final = [postprocess(monster) for monster in monsters_norm]
-
-    index_blob = build_indexes(monsters_final)
-
-    data_dir = target_dir / "data"
-    data_dir.mkdir(exist_ok=True)
-    (data_dir / "monsters.json").write_text(
-        json.dumps(monsters_final, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
-    (data_dir / "index.json").write_text(
-        json.dumps(index_blob, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    _update_pdf_metadata(raw_dir=layout["raw"])
 
     return report_path
 
