@@ -88,4 +88,3 @@ def build_indexes(monsters: list[dict[str, Any]]) -> dict[str, Any]:
             "unique_sizes": len(monster_indexes["monstersBySize"]),
         },
     }
-

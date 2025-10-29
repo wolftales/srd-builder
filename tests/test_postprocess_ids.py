@@ -5,12 +5,8 @@ def test_unify_simple_name_updates_monster_and_children():
         "id": "monster:temp",
         "name": "Solar.",
         "simple_name": "Solar.",
-        "abilities": [
-            {"name": "Angelic Weapons.", "description": "Sheds bright light."}
-        ],
-        "actions": [
-            {"name": "Healing Touch.", "description": "Magical healing."}
-        ],
+        "abilities": [{"name": "Angelic Weapons.", "description": "Sheds bright light."}],
+        "actions": [{"name": "Healing Touch.", "description": "Magical healing."}],
     }
 
     patched = unify_simple_name(monster)

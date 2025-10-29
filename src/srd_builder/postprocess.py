@@ -25,9 +25,7 @@ __all__ = [
 # stripped. This ensures compatibility with systems that require strict
 # identifier formats.
 _ID_CLEAN_RE = re.compile(r"[^0-9a-z_]+")
-_LEGENDARY_HEADER_RE = re.compile(
-    r"can take\s+(?:\w+\s+)?legendary actions", re.IGNORECASE
-)
+_LEGENDARY_HEADER_RE = re.compile(r"can take\s+(?:\w+\s+)?legendary actions", re.IGNORECASE)
 _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
     re.compile(r"Only one legendary action option can be used at a time\.\s*", re.IGNORECASE),
@@ -220,9 +218,7 @@ def structure_defenses(monster: dict[str, Any]) -> dict[str, Any]:
     condition_value = patched.get("condition_immunities")
     if condition_value:
         patched["condition_immunities"] = [
-            entry
-            if isinstance(entry, dict)
-            else {"type": str(entry).strip().lower()}
+            entry if isinstance(entry, dict) else {"type": str(entry).strip().lower()}
             for entry in condition_value
             if str(entry).strip()
         ]
@@ -321,4 +317,3 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
     for step in pipeline:
         patched = step(patched)
     return patched
-

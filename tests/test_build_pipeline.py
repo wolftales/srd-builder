@@ -71,7 +71,10 @@ def _raw_monsters_fixture() -> list[dict[str, object]]:
             "saving_throws": "Dex +2",
             "skills": "Stealth +6",
             "abilities": [
-                {"name": "Nimble Escape", "description": "The goblin can take the Disengage or Hide action as a bonus action."}
+                {
+                    "name": "Nimble Escape",
+                    "description": "The goblin can take the Disengage or Hide action as a bonus action.",
+                }
             ],
             "actions": [
                 {

@@ -9,9 +9,7 @@ def test_polish_text_fields_cleans_boilerplate_and_spacing():
                 "text": "Hit:10 (2d6 + 5) bludgeoning. The dragon can take three legendary actions at the end of another creature's turn.",
             }
         ],
-        "legendary_actions": [
-            {"name": "Wing Attack.", "text": "H it:10 (2d6 + 5) damage."}
-        ],
+        "legendary_actions": [{"name": "Wing Attack.", "text": "H it:10 (2d6 + 5) damage."}],
     }
 
     polished = polish_text_fields(monster)
