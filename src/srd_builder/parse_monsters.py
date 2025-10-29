@@ -223,8 +223,10 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     raw_hp = monster.get("hp") if monster.get("hp") is not None else monster.get("hit_points")
     hit_points, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
 
+    monster_id = monster.get("id")
+
     normalized = {
-        "id": str(monster.get("id")) if monster.get("id") else f"monster:{simple_name}",
+        "id": str(monster_id) if monster_id else f"monster:{simple_name}",
         "simple_name": simple_name,
         "name": str(monster.get("name", "")),
         "summary": str(monster.get("summary", "")),
