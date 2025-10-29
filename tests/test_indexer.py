@@ -6,5 +6,5 @@ def test_build_monster_index():
         {"id": "monster:b", "name": "B", "challenge_rating": 1, "type": "fiend", "size": "Large"},
     ]
     idx = build_monster_index(mons)
-    assert idx["monstersByName"]["a"] == "monster:a"
-    assert set(idx["monstersByCR"]["1"]) == {"monster:a", "monster:b"}
+    assert idx["by_name"]["a"] == "monster:a"
+    assert set(idx["by_cr"]["1"]) == {"monster:a", "monster:b"}
