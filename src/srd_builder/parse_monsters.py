@@ -224,7 +224,7 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     hit_points, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
 
     normalized = {
-        "id": str(monster.get("id", "")),
+        "id": str(monster.get("id")) if monster.get("id") else f"monster:{simple_name}",
         "simple_name": simple_name,
         "name": str(monster.get("name", "")),
         "summary": str(monster.get("summary", "")),
@@ -241,7 +241,7 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "traits": _normalize_list_of_dicts(monster.get("traits")),
         "actions": _normalize_list_of_dicts(monster.get("actions")),
         "legendary_actions": _normalize_list_of_dicts(monster.get("legendary_actions")),
-        "challenge_rating": challenge_value if challenge_value is not None else 0,
+        "challenge_rating": challenge_value,
         "xp_value": _extract_xp_value(monster),
         "senses": senses,
         "damage_resistances": _normalize_defense_entries(monster.get("damage_resistances")),
