@@ -481,7 +481,9 @@ def inspect_page(page: fitz.Page) -> dict:
     for block in data["blocks"]:
         for line in block.get("lines", []):
             for span in line.get("spans", []):
-                fonts[(span["font"], round(span["size"], 2))] += len(span.get("text", ""))
+                fonts[(span.get("font", ""), round(span.get("size", 0.0), 2))] += len(
+                    span.get("text", "")
+                )
                 spans.append(
                     {
                         "text": span.get("text", ""),
@@ -490,14 +492,16 @@ def inspect_page(page: fitz.Page) -> dict:
                         "size": span.get("size"),
                     }
                 )
-    widths = [span["bbox"][0] for span in spans]
+    widths = [bbox[0] for span in spans if (bbox := span.get("bbox"))]
     midpoint = page.rect.width / 2
+    left = [value for value in widths if value < midpoint]
+    right = [value for value in widths if value >= midpoint]
     return {
         "page": page.number + 1,
         "midpoint": midpoint,
-        "fonts": fonts.most_common(10),
-        "left_sample": mean(v for v in widths if v < midpoint) if widths else 0,
-        "right_sample": mean(v for v in widths if v >= midpoint) if widths else 0,
+        "fonts": list(fonts.most_common(10)),
+        "left_sample": mean(left) if left else 0,
+        "right_sample": mean(right) if right else 0,
     }
 
 
@@ -508,7 +512,7 @@ def main() -> None:
     args = parser.parse_args()
 
     with fitz.open(args.pdf) as doc:
-        pages = args.pages or range(doc.page_count)
+        pages = args.pages or range(1, doc.page_count + 1)
         report = [inspect_page(doc.load_page(page_number - 1)) for page_number in pages]
     print(json.dumps(report, indent=2, default=list))
 
@@ -538,7 +542,7 @@ def main() -> None:
 
     monsters = [entry for entry in data if entry.get("category") == "monster"]
     names = [entry.get("name", "").strip() for entry in monsters]
-    duplicates = sorted(name for name, count in Counter(names).items() if count > 1)
+    duplicates = {name: count for name, count in Counter(names).items() if count > 1}
 
     summary = {
         "total_entries": len(data),
@@ -594,7 +598,10 @@ if __name__ == "__main__":
             "minItems": 3,
             "maxItems": 3
           },
-          "flags": {"type": "integer"},
+          "flags": {
+            "type": "integer",
+            "description": "PyMuPDF text flags bitmask; encodes text extraction properties (e.g., bold, italic, etc.)"
+          },
           "is_header": {"type": "boolean"}
         }
       }
@@ -606,6 +613,10 @@ if __name__ == "__main__":
     "warnings": {
       "type": "array",
       "items": {"type": "string"}
+    },
+    "_meta": {
+      "type": "object",
+      "description": "Optional debug or provenance metadata retained for forward compatibility"
     }
   }
 }
