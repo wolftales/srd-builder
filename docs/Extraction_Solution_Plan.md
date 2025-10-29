@@ -488,8 +488,8 @@ def inspect_page(page: fitz.Page) -> dict:
                     {
                         "text": span.get("text", ""),
                         "bbox": span.get("bbox"),
-                        "font": span.get("font"),
-                        "size": span.get("size"),
+                        "font": span.get("font", ""),
+                        "size": span.get("size", 0.0),
                     }
                 )
     widths = [bbox[0] for span in spans if (bbox := span.get("bbox"))]
@@ -564,7 +564,9 @@ if __name__ == "__main__":
   "$id": "https://srd-builder.dev/schemas/raw_monster.schema.json",
   "type": "object",
   "required": ["name", "pages", "blocks"],
-  "additionalProperties": false,
+  "additionalProperties": {
+    "description": "Forward-compatible extension hook (e.g., _meta, extraction_info, debug stats)"
+  },
   "properties": {
     "name": {"type": "string", "minLength": 1},
     "simple_name": {"type": "string"},
