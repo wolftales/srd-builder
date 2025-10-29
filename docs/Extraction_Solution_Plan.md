@@ -103,7 +103,7 @@ Those categories remain valid — but the next step is turning each into an **en
 
 **Updated Guidance:**
 - Expect header spans around 13–16 pt vs body 8–9 pt based on SRD typography; script above will confirm and set thresholds in config.
-- If header font matches body size, rely on the "size, type, alignment" span plus capitalized text and zero leading spaces.
+- If header font matches body size, rely on the type-line ("size, type, alignment") span plus capitalized text and zero leading spaces.
 - Variants retain the type-line pattern; treat full span text as header even if parentheses appear.
 - Rare monsters (e.g., lair actions) still include type-line; fallback to `Armor Class` sentinel ensures boundary.
 - If both font + pattern fail, fall back to referencing previous header and emit `warnings.append("header_inference_failed")`.
