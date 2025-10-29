@@ -1,6 +1,6 @@
 [project]
 name = "srd-builder"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reproducible pipeline for extracting and normalizing SRD rulebooks (5.1 → 5.2.1 and beyond)."
 readme = "README.md"
 requires-python = ">=3.10"

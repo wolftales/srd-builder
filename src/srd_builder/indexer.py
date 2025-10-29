@@ -38,7 +38,7 @@ def _build_by_name_map(
     for monster in monsters:
         name = str(monster.get("name", ""))
         normalized = display_normalizer(name) if display_normalizer else None
-        key = normalized or name.lower()
+        key = (normalized or name).lower()
         monster_id = fallback_id(monster)
         existing = by_name.get(key)
         if existing is not None and existing != monster_id:
@@ -48,7 +48,8 @@ def _build_by_name_map(
             # Same identifier encountered; skip without recording conflict.
             continue
         by_name[key] = monster_id
-    return by_name, conflicts
+    sorted_conflicts = {key: sorted(ids) for key, ids in sorted(conflicts.items())}
+    return dict(sorted(by_name.items())), sorted_conflicts
 
 
 def build_monster_index(monsters: list[dict[str, Any]]) -> dict[str, Any]:
@@ -77,6 +78,10 @@ def build_monster_index(monsters: list[dict[str, Any]]) -> dict[str, Any]:
     )
     sorted_by_type = _stable_dict(sorted(by_type.items()))
     sorted_by_size = _stable_dict(sorted(by_size.items()))
+
+    for mapping in (sorted_by_cr, sorted_by_type, sorted_by_size):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
 
     return {
         "by_name": by_name,
@@ -119,15 +124,10 @@ def build_indexes(
         monster_indexes["by_name"] = by_name
     entity_index = _build_entity_index(monsters)
 
-    conflicts: dict[str, dict[str, list[str]]] = {}
-    if name_conflicts:
-        conflicts["by_name"] = name_conflicts
-
-    return {
+    payload: dict[str, Any] = {
         "format_version": "v0.4.0",
         "monsters": monster_indexes,
         "entities": entity_index,
-        "conflicts": conflicts,
         "stats": {
             "total_monsters": len(monsters),
             "total_entities": len(entity_index),
@@ -136,3 +136,6 @@ def build_indexes(
             "unique_sizes": len(monster_indexes["by_size"]),
         },
     }
+    if name_conflicts:
+        payload["conflicts"] = {"by_name": name_conflicts}
+    return payload

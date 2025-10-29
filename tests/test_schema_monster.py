@@ -20,7 +20,8 @@ SAMPLE_SIZE = 5
 @pytest.mark.skipif(not MONSTER_DATA.exists(), reason="No SRD monster data present")
 def test_monsters_validate_against_schema() -> None:
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-    monsters = json.loads(MONSTER_DATA.read_text(encoding="utf-8"))
+    document = json.loads(MONSTER_DATA.read_text(encoding="utf-8"))
+    monsters = document.get("items", []) if isinstance(document, dict) else []
 
     validator = Draft202012Validator(schema)
 

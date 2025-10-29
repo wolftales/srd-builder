@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.1.0)
+### Build pipeline (v0.2.0)
 
 The build pipeline processes monster data through parsing, normalization, and indexing stages.
 Currently uses fixture data; PDF extraction coming in v0.3.0.
@@ -47,7 +47,7 @@ python -m srd_builder.validate --ruleset srd_5_1
 dist/srd_5_1/
 ├── build_report.json      # Build metadata (version, timestamp)
 └── data/
-    ├── monsters.json      # Normalized monster entries
+    ├── monsters.json      # Normalized monster entries + _meta header
     └── index.json         # Lookup indexes (by name, CR, type, size)
 ```
 
@@ -57,6 +57,23 @@ dist/srd_5_1/
 2. **Postprocess** (`postprocess.py`) - Normalize and clean entries
 3. **Index** (`indexer.py`) - Build lookup tables
 4. **Validate** (`validate.py`) - JSON Schema validation
+
+### Consume the dataset (Python)
+
+```python
+import json, pathlib
+p = pathlib.Path("dist/srd_5_1/data/monsters.json")
+data = json.loads(p.read_text(encoding="utf-8"))
+print(data["_meta"]["schema_version"], len(data["items"]))
+```
+
+### Determinism
+
+Same inputs → same bytes. Arrays are sorted where order isn’t meaningful; dataset files contain no timestamps (only `build_report.json` records time).
+
+### Identifier policy
+
+Every monster and nested entry exposes both an `id` and `simple_name`. Identifiers are lowercase ASCII snake_case and match the regular expression `[a-z0-9_]+`. Top-level IDs are prefixed with `monster:`.
 
 ### Development workflow
 

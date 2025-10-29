@@ -17,4 +17,4 @@ def test_polish_text_fields_cleans_boilerplate_and_spacing():
     assert polished["summary"].startswith("Hit: 10")
     assert "legendary actions" not in polished["actions"][0]["text"].lower()
     assert polished["legendary_actions"][0]["name"] == "Wing Attack"
-    assert "2d6+5" in polished["legendary_actions"][0]["text"]
+    assert "2d6 + 5" in polished["legendary_actions"][0]["text"]

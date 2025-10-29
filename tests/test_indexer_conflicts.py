@@ -29,4 +29,4 @@ def test_build_indexes_uses_fallback_identifier() -> None:
     result = build_indexes(monsters)
 
     assert result["monsters"]["by_name"]["arcane wisp"] == "arcane_wisp"
-    assert result["conflicts"] == {}
+    assert "conflicts" not in result

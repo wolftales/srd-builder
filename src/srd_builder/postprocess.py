@@ -55,12 +55,14 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
     patched_name = str(patched.get("name", "")).rstrip(".")
     if patched_name:
         patched["name"] = patched_name
-    simple_name = normalize_id(patched.get("name", patched.get("simple_name", "")))
+
+    base_simple = patched.get("simple_name") or patched.get("name", "")
+    simple_name = normalize_id(str(base_simple))
     if simple_name:
         patched["simple_name"] = simple_name
         patched["id"] = f"monster:{simple_name}"
 
-    for key in ("abilities", "traits", "actions", "legendary_actions"):
+    for key in ("abilities", "traits", "actions", "legendary_actions", "reactions"):
         if key not in monster:
             continue
         entries: list[dict[str, Any]] = []
@@ -72,7 +74,7 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
             name = item.get("name")
             if isinstance(name, str):
                 item["name"] = name.rstrip(".")
-                item["simple_name"] = normalize_id(name)
+                item["simple_name"] = normalize_id(item.get("simple_name", name))
             entries.append(item)
         patched[key] = entries
 
@@ -272,10 +274,12 @@ def polish_text(text: str | None) -> str | None:
     for pattern in _LEGENDARY_SENTENCES:
         cleaned = pattern.sub("", cleaned)
 
-    cleaned = re.sub(r"--+", "-", cleaned)
+    cleaned = cleaned.replace("\u2013", "—").replace("\u2014", "—")
+    cleaned = re.sub(r"--+", "—", cleaned)
     cleaned = re.sub(r"\bH\s*it\b", "Hit", cleaned)
     cleaned = re.sub(r"Hit:\s*(\d)", r"Hit: \1", cleaned)
-    cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1\2\3", cleaned)
+    cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1 \2 \3", cleaned)
+    cleaned = cleaned.replace("keepsgoing", "keeps going")
     cleaned = re.sub(r"\s+", " ", cleaned)
     cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
     cleaned = cleaned.strip()
@@ -290,7 +294,7 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
     if "summary" in patched and isinstance(patched["summary"], str):
         patched["summary"] = polish_text(patched["summary"]) or ""
 
-    for key in ("traits", "actions", "legendary_actions"):
+    for key in ("traits", "actions", "legendary_actions", "reactions"):
         if key not in monster:
             continue
         formatted: list[dict[str, Any]] = []

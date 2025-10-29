@@ -7,40 +7,27 @@
   "required": [
     "id",
     "name",
-    "page",
-    "src",
+    "simple_name",
     "armor_class",
     "hit_points",
-    "ability_scores"
+    "ability_scores",
+    "actions"
   ],
   "properties": {
     "id": {
       "type": "string",
-      "minLength": 1,
+      "pattern": "^monster:[a-z0-9_]+$",
       "description": "Stable identifier for the monster entry"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Normalized identifier without the entity prefix"
     },
     "name": {
       "type": "string",
       "minLength": 1,
       "description": "Display name"
-    },
-    "page": {
-      "description": "Source page reference",
-      "oneOf": [
-        {
-          "type": "string",
-          "minLength": 1
-        },
-        {
-          "type": "integer",
-          "minimum": 0
-        }
-      ]
-    },
-    "src": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Source abbreviation (e.g. SRD)"
     },
     "armor_class": {
       "description": "Armor class value or breakdown",
@@ -79,27 +66,54 @@
     "ability_scores": {
       "type": "object",
       "description": "Ability score block keyed by ability name",
+      "minProperties": 1,
       "properties": {
-        "str": {
+        "strength": {
           "type": "integer"
         },
-        "dex": {
+        "dexterity": {
           "type": "integer"
         },
-        "con": {
+        "constitution": {
           "type": "integer"
         },
-        "int": {
+        "intelligence": {
           "type": "integer"
         },
-        "wis": {
+        "wisdom": {
           "type": "integer"
         },
-        "cha": {
+        "charisma": {
           "type": "integer"
         }
       },
       "additionalProperties": true
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "simple_name",
+          "text"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "simple_name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": true
+      }
     }
   }
 }
