@@ -88,7 +88,6 @@ def _raw_monsters_fixture() -> list[dict[str, object]]:
 def test_build_pipeline(tmp_path, monkeypatch):
     from srd_builder.build import build
     import sys
-    import types
 
     class _DummyValidator:
         def __init__(self, _schema):
@@ -97,7 +96,9 @@ def test_build_pipeline(tmp_path, monkeypatch):
         def validate(self, _instance):
             return None
 
-    monkeypatch.setitem(sys.modules, 'jsonschema', types.SimpleNamespace(Draft202012Validator=_DummyValidator))
+    import jsonschema
+
+    monkeypatch.setattr(jsonschema, "Draft202012Validator", _DummyValidator)
 
     import srd_builder.validate as validate_module
 
