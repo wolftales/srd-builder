@@ -1,332 +1,288 @@
-#!/usr/bin/env python3
-"""
-Polish monsters.json and index.json based on review feedback #2.
+from __future__ import annotations
 
-Fixes:
-1. Index name→ID glitches (duplicates, double hyphens, commas/parens)
-2. Strip legendary boilerplate from action text
-3. Fix damage resistance qualifiers (energy types shouldn't have 'nonmagical')
-4. Text normalization cleanup
-5. Update meta.json status
-6. Add monstersByCR and monstersByType to index
+"""Pure post-processing utilities for normalized monster records."""
 
-Usage:
-    python scripts/polish_data.py
-"""
-
-import json
+from copy import deepcopy
 import re
-from collections import defaultdict
-from pathlib import Path
+from typing import Any, Iterable
+
+__all__ = [
+    "normalize_id",
+    "unify_simple_name",
+    "rename_abilities_to_traits",
+    "split_legendary",
+    "structure_defenses",
+    "standardize_challenge",
+    "polish_text",
+    "polish_text_fields",
+]
 
 
-def normalize_display_name(name: str) -> str:
-    """
-    Normalize display name for index keys.
-
-    Examples:
-        "blue dragon ancient blue dragon" → "ancient blue dragon"
-        "half--red dragon veteran" → "half-red dragon veteran"
-        "elf, drow" → "drow elf"
-        "gnome, deep (svirfneblin)" → "deep gnome (svirfneblin)"
-    """
-    # Fix double hyphens
-    name = re.sub(r"--+", "-", name)
-
-    # Handle duplicates like "blue dragon ancient blue dragon"
-    words = name.split()
-    if len(words) > len(set(words)):
-        # Check if there's a repeated phrase
-        mid = len(words) // 2
-        first_half = " ".join(words[:mid])
-        second_half = " ".join(words[mid:])
-        if first_half in second_half or second_half in first_half:
-            # Take the longer/more specific one
-            name = second_half if len(second_half) > len(first_half) else first_half
-
-    # Handle comma formats "type, subtype" → "subtype type"
-    if "," in name and "(" not in name:
-        parts = [p.strip() for p in name.split(",")]
-        if len(parts) == 2:
-            name = f"{parts[1]} {parts[0]}"
-
-    return name.strip()
+_ID_CLEAN_RE = re.compile(r"[^0-9a-z_]+")
+_LEGENDARY_HEADER_RE = re.compile(
+    r"can take\s+(?:\w+\s+)?legendary actions", re.IGNORECASE
+)
+_LEGENDARY_SENTENCES = [
+    re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
+    re.compile(r"Only one legendary action option can be used at a time\.\s*", re.IGNORECASE),
+    re.compile(r"The [^.]+ regains spent legendary actions[^.]*\.\s*", re.IGNORECASE),
+]
 
 
-def strip_legendary_boilerplate(text: str) -> str:
-    """
-    Strip legendary actions boilerplate from action text.
+def normalize_id(value: str) -> str:
+    """Normalize arbitrary text into a lowercase underscore identifier."""
 
-    Removes text like "The aboleth can take 3 legendary actions..."
-    """
-    if not text:
-        return text
-
-    # Pattern for legendary actions boilerplate
-    patterns = [
-        r"The \w+ can take \d+ legendary actions.*?at the start of its turn\.",
-        r"The \w+ can take three legendary actions.*?at the start of its turn\.",
-        r"Only one legendary action.*?at the start of its turn\.",
-    ]
-
-    for pattern in patterns:
-        text = re.sub(pattern, "", text, flags=re.DOTALL | re.IGNORECASE)
-
-    # Clean up extra whitespace
-    text = re.sub(r"\s+", " ", text).strip()
-
-    return text
+    simplified = value.strip().lower()
+    simplified = simplified.replace("-", "_").replace(" ", "_")
+    simplified = _ID_CLEAN_RE.sub("", simplified)
+    simplified = re.sub(r"_+", "_", simplified)
+    return simplified.strip("_")
 
 
-def fix_resistance_qualifiers(resistances: list[dict]) -> list[dict]:
-    """
-    Fix resistance qualifiers - only B/P/S should have 'nonmagical'.
+def _copy_entries(entries: Iterable[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    return [deepcopy(entry) for entry in entries or []]
 
-    Energy types (fire, cold, lightning, acid, thunder, poison, necrotic, radiant,
-    psychic, force) should NOT have 'nonmagical' qualifier.
-    """
-    energy_types = {
-        "fire",
-        "cold",
-        "lightning",
-        "acid",
-        "thunder",
-        "poison",
-        "necrotic",
-        "radiant",
-        "psychic",
-        "force",
-    }
 
-    physical_types = {"bludgeoning", "piercing", "slashing"}
+def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
+    """Ensure IDs and nested records use a consistent normalized identifier."""
 
-    fixed = []
-    for resist in resistances:
-        resist_type = resist.get("type", "").lower()
+    patched = deepcopy(monster)
+    patched_name = patched.get("name", "").rstrip(".")
+    if patched_name:
+        patched["name"] = patched_name
+    simple_name = normalize_id(patched.get("name", patched.get("simple_name", "")))
+    if simple_name:
+        patched["simple_name"] = simple_name
+        patched["id"] = f"monster:{simple_name}"
 
-        # Remove 'nonmagical' qualifier from energy types
-        if resist_type in energy_types and resist.get("qualifier") == "nonmagical":
-            fixed.append({"type": resist["type"]})
-        # Keep qualifier for physical damage types
-        elif resist_type in physical_types:
-            fixed.append(resist)
-        # Everything else keeps as-is
+    for key in ("abilities", "traits", "actions", "legendary_actions"):
+        if key not in patched:
+            continue
+        entries: list[dict[str, Any]] = []
+        for entry in patched.get(key, []):
+            item = deepcopy(entry)
+            name = item.get("name")
+            if isinstance(name, str):
+                item["name"] = name.rstrip(".")
+                item["simple_name"] = normalize_id(name)
+            entries.append(item)
+        patched[key] = entries
+
+    return patched
+
+
+def rename_abilities_to_traits(monster: dict[str, Any]) -> dict[str, Any]:
+    """Rename legacy ability fields to the canonical trait structure."""
+
+    patched = deepcopy(monster)
+    if "abilities" in patched and "traits" not in patched:
+        patched["traits"] = _copy_entries(patched.get("abilities"))
+        patched.pop("abilities", None)
+
+    for key in ("traits", "actions", "legendary_actions"):
+        if key not in patched:
+            continue
+        converted: list[dict[str, Any]] = []
+        for entry in patched[key]:
+            item = deepcopy(entry)
+            if "description" in item and "text" not in item:
+                item["text"] = item.pop("description")
+            converted.append(item)
+        patched[key] = converted
+
+    return patched
+
+
+def _contains_legendary_header(text: str) -> bool:
+    return bool(text and _LEGENDARY_HEADER_RE.search(text))
+
+
+def _is_legendary_action(entry: dict[str, Any]) -> bool:
+    name = entry.get("name", "").lower()
+    text = entry.get("text", "").lower()
+    if "legendary action" in name or "legendary action" in text:
+        return True
+    if "(cost" in name:
+        return True
+    return False
+
+
+def split_legendary(monster: dict[str, Any]) -> dict[str, Any]:
+    """Move legendary actions from the main action list into their own field."""
+
+    patched = deepcopy(monster)
+    actions = _copy_entries(patched.get("actions"))
+    regular: list[dict[str, Any]] = []
+    legendary: list[dict[str, Any]] = _copy_entries(patched.get("legendary_actions"))
+    seen_header = False
+
+    for action in actions:
+        text = action.get("text", "")
+        if not seen_header and _contains_legendary_header(text):
+            seen_header = True
+            regular.append(action)
+            continue
+        if seen_header or _is_legendary_action(action):
+            legendary.append(action)
         else:
-            fixed.append(resist)
+            regular.append(action)
 
-    return fixed
+    patched["actions"] = regular
+    if legendary:
+        patched["legendary_actions"] = legendary
+    elif "legendary_actions" in patched:
+        patched["legendary_actions"] = []
 
-
-def normalize_text(text: str) -> str:
-    """
-    Normalize text content - fix spacing, punctuation artifacts.
-
-    Fixes:
-    - "Hit:15" → "Hit: 15"
-    - "restorationspell" → "restoration spell"
-    - Multiple spaces → single space
-    - Standardize dice notation
-    """
-    if not text:
-        return text
-
-    # Fix "Hit:" spacing
-    text = re.sub(r"Hit:\s*(\d)", r"Hit: \1", text)
-
-    # Fix missing spaces before "spell"
-    text = re.sub(r"(\w)(spell)", r"\1 \2", text)
-
-    # Fix missing spaces after periods (but not in abbreviations)
-    text = re.sub(r"\.([A-Z])", r". \1", text)
-
-    # Collapse multiple spaces
-    text = re.sub(r"\s+", " ", text)
-
-    # Standardize dice notation (already done in earlier script, but ensure consistency)
-    text = re.sub(r"(\d+d\d+)\s*\+\s*(\d+)", r"\1+\2", text)
-    text = re.sub(r"(\d+d\d+)\s*-\s*(\d+)", r"\1-\2", text)
-
-    return text.strip()
+    return patched
 
 
-def strip_trailing_periods_from_names(monster: dict) -> dict:
-    """
-    Optionally strip trailing periods from name fields.
-    User can decide if they want this or not.
-    """
-    # For now, keep periods as they appear in SRD
-    # This is a style choice - can be enabled later if desired
-    return monster
+def normalize_damage_list(damage_str: str) -> list[dict[str, str]]:
+    """Convert resistance/immunity strings to structured dictionaries."""
+
+    if not damage_str:
+        return []
+
+    segments = [segment.strip() for segment in damage_str.split(";") if segment.strip()]
+    entries: list[dict[str, str]] = []
+
+    for segment in segments:
+        working = segment
+        qualifier: str | None = None
+        lowered = working.lower()
+
+        if "from nonmagical" in lowered:
+            qualifier = "nonmagical"
+            working = re.sub(
+                r"\s+from\s+nonmagical\s+attacks?(?:\s+that\s+aren't\s+\w+)?",
+                "",
+                working,
+                flags=re.IGNORECASE,
+            )
+        elif "that aren't" in lowered:
+            match = re.search(r"that\s+aren't\s+(\w+)", working, flags=re.IGNORECASE)
+            if match:
+                qualifier = f"not_{match.group(1).lower()}"
+                working = re.sub(r"\s+that\s+aren't\s+\w+", "", working, flags=re.IGNORECASE)
+        elif "while in" in lowered:
+            match = re.search(r"while\s+in\s+(.+)$", working, flags=re.IGNORECASE)
+            if match:
+                qualifier = f"in_{match.group(1).strip().lower().replace(' ', '_')}"
+                working = re.sub(r"\s+while\s+in\s+.+$", "", working, flags=re.IGNORECASE)
+
+        parts = [p.strip() for p in re.split(r",|\band\b", working) if p.strip()]
+        for part in parts:
+            entry: dict[str, str] = {"type": part.lower()}
+            if qualifier:
+                entry["qualifier"] = qualifier
+            entries.append(entry)
+
+    return entries
 
 
-def polish_monster(monster: dict) -> dict:
-    """Apply all polish operations to a single monster."""
-    polished = monster.copy()
+def structure_defenses(monster: dict[str, Any]) -> dict[str, Any]:
+    """Normalize damage and condition defenses into structured dictionaries."""
 
-    # Strip legendary boilerplate from actions
-    for action in polished.get("actions", []):
-        if "text" in action:
-            action["text"] = strip_legendary_boilerplate(action["text"])
-            action["text"] = normalize_text(action["text"])
+    patched = deepcopy(monster)
+    for key in ("damage_resistances", "damage_immunities", "damage_vulnerabilities"):
+        value = patched.get(key)
+        if not value:
+            patched[key] = []
+            continue
+        structured: list[dict[str, str]] = []
+        for entry in value:
+            if isinstance(entry, dict):
+                normalized = {k: v for k, v in entry.items() if k in {"type", "qualifier"}}
+                if "type" in normalized and isinstance(normalized["type"], str):
+                    normalized["type"] = normalized["type"].lower()
+                    structured.append(normalized)
+            elif isinstance(entry, str):
+                structured.extend(normalize_damage_list(entry))
+        patched[key] = structured
 
-    # Normalize text in traits
-    for trait in polished.get("traits", []):
-        if "text" in trait:
-            trait["text"] = normalize_text(trait["text"])
+    condition_value = patched.get("condition_immunities")
+    if condition_value:
+        patched["condition_immunities"] = [
+            entry
+            if isinstance(entry, dict)
+            else {"type": str(entry).strip().lower()}
+            for entry in condition_value
+            if str(entry).strip()
+        ]
+    else:
+        patched["condition_immunities"] = []
 
-    # Normalize text in legendary_actions
-    for action in polished.get("legendary_actions", []):
-        if "text" in action:
-            action["text"] = normalize_text(action["text"])
-
-    # Fix resistance qualifiers
-    if "damage_resistances" in polished:
-        polished["damage_resistances"] = fix_resistance_qualifiers(polished["damage_resistances"])
-
-    if "damage_immunities" in polished:
-        polished["damage_immunities"] = fix_resistance_qualifiers(polished["damage_immunities"])
-
-    return polished
+    return patched
 
 
-def rebuild_index(monsters: list[dict]) -> dict:
-    """Rebuild index with fixed names and additional indexes."""
-    by_name = {}
-    by_cr = defaultdict(list)
-    by_type = defaultdict(list)
-    by_size = defaultdict(list)
-
-    for monster in monsters:
-        monster_id = monster["id"]
-
-        # Normalize display name for index key
-        display_name = normalize_display_name(monster["name"].lower())
-
-        # Add to by_name index
-        by_name[display_name] = monster_id
-
-        # Add to by_cr index
-        cr = str(monster.get("challenge_rating", 0))
-        by_cr[cr].append(monster_id)
-
-        # Add to by_type index
-        mtype = monster.get("type", "unknown")
-        by_type[mtype].append(monster_id)
-
-        # Add to by_size index
-        size = monster.get("size", "Medium")
-        by_size[size].append(monster_id)
-
-    # Sort CR index by numeric value
-    def cr_sort_key(cr_str):
+def _normalize_challenge(value: Any) -> Any:
+    if isinstance(value, str):
+        value = value.strip()
+        if "/" in value:
+            num, denom = value.split("/", 1)
+            try:
+                return float(num) / float(denom)
+            except (ValueError, ZeroDivisionError):
+                return value
         try:
-            return float(cr_str)
-        except (ValueError, TypeError):
-            return 0
-
-    by_cr_sorted = {k: sorted(v) for k, v in sorted(by_cr.items(), key=lambda x: cr_sort_key(x[0]))}
-    by_type_sorted = {k: sorted(v) for k, v in sorted(by_type.items())}
-    by_size_sorted = {k: sorted(v) for k, v in sorted(by_size.items())}
-
-    return {
-        "by_name": by_name,
-        "by_cr": by_cr_sorted,
-        "by_type": by_type_sorted,
-        "by_size": by_size_sorted,
-    }
+            as_float = float(value)
+        except ValueError:
+            return value
+        return int(as_float) if as_float.is_integer() else as_float
+    if isinstance(value, float):
+        return int(value) if value.is_integer() else value
+    return value
 
 
-def main():
-    """Main entry point."""
-    script_dir = Path(__file__).parent
-    project_root = script_dir.parent
-    data_dir = project_root / "data"
+def standardize_challenge(monster: dict[str, Any]) -> dict[str, Any]:
+    """Standardize the challenge rating representation."""
 
-    monsters_file = data_dir / "monsters.json"
-    index_file = data_dir / "index.json"
-    meta_file = data_dir / "meta.json"
-
-    # Load monsters
-    print(f"Loading monsters from {monsters_file}...")
-    with open(monsters_file, encoding="utf-8") as f:
-        monsters_data = json.load(f)
-
-    if isinstance(monsters_data, dict) and "monsters" in monsters_data:
-        monsters = monsters_data["monsters"]
-        wrapper = monsters_data
-    else:
-        monsters = monsters_data
-        wrapper = None
-
-    # Polish monsters
-    print(f"Polishing {len(monsters)} monsters...")
-    polished_monsters = []
-    for i, monster in enumerate(monsters):
-        if (i + 1) % 50 == 0:
-            print(f"  Processed {i + 1}/{len(monsters)}...")
-        polished = polish_monster(monster)
-        polished_monsters.append(polished)
-
-    # Save polished monsters
-    if wrapper:
-        wrapper["monsters"] = polished_monsters
-        output_data = wrapper
-    else:
-        output_data = polished_monsters
-
-    print(f"Writing polished monsters to {monsters_file}...")
-    with open(monsters_file, "w", encoding="utf-8") as f:
-        json.dump(output_data, f, indent=2, ensure_ascii=False)
-
-    # Rebuild index
-    print("Rebuilding index...")
-    monster_indexes = rebuild_index(polished_monsters)
-
-    # Load existing index
-    with open(index_file, encoding="utf-8") as f:
-        index_data = json.load(f)
-
-    # Update with new indexes
-    index_data["monsters"] = monster_indexes
-
-    # Update stats
-    index_data["stats"] = {
-        "total_monsters": len(polished_monsters),
-        "total_entities": len(index_data.get("entities", {})),
-        "unique_crs": len(monster_indexes["by_cr"]),
-        "unique_types": len(monster_indexes["by_type"]),
-        "unique_sizes": len(monster_indexes["by_size"]),
-    }
-
-    print(f"Writing updated index to {index_file}...")
-    with open(index_file, "w", encoding="utf-8") as f:
-        json.dump(index_data, f, indent=2, ensure_ascii=False)
-
-    # Update meta.json
-    print(f"Updating {meta_file}...")
-    with open(meta_file, encoding="utf-8") as f:
-        meta = json.load(f)
-
-    # Add schema version if missing
-    if "$schema_version" not in meta:
-        meta["$schema_version"] = "1.0"
-
-    # Update extraction status
-    if "extraction_status" in meta:
-        meta["extraction_status"]["index"] = "complete"
-
-    with open(meta_file, "w", encoding="utf-8") as f:
-        json.dump(meta, f, indent=2, ensure_ascii=False)
-
-    print("\n✅ Polish complete!")
-    print("\nSummary:")
-    print(f"  - Monsters polished: {len(polished_monsters)}")
-    print(f"  - Index entries: {len(monster_indexes['by_name'])}")
-    print(f"  - Unique CRs: {len(monster_indexes['by_cr'])}")
-    print(f"  - Unique types: {len(monster_indexes['by_type'])}")
-    print(f"  - Unique sizes: {len(monster_indexes['by_size'])}")
-    print(f"  - Meta schema version: {meta.get('$schema_version')}")
+    patched = deepcopy(monster)
+    patched["challenge_rating"] = _normalize_challenge(patched.get("challenge_rating"))
+    return patched
 
 
-if __name__ == "__main__":
-    main()
+def polish_text(text: str | None) -> str | None:
+    """Clean OCR artifacts, spacing, and boilerplate from text fields."""
+
+    if text is None:
+        return None
+
+    cleaned = text
+    for pattern in _LEGENDARY_SENTENCES:
+        cleaned = pattern.sub("", cleaned)
+
+    cleaned = re.sub(r"--+", "-", cleaned)
+    cleaned = re.sub(r"\bH\s*it\b", "Hit", cleaned)
+    cleaned = re.sub(r"Hit:\s*(\d)", r"Hit: \1", cleaned)
+    cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1\2\3", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned)
+    cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
+    cleaned = cleaned.strip()
+    return cleaned
+
+
+def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
+    """Apply :func:`polish_text` to summary, traits, actions, and legendary actions."""
+
+    patched = deepcopy(monster)
+
+    if "summary" in patched and isinstance(patched["summary"], str):
+        patched["summary"] = polish_text(patched["summary"]) or ""
+
+    for key in ("traits", "actions", "legendary_actions"):
+        if key not in patched:
+            continue
+        formatted: list[dict[str, Any]] = []
+        for entry in patched[key]:
+            item = deepcopy(entry)
+            if "text" in item:
+                polished = polish_text(item["text"])
+                if polished is not None:
+                    item["text"] = polished
+            if "name" in item and isinstance(item["name"], str):
+                item["name"] = item["name"].rstrip(".")
+            formatted.append(item)
+        patched[key] = formatted
+
+    return patched
+

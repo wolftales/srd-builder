@@ -16,6 +16,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__
+from .parse_monsters import normalize_monster
+from .postprocess import (
+    polish_text_fields,
+    rename_abilities_to_traits,
+    split_legendary,
+    standardize_challenge,
+    structure_defenses,
+    unify_simple_name,
+)
+from .indexer import build_indexes
 
 
 @dataclass
@@ -73,6 +83,44 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
     report = BuildReport.create(ruleset=ruleset, output_format=output_format)
     report_path = target_dir / "build_report.json"
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
+
+    raw_path = Path("rulesets") / ruleset / "raw" / "monsters.json"
+    if not raw_path.exists():
+        print(f"No raw monsters found at {raw_path}, skipping dataset build.")
+        return report_path
+
+    monsters_raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    monsters_norm = [normalize_monster(monster) for monster in monsters_raw]
+
+    def compose(*fns):
+        def inner(value):
+            for fn in fns:
+                value = fn(value)
+            return value
+
+        return inner
+
+    postprocess = compose(
+        unify_simple_name,
+        rename_abilities_to_traits,
+        split_legendary,
+        structure_defenses,
+        standardize_challenge,
+        polish_text_fields,
+    )
+    monsters_final = [postprocess(monster) for monster in monsters_norm]
+
+    index_blob = build_indexes(monsters_final)
+
+    data_dir = target_dir / "data"
+    data_dir.mkdir(exist_ok=True)
+    (data_dir / "monsters.json").write_text(
+        json.dumps(monsters_final, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (data_dir / "index.json").write_text(
+        json.dumps(index_blob, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
     return report_path
 
 
