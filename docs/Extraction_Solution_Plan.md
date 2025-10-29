@@ -514,7 +514,7 @@ def main() -> None:
     with fitz.open(args.pdf) as doc:
         pages = args.pages or range(1, doc.page_count + 1)
         report = [inspect_page(doc.load_page(page_number - 1)) for page_number in pages]
-    print(json.dumps(report, indent=2, default=list))
+    print(json.dumps(report, indent=2))
 
 
 if __name__ == "__main__":
