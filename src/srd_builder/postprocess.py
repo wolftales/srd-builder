@@ -1,10 +1,11 @@
-from __future__ import annotations
-
 """Pure post-processing utilities for normalized monster records."""
 
-from copy import deepcopy
+from __future__ import annotations
+
 import re
-from typing import Any, Iterable
+from collections.abc import Iterable
+from copy import deepcopy
+from typing import Any
 
 __all__ = [
     "normalize_id",
@@ -141,46 +142,53 @@ def split_legendary(monster: dict[str, Any]) -> dict[str, Any]:
     return patched
 
 
+def _extract_damage_qualifier(segment: str) -> tuple[str, str | None]:
+    working = segment
+    qualifier: str | None = None
+    lowered = working.lower()
+
+    if "from nonmagical" in lowered:
+        qualifier = "nonmagical"
+        working = re.sub(
+            r"\s+from\s+nonmagical\s+attacks?(?:\s+that\s+aren't\s+\w+)?",
+            "",
+            working,
+            flags=re.IGNORECASE,
+        )
+    elif "that aren't" in lowered:
+        match = re.search(r"that\s+aren't\s+(\w+)", working, flags=re.IGNORECASE)
+        if match:
+            allowed_qualifiers = {"magical", "silvered", "adamantine"}
+            matched_word = match.group(1).lower()
+            if matched_word in allowed_qualifiers:
+                qualifier = f"not_{matched_word}"
+        working = re.sub(r"\s+that\s+aren't\s+\w+", "", working, flags=re.IGNORECASE)
+    elif "while in" in lowered:
+        match = re.search(r"while\s+in\s+(.+)$", working, flags=re.IGNORECASE)
+        if match:
+            qualifier = f"in_{match.group(1).strip().lower().replace(' ', '_')}"
+        working = re.sub(r"\s+while\s+in\s+.+$", "", working, flags=re.IGNORECASE)
+
+    return working, qualifier
+
+
+def _split_damage_types(segment: str) -> list[str]:
+    return [part.strip() for part in re.split(r",|\band\b", segment) if part.strip()]
+
+
 def normalize_damage_list(damage_str: str) -> list[dict[str, str]]:
     """Convert resistance/immunity strings to structured dictionaries."""
 
     if not damage_str:
         return []
 
-    segments = [segment.strip() for segment in damage_str.split(";") if segment.strip()]
     entries: list[dict[str, str]] = []
 
+    segments = [segment.strip() for segment in damage_str.split(";") if segment.strip()]
+
     for segment in segments:
-        working = segment
-        qualifier: str | None = None
-        lowered = working.lower()
-
-        if "from nonmagical" in lowered:
-            qualifier = "nonmagical"
-            working = re.sub(
-                r"\s+from\s+nonmagical\s+attacks?(?:\s+that\s+aren't\s+\w+)?",
-                "",
-                working,
-                flags=re.IGNORECASE,
-            )
-        elif "that aren't" in lowered:
-            match = re.search(r"that\s+aren't\s+(\w+)", working, flags=re.IGNORECASE)
-            if match:
-                allowed_qualifiers = {"magical", "silvered", "adamantine"}
-                matched_word = match.group(1).lower()
-                if matched_word in allowed_qualifiers:
-                    qualifier = f"not_{matched_word}"
-                else:
-                    qualifier = None
-                working = re.sub(r"\s+that\s+aren't\s+\w+", "", working, flags=re.IGNORECASE)
-        elif "while in" in lowered:
-            match = re.search(r"while\s+in\s+(.+)$", working, flags=re.IGNORECASE)
-            if match:
-                qualifier = f"in_{match.group(1).strip().lower().replace(' ', '_')}"
-                working = re.sub(r"\s+while\s+in\s+.+$", "", working, flags=re.IGNORECASE)
-
-        parts = [p.strip() for p in re.split(r",|\band\b", working) if p.strip()]
-        for part in parts:
+        cleaned_segment, qualifier = _extract_damage_qualifier(segment)
+        for part in _split_damage_types(cleaned_segment):
             entry: dict[str, str] = {"type": part.lower()}
             if qualifier:
                 entry["qualifier"] = qualifier

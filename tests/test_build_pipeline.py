@@ -1,5 +1,8 @@
 import json
-from pathlib import Path
+
+import jsonschema
+
+from srd_builder.build import build
 
 
 def _raw_monsters_fixture() -> list[dict[str, object]]:
@@ -86,9 +89,6 @@ def _raw_monsters_fixture() -> list[dict[str, object]]:
 
 
 def test_build_pipeline(tmp_path, monkeypatch):
-    from srd_builder.build import build
-    import sys
-
     class _DummyValidator:
         def __init__(self, _schema):
             pass
@@ -96,11 +96,9 @@ def test_build_pipeline(tmp_path, monkeypatch):
         def validate(self, _instance):
             return None
 
-    import jsonschema
-
     monkeypatch.setattr(jsonschema, "Draft202012Validator", _DummyValidator)
 
-    import srd_builder.validate as validate_module
+    from srd_builder import validate as validate_module
 
     ruleset = "srd_5_1"
     rulesets_root = tmp_path / "rulesets"

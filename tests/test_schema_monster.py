@@ -5,6 +5,7 @@ from itertools import islice
 from pathlib import Path
 
 import pytest
+
 try:
     from jsonschema import Draft202012Validator
 except ModuleNotFoundError:  # pragma: no cover - optional dependency

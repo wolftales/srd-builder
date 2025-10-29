@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import __version__
+from .indexer import build_indexes
 from .parse_monsters import normalize_monster
 from .postprocess import (
     polish_text_fields,
@@ -25,7 +26,6 @@ from .postprocess import (
     structure_defenses,
     unify_simple_name,
 )
-from .indexer import build_indexes
 
 
 @dataclass

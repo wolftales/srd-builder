@@ -1,21 +1,22 @@
-from __future__ import annotations
-
 """Index construction helpers for SRD entities."""
 
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Any, Dict, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 __all__ = ["build_monster_index", "build_indexes"]
 
 
-def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> Dict[str, list[str]]:
+def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> dict[str, list[str]]:
     return {key: ids for key, ids in values}
 
 
 def build_monster_index(monsters: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical monster lookup tables."""
 
-    by_name: Dict[str, str] = {}
+    by_name: dict[str, str] = {}
     by_cr: defaultdict[str, list[str]] = defaultdict(list)
     by_type: defaultdict[str, list[str]] = defaultdict(list)
     by_size: defaultdict[str, list[str]] = defaultdict(list)
@@ -57,8 +58,8 @@ def _looks_numeric(value: str) -> bool:
     return True
 
 
-def _build_entity_index(monsters: list[dict[str, Any]]) -> Dict[str, dict[str, str]]:
-    index: Dict[str, dict[str, str]] = {}
+def _build_entity_index(monsters: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    index: dict[str, dict[str, str]] = {}
     for monster in monsters:
         monster_id = monster["id"]
         index[monster_id] = {
