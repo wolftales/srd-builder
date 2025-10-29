@@ -90,7 +90,20 @@ python -m srd_builder.build --ruleset srd_5_1 --out dist
 python -m srd_builder.validate --ruleset srd_5_1
 ```
 
-*Purpose:* Validate that parse → postprocess → index → validate chain works correctly before tackling PDF extraction.
+> **Intent:** Confirm the complete data pipeline functions deterministically using controlled fixture data.
+
+**Clarify schema stage:**
+
+> `validate.py` confirms `monsters.json` complies with `/schemas/monster.schema.json` and that no timestamps exist in outputs.
+
+**End with a definition of done checklist:**
+
+```
+✅ build and validate commands run cleanly
+✅ deterministic outputs under dist/
+✅ schema validation passes
+✅ CI green (ruff, black, pytest)
+```
 
 ---
 
