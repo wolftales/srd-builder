@@ -23,7 +23,6 @@ from .indexer import build_indexes
 from .parse_monsters import parse_monster_records
 from .postprocess import clean_monster_record
 
-
 RULESETS_DIRNAME: Final = "rulesets"
 DATA_SOURCE: Final = "SRD_CC_v5.1"
 SCHEMA_VERSION: Final = "1.0.0"
@@ -40,7 +39,7 @@ def _meta_block(ruleset: str) -> dict[str, str]:
 
 
 def _wrap_with_meta(payload: dict[str, Any], *, ruleset: str) -> dict[str, Any]:
-    document: "OrderedDict[str, Any]" = OrderedDict()
+    document: OrderedDict[str, Any] = OrderedDict()
     document["_meta"] = _meta_block(ruleset)
     for key, value in payload.items():
         document[key] = value
