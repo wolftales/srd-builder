@@ -13,8 +13,8 @@ SAMPLE_SIZE = 5
 
 @pytest.mark.skipif(not MONSTER_DATA.exists(), reason="No SRD monster data present")
 def test_monsters_json_sanity() -> None:
-    monsters = json.loads(MONSTER_DATA.read_text(encoding="utf-8"))
-    assert isinstance(monsters, list), "monsters.json should contain a list"
+    document = json.loads(MONSTER_DATA.read_text(encoding="utf-8"))
+    monsters = document.get("items", []) if isinstance(document, dict) else []
     assert monsters, "monsters.json should not be empty"
 
     for monster in islice(monsters, SAMPLE_SIZE):

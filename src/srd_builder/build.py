@@ -12,12 +12,75 @@ import argparse
 import hashlib
 import json
 import platform
+from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from . import __version__
+from .indexer import build_indexes
+from .parse_monsters import parse_monster_records
+from .postprocess import clean_monster_record
+
+
+RULESETS_DIRNAME: Final = "rulesets"
+DATA_SOURCE: Final = "SRD_CC_v5.1"
+SCHEMA_VERSION: Final = "1.0.0"
+
+
+def _meta_block(ruleset: str) -> dict[str, str]:
+    return {
+        "ruleset": ruleset,
+        "schema_version": SCHEMA_VERSION,
+        "source": DATA_SOURCE,
+        "build_report": "../build_report.json",
+        "generated_by": f"srd-builder v{__version__}",
+    }
+
+
+def _wrap_with_meta(payload: dict[str, Any], *, ruleset: str) -> dict[str, Any]:
+    document: "OrderedDict[str, Any]" = OrderedDict()
+    document["_meta"] = _meta_block(ruleset)
+    for key, value in payload.items():
+        document[key] = value
+    return document
+
+
+def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:
+    source = raw_dir / "monsters.json"
+    if not source.exists():
+        return []
+    data = json.loads(source.read_text(encoding="utf-8"))
+    if not isinstance(data, list):
+        raise TypeError("ruleset raw monsters must be stored as a JSON array")
+    return data
+
+
+def _render_json(payload: Any) -> str:
+    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
+
+def _write_datasets(
+    *,
+    ruleset: str,
+    data_dir: Path,
+    monsters: list[dict[str, Any]],
+) -> None:
+    processed = [clean_monster_record(monster) for monster in monsters]
+
+    monsters_doc = _wrap_with_meta({"items": processed}, ruleset=ruleset)
+    (data_dir / "monsters.json").write_text(
+        _render_json(monsters_doc),
+        encoding="utf-8",
+    )
+
+    index_payload = build_indexes(processed)
+    index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
+    (data_dir / "index.json").write_text(
+        _render_json(index_doc),
+        encoding="utf-8",
+    )
 
 
 @dataclass
@@ -68,9 +131,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-RULESETS_DIRNAME: Final = "rulesets"
-
-
 def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     """Create the directory layout expected for a ruleset build.
 
@@ -110,7 +170,7 @@ def _update_pdf_metadata(raw_dir: Path) -> None:
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
         if not isinstance(meta, dict):
             print(
-                f"Warning: {meta_path} contains JSON that is not an object (got {type(meta).__name__}); resetting to empty dict."
+                f"Warning: {meta_path} contains JSON that is not an object (got {type(meta).__name__}); resetting to empty dict.",
             )
             meta = {}
     else:
@@ -131,6 +191,10 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
 
     _update_pdf_metadata(raw_dir=layout["raw"])
+
+    raw_monsters = _load_raw_monsters(layout["raw"])
+    parsed = parse_monster_records(raw_monsters)
+    _write_datasets(ruleset=ruleset, data_dir=layout["data"], monsters=parsed)
 
     return report_path
 

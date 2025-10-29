@@ -32,9 +32,12 @@ def validate_monsters(ruleset: str, limit: int | None = None) -> int:
             "Monster schema is missing. Did you remove schemas/monster.schema.json?"
         )
 
-    monsters = load_json(data_file)
-    if not isinstance(monsters, list):  # pragma: no cover - defensive guard
-        raise TypeError("monsters.json must contain a JSON array")
+    document = load_json(data_file)
+    if not isinstance(document, dict):  # pragma: no cover - defensive guard
+        raise TypeError("monsters.json must contain a JSON object")
+    monsters = document.get("items", [])
+    if not isinstance(monsters, list):
+        raise TypeError("monsters.json 'items' must contain a JSON array")
 
     schema = load_json(schema_file)
     validator = Draft202012Validator(schema)
@@ -75,7 +78,7 @@ def _check_pdf_hash(ruleset: str) -> None:
 
         meta_obj = load_json(meta_path)
         if not isinstance(meta_obj, dict) or "pdf_sha256" not in meta_obj:
-            print("PDF/hash not present — OK for v0.1.0.")
+            print("PDF/hash not present — OK for v0.2.0.")
             return
 
         recorded_hash = meta_obj["pdf_sha256"]
@@ -92,7 +95,7 @@ def _check_pdf_hash(ruleset: str) -> None:
         print("OK: PDF hash matches meta.json.")
         return
 
-    print("PDF/hash not present — OK for v0.1.0.")
+    print("PDF/hash not present — OK for v0.2.0.")
 
 
 def validate_ruleset(ruleset: str, limit: int | None = None) -> None:

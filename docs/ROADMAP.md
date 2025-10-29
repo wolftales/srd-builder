@@ -7,6 +7,9 @@ but the long-term vision remains: ingest **source PDFs** under
 `rulesets/<ruleset>/raw/*.pdf` and produce **deterministic JSON datasets** in
 multiple stages.
 
+> Next milestone: **v0.3.0 focuses entirely on PDF extraction** so the
+> fixtures used today can be replaced with real source pulls.
+
 ```
 PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
         rulesets/<ruleset>/raw/extracted/monsters_raw.json

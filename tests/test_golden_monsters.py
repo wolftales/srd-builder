@@ -3,12 +3,22 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from srd_builder.indexer import build_indexes
+from srd_builder import __version__
 from srd_builder.parse_monsters import parse_monster_records
 from srd_builder.postprocess import clean_monster_record
 
 
-def test_monster_pipeline_matches_golden_fixture() -> None:
+def _meta(ruleset: str) -> dict[str, str]:
+    return {
+        "ruleset": ruleset,
+        "schema_version": "1.0.0",
+        "source": "SRD_CC_v5.1",
+        "build_report": "../build_report.json",
+        "generated_by": f"srd-builder v{__version__}",
+    }
+
+
+def test_monster_dataset_matches_normalized_fixture() -> None:
     raw_path = Path("tests/fixtures/srd_5_1/raw/monsters.json")
     expected_path = Path("tests/fixtures/srd_5_1/normalized/monsters.json")
 
@@ -16,9 +26,8 @@ def test_monster_pipeline_matches_golden_fixture() -> None:
     parsed = parse_monster_records(monsters_raw)
     processed = [clean_monster_record(monster) for monster in parsed]
 
-    index_blob = build_indexes(processed)
-    assert index_blob["stats"]["total_monsters"] == len(processed)
+    document = {"_meta": _meta("srd_5_1"), "items": processed}
 
-    rendered = json.dumps(processed, indent=2, sort_keys=True) + "\n"
+    rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
     expected = expected_path.read_text(encoding="utf-8")
     assert rendered == expected
