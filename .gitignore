@@ -18,3 +18,4 @@ htmlcov/
 .vscode/
 rulesets/*/raw/
 rulesets/*/raw/**
+docs/external/
