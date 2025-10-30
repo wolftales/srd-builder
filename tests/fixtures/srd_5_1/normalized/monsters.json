@@ -100,6 +100,10 @@
           "type": "acid"
         }
       ],
+      "languages": [
+        "Common",
+        "Draconic"
+      ],
       "page": 88,
       "src": "SRD 5.1"
     },
@@ -145,6 +149,10 @@
         "darkvision": 60,
         "passive_perception": 9
       },
+      "languages": [
+        "Common",
+        "Goblin"
+      ],
       "page": 166,
       "src": "SRD 5.1"
     },
@@ -243,6 +251,9 @@
           "type": "unconscious"
         }
       ],
+      "languages": [
+        "Ignan"
+      ],
       "page": 126,
       "src": "SRD 5.1"
     },
@@ -298,6 +309,9 @@
         {
           "type": "poisoned"
         }
+      ],
+      "languages": [
+        "understands the languages it knew in life but can't speak"
       ],
       "page": 272,
       "src": "SRD 5.1"
@@ -375,6 +389,7 @@
           "type": "stunned"
         }
       ],
+      "languages": [],
       "page": 338,
       "src": "SRD 5.1"
     },
@@ -452,6 +467,9 @@
         {
           "type": "slashing (nonmagical)"
         }
+      ],
+      "languages": [
+        "Common"
       ],
       "page": 298,
       "src": "SRD 5.1"

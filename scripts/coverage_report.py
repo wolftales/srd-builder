@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 
-def count_expected_from_raw(raw_path: Path) -> dict[str, int]:
+def count_expected_from_raw(raw_path: Path) -> dict[str, int]:  # noqa: C901
     """Count expected fields by analyzing raw PDF extraction."""
     with open(raw_path) as f:
         data = json.load(f)
@@ -78,9 +78,35 @@ def count_expected_from_raw(raw_path: Path) -> dict[str, int]:
     ]:
         expected[field] = total_monsters
 
-    # Traits and actions - most monsters should have these
-    expected["traits"] = total_monsters
-    expected["actions"] = total_monsters
+    # Traits: BoldItalic entries before Actions header
+    traits_count = 0
+    actions_count = 0
+    for monster in data["monsters"]:
+        blocks = monster.get("blocks", [])
+
+        # Find Actions header
+        actions_idx = None
+        for i, block in enumerate(blocks):
+            text = " ".join(block.get("text", "").split()).strip()
+            if text == "Actions" and block.get("size", 0) >= 10.8:
+                actions_idx = i
+                actions_count += 1  # Monster has Actions section
+                break
+
+        # Check for BoldItalic traits before Actions
+        if actions_idx is not None:
+            for i in range(actions_idx):
+                block = blocks[i]
+                if (
+                    block.get("font") == "Calibri-BoldItalic"
+                    and block.get("size") == 9.84
+                    and block.get("text", "").strip().endswith(".")
+                ):
+                    traits_count += 1
+                    break
+
+    expected["traits"] = traits_count
+    expected["actions"] = actions_count
 
     return expected
 

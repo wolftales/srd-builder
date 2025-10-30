@@ -370,16 +370,55 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
             # Clean label text: normalize whitespace
             label_clean = " ".join(text.split()).lower()
 
-            # Get next block value (usually)
-            next_block = blocks[i + 1] if i + 1 < len(blocks) else None
-            next_text = next_block.get("text", "").strip() if next_block else ""
+            # Handle multi-block labels (e.g., "Armor" + "Class 14..." or "Sense" + "s darkvision...")
+            # Check if next block continues the label (either Bold or regular text starting with lowercase)
+            j = i + 1
+            if j < len(blocks):
+                peek_block = blocks[j]
+                peek_font = peek_block.get("font", "")
+                peek_text = peek_block.get("text", "").strip()
+
+                # Case 1: Next block is Bold and looks like label continuation (e.g., "Sense" + "s")
+                if "Bold" in peek_font and peek_text and not peek_text[0].isdigit():
+                    if len(peek_text) <= 6 and not any(c in peek_text for c in "():,"):
+                        label_clean += " " + " ".join(peek_text.split()).lower()
+                        j += 1
+
+                # Case 2: Next block is regular text starting with label word (e.g., "Armor" + "Class 14...")
+                elif "Bold" not in peek_font and peek_text:
+                    # Extract first word from next block
+                    first_word = peek_text.split()[0] if peek_text.split() else ""
+                    # Common label continuations that aren't Bold
+                    if first_word.lower() in ("class", "points", "s"):
+                        label_clean += " " + first_word.lower()
+                        # The rest of the block is the value
+                        remaining = " ".join(peek_text.split()[1:])
+                        if remaining:
+                            # Value is in the same block as the label continuation
+                            next_text = remaining
+                            # We consumed label block (i) and the combined block (i+1)
+                            # So we should skip to i+2
+                            j = i + 2
+                        else:
+                            # Value is in the next block after the label continuation
+                            j = i + 2
+                            if j < len(blocks):
+                                next_block = blocks[j]
+                                next_text = next_block.get("text", "").strip() if next_block else ""
+                            else:
+                                next_text = ""
+
+            # Get next block value if we haven't already processed it
+            if j == i + 1:
+                next_block = blocks[j] if j < len(blocks) else None
+                next_text = next_block.get("text", "").strip() if next_block else ""
 
             if "armor class" in label_clean:
                 # TODO v0.4.0: Parse structured AC with source
                 # e.g., "17 (natural armor)" -> {"value": 17, "source": "natural armor"}
                 # Schema already supports object type for armor_class
                 parsed["armor_class"] = next_text
-                i += 2
+                i = j  # Move to the block after we've consumed
                 continue
 
             if "hit points" in label_clean:
@@ -387,12 +426,12 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                 # e.g., "135 (18d10 + 36)" -> {"average": 135, "formula": "18d10+36"}
                 # Schema already supports object type for hit_points
                 parsed["hit_points"] = next_text
-                i += 2
+                i = j
                 continue
 
             if label_clean == "speed":
                 parsed["speed"] = next_text
-                i += 2
+                i = j
                 continue
 
             # Ability scores: STR, DEX, CON, INT, WIS, CHA
@@ -443,19 +482,19 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
             # Saving Throws
             if "saving" in label_clean and "throw" in label_clean:
                 parsed["saving_throws"] = next_text
-                i += 2
+                i = j
                 continue
 
             # Skills
             if label_clean == "skills":
                 parsed["skills"] = next_text
-                i += 2
+                i = j
                 continue
 
             # Senses
-            if label_clean == "senses":
+            if label_clean == "senses" or label_clean == "sense s":
                 parsed["senses"] = next_text
-                i += 2
+                i = j
                 continue
 
             # Languages (optional field, but good to capture)
