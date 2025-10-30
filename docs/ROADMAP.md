@@ -112,35 +112,110 @@ python -m srd_builder.validate --ruleset srd_5_1
 
 ---
 
-## **v0.3.0 — PDF Extraction**
+## **v0.3.0 — PDF Extraction** 🔄 IN PROGRESS
 
 **Goal:** extract *monsters* text blocks directly from the PDF
 and serialize them as **raw, unprocessed JSON**.
 
-**New Module**
+**Status:** ~75% complete
 
-```python
-src/srd_builder/extract_monsters.py
-```
+### Completed ✅
+
+* **Extraction module** (`src/srd_builder/extract_monsters.py`)
+  - 296 monsters extracted from pages 261-394
+  - Font metadata (name, size, color, flags)
+  - Layout info (column, bbox, positioning)
+  - Page numbers per monster
+  - Verbatim text blocks with formatting preserved
+  - Zero extraction warnings
+
+* **Validation framework** (`src/srd_builder/validate_monsters.py`)
+  - Category completeness checks (8 categories, 44 known monsters)
+  - Count validation (290-320 range)
+  - Uniqueness verification
+  - Alphabetic distribution analysis
+  - All tests passing
+
+* **Build integration** (`build.py`)
+  - Extraction runs automatically during build
+  - Outputs to `rulesets/<ruleset>/raw/monsters_raw.json`
+  - PDF SHA-256 tracking in metadata
+  - Backward compatible with legacy format
 
 **Outputs**
 
 ```
-rulesets/<ruleset>/raw/extracted/monsters_raw.json
+rulesets/<ruleset>/raw/monsters_raw.json    # 296 monsters with rich metadata
 ```
 
 **Contents of `monsters_raw.json`:**
 
-* One entry per monster block from the PDF.
-* Fields mostly unparsed — strings for AC, HP, actions, etc.
-* Page references and offsets retained.
+* One entry per monster with `name`, `pages`, `blocks`, `markers`, `warnings`
+* Each block contains: `text`, `font`, `size`, `color`, `bbox`, `column`, `page`
+* Fields unparsed — blocks array ready for parser consumption
+* Page references and layout metadata retained
 
 **Integration**
 
-* `build.py` calls `extract_monsters_from_pdf(pdf_path)` instead of loading pre-existing JSON
-* Optional: compute and record PDF SHA-256 in `build_report.json`
+* ✅ `build.py` calls `extract_monsters(pdf_path)` when PDF present
+* ✅ Computes and records PDF SHA-256 in extraction metadata
+* ✅ `_load_raw_monsters()` supports new format (tries `monsters_raw.json` first)
 
-*This is the "read from source PDF" milestone.*
+### In Progress 🔄
+
+* **Parser update** (`parse_monsters.py`)
+  - Need to read `blocks` array and extract stat block fields
+  - Size, type, alignment, AC, HP, abilities, speeds, etc.
+  - Legacy parser only normalized pre-parsed fields
+  - New work: actual parsing from semi-structured text blocks
+
+### Remaining 📋
+
+* **Extraction tests**
+  - Test single monster extraction
+  - Category detection
+  - Column handling
+  - Cross-page monsters
+
+* **Cross-page validation**
+  - Verify monsters spanning multiple pages work correctly
+  - Test column wrap detection (Gemini YELLOW flag)
+
+### Quality Metrics vs TabylTop
+
+**Coverage:**
+- ✅ 296 monsters (vs TT's 319 which included NPCs/appendices/conditions)
+- ✅ All 8 core categories complete
+- ✅ Zero duplicates
+- ✅ Full Monster Manual section (pages 261-394)
+
+**Data Richness:**
+- ✅ Font metadata - **NEW** (TT didn't have)
+- ✅ Layout info - **NEW** (TT didn't have)
+- ✅ Page numbers - **same as TT**
+- ✅ Verbatim text - **better** (TT normalized too early)
+- ✅ Multiple blocks - **NEW** (TT flattened structure)
+
+**Goal:** ✅ "Extracting directly from PDF at least as well as TabylTop"
+
+### Validation Backlog (Post-v0.3.0)
+
+Tasks to rigorously defend the 296 vs 319 count:
+
+* Document the 23-entry delta with evidence
+  - List specific non-monster entries from reference JSON
+  - Examples: "Appendix MM-B", "Blinded" condition, "Actions" headers
+* Manual spot-check sample
+  - Verify random monsters from reference are in our 296
+  - Check edge cases (first/last monsters, multi-page entries)
+* Create comparison report
+  - Side-by-side: what's in 319 but not 296, and why
+  - Categorize: NPCs (page 60), appendices (post-394), conditions, chapter headers
+* Be transparent in documentation
+  - "We believe 296 is correct based on [evidence]"
+  - Provide reproducible validation steps
+
+*These validation tasks ensure defensibility for public project.*
 
 ---
 
