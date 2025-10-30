@@ -219,16 +219,34 @@ Tasks to rigorously defend the 296 vs 319 count:
 
 ---
 
-## **v0.4.0 — Extraction Quality Pass (monsters)**
+## **v0.4.0 — Parsing Quality Pass (monsters)**
 
-**Goal:** improve PDF segmentation fidelity.
+**Goal:** Improve parsing accuracy using rich extraction metadata.
 
-**Planned**
+**Planned Enhancements**
 
-* Better block detection (headers, "Armor Class", "Hit Points", "Actions", etc.).
-* Robust dice/bonus parsing; multi-line traits/actions join rules.
-* Handle edge cases (legendary actions, lair actions, regional effects).
-* Page cross-check using page index metadata.
+* **Structured field parsing** (leverage schema's object support)
+  - Armor Class: `{"value": 17, "source": "natural armor"}`
+  - Hit Points: `{"average": 135, "formula": "18d10+36"}`
+  - Speed: More granular breakdown with conditions
+  - Damage immunities/resistances/vulnerabilities: structured lists
+
+* **Better block detection**
+  - Use font metadata to distinguish traits vs actions
+  - Legendary actions, lair actions, regional effects
+  - Multi-line trait/action text joining
+
+* **Enhanced dice/bonus parsing**
+  - Attack bonuses: separate to-hit from damage
+  - Saving throw DC extraction
+  - Condition duration parsing
+
+* **Quality improvements**
+  - Page cross-check using page index metadata
+  - Validation against known monster patterns
+  - Edge case handling (multiattack, special abilities)
+
+**Benefit:** Rich extraction metadata (fonts, layout, positioning) enables more accurate parsing than previous TabylTop-based approach.
 
 ---
 

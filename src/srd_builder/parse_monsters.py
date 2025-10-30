@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from copy import deepcopy
 from typing import Any
 
-__all__ = ["normalize_monster", "parse_monster_records"]
+__all__ = ["normalize_monster", "parse_monster_records", "parse_monster_from_blocks"]
 
 _ABILITY_MAP = {
     "str": "strength",
@@ -209,21 +209,26 @@ def _extract_xp_value(monster: dict[str, Any]) -> int:
 
 
 def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
-    """Map a raw monster payload into the canonical monster template."""
+    """Map a raw monster payload into the canonical monster template.
+
+    Expects schema-compliant keys from v0.3.0+ extraction.
+    """
 
     monster = deepcopy(raw)
-    ability_scores = _expand_scores(monster.get("stats"))
-    saving_throws = _expand_proficiencies(monster.get("saves"))
+
+    ability_scores = _expand_scores(monster.get("ability_scores"))
+    saving_throws = _expand_proficiencies(monster.get("saving_throws"))
     skills = _expand_proficiencies(monster.get("skills"))
     senses = _normalize_senses(monster.get("senses"))
 
     simple_name = _infer_simple_name(monster)
-    challenge_value = _parse_challenge_value(monster.get("cr") or monster.get("challenge"))
+    challenge_value = _parse_challenge_value(monster.get("challenge_rating"))
 
-    raw_hp = monster.get("hp") if monster.get("hp") is not None else monster.get("hit_points")
+    raw_hp = monster.get("hit_points")
     hit_points, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
 
     monster_id = monster.get("id")
+    armor_class_value = _coerce_int(monster.get("armor_class")) or 0
 
     normalized = {
         "id": str(monster_id) if monster_id else f"monster:{simple_name}",
@@ -233,7 +238,7 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "size": str(monster.get("size", "")),
         "type": str(monster.get("type", "")),
         "alignment": str(monster.get("alignment", "")),
-        "armor_class": _coerce_int(monster.get("ac") or monster.get("armor_class")) or 0,
+        "armor_class": armor_class_value,
         "hit_points": hit_points,
         "hit_dice": hit_dice_text,
         "speed": _normalize_speed(monster.get("speed")),
@@ -257,7 +262,158 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
+def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
+    """Parse monster fields from blocks array (v0.3.0 extraction format).
+
+    Args:
+        monster: Dict with 'name', 'blocks', 'pages', etc.
+
+    Returns:
+        Dict with parsed fields ready for normalize_monster()
+
+    Note: Complexity acceptable for initial parser. Will refactor in v0.4.0.
+    """
+    # If no blocks array, assume legacy format and pass through
+    blocks = monster.get("blocks")
+    if not blocks:
+        return monster
+
+    parsed: dict[str, Any] = {"name": monster.get("name", "")}
+
+    # Add page numbers (take first page)
+    pages = monster.get("pages", [])
+    if pages:
+        parsed["page"] = pages[0]
+
+    # Parse blocks sequentially
+    i = 0
+    while i < len(blocks):
+        block = blocks[i]
+        text = block.get("text", "").strip()
+        font = block.get("font", "")
+
+        # Skip empty blocks
+        if not text:
+            i += 1
+            continue
+
+        # Size/type/alignment line (Calibri-Italic, right after name)
+        if "Italic" in font and i <= 2:
+            parsed.update(_parse_size_type_alignment(text))
+            i += 1
+            continue
+
+        # Check for stat block labels (Bold text)
+        if "Bold" in font:
+            # Clean label text: normalize whitespace
+            label_clean = " ".join(text.split()).lower()
+
+            # Get next block value (usually)
+            next_block = blocks[i + 1] if i + 1 < len(blocks) else None
+            next_text = next_block.get("text", "").strip() if next_block else ""
+
+            if "armor class" in label_clean:
+                # TODO v0.4.0: Parse structured AC with source
+                # e.g., "17 (natural armor)" -> {"value": 17, "source": "natural armor"}
+                # Schema already supports object type for armor_class
+                parsed["armor_class"] = next_text
+                i += 2
+                continue
+
+            if "hit points" in label_clean:
+                # TODO v0.4.0: Parse structured HP with dice formula
+                # e.g., "135 (18d10 + 36)" -> {"average": 135, "formula": "18d10+36"}
+                # Schema already supports object type for hit_points
+                parsed["hit_points"] = next_text
+                i += 2
+                continue
+
+            if label_clean == "speed":
+                parsed["speed"] = next_text
+                i += 2
+                continue
+
+            # Ability scores: STR, DEX, CON, INT, WIS, CHA
+            if label_clean in ("str", "dex", "con", "int", "wis", "cha"):
+                # Collect all 6 ability headers
+                ability_blocks = []
+                j = i
+                while j < len(blocks) and j < i + 6:
+                    ab_block = blocks[j]
+                    ab_text = ab_block.get("text", "").strip().lower()
+                    if ab_text in ("str", "dex", "con", "int", "wis", "cha"):
+                        ability_blocks.append(ab_text)
+                        j += 1
+                    else:
+                        break
+
+                # Next block should have values
+                if j < len(blocks):
+                    values_text = blocks[j].get("text", "")
+                    ability_scores = _parse_ability_scores(values_text)
+                    if ability_scores:
+                        # Use schema key "ability_scores" directly (not legacy "stats")
+                        parsed["ability_scores"] = ability_scores
+                    i = j + 1
+                    continue
+
+        i += 1
+
+    return parsed
+
+
+def _parse_size_type_alignment(text: str) -> dict[str, Any]:
+    """Parse 'Large aberration, lawful evil' line."""
+    # Clean whitespace/tabs
+    text = " ".join(text.split())
+
+    parts = [p.strip() for p in text.split(",")]
+    if len(parts) < 2:
+        return {}
+
+    # First part: size + type
+    size_type = parts[0].split(None, 1)
+    size = size_type[0] if len(size_type) > 0 else None
+    creature_type = size_type[1] if len(size_type) > 1 else None
+
+    # Rest: alignment
+    alignment = ", ".join(parts[1:]).strip()
+
+    return {
+        "size": size,
+        "type": creature_type,
+        "alignment": alignment,
+    }
+
+
+def _parse_ability_scores(text: str) -> dict[str, Any]:
+    """Parse '21 (+5)  9 (−1)  15 (+2)  18 (+4)  15 (+2)  18 (+4)' line."""
+    # Clean text
+    text = " ".join(text.split())
+
+    # Extract numbers before parentheses (the actual scores)
+    # Pattern: number followed by optional modifier in parens
+    scores = []
+    pattern = r"(\d+)\s*\([^)]+\)"
+    for match in re.finditer(pattern, text):
+        scores.append(int(match.group(1)))
+
+    if len(scores) != 6:
+        return {}
+
+    return {
+        "str": scores[0],
+        "dex": scores[1],
+        "con": scores[2],
+        "int": scores[3],
+        "wis": scores[4],
+        "cha": scores[5],
+    }
+
+
 def parse_monster_records(monsters: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Normalize a list of raw monster dictionaries."""
 
-    return [normalize_monster(monster) for monster in monsters]
+    # First parse blocks into fields (v0.3.0 format), then normalize
+    parsed = [parse_monster_from_blocks(monster) for monster in monsters]
+    return [normalize_monster(monster) for monster in parsed]
