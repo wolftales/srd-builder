@@ -108,6 +108,17 @@ def count_expected_from_raw(raw_path: Path) -> dict[str, int]:  # noqa: C901
     expected["traits"] = traits_count
     expected["actions"] = actions_count
 
+    # Reactions: Count monsters with "Reactions" header
+    reactions_count = 0
+    for monster in data["monsters"]:
+        blocks = monster.get("blocks", [])
+        for block in blocks:
+            text = " ".join(block.get("text", "").split()).strip()
+            if text == "Reactions" and block.get("size", 0) >= 10.8:
+                reactions_count += 1
+                break
+    expected["reactions"] = reactions_count
+
     return expected
 
 
@@ -154,6 +165,9 @@ def count_actual_from_parsed(parsed_path: Path) -> tuple[dict[str, int], int]:
         "cr": sum(1 for m in items if m.get("challenge_rating") is not None),
         "traits": sum(1 for m in items if m.get("traits") and len(m.get("traits", [])) > 0),
         "actions": sum(1 for m in items if m.get("actions") and len(m.get("actions", [])) > 0),
+        "reactions": sum(
+            1 for m in items if m.get("reactions") and len(m.get("reactions", [])) > 0
+        ),
         "legendary": sum(
             1
             for m in items
@@ -206,6 +220,7 @@ def main():
         ("cr", "Challenge Rating"),
         ("traits", "Traits"),
         ("actions", "Actions"),
+        ("reactions", "Reactions"),
         ("legendary", "Legendary Actions"),
     ]
 

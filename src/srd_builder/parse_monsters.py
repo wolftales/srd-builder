@@ -274,6 +274,7 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "skills": skills,
         "traits": _normalize_list_of_dicts(monster.get("traits")),
         "actions": _normalize_list_of_dicts(monster.get("actions")),
+        "reactions": _normalize_list_of_dicts(monster.get("reactions")),
         "legendary_actions": _normalize_list_of_dicts(monster.get("legendary_actions")),
         "challenge_rating": challenge_value,
         "xp_value": _extract_xp_value(monster),
@@ -572,11 +573,13 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
         i += 1
 
     # Parse traits, actions, legendary actions from remaining blocks
-    traits, actions, legendary_actions = _parse_traits_and_actions(blocks)
+    traits, actions, reactions, legendary_actions = _parse_traits_and_actions(blocks)
     if traits:
         parsed["traits"] = traits
     if actions:
         parsed["actions"] = actions
+    if reactions:
+        parsed["reactions"] = reactions
     if legendary_actions:
         parsed["legendary_actions"] = legendary_actions
 
@@ -634,22 +637,24 @@ def _parse_ability_scores(text: str) -> dict[str, Any]:
 
 def _parse_traits_and_actions(  # noqa: C901
     blocks: list[dict],
-) -> tuple[list[dict], list[dict], list[dict]]:
-    """Parse traits, actions, and legendary actions from blocks.
+) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+    """Parse traits, actions, reactions, and legendary actions from blocks.
 
     Patterns:
     - Trait names: 9.84pt Calibri-BoldItalic ending with period, before "Actions" header
     - Action names: 9.84pt Calibri-BoldItalic ending with period, after "Actions" header
+    - Reaction names: 9.84pt Calibri-BoldItalic ending with period, after "Reactions" header
     - Legendary action names: Similar pattern, after "Legendary Actions" header
-    - Section headers: 10.8pt Calibri-Bold ("Actions", "Legendary Actions")
+    - Section headers: 10.8pt Calibri-Bold ("Actions", "Reactions", "Legendary Actions")
     - Text: Multiple 9.84pt Calibri blocks following name
 
     Returns:
-        (traits, actions, legendary_actions) where each is a list of dicts with
+        (traits, actions, reactions, legendary_actions) where each is a list of dicts with
         {name, simple_name, text}
     """
     traits = []
     actions = []
+    reactions = []
     legendary_actions = []
     current_section = "traits"  # Start before "Actions" header
 
@@ -665,6 +670,10 @@ def _parse_traits_and_actions(  # noqa: C901
         if font_size >= 10.8 and "bold" in font.lower():
             if text.lower() == "actions":
                 current_section = "actions"
+                i += 1
+                continue
+            elif text.lower() == "reactions":
+                current_section = "reactions"
                 i += 1
                 continue
             elif "legendary" in text.lower() and "actions" in text.lower():
@@ -738,6 +747,8 @@ def _parse_traits_and_actions(  # noqa: C901
                 traits.append(entry)
             elif current_section == "actions":
                 actions.append(entry)
+            elif current_section == "reactions":
+                reactions.append(entry)
             elif current_section == "legendary_actions":
                 legendary_actions.append(entry)
 
@@ -746,7 +757,7 @@ def _parse_traits_and_actions(  # noqa: C901
 
         i += 1
 
-    return traits, actions, legendary_actions
+    return traits, actions, reactions, legendary_actions
 
 
 def parse_monster_records(monsters: list[dict[str, Any]]) -> list[dict[str, Any]]:
