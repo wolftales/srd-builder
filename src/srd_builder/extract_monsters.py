@@ -27,8 +27,14 @@ class ExtractionConfig:
     page_end: int | None = None  # None = to end of document
 
     # Font size thresholds (from Phase 1 research)
-    header_font_size_min: float = 13.0  # Catches 13.92pt and 18.0pt
-    body_font_size_max: float = 11.0  # Body is 9.84pt
+    category_font_size: float = 13.92  # Category headers like "Elementals"
+    monster_name_font_size: float = 9.84  # Individual monster names
+    header_font_size_min: float = 13.0  # General header threshold
+
+    # Font patterns (from Phase 1 research)
+    monster_name_font: str = "Calibri-Bold"  # 9.84pt Calibri-Bold
+    size_type_font: str = "Calibri-Italic"  # Size/type line follows name
+    trait_name_font: str = "Calibri-BoldItalic"  # Trait names (not monster names!)
 
     # Column detection (from Phase 1 research)
     column_midpoint: float = 306.0  # Measured exact midpoint
@@ -152,7 +158,7 @@ def _extract_spans(
                 # Determine column (left=1, right=2, single=0)
                 column = _determine_column(bbox[0], config)
 
-                # Check if this is a header based on font size
+                # Mark if this is a large header (for reference)
                 is_header = size >= config.header_font_size_min
 
                 spans.append(
@@ -165,7 +171,7 @@ def _extract_spans(
                         "size": size,
                         "color": _color_to_rgb(color),
                         "flags": flags,
-                        "is_header": is_header,
+                        "is_header": is_header,  # Kept for debugging/metadata
                     }
                 )
 
@@ -196,10 +202,10 @@ def _detect_monster_boundaries(
 ) -> list[RawMonster]:
     """Detect monster boundaries and group spans into monsters.
 
-    Uses multi-layer heuristics:
-    1. Font size spike (18pt or 13.92pt)
-    2. Type-line pattern detection ("Size Type, Alignment")
-    3. Keyword anchors (fallback)
+    Uses font pattern detection:
+    1. 9.84pt Calibri-Bold = Individual monster names
+    2. 13.92pt GillSans-SemiBold = Category headers (multi-monster groups)
+    3. Validates with size/type line (Calibri-Italic within 20pt Y-distance)
 
     Args:
         spans: Ordered list of text spans
@@ -211,21 +217,23 @@ def _detect_monster_boundaries(
     monsters: list[RawMonster] = []
     current_monster: dict[str, Any] | None = None
 
-    for span in spans:
-        # Check if this span is a monster name header
-        if span["is_header"] and _looks_like_monster_name(span["text"]):
-            # Save previous monster if exists
-            if current_monster:
-                monsters.append(_finalize_monster(current_monster))
+    for i, span in enumerate(spans):
+        # Check if this is an individual monster name (9.84pt Calibri-Bold)
+        if _is_monster_name_span(span, config):
+            # Validate with lookahead: next Italic span should be size/type
+            if _has_size_type_line_following(spans, i, config):
+                # Save previous monster if exists
+                if current_monster:
+                    monsters.append(_finalize_monster(current_monster))
 
-            # Start new monster
-            current_monster = {
-                "name": span["text"],
-                "pages": [span["page"]],
-                "blocks": [span],
-                "markers": [],
-                "warnings": [],
-            }
+                # Start new monster
+                current_monster = {
+                    "name": span["text"],
+                    "pages": [span["page"]],
+                    "blocks": [span],
+                    "markers": [],
+                    "warnings": [],
+                }
         elif current_monster:
             # Add span to current monster
             current_monster["blocks"].append(span)
@@ -243,6 +251,100 @@ def _detect_monster_boundaries(
         monsters.append(_finalize_monster(current_monster))
 
     return monsters
+
+
+def _is_monster_name_span(span: dict[str, Any], config: ExtractionConfig) -> bool:
+    """Check if span is a monster name (9.84pt Calibri-Bold).
+
+    Args:
+        span: Span dictionary
+        config: Extraction configuration
+
+    Returns:
+        True if this looks like a monster name
+    """
+    # Must be Calibri-Bold at 9.84pt
+    if span["font"] != config.monster_name_font:
+        return False
+
+    if abs(span["size"] - config.monster_name_font_size) > 0.5:
+        return False
+
+    # Must not be a stat block field keyword
+    stat_fields = {
+        "Speed",
+        "Armor Class",
+        "Hit Points",
+        "STR",
+        "DEX",
+        "CON",
+        "INT",
+        "WIS",
+        "CHA",
+        "Saving Throws",
+        "Skills",
+        "Senses",
+        "Languages",
+        "Challenge",
+        "Damage Resistances",
+        "Damage Immunities",
+        "Damage Vulnerabilities",
+        "Condition Immunities",
+    }
+    if span["text"] in stat_fields:
+        return False
+
+    # Must not be an "Actions" header
+    if span["text"] in {"Actions", "Reactions", "Legendary Actions"}:
+        return False
+
+    return True
+
+
+def _has_size_type_line_following(
+    spans: list[dict[str, Any]], current_index: int, config: ExtractionConfig
+) -> bool:
+    """Check if a size/type line (Calibri-Italic) follows within reasonable distance.
+
+    Args:
+        spans: All spans
+        current_index: Index of potential monster name span
+        config: Extraction configuration
+
+    Returns:
+        True if validated by following size/type line
+    """
+    if current_index >= len(spans) - 1:
+        return False
+
+    current_span = spans[current_index]
+    current_y = current_span["bbox"][1]  # Top Y coordinate
+
+    # Look ahead up to 30pt Y-distance for size/type line
+    for i in range(current_index + 1, min(current_index + 20, len(spans))):
+        next_span = spans[i]
+        next_y = next_span["bbox"][1]
+
+        # Stop if we've gone too far vertically
+        if next_y - current_y > 30:
+            break
+
+        # Check if this is a size/type line (Calibri-Italic with size keywords)
+        if next_span["font"] == config.size_type_font:
+            size_keywords = {
+                "Tiny",
+                "Small",
+                "Medium",
+                "Large",
+                "Huge",
+                "Gargantuan",
+            }
+            text_lower = next_span["text"]
+            if any(keyword in text_lower for keyword in size_keywords):
+                return True
+
+    # No size/type line found - might still be valid, but less confident
+    return False
 
 
 def _looks_like_monster_name(text: str) -> bool:
