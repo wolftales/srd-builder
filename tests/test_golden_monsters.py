@@ -11,7 +11,7 @@ from srd_builder.postprocess import clean_monster_record
 def _meta(ruleset: str) -> dict[str, str]:
     return {
         "ruleset": ruleset,
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "source": "SRD_CC_v5.1",
         "build_report": "../build_report.json",
         "generated_by": f"srd-builder v{__version__}",

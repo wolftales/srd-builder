@@ -25,7 +25,7 @@ from .postprocess import clean_monster_record
 
 RULESETS_DIRNAME: Final = "rulesets"
 DATA_SOURCE: Final = "SRD_CC_v5.1"
-SCHEMA_VERSION: Final = "1.0.0"
+SCHEMA_VERSION: Final = "1.1.0"
 
 
 def _meta_block(ruleset: str) -> dict[str, str]:

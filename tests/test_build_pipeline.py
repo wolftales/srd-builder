@@ -61,7 +61,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
     monsters_doc = json.loads(monsters_path.read_text(encoding="utf-8"))
     assert monsters_doc["_meta"] == {
         "ruleset": ruleset,
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "source": "SRD_CC_v5.1",
         "build_report": "../build_report.json",
         "generated_by": monsters_doc["_meta"]["generated_by"],

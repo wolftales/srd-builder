@@ -1,7 +1,7 @@
 {
   "_meta": {
     "ruleset": "srd_5_1",
-    "schema_version": "1.0.0",
+    "schema_version": "1.1.0",
     "source": "SRD_CC_v5.1",
     "build_report": "../build_report.json",
     "generated_by": "srd-builder v0.2.0"
@@ -11,6 +11,7 @@
       "id": "monster:adult_black_dragon",
       "simple_name": "adult_black_dragon",
       "name": "Adult Black Dragon",
+      "summary": "The dragon can breathe air and water.",
       "size": "Huge",
       "type": "dragon",
       "alignment": "chaotic evil",
@@ -111,6 +112,7 @@
       "id": "monster:goblin",
       "simple_name": "goblin",
       "name": "Goblin",
+      "summary": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns.",
       "size": "Small",
       "type": "humanoid (goblinoid)",
       "alignment": "neutral evil",
@@ -160,6 +162,7 @@
       "id": "monster:fire_elemental",
       "simple_name": "fire_elemental",
       "name": "Fire Elemental",
+      "summary": "The elemental can move through a space as narrow as 1 inch wide without squeezing. A creature that touches the elemental or hits it with a melee attack while within 5 feet of it takes 5 (1d10) fire damage.",
       "size": "Large",
       "type": "elemental",
       "alignment": "neutral",
@@ -320,6 +323,7 @@
       "id": "monster:swarm_of_insects",
       "simple_name": "swarm_of_insects",
       "name": "Swarm of Insects (Beetles)",
+      "summary": "The swarm can occupy another creature's space and vice versa, and the swarm can move through any opening large enough for a Tiny insect.",
       "size": "Medium",
       "type": "swarm of Tiny beasts",
       "alignment": "unaligned",
@@ -397,6 +401,7 @@
       "id": "monster:vampire_spawn",
       "simple_name": "vampire_spawn",
       "name": "Vampire Spawn",
+      "summary": "The vampire regains 10 hit points at the start of its turn if it has at least 1 hit point and isn't in sunlight or running water.",
       "size": "Medium",
       "type": "undead",
       "alignment": "neutral evil",

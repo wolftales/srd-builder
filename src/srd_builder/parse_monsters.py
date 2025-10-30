@@ -212,7 +212,12 @@ def _parse_challenge_value(raw_challenge: Any) -> Any:
 
 
 def _extract_xp_value(monster: dict[str, Any]) -> int:
-    for source in (monster.get("xp"), monster.get("xp_value"), monster.get("challenge")):
+    for source in (
+        monster.get("xp"),
+        monster.get("xp_value"),
+        monster.get("challenge"),
+        monster.get("challenge_rating"),
+    ):
         if not source:
             continue
         if isinstance(source, int | float):
@@ -257,11 +262,19 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     monster_id = monster.get("id")
     armor_class_value = _coerce_int(monster.get("armor_class")) or 0
 
+    # Extract summary from first trait's text
+    summary = ""
+    traits = monster.get("traits", [])
+    if traits and isinstance(traits, list) and len(traits) > 0:
+        first_trait = traits[0]
+        if isinstance(first_trait, dict):
+            summary = first_trait.get("text", "")
+
     normalized = {
         "id": str(monster_id) if monster_id else f"monster:{simple_name}",
         "simple_name": simple_name,
         "name": str(monster.get("name", "")),
-        "summary": str(monster.get("summary", "")),
+        "summary": summary,
         "size": str(monster.get("size", "")),
         "type": str(monster.get("type", "")),
         "alignment": str(monster.get("alignment", "")),
