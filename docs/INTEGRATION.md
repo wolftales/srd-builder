@@ -2,16 +2,25 @@
 
 ## Producer-Consumer Relationship
 
+### **The Vision: Separation of Concerns**
+
+srd-builder was created to **remove data processing burden from Blackmoor**, allowing Blackmoor to focus purely on game logic and usage. The project was bootstrapped collaboratively with Blackmoor to define the specification and ensure alignment with their consumption needs.
+
 **srd-builder** (Producer/Upstream)
+- **Role:** Data extraction and processing specialist
 - Extracts structured data directly from SRD 5.1 PDF
 - Produces clean, validated JSON data files
 - Maintains schemas and metadata
 - Version controlled, tested, reproducible
+- Implements the spec Blackmoor needs
 
 **Blackmoor** (Consumer/Downstream)
+- **Role:** Game framework and application logic
+- Defined the data specification and structure requirements
 - Integrates srd-builder's data files into game framework
-- Replaces their manually-curated/incomplete data
+- Focuses on game mechanics, not data extraction
 - Consumes: data files, schemas, indexes, metadata
+- No longer needs to maintain extraction pipeline
 
 ## Data Package Structure
 
@@ -110,15 +119,40 @@ srd-builder → [full SRD data + schemas] → Blackmoor
   - Conditions/Rules/Tables (TBD)
 ```
 
+## Design Philosophy
+
+### **Collaborative Spec, Focused Execution**
+
+- **Blackmoor defines the spec**: Field names, structure, what data is needed
+- **srd-builder implements extraction**: PDF parsing, normalization, validation
+- **Result**: Clean separation allows each project to excel at its specialty
+
+### **Data Enrichment Strategy**
+
+We provide **richer** data than strictly required:
+- Structured fields (AC with sources, HP with formulas) can be flattened if needed
+- Additional indexes and metadata available but optional
+- Backwards compatible: consumers can ignore enrichments and use simple values
+
+This approach:
+- ✅ **No lock-in**: Blackmoor can use as much or as little structure as needed
+- ✅ **Future-proof**: New use cases can leverage richer data without re-extraction
+- ✅ **No data loss**: Flattening is always possible, but original detail preserved
+
 ## Open Questions
+
 1. Should we maintain Blackmoor's exact field structure, or provide structured fields they can flatten?
    - **Recommendation**: Provide structured, they flatten if needed (no data loss)
+   - **Status**: Implemented in v0.4.0 - structured fields with backwards compatibility
 
 2. Do they need additional index types beyond name/CR/type/size?
    - Current indexes cover common lookups
+   - **Action**: Check with Blackmoor if additional indexes needed (alignment, environment, etc.)
 
 3. Should build_report.json include extraction statistics (warnings, coverage)?
    - Currently minimal, can expand if useful
+   - **Action**: Discuss what metadata would be valuable for debugging/validation
 
 4. File naming: `monsters.json` vs `monster.json`?
    - Currently plural, matches collection semantics
+   - **Status**: Confirmed plural convention
