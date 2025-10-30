@@ -587,13 +587,19 @@ def _parse_traits_and_actions(  # noqa: C901
                 i += 1
                 continue
 
-        # Detect trait/action names (BoldItalic with period)
-        if (
+        # Detect trait/action names (BoldItalic with period for traits/actions,
+        # or just Bold with period for legendary actions)
+        is_bold_italic = "bold" in font.lower() and "italic" in font.lower()
+        is_just_bold = "bold" in font.lower() and "italic" not in font.lower()
+        is_legendary_section = current_section == "legendary_actions"
+
+        is_name_block = (
             font_size >= 9.5
-            and "bold" in font.lower()
-            and "italic" in font.lower()
             and text.endswith(".")
-        ):
+            and (is_bold_italic or (is_just_bold and is_legendary_section))
+        )
+
+        if is_name_block:
             # Extract name (remove trailing period)
             name = text[:-1].strip()
             simple_name = name.lower().replace(" ", "_").replace("-", "_")
@@ -608,10 +614,24 @@ def _parse_traits_and_actions(  # noqa: C901
                 next_font_size = next_block.get("size", 0)
 
                 # Stop at next name or section header
-                if (next_font_size >= 10.8 and "bold" in next_font.lower()) or (
+                next_is_bold_italic = "bold" in next_font.lower() and "italic" in next_font.lower()
+                next_is_just_bold = (
+                    "bold" in next_font.lower() and "italic" not in next_font.lower()
+                )
+
+                # Stop at section header
+                if next_font_size >= 10.8 and "bold" in next_font.lower():
+                    break
+
+                # Stop at next BoldItalic name (trait/action)
+                if next_font_size >= 9.5 and next_is_bold_italic and next_text.endswith("."):
+                    break
+
+                # Stop at next Bold name (legendary action) if in legendary section
+                if (
                     next_font_size >= 9.5
-                    and "bold" in next_font.lower()
-                    and "italic" in next_font.lower()
+                    and next_is_just_bold
+                    and is_legendary_section
                     and next_text.endswith(".")
                 ):
                     break
