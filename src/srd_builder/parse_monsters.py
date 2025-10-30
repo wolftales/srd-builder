@@ -360,9 +360,34 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
             continue
 
         # Size/type/alignment line (Calibri-Italic, right after name)
+        # Handle split across multiple Italic blocks (e.g., Kraken, Mummy, Unicorn)
         if "Italic" in font and i <= 2:
-            parsed.update(_parse_size_type_alignment(text))
-            i += 1
+            # Collect all consecutive Italic blocks (may be split with comma blocks between)
+            italic_parts = [text]
+            j = i + 1
+            while j < len(blocks) and j < i + 5:  # Safety limit
+                next_block = blocks[j]
+                next_font = next_block.get("font", "")
+                next_text = next_block.get("text", "").strip()
+
+                # Stop at Bold (start of stat block)
+                if "Bold" in next_font:
+                    break
+
+                # Continue if Italic or if it's just a comma/punctuation
+                if "Italic" in next_font:
+                    italic_parts.append(next_text)
+                    j += 1
+                elif next_text in (",", ";"):
+                    # Skip punctuation blocks but don't add them
+                    j += 1
+                else:
+                    break
+
+            # Combine parts with comma separator
+            combined_text = ", ".join(italic_parts)
+            parsed.update(_parse_size_type_alignment(combined_text))
+            i = j
             continue
 
         # Check for stat block labels (Bold text)
