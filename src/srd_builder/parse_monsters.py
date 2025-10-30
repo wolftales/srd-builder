@@ -107,11 +107,29 @@ def _normalize_speed(raw_speed: Any) -> dict[str, int]:
 
 
 def _normalize_defense_entries(value: Any) -> list[Any]:
+    """Normalize defense entries (resistances, immunities, vulnerabilities).
+
+    Splits semicolon-separated strings and cleans whitespace.
+    Format: "radiant; bludgeoning, piercing, and slashing from nonmagical attacks"
+    Each semicolon-separated part becomes a separate entry.
+
+    Example:
+        "fire" -> [{"type": "fire"}]
+        "radiant; bludgeoning, piercing, and slashing" ->
+            [{"type": "radiant"}, {"type": "bludgeoning, piercing, and slashing"}]
+    """
     if not value:
         return []
     if isinstance(value, list | tuple):
         return [deepcopy(entry) for entry in value]
-    return [str(value)]
+
+    # Split semicolon-separated string and clean each entry
+    entries = []
+    for part in str(value).split(";"):
+        cleaned = " ".join(part.split()).strip()
+        if cleaned:
+            entries.append({"type": cleaned})
+    return entries
 
 
 def _add_sense_entry(senses: dict[str, int], entry: str) -> None:
@@ -271,6 +289,37 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     return normalized
 
 
+def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, int]:
+    """Gather a value that may span multiple blocks.
+
+    Reads consecutive 9.84pt Calibri (non-bold) blocks until hitting a bold label.
+    Returns (joined_text, blocks_consumed).
+    """
+    parts = []
+    idx = start_idx
+
+    while idx < len(blocks):
+        block = blocks[idx]
+        font = block.get("font", "")
+        size = block.get("size", 0)
+        text = block.get("text", "").strip()
+
+        # Stop if we hit a bold label (next field)
+        if "Bold" in font:
+            break
+
+        # Only collect regular text blocks (9.84pt Calibri)
+        if text and size >= 9.0 and size <= 10.0 and "Calibri" in font:
+            parts.append(text)
+            idx += 1
+        else:
+            break
+
+    combined = " ".join(parts)
+    blocks_consumed = idx - start_idx
+    return combined, blocks_consumed
+
+
 def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
     """Parse monster fields from blocks array (v0.3.0 extraction format).
 
@@ -394,6 +443,40 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
             if label_clean == "challenge":
                 parsed["challenge_rating"] = next_text
                 i += 2
+                continue
+
+            # Damage Resistances
+            if "damage" in label_clean and "resistance" in label_clean:
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["damage_resistances"] = value
+                i += 1 + consumed
+                continue
+
+            # Damage Immunities
+            if "damage" in label_clean and (
+                "immunity" in label_clean or "immunities" in label_clean
+            ):
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["damage_immunities"] = value
+                i += 1 + consumed
+                continue
+
+            # Damage Vulnerabilities
+            if "damage" in label_clean and (
+                "vulnerability" in label_clean or "vulnerabilities" in label_clean
+            ):
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["damage_vulnerabilities"] = value
+                i += 1 + consumed
+                continue
+
+            # Condition Immunities
+            if "condition" in label_clean and (
+                "immunity" in label_clean or "immunities" in label_clean
+            ):
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["condition_immunities"] = value
+                i += 1 + consumed
                 continue
 
         i += 1
