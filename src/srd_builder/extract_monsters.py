@@ -24,7 +24,7 @@ class ExtractionConfig:
 
     # Page range to extract (1-based, inclusive)
     page_start: int = 261  # "Monsters (A)" starts here
-    page_end: int | None = None  # None = to end of document
+    page_end: int = 394  # Before "Appendix MM-B: Nonplayer Characters" on 395
 
     # Font size thresholds (from Phase 1/2 research - CORRECTED!)
     category_font_size: float = 13.92  # Category headers like "Elementals"

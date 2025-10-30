@@ -730,4 +730,3 @@ if __name__ == "__main__":
 3. Implement the single-monster extraction proof of concept to validate ordering, schema compliance, and determinism.
 4. Draft bridge transformer interface so `parse_monsters.py` continues to work during v0.3 rollout.
 5. Update ROADMAP/EXTRACTION_CHALLENGES with resolved decisions from this document to keep planning artifacts aligned.
-
