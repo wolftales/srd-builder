@@ -6,8 +6,8 @@
     "type": "dragon",
     "alignment": "chaotic evil",
     "cr": "14",
-    "ac": 19,
-    "hp": 195,
+    "ac": "19 (natural armor)",
+    "hp": "195 (17d12 + 85)",
     "speed": {
       "walk": 40,
       "fly": 80,
@@ -105,8 +105,8 @@
     "type": "humanoid (goblinoid)",
     "alignment": "neutral evil",
     "cr": "1/4",
-    "ac": 15,
-    "hp": 7,
+    "ac": "15 (leather armor, shield)",
+    "hp": "7 (2d6)",
     "speed": {
       "walk": 30
     },
@@ -160,8 +160,8 @@
     "type": "elemental",
     "alignment": "neutral",
     "cr": "5",
-    "ac": 13,
-    "hp": 102,
+    "ac": "13",
+    "hp": "102 (12d10 + 36)",
     "speed": {
       "walk": 50
     },
@@ -236,8 +236,8 @@
     "type": "undead",
     "alignment": "lawful evil",
     "cr": "1/4",
-    "ac": 13,
-    "hp": 13,
+    "ac": "13 (armor scraps)",
+    "hp": "13 (2d8 + 4)",
     "speed": {
       "walk": 30
     },
@@ -292,8 +292,8 @@
     "type": "swarm of Tiny beasts",
     "alignment": "unaligned",
     "cr": "1/2",
-    "ac": 12,
-    "hp": 22,
+    "ac": "12 (natural armor)",
+    "hp": "22 (5d8)",
     "speed": {
       "walk": 20,
       "climb": 20
@@ -352,8 +352,8 @@
     "type": "undead",
     "alignment": "neutral evil",
     "cr": "5",
-    "ac": 15,
-    "hp": 82,
+    "ac": "15 (natural armor)",
+    "hp": "82 (11d8 + 33)",
     "speed": {
       "walk": 30,
       "climb": 30

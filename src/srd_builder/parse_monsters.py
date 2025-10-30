@@ -199,6 +199,66 @@ def _parse_hit_point_values(raw_hp: Any, raw_dice: Any) -> tuple[int, str]:
     return points, dice_text
 
 
+def _parse_armor_class(raw_ac: Any) -> dict[str, Any] | int:
+    """Parse armor class into structured format.
+
+    Examples:
+        "17" -> {"value": 17}
+        "17 (natural armor)" -> {"value": 17, "source": "natural armor"}
+        "16 (chain mail, shield)" -> {"value": 16, "source": "chain mail, shield"}
+
+    Returns dict with "value" and optionally "source", or int for simple cases.
+    """
+    if raw_ac is None:
+        return 0
+
+    text = str(raw_ac).strip()
+    if not text:
+        return 0
+
+    # Extract value (number before any parenthesis)
+    value = _coerce_int(text) or 0
+
+    # Extract source (text in parentheses)
+    if "(" in text and ")" in text:
+        source = text.split("(", 1)[1].split(")", 1)[0].strip()
+        return {"value": value, "source": source}
+
+    # Simple numeric AC
+    return value
+
+
+def _parse_hit_points_structured(raw_hp: Any) -> dict[str, Any] | int:
+    """Parse hit points into structured format.
+
+    Examples:
+        "135" -> {"average": 135}
+        "135 (18d10 + 36)" -> {"average": 135, "formula": "18d10+36"}
+        "135 (18d10+36)" -> {"average": 135, "formula": "18d10+36"}
+
+    Returns dict with "average" and optionally "formula", or int for simple cases.
+    """
+    if raw_hp is None:
+        return 0
+
+    text = str(raw_hp).strip()
+    if not text:
+        return 0
+
+    # Extract average (number before any parenthesis)
+    average = _coerce_int(text) or 0
+
+    # Extract formula (text in parentheses, normalize spacing)
+    if "(" in text and ")" in text:
+        formula = text.split("(", 1)[1].split(")", 1)[0].strip()
+        # Normalize spacing around operators
+        formula = re.sub(r"\s*([+\-])\s*", r"\1", formula)
+        return {"average": average, "formula": formula}
+
+    # Simple numeric HP
+    return average
+
+
 def _parse_challenge_value(raw_challenge: Any) -> Any:
     if raw_challenge is None:
         return 0
@@ -256,11 +316,18 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     simple_name = _infer_simple_name(monster)
     challenge_value = _parse_challenge_value(monster.get("challenge_rating"))
 
-    raw_hp = monster.get("hit_points")
-    hit_points, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
+    # v0.4.0: Structured AC and HP parsing
+    # Support both new keys (armor_class, hit_points) and legacy keys (ac, hp)
+    raw_ac = monster.get("armor_class") or monster.get("ac")
+    armor_class_value = _parse_armor_class(raw_ac)
+
+    raw_hp = monster.get("hit_points") or monster.get("hp")
+    hit_points = _parse_hit_points_structured(raw_hp)
+
+    # Keep hit_dice for backward compatibility (deprecated in favor of HP formula)
+    _, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
 
     monster_id = monster.get("id")
-    armor_class_value = _coerce_int(monster.get("armor_class")) or 0
 
     # Extract summary from first trait's text
     summary = ""
@@ -453,19 +520,19 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                 next_text = next_block.get("text", "").strip() if next_block else ""
 
             if "armor class" in label_clean:
-                # TODO v0.4.0: Parse structured AC with source
+                # v0.4.0: Gather full AC text including parentheses
                 # e.g., "17 (natural armor)" -> {"value": 17, "source": "natural armor"}
-                # Schema already supports object type for armor_class
-                parsed["armor_class"] = next_text
-                i = j  # Move to the block after we've consumed
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["armor_class"] = value
+                i += 1 + consumed
                 continue
 
             if "hit points" in label_clean:
-                # TODO v0.4.0: Parse structured HP with dice formula
+                # v0.4.0: Gather full HP text including formula
                 # e.g., "135 (18d10 + 36)" -> {"average": 135, "formula": "18d10+36"}
-                # Schema already supports object type for hit_points
-                parsed["hit_points"] = next_text
-                i = j
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["hit_points"] = value
+                i += 1 + consumed
                 continue
 
             if label_clean == "speed":

@@ -15,8 +15,15 @@
       "size": "Huge",
       "type": "dragon",
       "alignment": "chaotic evil",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": {
+        "value": 19,
+        "source": "natural armor"
+      },
+      "hit_points": {
+        "average": 195,
+        "formula": "17d12+85"
+      },
+      "hit_dice": "17d12 + 85",
       "speed": {
         "walk": 40,
         "fly": 80,
@@ -116,8 +123,15 @@
       "size": "Small",
       "type": "humanoid (goblinoid)",
       "alignment": "neutral evil",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": {
+        "value": 15,
+        "source": "leather armor, shield"
+      },
+      "hit_points": {
+        "average": 7,
+        "formula": "2d6"
+      },
+      "hit_dice": "2d6",
       "speed": {
         "walk": 30
       },
@@ -166,8 +180,12 @@
       "size": "Large",
       "type": "elemental",
       "alignment": "neutral",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": 13,
+      "hit_points": {
+        "average": 102,
+        "formula": "12d10+36"
+      },
+      "hit_dice": "12d10 + 36",
       "speed": {
         "walk": 50
       },
@@ -267,8 +285,15 @@
       "size": "Medium",
       "type": "undead",
       "alignment": "lawful evil",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": {
+        "value": 13,
+        "source": "armor scraps"
+      },
+      "hit_points": {
+        "average": 13,
+        "formula": "2d8+4"
+      },
+      "hit_dice": "2d8 + 4",
       "speed": {
         "walk": 30
       },
@@ -327,8 +352,15 @@
       "size": "Medium",
       "type": "swarm of Tiny beasts",
       "alignment": "unaligned",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": {
+        "value": 12,
+        "source": "natural armor"
+      },
+      "hit_points": {
+        "average": 22,
+        "formula": "5d8"
+      },
+      "hit_dice": "5d8",
       "speed": {
         "walk": 20,
         "climb": 20
@@ -405,8 +437,15 @@
       "size": "Medium",
       "type": "undead",
       "alignment": "neutral evil",
-      "armor_class": 0,
-      "hit_points": 0,
+      "armor_class": {
+        "value": 15,
+        "source": "natural armor"
+      },
+      "hit_points": {
+        "average": 82,
+        "formula": "11d8+33"
+      },
+      "hit_dice": "11d8 + 33",
       "speed": {
         "walk": 30,
         "climb": 30
