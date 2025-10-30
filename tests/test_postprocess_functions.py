@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from srd_builder.postprocess import (
     normalize_id,
     polish_text,
@@ -70,7 +72,7 @@ def test_structure_defenses_preserves_order_and_qualifiers() -> None:
 
 
 def test_standardize_challenge_handles_fraction_and_numeric() -> None:
-    monster = {"challenge_rating": "1/2"}
+    monster: dict[str, Any] = {"challenge_rating": "1/2"}
     assert standardize_challenge(monster)["challenge_rating"] == 0.5
 
     monster = {"challenge_rating": "5"}
