@@ -366,6 +366,36 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                     i = j + 1
                     continue
 
+            # Saving Throws
+            if "saving" in label_clean and "throw" in label_clean:
+                parsed["saving_throws"] = next_text
+                i += 2
+                continue
+
+            # Skills
+            if label_clean == "skills":
+                parsed["skills"] = next_text
+                i += 2
+                continue
+
+            # Senses
+            if label_clean == "senses":
+                parsed["senses"] = next_text
+                i += 2
+                continue
+
+            # Languages (optional field, but good to capture)
+            if label_clean == "languages":
+                parsed["languages"] = next_text
+                i += 2
+                continue
+
+            # Challenge Rating
+            if label_clean == "challenge":
+                parsed["challenge_rating"] = next_text
+                i += 2
+                continue
+
         i += 1
 
     # Parse traits, actions, legendary actions from remaining blocks

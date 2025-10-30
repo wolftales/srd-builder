@@ -6,44 +6,6 @@ This document tracks specific parsing oddities, edge cases, and deferred bugs th
 
 ## 🐛 Active Issues
 
-### Extraction: Incomplete Monster Blocks (Deva, Solar, etc.)
-**Affected Entities:** Deva, Solar, and potentially others
-**Version:** v0.3.0
-**Status:** Investigation needed
-
-**Issue:**
-Some monsters have incomplete block extraction - stat blocks end prematurely at page footers. Example:
-- Deva: Only 28 blocks (missing traits/actions)
-- Aboleth: 100 blocks (complete with actions)
-
-**Symptoms:**
-- Monsters show 0 traits, 0 actions in parsed output
-- Block count suspiciously low (~28 blocks)
-- Extraction stops at "System Reference Document 5.1" footer text
-
-**Root Cause:**
-Likely issue in `extract_monsters.py` monster boundary detection. May be:
-1. Stopping at page footers incorrectly
-2. Not handling multi-column flow properly
-3. Next monster detection triggering too early
-
-**Impact:**
-Data loss for affected monsters. Parser cannot extract what extraction didn't capture.
-
-**Fix Strategy:**
-1. Identify all affected monsters (scan for low block counts)
-2. Check extraction logic for monster end detection
-3. Verify page footer exclusion doesn't cut off stat blocks
-4. May need to adjust monster boundary heuristics
-
-**Workaround:**
-None yet. These monsters will have incomplete data in v0.3.0.
-
-**Priority:**
-HIGH - affects data completeness for multiple monsters
-
----
-
 ### Parser: Animated Armor (Ability Score Split)
 **Affected Entity:** Animated Armor
 **Version:** v0.3.0
@@ -80,26 +42,6 @@ See extraction blocks for "Animated Armor" in `monsters_raw.json`
 ---
 
 ## 🔍 Under Investigation
-
-### Cross-Page Monster Wrapping
-**Version:** v0.3.0
-**Status:** Needs validation
-
-**Issue:**
-Some monsters span multiple pages. Need to verify that:
-1. Page breaks don't split stat blocks incorrectly
-2. Column detection (306pt boundary) works across pages
-3. Block ordering is maintained correctly
-
-**Action Items:**
-- Identify monsters that cross pages (check `pages` array length > 1)
-- Manually verify 3-5 cross-page monsters parse correctly
-- Create test fixtures for cross-page cases
-
-**Gemini Flag:**
-YELLOW - Column wrapping detection needs testing
-
----
 
 ### Multi-Column Text Flow
 **Version:** v0.3.0
@@ -244,15 +186,26 @@ External reference claims 319 monsters. We extract 296. Need to document the 23-
 - Single monster extraction (unit test)
 - Category detection accuracy
 - Column handling (multi-column flow)
-- Cross-page monsters (page breaks)
+- **Cross-page monsters (page breaks) - REGRESSION TEST NEEDED**
 - Font pattern recognition (name detection, stat labels)
+
+**Priority Test Cases:**
+1. **Cross-page regression test** (HIGH PRIORITY)
+   - Test monsters known to span pages: Deva (261-262), Solar, etc.
+   - Verify block count remains high (50+ blocks for complex monsters)
+   - Ensure traits/actions are extracted completely
+   - Prevent regression of the page-boundary bug fixed in commit 7abeb74
+
+2. **Known challenge monsters:**
+   - Deva: Must have 70+ blocks, traits=[3], actions=[4]
+   - Solar: Must span multiple pages with complete stat block
+   - Animated Armor: 3 abilities edge case
 
 **Action Items:**
 - Create `tests/fixtures/extract/` with raw snapshots
 - Add `tests/test_extract_basic.py`
-- Test edge cases identified above
-
----
+- Add `tests/test_extract_cross_page.py` for page-spanning monsters
+- Test edge cases identified above---
 
 ## 📋 How to Use This Document
 
@@ -276,7 +229,36 @@ External reference claims 319 monsters. We extract 296. Need to document the 23-
 
 ## ✅ Resolved Issues
 
-*None yet - this is v0.3.0 (in progress)*
+### Extraction: Cross-Page Monster Handling ✅
+**Version:** Fixed in v0.3.0 (commit 7abeb74)
+**Affected:** Deva, Solar, and 23 other monsters
+
+**Original Issue:**
+Monsters spanning page boundaries were truncated. Extraction processed one page at a time, causing stat blocks to end prematurely at page breaks.
+
+**Symptoms:**
+- Deva: Only 28 blocks (missing traits/actions)
+- Solar: Only 17 blocks
+- 23 monsters total with <20 blocks
+- Monsters showed 0 traits, 0 actions in parsed output
+
+**Root Cause:**
+`extract_monsters()` called `_extract_page_monsters()` per-page, detecting monster boundaries within each page. Monsters crossing pages were split incorrectly.
+
+**Fix Applied:**
+- Renamed `_extract_page_monsters` → `_extract_page_lines`
+- Now collects ALL lines from ALL pages first
+- Monster boundary detection runs on complete line set across pages
+- Handles page breaks transparently
+
+**Result:**
+- ✅ All 296 monsters now have 20+ blocks (was 273 complete, 23 broken)
+- ✅ Deva: 28 → 78 blocks, now includes 3 traits, 4 actions
+- ✅ Solar: Complete stat block extraction
+- ✅ Resolves Gemini YELLOW flag for multi-page handling
+
+**Test Coverage:**
+⚠️ NEEDS REGRESSION TEST - Add to `tests/test_extract_cross_page.py`
 
 ---
 
