@@ -23,7 +23,7 @@ class ExtractionConfig:
     """Configuration for PDF extraction."""
 
     # Page range to extract (1-based, inclusive)
-    page_start: int = 300
+    page_start: int = 261  # "Monsters (A)" starts here
     page_end: int | None = None  # None = to end of document
 
     # Font size thresholds (from Phase 1/2 research - CORRECTED!)
