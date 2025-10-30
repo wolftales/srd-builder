@@ -26,15 +26,15 @@ class ExtractionConfig:
     page_start: int = 300
     page_end: int | None = None  # None = to end of document
 
-    # Font size thresholds (from Phase 1 research)
+    # Font size thresholds (from Phase 1/2 research - CORRECTED!)
     category_font_size: float = 13.92  # Category headers like "Elementals"
-    monster_name_font_size: float = 9.84  # Individual monster names
+    monster_name_font_size: float = 12.0  # Individual monster names (CORRECTED from 9.84!)
     header_font_size_min: float = 13.0  # General header threshold
 
-    # Font patterns (from Phase 1 research)
-    monster_name_font: str = "Calibri-Bold"  # 9.84pt Calibri-Bold
+    # Font patterns (from Phase 1/2 research)
+    monster_name_font: str = "Calibri-Bold"  # 12.0pt Calibri-Bold (monster names)
     size_type_font: str = "Calibri-Italic"  # Size/type line follows name
-    trait_name_font: str = "Calibri-BoldItalic"  # Trait names (not monster names!)
+    trait_name_font: str = "Calibri-BoldItalic"  # Trait names like "Air Form" (NOT monster names!)
 
     # Column detection (from Phase 1 research)
     column_midpoint: float = 306.0  # Measured exact midpoint
@@ -120,8 +120,11 @@ def _extract_page_monsters(
     # Extract all text spans with metadata
     spans = _extract_spans(page_dict, page_num, config)
 
-    # Detect monster boundaries using header detection
-    monsters = _detect_monster_boundaries(spans, config)
+    # Merge spans into logical lines (fixes text fragmentation)
+    lines = _merge_spans_into_lines(spans, config)
+
+    # Detect monster boundaries using line-based pattern matching
+    monsters = _detect_monster_boundaries(lines, config)
 
     return monsters
 
@@ -181,6 +184,109 @@ def _extract_spans(
     return spans
 
 
+def _merge_spans_into_lines(
+    spans: list[dict[str, Any]], config: ExtractionConfig
+) -> list[dict[str, Any]]:
+    """Merge consecutive spans into logical lines.
+
+    Fixes text fragmentation where 'Air Elemental' is split across spans.
+    Groups spans by Y-coordinate (±2pt tolerance) and same font/size.
+
+    Args:
+        spans: Ordered list of text spans
+        config: Extraction configuration
+
+    Returns:
+        List of merged line dictionaries with combined text
+    """
+    if not spans:
+        return []
+
+    lines: list[dict[str, Any]] = []
+    current_line: dict[str, Any] | None = None
+
+    for span in spans:
+        # Check if this span continues the current line
+        if current_line and _spans_on_same_line(current_line, span):
+            # Merge into current line
+            current_line["text"] += " " + span["text"]
+            current_line["spans"].append(span)
+            # Extend bbox to include this span
+            current_line["bbox"] = _merge_bboxes(current_line["bbox"], span["bbox"])
+        else:
+            # Save previous line
+            if current_line:
+                lines.append(current_line)
+
+            # Start new line
+            current_line = {
+                "page": span["page"],
+                "column": span["column"],
+                "bbox": span["bbox"].copy(),
+                "text": span["text"],
+                "font": span["font"],
+                "size": span["size"],
+                "color": span["color"],
+                "flags": span["flags"],
+                "is_header": span["is_header"],
+                "spans": [span],  # Keep original spans for debugging
+            }
+
+    # Don't forget the last line
+    if current_line:
+        lines.append(current_line)
+
+    return lines
+
+
+def _spans_on_same_line(line: dict[str, Any], span: dict[str, Any]) -> bool:
+    """Check if span continues the current line.
+
+    Args:
+        line: Current line being built
+        span: Span to check
+
+    Returns:
+        True if span should be merged into line
+    """
+    # Must be same page and column
+    if line["page"] != span["page"] or line["column"] != span["column"]:
+        return False
+
+    # Must have similar Y-coordinate (±2pt tolerance)
+    line_y = line["bbox"][1]  # Top Y of line
+    span_y = span["bbox"][1]  # Top Y of span
+    if abs(line_y - span_y) > 2.0:
+        return False
+
+    # Must have same font and size (for monster name detection)
+    # Allow slight size variation (±0.5pt) for rounding differences
+    if line["font"] != span["font"]:
+        return False
+    if abs(line["size"] - span["size"]) > 0.5:
+        return False
+
+    return True
+
+
+def _merge_bboxes(bbox1: list[float], bbox2: list[float]) -> list[float]:
+    """Merge two bounding boxes into a single encompassing box.
+
+    Args:
+        bbox1: First bbox [x0, y0, x1, y1]
+        bbox2: Second bbox [x0, y0, x1, y1]
+
+    Returns:
+        Merged bbox encompassing both
+    """
+    return [
+        min(bbox1[0], bbox2[0]),  # Left edge
+        min(bbox1[1], bbox2[1]),  # Top edge
+        max(bbox1[2], bbox2[2]),  # Right edge
+        max(bbox1[3], bbox2[3]),  # Bottom edge
+    ]
+
+
 def _determine_column(x_coord: float, config: ExtractionConfig) -> int:
     """Determine which column a span belongs to.
 
@@ -198,17 +304,17 @@ def _determine_column(x_coord: float, config: ExtractionConfig) -> int:
 
 
 def _detect_monster_boundaries(
-    spans: list[dict[str, Any]], config: ExtractionConfig
+    lines: list[dict[str, Any]], config: ExtractionConfig
 ) -> list[RawMonster]:
-    """Detect monster boundaries and group spans into monsters.
+    """Detect monster boundaries and group lines into monsters.
 
-    Uses font pattern detection:
+    Uses font pattern detection on merged lines (not fragmented spans):
     1. 9.84pt Calibri-Bold = Individual monster names
-    2. 13.92pt GillSans-SemiBold = Category headers (multi-monster groups)
+    2. 13.92pt GillSans-SemiBold = Category headers (skip these)
     3. Validates with size/type line (Calibri-Italic within 20pt Y-distance)
 
     Args:
-        spans: Ordered list of text spans
+        lines: Ordered list of merged text lines
         config: Extraction configuration
 
     Returns:
@@ -217,34 +323,37 @@ def _detect_monster_boundaries(
     monsters: list[RawMonster] = []
     current_monster: dict[str, Any] | None = None
 
-    for i, span in enumerate(spans):
+    for i, line in enumerate(lines):
         # Check if this is an individual monster name (9.84pt Calibri-Bold)
-        if _is_monster_name_span(span, config):
-            # Validate with lookahead: next Italic span should be size/type
-            if _has_size_type_line_following(spans, i, config):
+        if _is_monster_name_line(line, config):
+            # Validate with lookahead: next Italic line should be size/type
+            if _has_size_type_line_following(lines, i, config):
                 # Save previous monster if exists
                 if current_monster:
                     monsters.append(_finalize_monster(current_monster))
 
-                # Start new monster
+                # Start new monster - include ALL original spans from this line
+                # Clean name: remove tabs, newlines, multiple spaces
+                clean_name = " ".join(line["text"].split())
+
                 current_monster = {
-                    "name": span["text"],
-                    "pages": [span["page"]],
-                    "blocks": [span],
+                    "name": clean_name,
+                    "pages": [line["page"]],
+                    "blocks": line["spans"],  # Use original spans
                     "markers": [],
                     "warnings": [],
                 }
         elif current_monster:
-            # Add span to current monster
-            current_monster["blocks"].append(span)
+            # Add all spans from this line to current monster
+            current_monster["blocks"].extend(line["spans"])
 
             # Track page range
-            if span["page"] not in current_monster["pages"]:
-                current_monster["pages"].append(span["page"])
+            if line["page"] not in current_monster["pages"]:
+                current_monster["pages"].append(line["page"])
 
             # Track section markers
-            if _is_section_marker(span["text"]):
-                current_monster["markers"].append(span["text"])
+            if _is_section_marker(line["text"]):
+                current_monster["markers"].append(line["text"])
 
     # Don't forget the last monster
     if current_monster:
@@ -253,21 +362,21 @@ def _detect_monster_boundaries(
     return monsters
 
 
-def _is_monster_name_span(span: dict[str, Any], config: ExtractionConfig) -> bool:
-    """Check if span is a monster name (9.84pt Calibri-Bold).
+def _is_monster_name_line(line: dict[str, Any], config: ExtractionConfig) -> bool:
+    """Check if line is a monster name (9.84pt Calibri-Bold).
 
     Args:
-        span: Span dictionary
+        line: Merged line dictionary
         config: Extraction configuration
 
     Returns:
         True if this looks like a monster name
     """
     # Must be Calibri-Bold at 9.84pt
-    if span["font"] != config.monster_name_font:
+    if line["font"] != config.monster_name_font:
         return False
 
-    if abs(span["size"] - config.monster_name_font_size) > 0.5:
+    if abs(line["size"] - config.monster_name_font_size) > 0.5:
         return False
 
     # Must not be a stat block field keyword
@@ -291,46 +400,46 @@ def _is_monster_name_span(span: dict[str, Any], config: ExtractionConfig) -> boo
         "Damage Vulnerabilities",
         "Condition Immunities",
     }
-    if span["text"] in stat_fields:
+    if line["text"] in stat_fields:
         return False
 
     # Must not be an "Actions" header
-    if span["text"] in {"Actions", "Reactions", "Legendary Actions"}:
+    if line["text"] in {"Actions", "Reactions", "Legendary Actions"}:
         return False
 
     return True
 
 
 def _has_size_type_line_following(
-    spans: list[dict[str, Any]], current_index: int, config: ExtractionConfig
+    lines: list[dict[str, Any]], current_index: int, config: ExtractionConfig
 ) -> bool:
     """Check if a size/type line (Calibri-Italic) follows within reasonable distance.
 
     Args:
-        spans: All spans
-        current_index: Index of potential monster name span
+        lines: All merged lines
+        current_index: Index of potential monster name line
         config: Extraction configuration
 
     Returns:
         True if validated by following size/type line
     """
-    if current_index >= len(spans) - 1:
+    if current_index >= len(lines) - 1:
         return False
 
-    current_span = spans[current_index]
-    current_y = current_span["bbox"][1]  # Top Y coordinate
+    current_line = lines[current_index]
+    current_y = current_line["bbox"][1]  # Top Y coordinate
 
     # Look ahead up to 30pt Y-distance for size/type line
-    for i in range(current_index + 1, min(current_index + 20, len(spans))):
-        next_span = spans[i]
-        next_y = next_span["bbox"][1]
+    for i in range(current_index + 1, min(current_index + 20, len(lines))):
+        next_line = lines[i]
+        next_y = next_line["bbox"][1]
 
         # Stop if we've gone too far vertically
         if next_y - current_y > 30:
             break
 
         # Check if this is a size/type line (Calibri-Italic with size keywords)
-        if next_span["font"] == config.size_type_font:
+        if next_line["font"] == config.size_type_font:
             size_keywords = {
                 "Tiny",
                 "Small",
@@ -339,7 +448,7 @@ def _has_size_type_line_following(
                 "Huge",
                 "Gargantuan",
             }
-            text_lower = next_span["text"]
+            text_lower = next_line["text"]
             if any(keyword in text_lower for keyword in size_keywords):
                 return True
 
