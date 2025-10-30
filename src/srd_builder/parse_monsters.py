@@ -91,11 +91,11 @@ def _normalize_list_of_dicts(entries: list[dict[str, Any]] | None) -> list[dict[
 
 def _normalize_speed(raw_speed: Any) -> dict[str, int]:
     if isinstance(raw_speed, str):
-        normalized: dict[str, int] = {}
+        speed_dict: dict[str, int] = {}
         for match in _SPEED_PATTERN.finditer(raw_speed):
             mode = match.group("mode") or "walk"
-            normalized[mode.strip().lower().replace(" ", "_")] = int(match.group("value"))
-        return normalized
+            speed_dict[mode.strip().lower().replace(" ", "_")] = int(match.group("value"))
+        return speed_dict
     if not isinstance(raw_speed, dict):
         return {}
     normalized: dict[str, int] = {}
@@ -216,7 +216,16 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
 
     monster = deepcopy(raw)
 
-    ability_scores = _expand_scores(monster.get("ability_scores"))
+    # v0.3.0+ parser outputs full key names (strength, dexterity, etc.)
+    # If we get short keys (str, dex, etc.), expand them
+    raw_abilities = monster.get("ability_scores", {})
+    if raw_abilities and any(
+        k in raw_abilities for k in ("str", "dex", "con", "int", "wis", "cha")
+    ):
+        ability_scores = _expand_scores(raw_abilities)
+    else:
+        ability_scores = dict(raw_abilities) if isinstance(raw_abilities, dict) else {}
+
     saving_throws = _expand_proficiencies(monster.get("saving_throws"))
     skills = _expand_proficiencies(monster.get("skills"))
     senses = _normalize_senses(monster.get("senses"))
@@ -359,6 +368,15 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
 
         i += 1
 
+    # Parse traits, actions, legendary actions from remaining blocks
+    traits, actions, legendary_actions = _parse_traits_and_actions(blocks)
+    if traits:
+        parsed["traits"] = traits
+    if actions:
+        parsed["actions"] = actions
+    if legendary_actions:
+        parsed["legendary_actions"] = legendary_actions
+
     return parsed
 
 
@@ -402,13 +420,110 @@ def _parse_ability_scores(text: str) -> dict[str, Any]:
         return {}
 
     return {
-        "str": scores[0],
-        "dex": scores[1],
-        "con": scores[2],
-        "int": scores[3],
-        "wis": scores[4],
-        "cha": scores[5],
+        "strength": scores[0],
+        "dexterity": scores[1],
+        "constitution": scores[2],
+        "intelligence": scores[3],
+        "wisdom": scores[4],
+        "charisma": scores[5],
     }
+
+
+def _parse_traits_and_actions(  # noqa: C901
+    blocks: list[dict],
+) -> tuple[list[dict], list[dict], list[dict]]:
+    """Parse traits, actions, and legendary actions from blocks.
+
+    Patterns:
+    - Trait names: 9.84pt Calibri-BoldItalic ending with period, before "Actions" header
+    - Action names: 9.84pt Calibri-BoldItalic ending with period, after "Actions" header
+    - Legendary action names: Similar pattern, after "Legendary Actions" header
+    - Section headers: 10.8pt Calibri-Bold ("Actions", "Legendary Actions")
+    - Text: Multiple 9.84pt Calibri blocks following name
+
+    Returns:
+        (traits, actions, legendary_actions) where each is a list of dicts with
+        {name, simple_name, text}
+    """
+    traits = []
+    actions = []
+    legendary_actions = []
+    current_section = "traits"  # Start before "Actions" header
+
+    i = 0
+    while i < len(blocks):
+        block = blocks[i]
+        # Clean whitespace: tabs, newlines, carriage returns
+        text = " ".join(block.get("text", "").split()).strip()
+        font = block.get("font", "")
+        font_size = block.get("size", 0)
+
+        # Detect section headers
+        if font_size >= 10.8 and "bold" in font.lower():
+            if text.lower() == "actions":
+                current_section = "actions"
+                i += 1
+                continue
+            elif "legendary" in text.lower() and "actions" in text.lower():
+                current_section = "legendary_actions"
+                i += 1
+                continue
+
+        # Detect trait/action names (BoldItalic with period)
+        if (
+            font_size >= 9.5
+            and "bold" in font.lower()
+            and "italic" in font.lower()
+            and text.endswith(".")
+        ):
+            # Extract name (remove trailing period)
+            name = text[:-1].strip()
+            simple_name = name.lower().replace(" ", "_").replace("-", "_")
+
+            # Collect text blocks until next BoldItalic or section header
+            description_parts = []
+            j = i + 1
+            while j < len(blocks):
+                next_block = blocks[j]
+                next_text = next_block.get("text", "").strip()
+                next_font = next_block.get("font", "")
+                next_font_size = next_block.get("size", 0)
+
+                # Stop at next name or section header
+                if (next_font_size >= 10.8 and "bold" in next_font.lower()) or (
+                    next_font_size >= 9.5
+                    and "bold" in next_font.lower()
+                    and "italic" in next_font.lower()
+                    and next_text.endswith(".")
+                ):
+                    break
+
+                # Collect regular text
+                if next_text:
+                    description_parts.append(next_text)
+                j += 1
+
+            # Build entry
+            entry = {
+                "name": name,
+                "simple_name": simple_name,
+                "text": " ".join(description_parts),
+            }
+
+            # Add to appropriate section
+            if current_section == "traits":
+                traits.append(entry)
+            elif current_section == "actions":
+                actions.append(entry)
+            elif current_section == "legendary_actions":
+                legendary_actions.append(entry)
+
+            i = j
+            continue
+
+        i += 1
+
+    return traits, actions, legendary_actions
 
 
 def parse_monster_records(monsters: list[dict[str, Any]]) -> list[dict[str, Any]]:

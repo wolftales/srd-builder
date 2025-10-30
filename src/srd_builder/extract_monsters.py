@@ -75,14 +75,20 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
     monsters: list[RawMonster] = []
     extraction_warnings: list[str] = []
 
+    # Collect ALL lines from ALL pages first (fixes cross-page monsters)
+    all_lines: list[dict[str, Any]] = []
+
     with fitz.open(pdf_path) as doc:
         page_end = config.page_end or doc.page_count
 
-        # Extract from specified page range
+        # Extract lines from all pages
         for page_num in range(config.page_start - 1, page_end):  # Convert to 0-based
             page = doc.load_page(page_num)
-            page_monsters = _extract_page_monsters(page, page_num + 1, config)
-            monsters.extend(page_monsters)
+            page_lines = _extract_page_lines(page, page_num + 1, config)
+            all_lines.extend(page_lines)
+
+    # Detect monster boundaries across ALL pages (handles cross-page monsters)
+    monsters = _detect_monster_boundaries(all_lines, config)
 
     # Build extraction report
     total_warnings = sum(len(m.warnings) for m in monsters)
@@ -100,10 +106,10 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
     }
 
 
-def _extract_page_monsters(
+def _extract_page_lines(
     page: fitz.Page, page_num: int, config: ExtractionConfig
-) -> list[RawMonster]:
-    """Extract monsters from a single page.
+) -> list[dict[str, Any]]:
+    """Extract text lines from a single page.
 
     Args:
         page: PyMuPDF page object
@@ -111,7 +117,7 @@ def _extract_page_monsters(
         config: Extraction configuration
 
     Returns:
-        List of raw monsters found on this page
+        List of merged line dictionaries
     """
     # Get structured text with font metadata
     textpage = page.get_textpage(flags=fitz.TEXTFLAGS_TEXT)
@@ -123,10 +129,7 @@ def _extract_page_monsters(
     # Merge spans into logical lines (fixes text fragmentation)
     lines = _merge_spans_into_lines(spans, config)
 
-    # Detect monster boundaries using line-based pattern matching
-    monsters = _detect_monster_boundaries(lines, config)
-
-    return monsters
+    return lines
 
 
 def _extract_spans(
