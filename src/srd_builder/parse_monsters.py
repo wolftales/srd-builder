@@ -282,6 +282,7 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "damage_immunities": _normalize_defense_entries(monster.get("damage_immunities")),
         "damage_vulnerabilities": _normalize_defense_entries(monster.get("damage_vulnerabilities")),
         "condition_immunities": _normalize_defense_entries(monster.get("condition_immunities")),
+        "languages": monster.get("languages"),
         "page": _coerce_int(monster.get("page")) or 0,
         "src": str(monster.get("src", "")),
     }
@@ -293,6 +294,7 @@ def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, in
     """Gather a value that may span multiple blocks.
 
     Reads consecutive 9.84pt Calibri (non-bold) blocks until hitting a bold label.
+    Cleans whitespace (tabs, newlines, etc.) from each block.
     Returns (joined_text, blocks_consumed).
     """
     parts = []
@@ -310,7 +312,9 @@ def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, in
 
         # Only collect regular text blocks (9.84pt Calibri)
         if text and size >= 9.0 and size <= 10.0 and "Calibri" in font:
-            parts.append(text)
+            # Clean whitespace: tabs, newlines, carriage returns
+            cleaned_text = " ".join(text.split())
+            parts.append(cleaned_text)
             idx += 1
         else:
             break
@@ -435,8 +439,9 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
 
             # Languages (optional field, but good to capture)
             if label_clean == "languages":
-                parsed["languages"] = next_text
-                i += 2
+                value, consumed = _gather_multiline_value(blocks, i + 1)
+                parsed["languages"] = value
+                i += 1 + consumed
                 continue
 
             # Challenge Rating
