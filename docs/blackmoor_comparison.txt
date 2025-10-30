@@ -1,0 +1,118 @@
+================================================================================
+SRD Parser Comparison: srd-builder vs Blackmoor
+================================================================================
+
+1. MONSTER COUNT
+--------------------------------------------------------------------------------
+srd-builder:  296 monsters
+Blackmoor:    201 monsters
+Difference:   +95 monsters
+
+2. MONSTER NAMES
+--------------------------------------------------------------------------------
+Common monsters:      198
+Only in srd-builder:   98
+Only in Blackmoor:      3
+
+First 20 monsters only in srd-builder:
+  + Ancient Blue Dragon
+  + Ape
+  + Awakened Shrub
+  + Awakened Tree
+  + Axe Beak
+  + Baboon
+  + Badger
+  + Bat
+  + Black Bear
+  + Blink Dog
+  + Blood Hawk
+  + Boar
+  + Brown Bear
+  + Camel
+  + Cat
+  + Constrictor Snake
+  + Crab
+  + Crocodile
+  + Death Dog
+  + Deer
+  ... and 78 more
+
+Monsters only in Blackmoor:
+  - Blue Dragon Ancient Blue Dragon
+  - Half--Red Dragon Veteran
+  - Will--o’--Wisp
+
+3. FIELD COVERAGE
+--------------------------------------------------------------------------------
+Fields in srd-builder: 26
+Fields in Blackmoor:   24
+
+Fields only in srd-builder (4):
+  + damage_vulnerabilities    ( 15 monsters)
+  + languages                 (296 monsters)
+  + page                      (296 monsters)
+  + reactions                 (  8 monsters)
+
+Fields only in Blackmoor (2):
+  - src                       (201 monsters)
+  - summary                   (200 monsters)
+
+4. DATA QUALITY COMPARISON (Common Monsters)
+--------------------------------------------------------------------------------
+Field                  Ours   Them   Both Winner
+------------------------------------------------------------
+ability_scores         100%   100%   198 = Tie
+actions                 99%    93%   186 ✓ Ours
+alignment              100%   100%   198 = Tie
+armor_class            100%   100%   198 = Tie
+challenge_rating        98%    98%   195 = Tie
+condition_immunities    40%    40%    81 = Tie
+damage_immunities       62%    62%   123 = Tie
+damage_resistances      26%    26%    52 = Tie
+hit_dice               100%   100%   198 = Tie
+hit_points             100%   100%   198 = Tie
+legendary_actions       14%    13%    27 ✓ Ours
+name                   100%   100%   198 = Tie
+saving_throws           42%    42%    84 = Tie
+senses                 100%    98%   196 ✓ Ours
+size                   100%   100%   198 = Tie
+skills                  60%    60%   119 = Tie
+speed                  100%   100%   198 = Tie
+traits                  83%    85%   165 ✗ Them
+type                   100%   100%   198 = Tie
+xp_value                 0%   100%     0 ✗ Them
+
+5. SAMPLE COMPARISON (Aboleth)
+--------------------------------------------------------------------------------
+srd-builder fields:
+  - Armor Class:    17
+  - Hit Points:     135
+  - Languages:      Deep Speech, telepathy 120 ft.
+  - Reactions:      0 reactions
+  - Traits:         3 traits
+  - Actions:        4 actions
+  - Legendary:      3 legendary
+
+Blackmoor fields:
+  - Armor Class:    17
+  - Hit Points:     135
+  - Languages:      N/A
+  - Reactions:      0 reactions
+  - Traits:         3 traits
+  - Actions:        4 actions
+  - Legendary:      3 legendary
+
+================================================================================
+SUMMARY
+================================================================================
+✓ srd-builder extracts 95 MORE monsters
+✓ srd-builder has 4 additional fields:
+    - damage_vulnerabilities
+    - languages
+    - page
+    - reactions
+
+Data Quality (for 198 common monsters):
+  Wins:    4 fields
+  Losses:  2 fields
+  Ties:   14 fields
