@@ -63,14 +63,22 @@ def count_monsters_in_pdf(pdf_path: Path) -> tuple[int, list[str]]:
     return len(monster_names), monster_names
 
 
-def main() -> None:
+def main() -> None:  # noqa: C901
     """Main entry point."""
     print("=" * 80)
     print("PDF Monster Count Analysis")
     print("=" * 80)
     print()
 
-    pdf_path = Path("rulesets/srd_5_1/raw/SRD_CC_v5.1.pdf")
+    # Find any PDF in raw directory
+    raw_dir = Path("rulesets/srd_5_1/raw")
+    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    if not pdf_files:
+        print("Error: No PDF found in rulesets/srd_5_1/raw/")
+        print("Please download the SRD PDF and place it in that directory.")
+        return
+    pdf_path = pdf_files[0]
+    print(f"Using PDF: {pdf_path.name}")
 
     count, names = count_monsters_in_pdf(pdf_path)
 

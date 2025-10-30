@@ -25,13 +25,36 @@ def test_build_pipeline(tmp_path, monkeypatch):
     raw_dir.mkdir(parents=True)
 
     fixture_raw = Path("tests/fixtures/srd_5_1/raw/monsters.json")
+    fixture_data = json.loads(fixture_raw.read_text(encoding="utf-8"))
+
     raw_dir.joinpath("monsters.json").write_text(
-        fixture_raw.read_text(encoding="utf-8"),
+        json.dumps(fixture_data, indent=2),
         encoding="utf-8",
     )
 
-    pdf_path = raw_dir / "srd.pdf"
+    # Create a mock PDF (any .pdf name works)
+    pdf_path = raw_dir / "test_srd.pdf"
     pdf_path.write_bytes(b"placeholder pdf data")
+
+    # Mock extract_monsters to avoid PDF parsing issues with fake PDF
+    from srd_builder import build as build_module
+
+    def mock_extract_monsters(_pdf_path):
+        # Return structure matching extract_monsters output
+        # fixture_data is a list of monsters, but extract_monsters returns dict with metadata
+        return {
+            "monsters": fixture_data,  # The fixture is already a list
+            "_meta": {
+                "pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
+                "extractor_version": "0.3.0",
+                "pages_processed": 134,
+                "monster_count": len(fixture_data),
+                "total_warnings": 0,
+                "extraction_warnings": [],
+            },
+        }
+
+    monkeypatch.setattr(build_module, "extract_monsters", mock_extract_monsters)
 
     monkeypatch.chdir(tmp_path)
 
