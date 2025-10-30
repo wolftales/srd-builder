@@ -9,7 +9,6 @@ with real extraction logic.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import platform
 from collections import OrderedDict
@@ -19,6 +18,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from . import __version__
+from .extract_monsters import extract_monsters
 from .indexer import build_indexes
 from .parse_monsters import parse_monster_records
 from .postprocess import clean_monster_record
@@ -47,13 +47,28 @@ def _wrap_with_meta(payload: dict[str, Any], *, ruleset: str) -> dict[str, Any]:
 
 
 def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:
-    source = raw_dir / "monsters.json"
-    if not source.exists():
-        return []
-    data = json.loads(source.read_text(encoding="utf-8"))
-    if not isinstance(data, list):
-        raise TypeError("ruleset raw monsters must be stored as a JSON array")
-    return data
+    """Load raw monster data from extraction output.
+
+    Tries monsters_raw.json first (v0.3.0 extraction format),
+    falls back to monsters.json (legacy TabylTop format).
+    """
+    # Try v0.3.0 extraction format first
+    raw_source = raw_dir / "monsters_raw.json"
+    if raw_source.exists():
+        data = json.loads(raw_source.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "monsters" in data:
+            return data["monsters"]
+        raise TypeError("monsters_raw.json must contain 'monsters' key with array")
+
+    # Fall back to legacy format
+    legacy_source = raw_dir / "monsters.json"
+    if legacy_source.exists():
+        data = json.loads(legacy_source.read_text(encoding="utf-8"))
+        if not isinstance(data, list):
+            raise TypeError("ruleset raw monsters must be stored as a JSON array")
+        return data
+
+    return []
 
 
 def _render_json(payload: Any) -> str:
@@ -154,15 +169,36 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     }
 
 
-def _update_pdf_metadata(raw_dir: Path) -> None:
+def _extract_raw_monsters(raw_dir: Path) -> Path | None:
+    """Extract monsters from PDF if present.
+
+    Returns:
+        Path to extracted monsters_raw.json, or None if no PDF found
+    """
     pdf_files = sorted(raw_dir.glob("*.pdf"))
     if not pdf_files:
-        print("No PDF found; v0.2.0 extractor will skip.")
-        return
+        print("No PDF found; extraction will skip.")
+        return None
 
     pdf_path = pdf_files[0]
-    sha256 = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
+    print(f"Extracting monsters from {pdf_path.name}...")
 
+    # Run extraction
+    extracted_data = extract_monsters(pdf_path)
+
+    # Write to raw directory
+    output_path = raw_dir / "monsters_raw.json"
+    output_path.write_text(
+        json.dumps(extracted_data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    monster_count = extracted_data["_meta"]["monster_count"]
+    warnings = extracted_data["_meta"]["total_warnings"]
+    print(f"✓ Extracted {monster_count} monsters (warnings: {warnings})")
+    print(f"✓ Saved to {output_path}")
+
+    # Update meta.json with PDF hash
     meta_path = raw_dir / "meta.json"
     meta: dict[str, object]
     if meta_path.exists():
@@ -175,10 +211,10 @@ def _update_pdf_metadata(raw_dir: Path) -> None:
     else:
         meta = {}
 
-    meta["pdf_sha256"] = sha256
+    meta["pdf_sha256"] = extracted_data["_meta"]["pdf_sha256"]
     meta_path.write_text(json.dumps(meta, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    print("Found PDF; v0.2.0 will extract raw JSON.")
+    return output_path
 
 
 def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
@@ -189,7 +225,8 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
     report_path = target_dir / "build_report.json"
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
 
-    _update_pdf_metadata(raw_dir=layout["raw"])
+    # Extract monsters from PDF (v0.3.0)
+    _extract_raw_monsters(raw_dir=layout["raw"])
 
     raw_monsters = _load_raw_monsters(layout["raw"])
     parsed = parse_monster_records(raw_monsters)
