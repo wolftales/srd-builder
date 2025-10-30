@@ -1,0 +1,82 @@
+================================================================================
+Quality Analysis Report (296 monsters)
+================================================================================
+
+EXTRACTION COVERAGE
+--------------------------------------------------------------------------------
+Monsters Extracted:  296
+Expected from SRD:   ~319 (official D&D 5e SRD count)
+Coverage Rate:       92.8%
+Missing:             ~23 creatures
+
+Likely reasons for missing monsters:
+  • NPCs with different formatting (Acolyte, Guard, Noble, etc.)
+  • Variant creatures in non-standard format
+  • Cross-references instead of full stat blocks
+  • Different font patterns (non-12pt Bold names)
+
+See docs/COVERAGE_ANALYSIS.md for detailed investigation plan
+
+1. CORE STATS VALIDATION
+--------------------------------------------------------------------------------
+✅ All 296 monsters have valid AC, HP, and abilities
+
+2. ABILITY SCORE DISTRIBUTION
+--------------------------------------------------------------------------------
+✅ 6 abilities: 296 monsters (100.0%)
+
+3. TRAIT/ACTION PARSING QUALITY
+--------------------------------------------------------------------------------
+Trait distribution:
+  0 traits:  52 monsters
+  1 traits:  92 monsters
+  2 traits:  89 monsters
+  3 traits:  46 monsters
+  4 traits:  14 monsters
+  5 traits:   2 monsters
+  6 traits:   1 monsters
+
+Action distribution:
+  0 actions:   3 monsters
+  1 actions:  85 monsters
+  2 actions:  72 monsters
+  3 actions:  54 monsters
+  4 actions:  44 monsters
+  5 actions:  16 monsters
+  6 actions:  12 monsters
+  7 actions:   9 monsters
+
+⚠️  High trait count (>5): Vampire
+
+4. DEFENSE FIELDS COVERAGE
+--------------------------------------------------------------------------------
+Damage Resistances:        60 monsters ( 20.3%)
+Damage Immunities:        126 monsters ( 42.6%)
+Damage Vulnerabilities:    15 monsters (  5.1%)
+Condition Immunities:      88 monsters ( 29.7%)
+
+5. LEGENDARY ACTIONS
+--------------------------------------------------------------------------------
+✅ 30 monsters with legendary actions (10.1%)
+Examples: Aboleth, Solar, Ancient Black Dragon, Adult Black Dragon, Ancient Blue Dragon, Adult Blue Dragon, Ancient Green Dragon, Adult Green Dragon, Ancient Red Dragon, Adult Red Dragon
+
+6. TEXT CONTENT QUALITY
+--------------------------------------------------------------------------------
+✅ All traits and actions have valid text content
+
+7. SCHEMA COMPLIANCE
+--------------------------------------------------------------------------------
+❌ Schema violations found (6 issues):
+   - Kraken: Missing 'size'
+   - Kraken: Missing 'type'
+   - Mummy: Missing 'size'
+   - Mummy: Missing 'type'
+   - Unicorn: Missing 'size'
+   - Unicorn: Missing 'type'
+
+================================================================================
+SUMMARY
+================================================================================
+⚠️  FOUND 6 POTENTIAL ISSUES
+   - Review text content quality issues
+   - Verify schema compliance
