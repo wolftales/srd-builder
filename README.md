@@ -28,13 +28,12 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.2.0)
+### Build pipeline (v0.3.5)
 
-The build pipeline processes monster data through parsing, normalization, and indexing stages.
-Currently uses fixture data; PDF extraction coming in v0.3.0.
+The build pipeline extracts monster data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** with **18 fields** at 100% coverage.
 
 ```bash
-# Build the dataset (uses fixture data from tests/)
+# Build the dataset (extracts from PDF if present)
 python -m srd_builder.build --ruleset srd_5_1 --out dist
 
 # Validate the output
@@ -45,7 +44,7 @@ python -m srd_builder.validate --ruleset srd_5_1
 
 ```
 dist/srd_5_1/
-├── build_report.json      # Build metadata (version, timestamp)
+├── build_report.json      # Build metadata (version, timestamp, PDF hash)
 └── data/
     ├── monsters.json      # Normalized monster entries + _meta header
     └── index.json         # Lookup indexes (by name, CR, type, size)
@@ -53,10 +52,13 @@ dist/srd_5_1/
 
 **Pipeline stages:**
 
-1. **Parse** (`parse_monsters.py`) - Map raw fields to structured data
-2. **Postprocess** (`postprocess.py`) - Normalize and clean entries
-3. **Index** (`indexer.py`) - Build lookup tables
-4. **Validate** (`validate.py`) - JSON Schema validation
+1. **Extract** (`extract_monsters.py`) - PDF text extraction with font metadata
+2. **Parse** (`parse_monsters.py`) - Stat block parsing (18 fields)
+3. **Postprocess** (`postprocess.py`) - Normalize and clean entries
+4. **Index** (`indexer.py`) - Build lookup tables
+5. **Validate** (`validate.py`) - JSON Schema validation
+
+**Parsed fields:** name, size, type, alignment, AC, HP, speed, ability scores, saving throws, skills, damage resistances/immunities/vulnerabilities, condition immunities, senses, languages, traits, actions, reactions, legendary actions, challenge rating, XP value, summary, page number.
 
 ### Consume the dataset (Python)
 
@@ -64,7 +66,12 @@ dist/srd_5_1/
 import json, pathlib
 p = pathlib.Path("dist/srd_5_1/data/monsters.json")
 data = json.loads(p.read_text(encoding="utf-8"))
-print(data["_meta"]["schema_version"], len(data["items"]))
+print(f"Schema: {data['_meta']['schema_version']}, Monsters: {len(data['items'])}")
+
+# Example: Find CR 10 monsters
+cr10 = [m for m in data["items"] if m["challenge_rating"] == "10"]
+for monster in cr10:
+    print(f"{monster['name']}: {monster['xp_value']} XP - {monster['summary']}")
 ```
 
 ### Determinism

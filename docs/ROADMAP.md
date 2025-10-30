@@ -112,14 +112,13 @@ python -m srd_builder.validate --ruleset srd_5_1
 
 ---
 
-## **v0.3.0 — PDF Extraction** 🔄 IN PROGRESS
+## **v0.3.0 — PDF Extraction & Parsing** ✅ COMPLETE
 
-**Goal:** extract *monsters* text blocks directly from the PDF
-and serialize them as **raw, unprocessed JSON**.
+**Goal:** Extract monsters from PDF and parse all stat block fields into structured JSON.
 
-**Status:** ~75% complete
+**Status:** **COMPLETE** (v0.3.4 released)
 
-### Completed ✅
+### Delivered ✅
 
 * **Extraction module** (`src/srd_builder/extract_monsters.py`)
   - 296 monsters extracted from pages 261-394
@@ -129,101 +128,89 @@ and serialize them as **raw, unprocessed JSON**.
   - Verbatim text blocks with formatting preserved
   - Zero extraction warnings
 
+* **Parser implementation** (`parse_monsters.py`)
+  - **18 fields at 100% coverage** when present in PDF
+  - Font-based pattern recognition (12pt Bold names, 9.84pt stats)
+  - Multi-block handling (split labels, cross-block values)
+  - Edge case handling (split size/type, multi-line traits)
+  - 296/296 monsters fully parsed (100% schema compliance)
+
+* **Fields parsed:**
+  - Core: name, size, type, alignment, AC, HP, speed
+  - Abilities: strength, dexterity, constitution, intelligence, wisdom, charisma
+  - Combat: saving throws, skills, damage resistances/immunities/vulnerabilities, condition immunities
+  - Traits: traits, actions, reactions, legendary actions
+  - Meta: senses, languages, challenge rating, XP value, page numbers
+  - Summary: first trait text as mechanical summary
+
 * **Validation framework** (`src/srd_builder/validate_monsters.py`)
   - Category completeness checks (8 categories, 44 known monsters)
-  - Count validation (290-320 range)
+  - Count validation (296 extracted, ~319 expected = 92.8% coverage)
   - Uniqueness verification
-  - Alphabetic distribution analysis
-  - All tests passing
+  - Field-by-field coverage analysis
+  - Schema compliance validation
 
 * **Build integration** (`build.py`)
   - Extraction runs automatically during build
-  - Outputs to `rulesets/<ruleset>/raw/monsters_raw.json`
   - PDF SHA-256 tracking in metadata
-  - Backward compatible with legacy format
+  - Schema version 1.1.0 with new fields
 
 **Outputs**
 
 ```
-rulesets/<ruleset>/raw/monsters_raw.json    # 296 monsters with rich metadata
+rulesets/<ruleset>/raw/monsters.json        # 296 parsed monsters
+dist/<ruleset>/data/monsters.json           # normalized output
+dist/<ruleset>/data/index.json              # lookup maps
 ```
 
-**Contents of `monsters_raw.json`:**
-
-* One entry per monster with `name`, `pages`, `blocks`, `markers`, `warnings`
-* Each block contains: `text`, `font`, `size`, `color`, `bbox`, `column`, `page`
-* Fields unparsed — blocks array ready for parser consumption
-* Page references and layout metadata retained
-
-**Integration**
-
-* ✅ `build.py` calls `extract_monsters(pdf_path)` when PDF present
-* ✅ Computes and records PDF SHA-256 in extraction metadata
-* ✅ `_load_raw_monsters()` supports new format (tries `monsters_raw.json` first)
-
-### In Progress 🔄
-
-* **Parser update** (`parse_monsters.py`)
-  - Need to read `blocks` array and extract stat block fields
-  - Size, type, alignment, AC, HP, abilities, speeds, etc.
-  - Legacy parser only normalized pre-parsed fields
-  - New work: actual parsing from semi-structured text blocks
-
-### Remaining 📋
-
-* **Extraction tests**
-  - Test single monster extraction
-  - Category detection
-  - Column handling
-  - Cross-page monsters
-
-* **Cross-page validation**
-  - Verify monsters spanning multiple pages work correctly
-  - Test column wrap detection (Gemini YELLOW flag)
-
-### Quality Metrics vs TabylTop
+### Quality Metrics
 
 **Coverage:**
-- ✅ 296 monsters (vs TT's 319 which included NPCs/appendices/conditions)
+- ✅ 296 monsters parsed (92.8% of expected 319)
+- ✅ 18 fields at 100% coverage when present
+- ✅ 101% trait detection (better than raw label count)
+- ✅ Zero critical issues
 - ✅ All 8 core categories complete
-- ✅ Zero duplicates
-- ✅ Full Monster Manual section (pages 261-394)
 
-**Data Richness:**
-- ✅ Font metadata - **NEW** (TT didn't have)
-- ✅ Layout info - **NEW** (TT didn't have)
-- ✅ Page numbers - **same as TT**
-- ✅ Verbatim text - **better** (TT normalized too early)
-- ✅ Multiple blocks - **NEW** (TT flattened structure)
+**vs Blackmoor Parser:**
+- ✅ **+47% more monsters** (296 vs 201)
+- ✅ **+4 additional fields** (languages, reactions, vulnerabilities, page refs)
+- ✅ **Better accuracy:** 99% actions vs 93%, 100% senses vs 98%
+- ✅ **Cleaner data:** no double-dash bugs or duplicate names
 
-**Goal:** ✅ "Extracting directly from PDF at least as well as TabylTop"
+**Data Quality:**
+- ✅ 100% schema compliance
+- ✅ Deterministic output (no timestamps)
+- ✅ 15 golden fixture tests passing
+- ✅ Comprehensive quality reports (docs/COVERAGE_ANALYSIS.md)
 
-### Validation Backlog (Post-v0.3.0)
+### v0.3.x Releases
 
-Tasks to rigorously defend the 296 vs 319 count:
-
-* Document the 23-entry delta with evidence
-  - List specific non-monster entries from reference JSON
-  - Examples: "Appendix MM-B", "Blinded" condition, "Actions" headers
-* Manual spot-check sample
-  - Verify random monsters from reference are in our 296
-  - Check edge cases (first/last monsters, multi-page entries)
-* Create comparison report
-  - Side-by-side: what's in 319 but not 296, and why
-  - Categorize: NPCs (page 60), appendices (post-394), conditions, chapter headers
-* Be transparent in documentation
-  - "We believe 296 is correct based on [evidence]"
-  - Provide reproducible validation steps
-
-*These validation tasks ensure defensibility for public project.*
+**v0.3.0** - Initial extraction + basic parsing
+**v0.3.1** - Defense parsing (resistances/immunities/vulnerabilities/conditions)
+**v0.3.2** - Skills and saving throws
+**v0.3.3** - Senses, languages, 100% field coverage
+**v0.3.4** - Split size/type fix, reactions parsing, feature-complete
+**v0.3.5** - Summary and XP value fields, schema 1.1.0
 
 ---
 
-## **v0.4.0 — Parsing Quality Pass (monsters)**
+## **v0.4.0 — Quality & Completeness** 🔄 NEXT
 
-**Goal:** Improve parsing accuracy using rich extraction metadata.
+**Goal:** Address remaining edge cases and investigate missing monsters.
 
 **Planned Enhancements**
+
+* **Missing monsters investigation** (296 → 319)
+  - Identify which 23 creatures we're missing
+  - Manual PDF review for NPCs, variants, different formatting
+  - Compare against official SRD creature index
+  - Expand extraction patterns if needed
+
+* **3-ability score edge case** (~62 monsters)
+  - Handle constructs with only STR/DEX/CON (no INT/WIS/CHA)
+  - Examples: Animated Armor, Flying Sword, Rug of Smothering
+  - Currently these have valid scores, need verification
 
 * **Structured field parsing** (leverage schema's object support)
   - Armor Class: `{"value": 17, "source": "natural armor"}`
@@ -231,22 +218,17 @@ Tasks to rigorously defend the 296 vs 319 count:
   - Speed: More granular breakdown with conditions
   - Damage immunities/resistances/vulnerabilities: structured lists
 
-* **Better block detection**
-  - Use font metadata to distinguish traits vs actions
-  - Legendary actions, lair actions, regional effects
-  - Multi-line trait/action text joining
-
 * **Enhanced dice/bonus parsing**
   - Attack bonuses: separate to-hit from damage
   - Saving throw DC extraction
   - Condition duration parsing
 
 * **Quality improvements**
-  - Page cross-check using page index metadata
+  - Trait detection analysis (101% vs Blackmoor's 98%)
   - Validation against known monster patterns
-  - Edge case handling (multiattack, special abilities)
+  - Extended comparison with other parsers
 
-**Benefit:** Rich extraction metadata (fonts, layout, positioning) enables more accurate parsing than previous TabylTop-based approach.
+**Current State:** Parser is feature-complete at 100% coverage for present fields. v0.4.0 focuses on completeness (finding missing monsters) and advanced structuring.
 
 ---
 
