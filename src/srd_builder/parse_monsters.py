@@ -409,15 +409,36 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                     else:
                         break
 
-                # Next block should have values
-                if j < len(blocks):
-                    values_text = blocks[j].get("text", "")
-                    ability_scores = _parse_ability_scores(values_text)
-                    if ability_scores:
-                        # Use schema key "ability_scores" directly (not legacy "stats")
-                        parsed["ability_scores"] = ability_scores
-                    i = j + 1
-                    continue
+                # Gather value blocks (might be split across multiple lines)
+                # Continue until we hit a Bold label (next stat block field)
+                values_parts = []
+                k = j
+                while k < len(blocks):
+                    val_block = blocks[k]
+                    val_font = val_block.get("font", "")
+                    val_text = val_block.get("text", "").strip()
+
+                    # Stop at next Bold label
+                    if "Bold" in val_font:
+                        break
+
+                    # Collect value text
+                    if val_text:
+                        values_parts.append(val_text)
+                    k += 1
+
+                    # Safety: stop after collecting reasonable amount (up to 6 blocks for edge cases)
+                    if len(values_parts) >= 6:
+                        break
+
+                # Parse combined values
+                combined_values = " ".join(values_parts)
+                ability_scores = _parse_ability_scores(combined_values)
+                if ability_scores:
+                    # Use schema key "ability_scores" directly (not legacy "stats")
+                    parsed["ability_scores"] = ability_scores
+                i = k
+                continue
 
             # Saving Throws
             if "saving" in label_clean and "throw" in label_clean:
