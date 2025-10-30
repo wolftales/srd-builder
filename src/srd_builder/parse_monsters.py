@@ -22,6 +22,10 @@ _DISTANCE_RE = re.compile(r"(?P<value>\d+)\s*ft\.?")
 _PASSIVE_PERCEPTION_RE = re.compile(r"passive\s+perception\s+(?P<value>\d+)", re.IGNORECASE)
 _SENSE_NAME_RE = re.compile(r"^(?P<name>[a-zA-Z ]+?)\s*\d+\s*ft", re.IGNORECASE)
 _SPEED_PATTERN = re.compile(r"(?:(?P<mode>[a-z ]+)\s+)?(?P<value>\d+)\s*ft\.?", re.IGNORECASE)
+_SPEED_WITH_CONDITION = re.compile(
+    r"(?:(?P<mode>[a-z ]+)\s+)?(?P<value>\d+)\s*ft\.?\s*(?:\((?P<condition>[^)]+)\))?",
+    re.IGNORECASE,
+)
 _XP_RE = re.compile(r"([\d,]+)\s*XP", re.IGNORECASE)
 
 
@@ -89,16 +93,37 @@ def _normalize_list_of_dicts(entries: list[dict[str, Any]] | None) -> list[dict[
     return [deepcopy(entry) for entry in entries]
 
 
-def _normalize_speed(raw_speed: Any) -> dict[str, int]:
+def _normalize_speed(raw_speed: Any) -> dict[str, int | dict[str, Any]]:
+    """Normalize speed into structured format.
+
+    Examples:
+        "30 ft." -> {"walk": 30}
+        "walk 30 ft., fly 60 ft." -> {"walk": 30, "fly": 60}
+        "fly 50 ft. (hover)" -> {"fly": {"value": 50, "condition": "hover"}}
+        "0 ft., fly 90 ft. (hover)" -> {"walk": 0, "fly": {"value": 90, "condition": "hover"}}
+
+    Returns dict where values are either int (simple) or dict with value/condition (structured).
+    Only single-word conditions in parentheses are treated as structured (e.g., "hover").
+    Complex parenthetical content is ignored for now.
+    """
     if isinstance(raw_speed, str):
-        speed_dict: dict[str, int] = {}
-        for match in _SPEED_PATTERN.finditer(raw_speed):
+        speed_dict: dict[str, int | dict[str, Any]] = {}
+        for match in _SPEED_WITH_CONDITION.finditer(raw_speed):
             mode = match.group("mode") or "walk"
-            speed_dict[mode.strip().lower().replace(" ", "_")] = int(match.group("value"))
+            value = int(match.group("value"))
+            condition = match.group("condition")
+
+            mode_key = mode.strip().lower().replace(" ", "_")
+            # Only treat single-word conditions as structured (like "hover")
+            # Ignore complex parenthetical content (like alternate forms)
+            if condition and len(condition.split()) == 1:
+                speed_dict[mode_key] = {"value": value, "condition": condition.strip()}
+            else:
+                speed_dict[mode_key] = value
         return speed_dict
     if not isinstance(raw_speed, dict):
         return {}
-    normalized: dict[str, int] = {}
+    normalized: dict[str, int | dict[str, Any]] = {}
     for mode, value in raw_speed.items():
         coerced = _coerce_int(value)
         if coerced is not None:
