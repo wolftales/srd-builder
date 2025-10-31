@@ -1,8 +1,205 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "title": "Equipment",
+  "title": "Equipment Item",
+  "description": "Schema for individual equipment items (weapons, armor, gear) from the SRD.",
   "type": "object",
-  "additionalProperties": true,
-  "description": "Placeholder schema for equipment entries."
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "category",
+    "page",
+    "src"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^item:[a-z0-9_-]+$",
+      "description": "Unique identifier in format 'item:<name>'"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the equipment item"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Lowercase normalized name for indexing and search"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description for tooltips and previews"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "weapon",
+        "armor",
+        "shield",
+        "gear",
+        "tool",
+        "mount",
+        "vehicle",
+        "trade_good",
+        "service"
+      ],
+      "description": "Primary equipment category"
+    },
+    "weapon_category": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "martial"
+      ],
+      "description": "Weapon proficiency requirement (weapons only)"
+    },
+    "weapon_type": {
+      "type": "string",
+      "enum": [
+        "melee",
+        "ranged"
+      ],
+      "description": "Weapon attack type (weapons only)"
+    },
+    "armor_category": {
+      "type": "string",
+      "enum": [
+        "light",
+        "medium",
+        "heavy"
+      ],
+      "description": "Armor weight class (armor only)"
+    },
+    "cost": {
+      "type": "object",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Cost amount"
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "cp",
+            "sp",
+            "ep",
+            "gp",
+            "pp"
+          ],
+          "description": "Currency type"
+        }
+      },
+      "description": "Item cost"
+    },
+    "weight": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Weight in pounds"
+    },
+    "damage": {
+      "type": "object",
+      "required": [
+        "dice",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dice": {
+          "type": "string",
+          "pattern": "^\\d+d\\d+(\\+\\d+)?$",
+          "description": "Damage dice notation (e.g., '1d8', '2d6+3')"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bludgeoning",
+            "piercing",
+            "slashing"
+          ],
+          "description": "Damage type"
+        }
+      },
+      "description": "Weapon damage (one-handed or default)"
+    },
+    "versatile_damage": {
+      "type": "object",
+      "required": [
+        "dice",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dice": {
+          "type": "string",
+          "pattern": "^\\d+d\\d+(\\+\\d+)?$",
+          "description": "Damage dice when wielded two-handed"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "bludgeoning",
+            "piercing",
+            "slashing"
+          ],
+          "description": "Damage type"
+        }
+      },
+      "description": "Damage when wielded two-handed (versatile weapons)"
+    },
+    "armor_class": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Base armor class provided by armor or shield"
+    },
+    "strength_requirement": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Minimum Strength score required (heavy armor)"
+    },
+    "stealth_disadvantage": {
+      "type": "boolean",
+      "description": "Whether armor imposes disadvantage on Stealth checks"
+    },
+    "properties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Weapon properties (e.g., 'versatile', 'finesse', 'heavy', 'light', 'thrown', 'ammunition', 'loading')"
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "normal": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Normal range in feet"
+        },
+        "long": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Long range in feet (with disadvantage)"
+        }
+      },
+      "description": "Range for ranged/thrown weapons"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "src": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD_CC_v5.1')"
+    }
+  }
 }

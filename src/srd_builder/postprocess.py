@@ -16,6 +16,7 @@ __all__ = [
     "polish_text",
     "polish_text_fields",
     "clean_monster_record",
+    "clean_equipment_record",
     "dedup_defensive_lists",
     "prune_empty_fields",
 ]
@@ -404,4 +405,57 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
     patched = monster
     for step in pipeline:
         patched = step(patched)
+    return patched
+
+
+def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
+    """Run the canonical post-processing pipeline over an equipment record.
+
+    This ensures:
+    - Names are cleaned (trailing periods removed)
+    - IDs are normalized
+    - Properties are lowercase and consistent
+    - Empty optional fields are pruned
+    """
+    patched = {**item}
+
+    # Clean name
+    if "name" in patched and isinstance(patched["name"], str):
+        patched["name"] = patched["name"].rstrip(".")
+
+    # Ensure ID is normalized
+    if "id" in patched and isinstance(patched["id"], str):
+        patched["id"] = normalize_id(patched["id"])
+
+    # Ensure simple_name is normalized
+    if "simple_name" in patched and isinstance(patched["simple_name"], str):
+        patched["simple_name"] = normalize_id(patched["simple_name"])
+
+    # Normalize properties to lowercase
+    if "properties" in patched and isinstance(patched["properties"], list):
+        patched["properties"] = [
+            prop.lower().strip() if isinstance(prop, str) else prop
+            for prop in patched["properties"]
+        ]
+
+    # Prune empty optional fields
+    equipment_optional_fields = {
+        "properties",
+        "armor_category",
+        "weapon_category",
+        "weapon_type",
+        "stealth_disadvantage",
+        "strength_requirement",
+        "versatile_damage",
+        "range",
+        "quantity",
+    }
+
+    for key in list(patched.keys()):
+        if key not in equipment_optional_fields:
+            continue
+        value = patched[key]
+        if value is None or (isinstance(value, list | str) and not value):
+            patched.pop(key)
+
     return patched
