@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-MONSTER_DATA = Path("rulesets/srd_5_1/data/monsters.json")
-REQUIRED_FIELDS = ["id", "name", "page", "src"]
+MONSTER_DATA = Path("dist/srd_5_1/data/monsters.json")
+REQUIRED_FIELDS = ["id", "name", "page", "simple_name"]
 SAMPLE_SIZE = 5
 
 

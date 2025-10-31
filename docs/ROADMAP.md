@@ -267,7 +267,53 @@ srd-builder is the **upstream producer** for Blackmoor (downstream consumer):
 - Integration: simple file copy from `dist/srd_5_1/data/*`
 - See `docs/INTEGRATION.md` for details
 
-**Current State:** Monster extraction is production-ready at v0.4.1. Next focus: additional content types (equipment, spells, classes) to match Blackmoor's roadmap.
+**Current State:** Monster extraction is production-ready at v0.4.1. Next focus: additional content types (equipment, spells, classes).
+
+### v0.4.2 — Metadata & Provenance ✅ COMPLETE
+
+**Goal:** Establish clean provenance and remove hardcoded assumptions from intermediary sources.
+
+**Delivered**
+
+* **Rich Metadata (`dist/srd_5_1/meta.json`)**
+  - License information (CC-BY-4.0 with full attribution)
+  - Build metadata (timestamp, versions, PDF hash)
+  - Page index computed from actual extraction (monsters: pages 261-394)
+  - File manifest (only includes extracted content)
+  - Extraction status tracking
+  - Schema version 1.1.0
+
+* **Clean Provenance**
+  - Removed all hardcoded page numbers from Blackmoor/TabylTop sources
+  - Page ranges computed dynamically from extraction data
+  - `pdf_meta.json` separation: input validation vs consumer metadata
+  - Version bumped to 0.4.2 throughout codebase
+
+* **Directory Cleanup**
+  - Renamed `raw/meta.json` → `raw/pdf_meta.json` (clear separation of concerns)
+  - Removed unused `raw/extracted/` directory
+  - Moved historical research to `docs/archive/`
+  - Minimized public Blackmoor references (internal project)
+
+* **Test Improvements**
+  - Fixed 2 skipped tests (updated paths from `rulesets/` to `dist/`)
+  - Suppressed PyMuPDF SWIG deprecation warnings
+  - Updated golden fixtures with v0.4.2
+  - All 56 tests passing
+
+* **Documentation**
+  - Created `docs/PARKING_LOT.md` for deferred features (terminology.aliases)
+  - Updated README.md with v0.4.2 info and meta.json structure
+  - Archived phase1_research materials
+  - Removed Blackmoor branding from public docs
+
+**Integration Context:**
+
+Metadata structure now provides complete provenance for downstream consumers:
+- License compliance (CC-BY-4.0 attribution)
+- Source traceability (PDF hash, page ranges)
+- Extraction status (what's complete vs pending)
+- Ready for multi-content-type extraction (equipment, spells, etc.)
 
 ---
 

@@ -69,30 +69,30 @@ def _check_pdf_hash(ruleset: str) -> None:
     raw_dir = RULESETS_DIR / ruleset / "raw"
     pdf_files = sorted(raw_dir.glob("*.pdf")) if raw_dir.exists() else []
 
-    meta_path = raw_dir / "meta.json"
+    pdf_meta_path = raw_dir / "pdf_meta.json"
     if pdf_files:
-        if not meta_path.exists():
+        if not pdf_meta_path.exists():
             raise FileNotFoundError(
-                f"PDF file(s) found in '{raw_dir}' but meta.json is missing. Cannot validate PDF hash."
+                f"PDF file(s) found in '{raw_dir}' but pdf_meta.json is missing. Cannot validate PDF hash."
             )
 
-        meta_obj = load_json(meta_path)
-        if not isinstance(meta_obj, dict) or "pdf_sha256" not in meta_obj:
+        pdf_meta_obj = load_json(pdf_meta_path)
+        if not isinstance(pdf_meta_obj, dict) or "pdf_sha256" not in pdf_meta_obj:
             print("PDF/hash not present — OK for v0.2.0.")
             return
 
-        recorded_hash = meta_obj["pdf_sha256"]
+        recorded_hash = pdf_meta_obj["pdf_sha256"]
         if not isinstance(recorded_hash, str):
-            raise TypeError("meta.json pdf_sha256 must be a string")
+            raise TypeError("pdf_meta.json pdf_sha256 must be a string")
 
         pdf_path = pdf_files[0]
         computed_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
         if computed_hash != recorded_hash:
             raise ValueError(
-                "PDF hash mismatch: meta.json pdf_sha256 does not match the current file"
+                "PDF hash mismatch: pdf_meta.json pdf_sha256 does not match the current file"
             )
 
-        print("OK: PDF hash matches meta.json.")
+        print("OK: PDF hash matches pdf_meta.json.")
         return
 
     print("PDF/hash not present — OK for v0.2.0.")

@@ -19,3 +19,4 @@ htmlcov/
 rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/
+docs/archive/

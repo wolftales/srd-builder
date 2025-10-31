@@ -11,7 +11,7 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - optional dependency
     Draft202012Validator = None
 
-MONSTER_DATA = Path("rulesets/srd_5_1/data/monsters.json")
+MONSTER_DATA = Path("dist/srd_5_1/data/monsters.json")
 SCHEMA_PATH = Path("schemas/monster.schema.json")
 SAMPLE_SIZE = 5
 

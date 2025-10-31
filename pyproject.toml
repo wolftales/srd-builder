@@ -72,3 +72,8 @@ ignore_missing_imports = true
 minversion = "8.0"
 testpaths = ["tests"]
 addopts = "-q"
+filterwarnings = [
+    # Suppress PyMuPDF SWIG binding deprecation warnings
+    "ignore::DeprecationWarning:importlib._bootstrap",
+    "ignore:builtin type.*has no __module__ attribute:DeprecationWarning",
+]

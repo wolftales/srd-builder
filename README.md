@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.3.5)
+### Build pipeline (v0.4.2)
 
-The build pipeline extracts monster data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** with **18 fields** at 100% coverage.
+The build pipeline extracts monster data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** with **27 fields** and full provenance tracking.
 
 ```bash
 # Build the dataset (extracts from PDF if present)
@@ -44,9 +44,10 @@ python -m srd_builder.validate --ruleset srd_5_1
 
 ```
 dist/srd_5_1/
-├── build_report.json      # Build metadata (version, timestamp, PDF hash)
+├── meta.json              # Dataset metadata (license, provenance, page index)
+├── build_report.json      # Build metadata (version, timestamp)
 └── data/
-    ├── monsters.json      # Normalized monster entries + _meta header
+    ├── monsters.json      # Normalized monster entries (296 monsters)
     └── index.json         # Lookup indexes (by name, CR, type, size)
 ```
 
@@ -58,7 +59,7 @@ dist/srd_5_1/
 4. **Index** (`indexer.py`) - Build lookup tables
 5. **Validate** (`validate.py`) - JSON Schema validation
 
-**Parsed fields:** name, size, type, alignment, AC, HP, speed, ability scores, saving throws, skills, damage resistances/immunities/vulnerabilities, condition immunities, senses, languages, traits, actions, reactions, legendary actions, challenge rating, XP value, summary, page number.
+**Parsed fields (27):** id, simple_name, name, summary, size, type, alignment, armor_class, hit_points, hit_dice, speed, ability_scores, saving_throws, skills, damage_resistances, damage_immunities, damage_vulnerabilities, condition_immunities, senses, languages, challenge_rating, xp_value, traits, actions, reactions, legendary_actions, page.
 
 ### Consume the dataset (Python)
 

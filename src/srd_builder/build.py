@@ -26,6 +26,7 @@ from .postprocess import clean_monster_record
 RULESETS_DIRNAME: Final = "rulesets"
 DATA_SOURCE: Final = "SRD_CC_v5.1"
 SCHEMA_VERSION: Final = "1.1.0"
+FORMAT_VERSION: Final = "v0.4.1"
 
 
 def _meta_block(ruleset: str) -> dict[str, str]:
@@ -73,6 +74,60 @@ def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:
 
 def _render_json(payload: Any) -> str:
     return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
+
+def _generate_meta_json(
+    *,
+    pdf_hash: str | None,
+    monsters_complete: bool,
+    monsters_page_range: tuple[int, int] | None = None,
+) -> dict[str, Any]:
+    """Generate rich metadata for dist/meta.json with provenance.
+
+    This is the consumer-facing metadata that includes license info,
+    page index for all content types, file manifest, and extraction status.
+    """
+    return {
+        "version": "5.1",
+        "source": DATA_SOURCE,
+        "format_version": FORMAT_VERSION,
+        "license": {
+            "type": "CC-BY-4.0",
+            "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+            "attribution": (
+                "This work includes material taken from the System Reference Document 5.1 "
+                '("SRD 5.1") by Wizards of the Coast LLC and available at '
+                "https://dnd.wizards.com/resources/systems-reference-document. "
+                "The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 "
+                "International License available at https://creativecommons.org/licenses/by/4.0/legalcode."
+            ),
+            "conversion_note": (
+                "Converted from the original PDF by srd-builder "
+                f"(https://github.com/wolftales/srd-builder) version {__version__}"
+            ),
+        },
+        "build": {
+            "extracted_at": datetime.now(timezone.utc).isoformat(),
+            "extractor_version": FORMAT_VERSION,
+            "builder_version": __version__,
+            "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
+        },
+        "page_index": (
+            {"monsters": {"start": monsters_page_range[0], "end": monsters_page_range[1]}}
+            if monsters_page_range
+            else {}
+        ),
+        "files": {
+            "meta": "meta.json",
+            "build_report": "build_report.json",
+            "index": "data/index.json",
+            "monsters": "data/monsters.json",
+        },
+        "extraction_status": {
+            "monsters": "complete" if monsters_complete else "in_progress",
+        },
+        "$schema_version": "1.1.0",
+    }
 
 
 def _write_datasets(
@@ -154,18 +209,15 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     dist_ruleset_dir = out_dir / ruleset
     data_dir = dist_ruleset_dir / "data"
     raw_dir = Path(RULESETS_DIRNAME) / ruleset / "raw"
-    extracted_dir = raw_dir / "extracted"
 
     dist_ruleset_dir.mkdir(parents=True, exist_ok=True)
     data_dir.mkdir(exist_ok=True)
     raw_dir.mkdir(parents=True, exist_ok=True)
-    extracted_dir.mkdir(exist_ok=True)
 
     return {
         "dist_ruleset": dist_ruleset_dir,
         "data": data_dir,
         "raw": raw_dir,
-        "extracted": extracted_dir,
     }
 
 
@@ -198,21 +250,23 @@ def _extract_raw_monsters(raw_dir: Path) -> Path | None:
     print(f"✓ Extracted {monster_count} monsters (warnings: {warnings})")
     print(f"✓ Saved to {output_path}")
 
-    # Update meta.json with PDF hash
-    meta_path = raw_dir / "meta.json"
-    meta: dict[str, object]
-    if meta_path.exists():
-        meta = json.loads(meta_path.read_text(encoding="utf-8"))
-        if not isinstance(meta, dict):
+    # Update pdf_meta.json with PDF hash (input validation file)
+    pdf_meta_path = raw_dir / "pdf_meta.json"
+    pdf_meta: dict[str, object]
+    if pdf_meta_path.exists():
+        pdf_meta = json.loads(pdf_meta_path.read_text(encoding="utf-8"))
+        if not isinstance(pdf_meta, dict):
             print(
-                f"Warning: {meta_path} contains JSON that is not an object (got {type(meta).__name__}); resetting to empty dict.",
+                f"Warning: {pdf_meta_path} contains JSON that is not an object (got {type(pdf_meta).__name__}); resetting to empty dict.",
             )
-            meta = {}
+            pdf_meta = {}
     else:
-        meta = {}
+        pdf_meta = {}
 
-    meta["pdf_sha256"] = extracted_data["_meta"]["pdf_sha256"]
-    meta_path.write_text(json.dumps(meta, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    pdf_meta["pdf_sha256"] = extracted_data["_meta"]["pdf_sha256"]
+    pdf_meta_path.write_text(
+        json.dumps(pdf_meta, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     return output_path
 
@@ -231,6 +285,34 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
     raw_monsters = _load_raw_monsters(layout["raw"])
     parsed = parse_monster_records(raw_monsters)
     _write_datasets(ruleset=ruleset, data_dir=layout["data"], monsters=parsed)
+
+    # Read PDF hash from pdf_meta.json (if present)
+    pdf_meta_path = layout["raw"] / "pdf_meta.json"
+    pdf_hash = None
+    if pdf_meta_path.exists():
+        pdf_meta = json.loads(pdf_meta_path.read_text(encoding="utf-8"))
+        if isinstance(pdf_meta, dict):
+            pdf_hash = pdf_meta.get("pdf_sha256")
+
+    # Compute page range from raw monsters for provenance
+    monsters_page_range = None
+    if raw_monsters:
+        all_pages = []
+        for monster in raw_monsters:
+            pages = monster.get("pages", [])
+            if isinstance(pages, list):
+                all_pages.extend(pages)
+        if all_pages:
+            monsters_page_range = (min(all_pages), max(all_pages))
+
+    # Generate rich meta.json for consumers (includes license, page_index, etc.)
+    meta_json = _generate_meta_json(
+        pdf_hash=pdf_hash,
+        monsters_complete=len(parsed) > 0,
+        monsters_page_range=monsters_page_range,
+    )
+    meta_path = target_dir / "meta.json"
+    meta_path.write_text(_render_json(meta_json), encoding="utf-8")
 
     return report_path
 

@@ -68,13 +68,24 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert data_dir.is_dir()
 
     assert raw_dir.is_dir()
-    assert (raw_dir / "extracted").is_dir()
 
-    meta_path = raw_dir / "meta.json"
-    assert meta_path.exists()
-    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+    # Check pdf_meta.json (input validation file)
+    pdf_meta_path = raw_dir / "pdf_meta.json"
+    assert pdf_meta_path.exists()
+    pdf_meta = json.loads(pdf_meta_path.read_text(encoding="utf-8"))
     expected_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
-    assert meta["pdf_sha256"] == expected_hash
+    assert pdf_meta["pdf_sha256"] == expected_hash
+
+    # Check dist/meta.json (rich consumer metadata)
+    dist_meta_path = dist_ruleset_dir / "meta.json"
+    assert dist_meta_path.exists()
+    dist_meta = json.loads(dist_meta_path.read_text(encoding="utf-8"))
+    assert dist_meta["version"] == "5.1"
+    assert dist_meta["source"] == "SRD_CC_v5.1"
+    assert "license" in dist_meta
+    assert "page_index" in dist_meta
+    assert "files" in dist_meta
+    assert "extraction_status" in dist_meta
 
     monsters_path = data_dir / "monsters.json"
     index_path = data_dir / "index.json"
@@ -96,13 +107,15 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert index_doc["_meta"]["ruleset"] == ruleset
     assert "conflicts" not in index_doc or index_doc["conflicts"]
 
-    first_meta_bytes = meta_path.read_bytes()
+    # Check determinism: rebuilding should produce identical output (except timestamp in dist/meta.json)
+    first_pdf_meta_bytes = pdf_meta_path.read_bytes()
     monsters_bytes = monsters_path.read_bytes()
     index_bytes = index_path.read_bytes()
     build(ruleset=ruleset, output_format="json", out_dir=out_dir)
-    assert first_meta_bytes == meta_path.read_bytes()
+    assert first_pdf_meta_bytes == pdf_meta_path.read_bytes()
     assert monsters_bytes == monsters_path.read_bytes()
     assert index_bytes == index_path.read_bytes()
+    # Note: dist/meta.json contains timestamp, so it won't be deterministic
 
     monkeypatch.setattr(validate_module, "DIST_DIR", out_dir)
     monkeypatch.setattr(validate_module, "RULESETS_DIR", rulesets_root)
