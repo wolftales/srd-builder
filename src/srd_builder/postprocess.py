@@ -413,7 +413,7 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
 
     This ensures:
     - Names are cleaned (trailing periods removed)
-    - IDs are normalized
+    - IDs are preserved with namespace prefix (item:*)
     - Properties are lowercase and consistent
     - Empty optional fields are pruned
     """
@@ -423,11 +423,10 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
     if "name" in patched and isinstance(patched["name"], str):
         patched["name"] = patched["name"].rstrip(".")
 
-    # Ensure ID is normalized
-    if "id" in patched and isinstance(patched["id"], str):
-        patched["id"] = normalize_id(patched["id"])
+    # NOTE: Do NOT normalize equipment IDs - they use "item:" namespace with hyphens
+    # IDs are already generated correctly by parse_equipment._generate_id()
 
-    # Ensure simple_name is normalized
+    # Ensure simple_name is normalized (lowercase, underscores)
     if "simple_name" in patched and isinstance(patched["simple_name"], str):
         patched["simple_name"] = normalize_id(patched["simple_name"])
 

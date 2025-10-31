@@ -16,6 +16,7 @@ Strategy:
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -276,8 +277,15 @@ def _detect_section_context(  # noqa: C901
     return None
 
 
-def _is_equipment_row(row: list[str]) -> bool:
-    """Check if table row contains actual equipment (vs headers/descriptions)."""
+def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
+    """Check if table row contains actual equipment (vs headers/descriptions).
+
+    Filters out:
+    - Empty rows or headers
+    - Currency table entries
+    - Reference tables (Trade Goods pricing, Lifestyle Expenses, Food/Drink)
+    - Descriptive text
+    """
     if not row or len(row) < 2:
         return False
 
@@ -285,6 +293,34 @@ def _is_equipment_row(row: list[str]) -> bool:
     name = row[0].strip()
     if not name:
         return False
+
+    # Filter Trade Goods pricing tables where first cell is price (reversed structure)
+    # Example: ['1 cp', '1 lb. of wheat'] - price first, item second
+    if re.match(r"^\d+\s*(cp|sp|ep|gp|pp)$", name, re.IGNORECASE):
+        return False
+
+    # Filter Lifestyle Expenses levels (not actual items)
+    lifestyle_levels = [
+        "poor",
+        "modest",
+        "comfortable",
+        "wealthy",
+        "aristocratic",
+        "wretched",
+        "squalid",
+    ]
+    if name.lower() in lifestyle_levels:
+        return False
+
+    # Filter Food/Drink/Lodging incomplete extractions
+    # Single-word entries with only a price in second column are likely reference table fragments
+    if len(row) == 2 and len(name.split()) == 1:
+        second_cell = row[1].strip()
+        # If second cell is just a price, this is likely a pricing reference, not equipment
+        if re.match(r"^\d+\s*(cp|sp|ep|gp|pp)$", second_cell, re.IGNORECASE):
+            # Exception: Some valid items are single words (Rope, Tent, etc.)
+            # But those appear in tables with more columns typically
+            return False
 
     # Skip currency table entries
     currency_keywords = ["copper", "silver", "electrum", "gold", "platinum"]

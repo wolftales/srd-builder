@@ -324,12 +324,12 @@ def _parse_versatile_damage(versatile_prop: str) -> dict[str, str] | None:
 
 
 def _generate_id(name: str) -> str:
-    """Generate ID from item name.
+    """Generate ID from item name with item: namespace prefix.
 
     Examples:
-        "Longsword" -> "longsword"
-        "Chain Mail" -> "chain-mail"
-        "Rope, hempen (50 feet)" -> "rope-hempen-50-feet"
+        "Longsword" -> "item:longsword"
+        "Chain Mail" -> "item:chain-mail"
+        "Rope, hempen (50 feet)" -> "item:rope-hempen-50-feet"
     """
     # Lowercase and replace spaces/punctuation with hyphens
     id_str = name.lower()
@@ -338,7 +338,7 @@ def _generate_id(name: str) -> str:
     id_str = re.sub(r"-+", "-", id_str)  # Collapse multiple hyphens
     id_str = id_str.strip("-")  # Remove leading/trailing hyphens
 
-    return id_str
+    return f"item:{id_str}"
 
 
 def _generate_simple_name(name: str) -> str:
