@@ -20,3 +20,6 @@ rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/
 docs/archive/
+
+# Archive folder - local reference only
+docs/archive/
