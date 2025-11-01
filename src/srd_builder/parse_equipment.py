@@ -6,6 +6,8 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from .column_mapper import ColumnMapper
+
 
 def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Parse raw equipment items into structured records."""
@@ -172,88 +174,21 @@ def _apply_common_fields(
         item["weight_raw"] = weight_raw
 
 
-def _detect_column_map(  # noqa: C901
+def _detect_column_map(
     headers: list[str] | None, table_row: list[str], category: str
 ) -> dict[str, int]:
-    column_map: dict[str, int] = {}
+    """Detect column mapping using ColumnMapper.
 
-    if headers:
-        for index, header in enumerate(headers):
-            key = _match_header(header)
-            if key:
-                column_map.setdefault(key, index)
+    Args:
+        headers: Column headers if available
+        table_row: Sample data row for heuristic detection
+        category: Equipment category (armor, weapon, gear, etc.)
 
-    if category == "armor" and "armor_class" not in column_map:
-        for idx, cell in enumerate(table_row):
-            lower = cell.lower()
-            if "ac" in lower or "dex" in lower:
-                column_map["armor_class"] = idx
-                break
-
-    if "cost" not in column_map:
-        for idx, cell in enumerate(table_row):
-            if _parse_cost_value(cell):
-                column_map["cost"] = idx
-                break
-
-    if "weight" not in column_map:
-        # Skip columns already mapped to avoid misdetection
-        used_columns = set(column_map.values())
-        for idx, cell in enumerate(table_row):
-            if idx in used_columns:
-                continue
-            # Only accept cells that contain "lb" for heuristic weight detection
-            # to avoid false positives like "15 gp" being treated as weight
-            if "lb" in cell.lower():
-                weight_candidate = _parse_weight_value(cell)
-                if weight_candidate[0] is not None or weight_candidate[1] is not None:
-                    column_map["weight"] = idx
-                    break
-
-    if category == "armor":
-        if "strength" not in column_map:
-            for idx, cell in enumerate(table_row):
-                if "str" in cell.lower():
-                    column_map["strength"] = idx
-                    break
-        if "stealth" not in column_map:
-            for idx, cell in enumerate(table_row):
-                if "stealth" in cell.lower():
-                    column_map["stealth"] = idx
-                    break
-
-    if category == "weapon":
-        if "damage" not in column_map:
-            for idx, cell in enumerate(table_row):
-                if _parse_damage(cell):
-                    column_map["damage"] = idx
-                    break
-        if "properties" not in column_map and table_row:
-            column_map["properties"] = len(table_row) - 1
-    else:
-        if "properties" not in column_map and table_row:
-            column_map["properties"] = len(table_row) - 1
-
-    return column_map
-
-
-def _match_header(header: str) -> str | None:
-    normalized = re.sub(r"[^a-z0-9]+", " ", header.lower()).strip()
-    header_map = {
-        "armor_class": ["armor class", "ac"],
-        "cost": ["cost"],
-        "weight": ["weight"],
-        "strength": ["strength"],
-        "stealth": ["stealth"],
-        "damage": ["damage"],
-        "properties": ["properties", "property"],
-    }
-
-    for key, tokens in header_map.items():
-        for token in tokens:
-            if token in normalized:
-                return key
-    return None
+    Returns:
+        Dictionary mapping field names to column indices
+    """
+    mapper = ColumnMapper(category=category)
+    return mapper.build_map(headers, table_row)
 
 
 def _parse_cost(table_row: list[str], column_map: dict[str, int]) -> dict[str, Any] | None:
