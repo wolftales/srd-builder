@@ -187,7 +187,9 @@ Blackmoor reviewed srd-builder v0.4.2 package and provided comprehensive feedbac
 - simple_name field: "excellent for indexing"
 - Version tracking in _meta: "exactly what's needed"
 - Structured data (armor_class, hit_points as objects)
-- Note: We already support by_cr and by_type indexes in indexer.py
+
+**Note on Index Features:**
+Blackmoor's review requested `by_cr` and `by_type` indexes be added. However, these have been present in index.json since the indexer was first created (commit 7a1b633, before v0.4.2). The review may have been based on documentation rather than examining the actual generated index.json file. The "Gap" they identified in section B was actually about **their own code** lacking utility functions to consume the index, not missing features in srd-builder.
 
 ### High Priority - Action Data Parsing
 
