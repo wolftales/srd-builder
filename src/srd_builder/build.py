@@ -310,7 +310,11 @@ def _extract_raw_equipment(raw_dir: Path) -> Path | None:
     print(f"Extracting equipment from {pdf_path.name}...")
 
     # Run extraction
-    extracted_data = extract_equipment(pdf_path)
+    try:
+        extracted_data = extract_equipment(pdf_path)
+    except Exception as exc:  # pragma: no cover - defensive guard for non-PDF fixtures
+        print(f"⚠️ Equipment extraction skipped: {exc}")
+        return None
 
     # Write to raw directory
     output_path = raw_dir / "equipment_raw.json"
