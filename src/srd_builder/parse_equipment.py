@@ -134,9 +134,7 @@ def _parse_weapon_fields(  # noqa: C901
             item["range"] = range_info
 
         ranged_prop = any(
-            prop.startswith("thrown")
-            or prop.startswith("ammunition")
-            or prop.startswith("range")
+            prop.startswith("thrown") or prop.startswith("ammunition") or prop.startswith("range")
             for prop in properties
         )
 
@@ -199,11 +197,18 @@ def _detect_column_map(  # noqa: C901
                 break
 
     if "weight" not in column_map:
+        # Skip columns already mapped to avoid misdetection
+        used_columns = set(column_map.values())
         for idx, cell in enumerate(table_row):
-            weight_candidate = _parse_weight_value(cell)
-            if weight_candidate[0] is not None or weight_candidate[1] is not None:
-                column_map["weight"] = idx
-                break
+            if idx in used_columns:
+                continue
+            # Only accept cells that contain "lb" for heuristic weight detection
+            # to avoid false positives like "15 gp" being treated as weight
+            if "lb" in cell.lower():
+                weight_candidate = _parse_weight_value(cell)
+                if weight_candidate[0] is not None or weight_candidate[1] is not None:
+                    column_map["weight"] = idx
+                    break
 
     if category == "armor":
         if "strength" not in column_map:
@@ -308,10 +313,7 @@ def _parse_weight_value(weight_str: str | None) -> tuple[float | None, str | Non
         return (None, None)
 
     normalized = (
-        weight_raw.lower()
-        .replace("lbs.", "lb.")
-        .replace("lbs", "lb")
-        .replace("pounds", "lb")
+        weight_raw.lower().replace("lbs.", "lb.").replace("lbs", "lb").replace("pounds", "lb")
     )
 
     if normalized in {"—", "-", "–"}:
@@ -462,9 +464,7 @@ def _parse_range(properties: list[str]) -> dict[str, int] | None:
     return None
 
 
-def _get_column_value(
-    table_row: list[str], column_map: dict[str, int], key: str
-) -> str | None:
+def _get_column_value(table_row: list[str], column_map: dict[str, int], key: str) -> str | None:
     idx = column_map.get(key)
     if idx is None or idx >= len(table_row):
         return None
