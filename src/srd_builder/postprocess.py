@@ -13,6 +13,7 @@ __all__ = [
     "split_legendary",
     "structure_defenses",
     "standardize_challenge",
+    "add_ability_modifiers",
     "polish_text",
     "polish_text_fields",
     "clean_monster_record",
@@ -265,6 +266,33 @@ def standardize_challenge(monster: dict[str, Any]) -> dict[str, Any]:
     return patched
 
 
+def add_ability_modifiers(monster: dict[str, Any]) -> dict[str, Any]:
+    """Add calculated ability score modifiers for convenience.
+
+    Modifiers follow D&D 5e formula: (score - 10) // 2
+
+    Example:
+        {"strength": 21} → {"strength": 21, "strength_modifier": 5}
+    """
+    patched = {**monster}
+    ability_scores = patched.get("ability_scores")
+
+    if not isinstance(ability_scores, dict):
+        return patched
+
+    updated_scores = {**ability_scores}
+
+    for ability, score in ability_scores.items():
+        if not isinstance(score, int):
+            continue
+        modifier = (score - 10) // 2
+        modifier_key = f"{ability}_modifier"
+        updated_scores[modifier_key] = modifier
+
+    patched["ability_scores"] = updated_scores
+    return patched
+
+
 def polish_text(text: str | None) -> str | None:
     """Clean OCR artifacts, spacing, and boilerplate from text fields."""
 
@@ -397,6 +425,7 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
         split_legendary,
         structure_defenses,
         standardize_challenge,
+        add_ability_modifiers,
         polish_text_fields,
         dedup_defensive_lists,
         prune_empty_fields,
