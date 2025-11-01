@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
   "version": "1.1.0",
+  "last_modified": "2024-10-31",
   "title": "Monster",
   "type": "object",
   "additionalProperties": true,

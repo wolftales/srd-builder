@@ -48,22 +48,37 @@ schemas/
 
 ### Schema File Structure
 
-Each schema file follows JSON Schema Draft 2020-12:
+Each schema file follows JSON Schema Draft 2020-12 with custom metadata fields:
 
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
+  "version": "1.1.0",
+  "last_modified": "2024-11-01",
   "title": "Monster",
   "description": "Schema for D&D 5e monster stat blocks",
-  "version": "1.1.0",
   "type": "object",
   "required": ["id", "name", "simple_name", ...],
   "properties": { ... }
 }
 ```
 
-**Note:** Currently our schema files do NOT include a `"version"` field. This is a gap we should address.
+**Version Tracking:**
+- `version`: Semantic version (MAJOR.MINOR.PATCH) tracking breaking changes and additions
+  - **MAJOR** (1.x.x) - Breaking changes (field renames, type changes, removed fields)
+  - **MINOR** (x.1.x) - Non-breaking additions (new optional fields, new enums)
+  - **PATCH** (x.x.1) - Documentation/clarification updates (no structural changes)
+- `last_modified`: ISO date (YYYY-MM-DD) of last schema file update
+  - Updated whenever schema file changes (even documentation-only changes)
+  - Helps track incremental updates within same semantic version
+  - Useful for identifying fresh additions before next version bump
+
+**Example Evolution:**
+- v1.1.0 (2024-10-31) - Added equipment schema with weapon/armor fields
+- v1.1.0 (2024-11-01) - Added optional magic item fields (last_modified updated, version unchanged)
+- v1.2.0 (future) - Would bump MINOR when those magic fields are actively used in data
+- v2.0.0 (future) - Would bump MAJOR if we renamed `simple_name` to `slug` (breaking)
 
 ---
 
