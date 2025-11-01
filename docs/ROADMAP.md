@@ -317,124 +317,55 @@ Metadata structure now provides complete provenance for downstream consumers:
 
 ---
 
-## **v0.5.0 — Equipment Dataset** ✅ COMPLETE
+## **v0.5.0 — Additional Content Types** 🔄 NEXT
 
-**Goal:** Extract equipment from SRD 5.1 tables with proper column mapping and structured parsing.
+**Goal:** Expand extraction beyond monsters following Blackmoor's integration roadmap.
 
-**Delivered**
+**Planned Content Types** (matching Blackmoor Week 2-6 schedule):
 
-* **Equipment Dataset (111 items)**
-  - 6 armor items with correct AC structure and subcategories (light/medium/heavy)
-  - 19+ weapons with damage, versatile damage, range parsing
-  - 70+ gear items including adventuring gear, tools, mounts, trade goods
-  - Schema v1.1.0 with hybrid approach (current fields + future magic item fields)
+* **Week 2: Equipment**
+  - Weapons, armor, adventuring gear
+  - Extract from SRD Equipment section
+  - Schema: `equipment.schema.json`
+  - Output: `dist/srd_5_1/data/equipment.json`
 
-* **Critical Bugs Fixed (Phase 1 — 100%)**
-  1. ✅ Armor AC parsing — Proper object structure with base, dex_bonus, max_bonus
-  2. ✅ Weight parsing — Correct weight_lb (float) and weight_raw (string with units)
-  3. ✅ Versatile damage — Extracted and structured for versatile weapons
-  4. ✅ Range extraction — Proper range.normal and range.long for ranged/thrown weapons
-  5. ✅ Armor subcategory detection — Correct light/medium/heavy classification
+* **Week 3-4: Classes & Lineages**
+  - Character classes (12 core classes)
+  - Lineages (races/species)
+  - Class features and progressions
+  - Schema: `classes.schema.json`, `lineages.schema.json`
 
-* **Architecture Improvements**
-  - **ColumnMapper class** — Reliable 3-tier column detection (header-based → heuristic → category defaults)
-  - **Name-based inference** — Armor subcategory lookup table for SRD 5.1 armor types
-  - **Context tracking** — Multi-page table section awareness
-  - **Section header filtering** — Prevents header rows from being extracted as items
+* **Week 5: Spells & Features**
+  - Spell list extraction
+  - Class features
+  - Schema: `spells.schema.json`
 
-**Quality Assessment:** 85% confidence overall
-- Armor: 95% (all validated)
-- Weapons: 90% (damage, versatile, range tested)
-- Gear: 70% (basic fields likely correct, untested)
-- Edge cases: 60% (ammunition, mounts, packs need validation)
+* **Week 6: Conditions, Rules, Tables**
+  - Condition definitions
+  - Game rules text
+  - Reference tables
+  - Schema: `conditions.schema.json`, `rules.schema.json`
 
-**Production Bundle:**
-```
-dist/srd_5_1/
-├── data/
-│   ├── monsters.json      # 296 monsters
-│   ├── equipment.json     # 111 items ✅ NEW
-│   ├── index.json
-│   └── meta.json
-├── schemas/
-│   ├── monster.schema.json (v1.1.0)
-│   └── equipment.schema.json (v1.1.0) ✅ NEW
-└── docs/
-```
-
-**Known Issues:**
-- Shield subcategory shows "medium" instead of null
-- Weapon subcategories use raw strings ("Martial Melee") vs normalized ("martial_melee")
-- Properties are raw strings, should be normalized arrays
-- Gear items need validation (70+ items untested)
-
-**Lessons Learned:**
-- Multi-page table handling is complex (PyMuPDF splits unpredictably)
-- Context propagation is fragile across pages
-- Name-based inference is pragmatic when context fails
-- Heuristics need constraints (e.g., weight detection required "lb" to avoid false positives)
-
-**See:** `docs/archive/v0.5.0_RELEASE_NOTES.md` for complete details
-
----
-
-## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 PLANNED
-
-**Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
-
-**Problem:** Current heuristic approach works but doesn't scale
-- Equipment armor subcategory fix used name-based inference (pragmatic but brittle)
-- PDF table layouts are complex, context tracking unreliable
-- Each new table requires custom debugging and fixes
-- No validation capability ("did we extract all tables?")
-
-**Solution:** Table metadata discovery system
-```python
-discover_tables() → table_metadata.json
-{
-  "tables": [
-    {
-      "id": "equipment_armor",
-      "pages": [63, 64],
-      "headers": ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"],
-      "row_count": 6,
-      "sections": [
-        {"name": "Light Armor", "rows": 3},
-        {"name": "Medium Armor", "rows": 5},
-        {"name": "Heavy Armor", "rows": 4}
-      ]
-    }
-  ]
-}
-```
-
-**Benefits:**
-- Deterministic column mapping (no heuristics)
-- Validation: compare extracted items to expected row counts
-- Documentation: PDF structure visible to maintainers
-- Prevents future cycles of per-table fixes
-
-**Estimated Effort:** 2-3 hours
-
-**Priority:** HIGH — Do this before spells/classes to avoid repeating equipment pain
-
----
-
-## **v0.6.0 — Additional Content Types** 🔄 NEXT
-
-**Goal:** Expand extraction to spells, conditions, or classes using improved table infrastructure.
-
-**Candidates:**
-- **Spells** (~300 items, structured prose, different pattern than tables)
-- **Conditions** (simpler, good confidence builder)
-- **Classes** (complex with level progression tables)
-
-**Recommendation:** Start with spells (different enough to validate extraction patterns) or conditions (simpler, faster win)
-
-**Architecture:** Each content type follows three-stage pattern:
+**Architecture:** Each content type follows the same three-stage pattern:
 ```
 extract_<type>.py → parse_<type>.py → postprocess.py → indexer.py
 ```
+
+**Target Output Structure:**
+```
+dist/srd_5_1/
+├── data/
+│   ├── monsters.json      # ✅ v0.4.1 (296 monsters)
+│   ├── equipment.json     # 🔄 v0.5.0 (Week 2)
+│   ├── classes.json       # 🔄 v0.5.0 (Week 3-4)
+│   ├── spells.json        # 🔄 v0.5.0 (Week 5)
+│   ├── conditions.json    # 🔄 v0.5.0 (Week 6)
+│   └── index.json         # Unified index for all types
+├── schemas/               # JSON schemas for validation
+└── build_report.json      # Build metadata
+```
+
+**Integration:** Each release provides Blackmoor with additional data files they can immediately consume.
 
 ---
 
