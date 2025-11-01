@@ -255,45 +255,63 @@ For ALL Melee Weapon Attack and Ranged Weapon Attack actions, parse:
 
 ---
 
-### Low Priority - Ability Score Modifiers
+### ✅ Ability Score Modifiers - IMPLEMENTED
 
-**Current State:**
-Only raw ability scores provided.
+**Status:** COMPLETE (v0.5.0+)
 
-**Request:**
+**Implementation:**
 ```json
 {
   "ability_scores": {
     "strength": 21,
-    "strength_modifier": 5  // Auto-calculated: (21 - 10) / 2
+    "strength_modifier": 5,
+    "dexterity": 10,
+    "dexterity_modifier": 0,
+    ...
   }
 }
 ```
 
-**Why:** Common lookup, saves calculation on every use.
-
-**Implementation Notes:**
-- Add in postprocess.py normalization
+**Delivered:**
+- Added `add_ability_modifiers()` to postprocess.py
 - Formula: (score - 10) // 2
-- Consider adding to all ability scores or just when needed
-- Balance: convenience vs data bloat
+- Integrated into clean_monster_record() pipeline
+- 5 comprehensive tests (all passing)
+
+**Benefits:** No runtime calculation needed, common lookup optimized
 
 ---
 
-### Equipment Properties (Future)
+### Equipment Properties Normalization
 
-**Current Status:** Equipment v0.5.0 has 111 items, noted as "still in dev"
+**Current Status:** Equipment v0.5.0 has 111 items
 
-**Request:** Once stable, add properties parsing for weapons as structured array:
+**Current State:**
 ```json
 {
-  "properties": ["versatile", "finesse", "two-handed"]
+  "properties": ["versatile (1d10)", "thrown (range 20/60)"]
 }
 ```
 
-**Why:** Currently properties are in text descriptions, need structured data for rule automation.
+**Request:** Remove embedded data from properties array:
+```json
+{
+  "properties": ["versatile", "thrown"]
+}
+```
 
-**Defer Until:** Equipment schema stabilizes.
+**Rationale:**
+- `versatile_damage` and `range` are already parsed as separate fields
+- Properties array duplicates data
+- Cleaner for rule automation (check for "versatile" without parsing parens)
+
+**Implementation Notes:**
+- Strip parenthetical data from properties during equipment parsing
+- Verify versatile_damage and range fields capture all the data
+- Update equipment tests to reflect clean properties
+- Consider adding to clean_equipment_record() in postprocess.py
+
+**Priority:** LOW - nice-to-have, non-blocking (Blackmoor's integration already complete)
 
 ---
 
@@ -305,16 +323,26 @@ Only raw ability scores provided.
 
 ---
 
-### Implementation Priority
+### Implementation Status
 
-**v0.6.0 or v0.7.0:**
-1. Action data consistency (HIGH - blocks combat integration)
-2. Saving throw parsing (MEDIUM - needed for full combat)
-3. Ability score modifiers (LOW - nice to have)
+**✅ COMPLETED:**
+- Ability score modifiers (v0.5.0+)
+
+**Blackmoor Integration Status (as of 2025-11-01):**
+- ✅ Full SRD v0.5.0 integration (296 monsters, 111 equipment)
+- ✅ Data loader with caching
+- ✅ REST API endpoints
+- ✅ Equipment helpers for combat
+- ✅ All tests passing
+- 🎉 **Integration complete and working!**
+
+**v0.6.0 or v0.7.0 (Nice-to-Have):**
+1. Action data consistency (HIGH - would improve combat integration)
+2. Saving throw parsing (MEDIUM - would enable automated saving throws)
+3. Equipment properties normalization (LOW - minor cleanup)
 
 **Future:**
-4. Equipment properties (defer until schema stable)
-5. Spells extraction (separate milestone)
+4. Spells extraction (separate milestone, high priority for VTT)
 
 ---
 
