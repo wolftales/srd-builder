@@ -61,12 +61,12 @@ Each content type will follow the same pattern:
 ```
 dist/srd_5_1/
 └── data/
-    ├── monsters.json     # ✅ v0.4.1
-    ├── equipment.json    # 🔄 Week 2
-    ├── classes.json      # 🔄 Week 3-4
-    ├── spells.json       # 🔄 Week 5
-    ├── conditions.json   # 🔄 Week 6
-    └── index.json        # Updated with all content types
+    ├── monsters.json     # ✅ v0.5.0 (296 monsters)
+    ├── equipment.json    # ✅ v0.5.0 (111 items)
+    ├── classes.json      # 🔄 Future
+    ├── spells.json       # 🔄 Future
+    ├── conditions.json   # 🔄 Future
+    └── index.json        # Unified indexes
 ```
 
 ## Integration Workflow
@@ -102,10 +102,11 @@ No data loss - consumers can always extract the simple value from our structured
 
 ## Current vs Target State
 
-### Current (v0.4.2)
+### Current (v0.5.0)
 ```
-srd-builder → [monsters.json, index.json, meta.json, schemas] → Consumers
+srd-builder → [monsters.json, equipment.json, index.json, meta.json, schemas] → Consumers
   296 monsters with full provenance tracking
+  111 equipment items with structured parsing
   Structured fields with rich metadata
 ```
 
@@ -113,7 +114,7 @@ srd-builder → [monsters.json, index.json, meta.json, schemas] → Consumers
 ```
 srd-builder → [full SRD data + schemas + provenance] → Consumers
   - Monsters (296) ✅
-  - Equipment (TBD)
+  - Equipment (111) ✅
   - Classes (TBD)
   - Spells (TBD)
   - Conditions/Rules/Tables (TBD)
@@ -149,7 +150,7 @@ This approach:
 
 3. **Complete provenance** in meta.json (license, PDF hash, page ranges, extraction status)
    - Enables traceability and compliance
-   - **Status**: Implemented in v0.4.2
+   - **Status**: Implemented in v0.5.0
 
 4. **File naming conventions**: Plural for collections (`monsters.json`, `spells.json`)
    - **Status**: Confirmed and consistent across all content types
