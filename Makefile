@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci
+.PHONY: init lint test format pre-commit ci output bundle
 
 init:
 	pip install -e ".[dev]"
@@ -21,3 +21,9 @@ pre-commit:
 	pre-commit run --all-files
 
 ci: lint test
+
+output:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist
+
+bundle:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle

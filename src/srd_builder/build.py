@@ -209,6 +209,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default="dist",
         help="Root output directory for build artifacts",
     )
+    parser.add_argument(
+        "--bundle",
+        action="store_true",
+        help="Create complete bundle with schemas and documentation (for production)",
+    )
     return parser.parse_args(argv)
 
 
@@ -231,6 +236,46 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
         "data": data_dir,
         "raw": raw_dir,
     }
+
+
+def _copy_bundle_collateral(target_dir: Path) -> None:
+    """Copy schemas and documentation to create complete bundle.
+
+    For production releases, this assembles the full package with:
+    - README.md (from BUNDLE_README.md)
+    - schemas/ directory
+    - docs/ directory
+    """
+    repo_root = Path(__file__).resolve().parents[2]
+
+    # Copy README (from BUNDLE_README.md)
+    readme_src = repo_root / "docs" / "BUNDLE_README.md"
+    readme_dst = target_dir / "README.md"
+    if readme_src.exists():
+        readme_dst.write_text(readme_src.read_text(encoding="utf-8"), encoding="utf-8")
+        print("  ✓ Copied README.md")
+
+    # Copy schemas
+    schemas_src = repo_root / "schemas"
+    schemas_dst = target_dir / "schemas"
+    schemas_dst.mkdir(exist_ok=True)
+    for schema_file in ["monster.schema.json", "equipment.schema.json"]:
+        src = schemas_src / schema_file
+        if src.exists():
+            (schemas_dst / schema_file).write_text(
+                src.read_text(encoding="utf-8"), encoding="utf-8"
+            )
+    print("  ✓ Copied schemas/")
+
+    # Copy docs
+    docs_src = repo_root / "docs"
+    docs_dst = target_dir / "docs"
+    docs_dst.mkdir(exist_ok=True)
+    for doc_file in ["SCHEMAS.md", "DATA_DICTIONARY.md"]:
+        src = docs_src / doc_file
+        if src.exists():
+            (docs_dst / doc_file).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
+    print("  ✓ Copied docs/")
 
 
 def _extract_raw_monsters(raw_dir: Path) -> Path | None:
@@ -342,7 +387,7 @@ def _load_raw_equipment(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
-def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
+def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False) -> Path:
     layout = ensure_ruleset_layout(ruleset=ruleset, out_dir=out_dir)
     target_dir = layout["dist_ruleset"]
 
@@ -403,8 +448,12 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
         equipment_complete=len(parsed_equipment) > 0,
         equipment_page_range=equipment_page_range,
     )
-    meta_path = target_dir / "meta.json"
+    meta_path = layout["data"] / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")
+
+    # Copy collateral for production bundle
+    if bundle:
+        _copy_bundle_collateral(target_dir)
 
     return report_path
 
@@ -412,7 +461,7 @@ def build(ruleset: str, output_format: str, out_dir: Path) -> Path:
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     out_dir = Path(args.out)
-    build(ruleset=args.ruleset, output_format=args.format, out_dir=out_dir)
+    build(ruleset=args.ruleset, output_format=args.format, out_dir=out_dir, bundle=args.bundle)
     return 0
 
 

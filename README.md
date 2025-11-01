@@ -30,25 +30,54 @@ make test
 
 ### Build pipeline (v0.4.2)
 
-The build pipeline extracts monster data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** with **27 fields** and full provenance tracking.
+The build pipeline extracts monster and equipment data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** and **114 equipment items** with full provenance tracking.
 
+**Development (fast iteration):**
 ```bash
-# Build the dataset (extracts from PDF if present)
-python -m srd_builder.build --ruleset srd_5_1 --out dist
+# Build data only (no schemas/docs copied)
+make output
+# OR: python -m srd_builder.build --ruleset srd_5_1 --out dist
+```
 
-# Validate the output
+**Production (complete bundle for distribution):**
+```bash
+# Build data + copy schemas and documentation
+make bundle
+# OR: python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
+```
+
+**Validation:**
+```bash
 python -m srd_builder.validate --ruleset srd_5_1
 ```
 
-**What gets created:**
-
+**Development output:**
 ```
 dist/srd_5_1/
-├── meta.json              # Dataset metadata (license, provenance, page index)
 ├── build_report.json      # Build metadata (version, timestamp)
 └── data/
-    ├── monsters.json      # Normalized monster entries (296 monsters)
-    └── index.json         # Lookup indexes (by name, CR, type, size)
+    ├── meta.json          # Dataset metadata (license, provenance)
+    ├── monsters.json      # 296 creature stat blocks
+    ├── equipment.json     # 114 items
+    └── index.json         # Lookup indexes
+```
+
+**Production bundle output:**
+```
+dist/srd_5_1/
+├── README.md              # Consumer documentation
+├── build_report.json
+├── data/
+│   ├── meta.json
+│   ├── monsters.json
+│   ├── equipment.json
+│   └── index.json
+├── schemas/
+│   ├── monster.schema.json
+│   └── equipment.schema.json
+└── docs/
+    ├── SCHEMAS.md
+    └── DATA_DICTIONARY.md
 ```
 
 **Pipeline stages:**
@@ -146,6 +175,66 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - 📋 **v0.3.0** - PDF extraction module
 - 📋 **v0.4.0** - Extraction quality improvements
 - 📋 **v0.5.0** - Additional entities (equipment, lineages, etc.)
+
+## Use Cases
+
+The generated datasets are designed for:
+
+- **VTT Integrations** - Roll20, Foundry VTT, Fantasy Grounds
+- **Mobile Apps** - Character sheets, monster reference, DM tools
+- **AI/LLM Applications** - D&D chatbots, rule assistants, content generation
+- **Campaign Tools** - Encounter builders, initiative trackers
+- **Analysis & Research** - Game balance studies, statistical modeling
+
+### Validation Examples
+
+```bash
+# Validate with jsonschema (Python)
+jsonschema -i dist/srd_5_1/data/monsters.json schemas/monster.schema.json
+
+# Or in code
+import json
+from jsonschema import Draft202012Validator
+
+with open('schemas/monster.schema.json') as f:
+    schema = json.load(f)
+with open('dist/srd_5_1/data/monsters.json') as f:
+    data = json.load(f)
+
+validator = Draft202012Validator(schema)
+for error in validator.iter_errors(data['items'][0]):
+    print(error.message)
+```
+
+## Use Cases
+
+The generated datasets are designed for:
+
+- **VTT Integrations** - Roll20, Foundry VTT, Fantasy Grounds
+- **Mobile Apps** - Character sheets, monster reference, DM tools
+- **AI/LLM Applications** - D&D chatbots, rule assistants, content generation
+- **Campaign Tools** - Encounter builders, initiative trackers
+- **Analysis & Research** - Game balance studies, statistical modeling
+
+### Validation Examples
+
+```bash
+# Validate with jsonschema (Python)
+jsonschema -i dist/srd_5_1/data/monsters.json schemas/monster.schema.json
+
+# Or in code
+import json
+from jsonschema import Draft202012Validator
+
+with open('schemas/monster.schema.json') as f:
+    schema = json.load(f)
+with open('dist/srd_5_1/data/monsters.json') as f:
+    data = json.load(f)
+
+validator = Draft202012Validator(schema)
+for error in validator.iter_errors(data['items'][0]):
+    print(error.message)
+```
 
 ## License
 

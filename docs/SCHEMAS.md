@@ -415,11 +415,42 @@ Prefer structured objects over formatted strings:
 
 ---
 
+## Consumer Use Cases
+
+Datasets conforming to these schemas are designed for:
+
+### Campaign Tools
+- VTT integrations (Roll20, Foundry VTT, Fantasy Grounds)
+- Encounter builders and balance calculators
+- Initiative trackers with auto-populated stats
+- Digital character sheet integrations
+
+### Mobile & Web Apps
+- Monster reference apps with offline support
+- DM companion tools
+- Quick lookup utilities
+- Combat assistants
+
+### AI/LLM Applications
+- D&D chatbots and virtual DMs
+- Rule reference systems
+- Content generation tools
+- Natural language query interfaces
+
+### Analysis & Research
+- Game balance analysis and CR calculations
+- Statistical modeling of creature design
+- Content exploration and discovery
+- Dataset comparisons across editions
+
+---
+
 ## Related Documentation
 
 - **ARCHITECTURE.md** - Overall system design
 - **ROADMAP.md** - Version timeline and features
 - **terminology.aliases.md** - Naming conventions and namespace patterns
+- **DATA_DICTIONARY.md** - Field meanings and SRD source mappings
 - **INTEGRATION.md** - Consumer guidance (planned)
 - **MIGRATIONS.md** - Breaking change guides (planned)
 
