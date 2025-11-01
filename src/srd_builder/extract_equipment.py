@@ -272,6 +272,7 @@ def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
 
     Filters out:
     - Empty rows or headers
+    - Section header rows (Light Armor, Medium Armor, etc.)
     - Currency table entries
     - Reference tables (Trade Goods pricing, Lifestyle Expenses, Food/Drink)
     - Descriptive text
@@ -282,6 +283,11 @@ def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
     # First column should be item name (not empty, not a header)
     name = row[0].strip()
     if not name:
+        return False
+
+    # Filter section header rows (armor subcategory labels within tables)
+    # These appear as single-cell rows like "Light Armor", "Medium Armor", "Heavy Armor"
+    if name.lower() in ["light armor", "medium armor", "heavy armor", "shields"]:
         return False
 
     # Filter Trade Goods pricing tables where first cell is price (reversed structure)

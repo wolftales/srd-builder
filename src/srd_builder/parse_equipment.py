@@ -79,7 +79,14 @@ def _parse_armor_fields(
     section: dict[str, Any],
     column_map: dict[str, int],
 ) -> None:
-    subcategory = section.get("subcategory")
+    # Use name-based inference for armor subcategory since PDF multi-column layout
+    # makes section context unreliable (subcategories propagate incorrectly across columns)
+    subcategory = _infer_armor_subcategory(item["name"])
+
+    # Fallback to section context if name-based inference fails
+    if not subcategory:
+        subcategory = section.get("subcategory")
+
     if subcategory:
         item["sub_category"] = subcategory
 
@@ -430,3 +437,40 @@ def _generate_simple_name(name: str) -> str:
     simple = simple.replace(",", "")
     simple = simple.lower().strip()
     return re.sub(r"\s+", " ", simple)
+
+
+def _infer_armor_subcategory(armor_name: str) -> str | None:
+    """Infer armor subcategory from item name.
+
+    Fallback for when PDF table layout makes section context unreliable.
+    Based on SRD 5.1 armor classifications.
+    """
+    name_lower = armor_name.lower().strip()
+
+    # Light armor
+    light_armor = {"padded", "leather", "studded leather", "studded"}
+    if name_lower in light_armor:
+        return "light"
+
+    # Medium armor
+    medium_armor = {
+        "hide",
+        "chain shirt",
+        "scale mail",
+        "breastplate",
+        "half plate",
+        "half-plate",
+    }
+    if name_lower in medium_armor:
+        return "medium"
+
+    # Heavy armor
+    heavy_armor = {"ring mail", "chain mail", "splint", "plate"}
+    if name_lower in heavy_armor:
+        return "heavy"
+
+    # Shield is neither light/medium/heavy
+    if "shield" in name_lower:
+        return None
+
+    return None
