@@ -440,14 +440,18 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
     # Prune empty optional fields
     equipment_optional_fields = {
         "properties",
-        "armor_category",
-        "weapon_category",
+        "sub_category",
         "weapon_type",
         "stealth_disadvantage",
-        "strength_requirement",
+        "strength_req",
         "versatile_damage",
         "range",
         "quantity",
+        "weight_lb",
+        "weight_raw",
+        "section",
+        "table_header",
+        "row_index",
     }
 
     for key in list(patched.keys()):

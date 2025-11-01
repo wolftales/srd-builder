@@ -115,7 +115,7 @@ def main() -> None:  # noqa: C901
     # Compare common fields for common monsters
     quality_metrics = {}
     for field in sorted(common_fields):
-        if field in ("id", "simple_name", "src", "page", "summary"):
+        if field in ("id", "simple_name", "src", "source", "page", "summary"):
             continue  # Skip metadata fields
 
         ours_count = 0

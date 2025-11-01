@@ -15,7 +15,7 @@
       "simple_name": "longsword",
       "summary": "One-sentence description",
       "category": "weapon",
-      "weapon_category": "martial",
+      "sub_category": "martial_melee",
       "weapon_type": "melee",
       "cost": {
         "amount": 15,
@@ -26,15 +26,16 @@
         "type": "slashing"
       },
       "versatile_damage": {
-        "dice": "1d10",
-        "type": "slashing"
+        "dice": "1d10"
       },
-      "weight": 3,
+      "weight_lb": 3,
+      "weight_raw": "3 lb.",
       "properties": [
-        "versatile"
+        "versatile (1d10)"
       ],
       "page": 149,
-      "src": "SRD_CC_v5.1"
+      "source": "SRD_CC_v5.1",
+      "is_magic": false
     },
     {
       "id": "item:chain-mail",
@@ -42,32 +43,43 @@
       "simple_name": "chain_mail",
       "summary": "One-sentence description",
       "category": "armor",
-      "armor_category": "heavy",
+      "sub_category": "heavy",
       "cost": {
         "amount": 75,
         "currency": "gp"
       },
-      "armor_class": 16,
-      "strength_requirement": 13,
+      "armor_class": {
+        "base": 16,
+        "dex_bonus": false
+      },
+      "strength_req": 13,
       "stealth_disadvantage": true,
-      "weight": 55,
+      "weight_lb": 55,
+      "weight_raw": "55 lb.",
       "page": 145,
-      "src": "SRD_CC_v5.1"
+      "source": "SRD_CC_v5.1",
+      "is_magic": false
     },
     {
       "id": "item:shield",
       "name": "Shield",
       "simple_name": "shield",
       "summary": "One-sentence description",
-      "category": "shield",
+      "category": "armor",
+      "sub_category": "shield",
       "cost": {
         "amount": 10,
         "currency": "gp"
       },
-      "armor_class": 2,
-      "weight": 6,
+      "armor_class": {
+        "base": 2,
+        "dex_bonus": false
+      },
+      "weight_lb": 6,
+      "weight_raw": "6 lb.",
       "page": 145,
-      "src": "SRD_CC_v5.1"
+      "source": "SRD_CC_v5.1",
+      "is_magic": false
     },
     {
       "id": "item:rope-hempen-50ft",
@@ -75,13 +87,16 @@
       "simple_name": "rope_hempen_50ft",
       "summary": "One-sentence description",
       "category": "gear",
+      "sub_category": "adventuring_gear",
       "cost": {
         "amount": 1,
         "currency": "gp"
       },
-      "weight": 10,
+      "weight_lb": 10,
+      "weight_raw": "10 lb.",
       "page": 150,
-      "src": "SRD_CC_v5.1"
+      "source": "SRD_CC_v5.1",
+      "is_magic": false
     }
   ]
 }

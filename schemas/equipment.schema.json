@@ -2,31 +2,31 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
   "version": "1.1.0",
-  "title": "Equipment Item",
-  "description": "Schema for individual equipment items (weapons, armor, gear, mounts, trade goods) from the SRD. v1.1.0 covers base SRD items; optional future fields prepare for magic items and variants.",
+  "title": "SRD 5.1 Equipment Item",
+  "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",
   "required": [
     "id",
     "name",
     "simple_name",
     "category",
-    "page",
-    "src"
+    "source",
+    "page"
   ],
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
       "pattern": "^item:[a-z0-9_-]+$",
-      "description": "Unique identifier in format 'item:<name>'"
+      "description": "Unique identifier using the item: namespace"
     },
     "name": {
       "type": "string",
-      "description": "Display name of the equipment item"
+      "description": "Display name (e.g., 'Longsword')"
     },
     "simple_name": {
       "type": "string",
-      "pattern": "^[a-z0-9_]+$",
+      "pattern": "^[a-z0-9][a-z0-9\\s-]*$",
       "description": "Lowercase normalized name for indexing and search"
     },
     "summary": {
@@ -35,230 +35,172 @@
     },
     "category": {
       "type": "string",
-      "enum": [
-        "weapon",
-        "armor",
-        "gear",
-        "mount",
-        "trade_good"
-      ],
-      "description": "Primary equipment category (matches actual data categories)"
+      "enum": ["weapon", "armor", "gear", "mount", "trade_good"],
+      "description": "Primary equipment category"
+    },
+    "sub_category": {
+      "type": ["string", "null"],
+      "description": "Category specific detail (e.g., 'light', 'martial_melee')"
     },
     "weapon_type": {
-      "type": "string",
-      "enum": [
-        "melee",
-        "ranged"
-      ],
-      "description": "Weapon attack type (weapons only)"
-    },
-    "armor_category": {
-      "type": "string",
-      "enum": [
-        "light",
-        "medium",
-        "heavy"
-      ],
-      "description": "Armor weight class (armor only)"
+      "type": ["string", "null"],
+      "enum": ["melee", "ranged", null],
+      "description": "Weapon attack type"
     },
     "cost": {
       "type": "object",
-      "required": [
-        "amount",
-        "currency"
-      ],
+      "required": ["amount", "currency"],
       "additionalProperties": false,
+      "description": "Item cost in D&D currency",
       "properties": {
         "amount": {
           "type": "number",
-          "minimum": 0,
-          "description": "Cost amount"
+          "minimum": 0
         },
         "currency": {
           "type": "string",
-          "enum": [
-            "cp",
-            "sp",
-            "ep",
-            "gp",
-            "pp"
-          ],
-          "description": "Currency type"
+          "enum": ["cp", "sp", "ep", "gp", "pp"]
         }
-      },
-      "description": "Item cost"
+      }
     },
-    "weight": {
-      "type": "string",
-      "description": "Weight as string from source (e.g., '10 lb.', '1\u00bd lb.') - normalization to number pending"
+    "weight_lb": {
+      "type": ["number", "null"],
+      "description": "Parsed weight in pounds"
+    },
+    "weight_raw": {
+      "type": ["string", "null"],
+      "description": "Original weight text from the source PDF"
     },
     "damage": {
-      "type": "object",
-      "required": [
-        "dice",
-        "type"
-      ],
+      "type": ["object", "null"],
+      "required": ["dice", "type"],
       "additionalProperties": false,
+      "description": "Default weapon damage",
       "properties": {
         "dice": {
           "type": "string",
-          "pattern": "^\\d+d\\d+(\\+\\d+)?$",
-          "description": "Damage dice notation (e.g., '1d8', '2d6+3')"
+          "pattern": "^\\d+d\\d+(\\+\\d+)?$"
         },
         "type": {
           "type": "string",
-          "enum": [
-            "bludgeoning",
-            "piercing",
-            "slashing"
-          ],
-          "description": "Damage type"
+          "enum": ["bludgeoning", "piercing", "slashing"]
         }
-      },
-      "description": "Weapon damage (one-handed or default)"
+      }
     },
     "versatile_damage": {
-      "type": "object",
-      "required": [
-        "dice"
-      ],
+      "type": ["object", "null"],
+      "required": ["dice"],
       "additionalProperties": false,
+      "description": "Damage when wielded two-handed (versatile weapons)",
       "properties": {
         "dice": {
           "type": "string",
-          "pattern": "^\\d+d\\d+(\\+\\d+)?$",
-          "description": "Damage dice when wielded two-handed"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "bludgeoning",
-            "piercing",
-            "slashing"
-          ],
-          "description": "Damage type (optional - defaults to same as base damage.type)"
+          "pattern": "^\\d+d\\d+$"
         }
-      },
-      "description": "Damage when wielded two-handed (versatile weapons). Type defaults to base damage type if omitted."
+      }
     },
     "armor_class": {
-      "type": "object",
-      "required": [
-        "base"
-      ],
+      "type": ["object", "null"],
+      "required": ["base"],
       "additionalProperties": false,
+      "description": "Armor class provided by armor",
       "properties": {
         "base": {
           "type": "integer",
-          "minimum": 0,
-          "description": "Base armor class value"
+          "minimum": 0
         },
         "dex_bonus": {
-          "type": "boolean",
-          "description": "Whether armor allows adding Dexterity modifier (currently always false in data)"
+          "type": "boolean"
         },
-        "max_dex_bonus": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Maximum Dexterity bonus that can be added (for medium armor, future)"
+        "max_bonus": {
+          "type": ["integer", "null"],
+          "minimum": 0
         }
-      },
-      "description": "Armor class provided by armor (armor only)"
+      }
     },
-    "strength_requirement": {
-      "type": "integer",
+    "strength_req": {
+      "type": ["integer", "null"],
       "minimum": 0,
-      "description": "Minimum Strength score required (heavy armor, future)"
+      "description": "Minimum Strength score required"
     },
     "stealth_disadvantage": {
-      "type": "boolean",
+      "type": ["boolean", "null"],
       "description": "Whether armor imposes disadvantage on Stealth checks"
     },
     "properties": {
       "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Weapon properties as raw strings (e.g., 'versatile', 'finesse', 'thrown (range 20/60)'). Range extraction to structured range field is pending."
+      "items": {"type": "string"},
+      "description": "Weapon or item properties as raw strings"
     },
     "range": {
-      "type": "object",
-      "required": [
-        "normal"
-      ],
+      "type": ["object", "null"],
+      "required": ["normal"],
       "additionalProperties": false,
+      "description": "Range for thrown or ranged weapons",
       "properties": {
         "normal": {
           "type": "integer",
-          "minimum": 0,
-          "description": "Normal range in feet"
+          "minimum": 0
         },
         "long": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Long range in feet (with disadvantage)"
+          "type": ["integer", "null"],
+          "minimum": 0
         }
-      },
-      "description": "Range for ranged/thrown weapons (future - currently in properties array)"
+      }
     },
     "quantity": {
-      "type": "string",
-      "description": "Quantity or packaging info (e.g., 'bolts (20)', '50 gp') - appears on gear/mounts/trade goods"
+      "type": ["integer", "null"],
+      "description": "Default quantity packaged with the item"
     },
     "page": {
       "type": "integer",
       "minimum": 1,
       "description": "Page number in source PDF"
     },
-    "src": {
+    "source": {
       "type": "string",
       "description": "Source document identifier (e.g., 'SRD 5.1')"
     },
     "variant_of": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "^item:[a-z0-9_-]+$",
-      "description": "FUTURE: Reference to base item this is a variant of (e.g., magic items referencing mundane base)"
+      "description": "FUTURE: Base item this entry is derived from"
     },
     "is_magic": {
       "type": "boolean",
-      "description": "FUTURE: Whether this is a magic item"
+      "default": false,
+      "description": "FUTURE: Whether the item is magical"
     },
     "rarity": {
-      "type": "string",
-      "enum": [
-        "common",
-        "uncommon",
-        "rare",
-        "very rare",
-        "legendary",
-        "artifact"
-      ],
+      "type": ["string", "null"],
+      "enum": ["common", "uncommon", "rare", "very rare", "legendary", "artifact", null],
       "description": "FUTURE: Magic item rarity"
     },
     "requires_attunement": {
-      "type": "boolean",
-      "description": "FUTURE: Whether magic item requires attunement"
+      "type": ["boolean", "null"],
+      "description": "FUTURE: Whether the magic item requires attunement"
     },
     "modifiers": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "required": [
-          "type",
-          "value"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "What the modifier affects (e.g., 'attack', 'damage', 'ac')"
-          },
-          "value": {
-            "type": "integer",
-            "description": "Modifier value (typically +1, +2, +3 for magic items)"
-          }
-        }
-      },
-      "description": "FUTURE: Numeric modifiers provided by magic items"
+      "description": "FUTURE: Free-form modifier descriptions",
+      "items": {"type": "string"}
+    },
+    "section": {
+      "type": ["string", "null"],
+      "description": "INTERNAL: Section context captured during extraction"
+    },
+    "table_header": {
+      "type": ["array", "null"],
+      "description": "INTERNAL: Column headers detected for the source table",
+      "items": {"type": "string"}
+    },
+    "row_index": {
+      "type": ["integer", "null"],
+      "description": "INTERNAL: Row index within the source table"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata (timestamps, notes)"
     }
   }
 }

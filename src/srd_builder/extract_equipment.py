@@ -22,6 +22,8 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
+from .context_tracker import ContextTracker
+
 logger = logging.getLogger(__name__)
 
 # Equipment section pages (0-indexed)
@@ -57,20 +59,14 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
     equipment_items: list[dict[str, Any]] = []
     warnings: list[str] = []
 
-    # Track section context across pages
-    current_section: dict[str, str | None] = {"category": "gear", "subcategory": None}
+    tracker = ContextTracker(initial_category="gear")
 
     try:
         # Process equipment pages
         for page_num in range(EQUIPMENT_START_PAGE, EQUIPMENT_END_PAGE + 1):
             page = doc[page_num]
-            page_items, current_section = _extract_page_equipment(
-                page, page_num, current_section, warnings
-            )
+            page_items = _extract_page_equipment(page, page_num, tracker, warnings)
             equipment_items.extend(page_items)
-            logger.debug(
-                f"Page {page_num + 1}: {len(page_items)} items, category={current_section['category']}"
-            )
 
         logger.info(f"Extracted {len(equipment_items)} equipment items")
 
@@ -88,8 +84,11 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
 
 
 def _extract_page_equipment(
-    page: fitz.Page, page_num: int, current_section: dict[str, str | None], warnings: list[str]
-) -> tuple[list[dict[str, Any]], dict[str, str | None]]:
+    page: fitz.Page,
+    page_num: int,
+    tracker: ContextTracker,
+    warnings: list[str],
+) -> list[dict[str, Any]]:
     """Extract equipment from a single page using table finder.
 
     Returns:
@@ -97,16 +96,12 @@ def _extract_page_equipment(
     """
     items = []
 
+    tracker.start_page(page_num + 1)
+
     # Check for new section headers on this page (with Y positions)
     section_markers = _get_section_markers(page, page_num)
 
-    # Track section to propagate to next page (last marker if found)
-    section_to_propagate = current_section
-    if section_markers:
-        section_to_propagate = section_markers[-1][1]
-        logger.debug(
-            f"  Found {len(section_markers)} section markers, will propagate: {section_to_propagate['category']}"
-        )
+    marker_sections = [marker for _, marker in section_markers]
 
     # Extract tables (each row = one table)
     try:
@@ -116,46 +111,41 @@ def _extract_page_equipment(
         logger.debug(f"Page {page_num + 1}: Found {len(tables)} tables")
 
         for table in tables:
-            # Extract row data
-            data = table.extract()
-            if not data or not data[0]:  # Skip empty tables
+            raw_rows = table.extract()
+            header, rows = _split_header_and_rows(raw_rows)
+            if not rows:
                 continue
 
-            row = data[0]  # Each "table" is one row
+            cleaned_rows = [_merge_split_name(row) for row in rows]
 
-            # Merge split names (e.g., "Longswor" + "d" → "Longsword")
-            row = _merge_split_name(row)
+            for row_index, row in enumerate(cleaned_rows):
+                if not _is_equipment_row(row):
+                    logger.debug(f"  Skipped non-equipment: {row[0] if row else 'empty'}")
+                    continue
 
-            # Filter out non-equipment rows (section headers, descriptions, etc.)
-            if _is_equipment_row(row):
-                # Determine section based on table Y position and markers
-                table_y = table.bbox[1]  # top of table
-                section_for_table = dict(current_section)  # Default: propagated from prev page
-
-                # Find the most recent section marker before this table
-                for marker_y, marker_section in reversed(section_markers):
-                    if marker_y < table_y:
-                        section_for_table = marker_section
-                        break
+                table_y = table.bbox[1]
+                section_for_table = tracker.context_for_position(section_markers, table_y)
 
                 item = {
-                    "page": page_num + 1,  # 1-indexed for user display
-                    "section": dict(section_for_table),  # Copy to avoid mutation
+                    "page": page_num + 1,
+                    "section": dict(section_for_table),
                     "table_row": row,
+                    "table_headers": header,
+                    "row_index": row_index,
                     "bbox": table.bbox,
                 }
                 items.append(item)
                 logger.debug(
                     f"  Extracted: {row[0] if row else 'empty'} (cat={section_for_table['category']})"
                 )
-            else:
-                logger.debug(f"  Skipped non-equipment: {row[0] if row else 'empty'}")
 
     except Exception as e:
         warnings.append(f"Page {page_num + 1}: Table extraction failed - {e}")
         logger.warning(f"Page {page_num + 1}: {e}")
 
-    return items, section_to_propagate
+    tracker.propagate(marker_sections)
+
+    return items
 
 
 def _get_section_markers(  # noqa: C901
@@ -381,6 +371,58 @@ def _merge_split_name(row: list[str]) -> list[str]:
         return [merged_name] + row[2:]
 
     return row
+
+
+def _split_header_and_rows(
+    table_rows: list[list[str]] | None,
+) -> tuple[list[str] | None, list[list[str]]]:
+    """Separate header row from data rows when possible."""
+
+    if not table_rows:
+        return None, []
+
+    cleaned_rows: list[list[str]] = []
+    for raw_row in table_rows:
+        cleaned_row = [str(cell).strip() if cell is not None else "" for cell in raw_row]
+        if any(cleaned_row):
+            cleaned_rows.append(cleaned_row)
+
+    if not cleaned_rows:
+        return None, []
+
+    header_candidate = cleaned_rows[0]
+    if _looks_like_header(header_candidate):
+        return header_candidate, cleaned_rows[1:]
+
+    return None, cleaned_rows
+
+
+def _looks_like_header(row: list[str]) -> bool:
+    """Heuristically determine whether a row is a column header."""
+
+    header_keywords = [
+        "armor",
+        "armor class",
+        "ac",
+        "cost",
+        "damage",
+        "weight",
+        "properties",
+        "strength",
+        "stealth",
+        "type",
+    ]
+
+    normalized_cells = [cell.lower() for cell in row if cell]
+    if not normalized_cells:
+        return False
+
+    matches = 0
+    for cell in normalized_cells:
+        if any(keyword in cell for keyword in header_keywords):
+            matches += 1
+
+    return matches >= max(1, len(normalized_cells) // 2)
 
 
 if __name__ == "__main__":

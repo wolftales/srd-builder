@@ -1,43 +1,31 @@
-"""Parse raw equipment table data into structured records.
-
-This module converts raw table_row data from extract_equipment.py into
-structured equipment objects matching the equipment.schema.json.
-
-Pure transformation - no I/O or logging at module level.
-"""
+"""Parse raw equipment table data into structured records."""
 
 from __future__ import annotations
 
 import re
+from fractions import Fraction
 from typing import Any
 
 
 def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Parse raw equipment items into structured records.
+    """Parse raw equipment items into structured records."""
 
-    Args:
-        raw_items: List of dicts with table_row, page, section, bbox
-
-    Returns:
-        List of structured equipment dicts matching schema
-    """
-    parsed = []
-    for item in raw_items:
+    parsed: list[dict[str, Any]] = []
+    for raw_item in raw_items:
         try:
-            parsed_item = _parse_single_item(item)
-            if parsed_item:
-                parsed.append(parsed_item)
-        except Exception as e:
-            # Skip items that fail parsing but log enough context to debug
-            name = item.get("table_row", [None])[0] if item.get("table_row") else "unknown"
-            print(f"Warning: Failed to parse {name}: {e}")
+            parsed_item = _parse_single_item(raw_item)
+        except Exception as exc:  # pragma: no cover - defensive fallback
+            name = raw_item.get("table_row", ["unknown"])[0]
+            print(f"Warning: Failed to parse {name}: {exc}")
             continue
+
+        if parsed_item:
+            parsed.append(parsed_item)
 
     return parsed
 
 
 def _parse_single_item(raw_item: dict[str, Any]) -> dict[str, Any] | None:
-    """Parse a single equipment item from raw table data."""
     table_row = raw_item.get("table_row", [])
     if not table_row:
         return None
@@ -48,231 +36,374 @@ def _parse_single_item(raw_item: dict[str, Any]) -> dict[str, Any] | None:
 
     section = raw_item.get("section", {})
     category = section.get("category", "gear")
-    page = raw_item.get("page", 0)
+    headers = raw_item.get("table_headers")
+    row_index = raw_item.get("row_index")
 
-    # Build base item
     item: dict[str, Any] = {
         "id": _generate_id(name),
         "name": name,
         "simple_name": _generate_simple_name(name),
         "category": category,
-        "page": page,
-        "src": "SRD 5.1",
+        "page": raw_item.get("page", 0),
+        "source": "SRD 5.1",
+        "is_magic": False,
     }
 
-    # Parse category-specific fields
+    if headers:
+        item["table_header"] = headers
+
+    if isinstance(row_index, int):
+        item["row_index"] = row_index
+
+    section_value = _stringify_section(section)
+    if section_value:
+        item["section"] = section_value
+
+    column_map = _detect_column_map(headers, table_row, category)
+
     if category == "armor":
-        _parse_armor_fields(item, table_row, section)
+        _parse_armor_fields(item, table_row, section, column_map)
     elif category == "weapon":
-        _parse_weapon_fields(item, table_row, section)
+        _parse_weapon_fields(item, table_row, section, column_map)
     else:
-        # gear, mount, trade_good, etc.
-        _parse_general_fields(item, table_row)
+        _parse_general_fields(item, table_row, section, column_map)
 
     return item
 
 
 def _parse_armor_fields(
-    item: dict[str, Any], table_row: list[str], section: dict[str, Any]
+    item: dict[str, Any],
+    table_row: list[str],
+    section: dict[str, Any],
+    column_map: dict[str, int],
 ) -> None:
-    """Parse armor-specific fields from table row.
-
-    Armor table columns (approx): Name | Type | Armor Class | Strength | Stealth | Weight | Cost
-    """
-    # Armor category from section context
     subcategory = section.get("subcategory")
     if subcategory:
-        item["armor_category"] = subcategory  # light, medium, heavy
+        item["sub_category"] = subcategory
 
-    # Column mapping (may vary by page layout)
-    if len(table_row) >= 3:
-        # Try to parse AC (usually column 2 or 3)
-        for col_idx in range(1, min(len(table_row), 4)):
-            ac_text = table_row[col_idx].strip()
-            if ac_text and any(c.isdigit() for c in ac_text):
-                ac_value = _parse_armor_class(ac_text)
-                if ac_value:
-                    item["armor_class"] = ac_value
-                break
+    ac_text = _get_column_value(table_row, column_map, "armor_class")
+    if ac_text:
+        ac_value = _parse_armor_class(ac_text)
+        if ac_value:
+            item["armor_class"] = ac_value
 
-    # Parse cost (usually last or second-to-last column)
-    cost = _parse_cost(table_row)
-    if cost:
-        item["cost"] = cost
+    strength_text = _get_column_value(table_row, column_map, "strength")
+    strength_req = _parse_strength_requirement(strength_text)
+    if strength_req is not None:
+        item["strength_req"] = strength_req
 
-    # Parse weight (column before cost, or earlier)
-    weight = _parse_weight(table_row)
-    if weight:
-        item["weight"] = weight
+    stealth_text = _get_column_value(table_row, column_map, "stealth")
+    stealth = _parse_stealth(stealth_text)
+    if stealth is not None:
+        item["stealth_disadvantage"] = stealth
 
-    # Check for stealth disadvantage
-    if any("disadvantage" in col.lower() for col in table_row):
-        item["stealth_disadvantage"] = True
+    _apply_common_fields(item, table_row, column_map)
 
 
 def _parse_weapon_fields(  # noqa: C901
-    item: dict[str, Any], table_row: list[str], section: dict[str, Any]
+    item: dict[str, Any],
+    table_row: list[str],
+    section: dict[str, Any],
+    column_map: dict[str, int],
 ) -> None:
-    """Parse weapon-specific fields from table row.
-
-    Weapon table columns (approx): Name | Cost | Damage | Weight | Properties
-    """
-    # Weapon category from section context (simple/martial)
     subcategory = section.get("subcategory")
     if subcategory:
-        # subcategory is like "simple_melee", "martial_ranged"
-        if "simple" in subcategory:
-            item["weapon_category"] = "simple"
-        elif "martial" in subcategory:
-            item["weapon_category"] = "martial"
-
+        item["sub_category"] = subcategory
         if "melee" in subcategory:
             item["weapon_type"] = "melee"
         elif "ranged" in subcategory:
             item["weapon_type"] = "ranged"
 
-    # Parse damage (usually column 2 or 3)
-    damage = None
-    for col_idx in range(1, min(len(table_row), 5)):
-        damage = _parse_damage(table_row[col_idx])
+    damage_text = _get_column_value(table_row, column_map, "damage")
+    if damage_text:
+        damage = _parse_damage(damage_text)
         if damage:
             item["damage"] = damage
-            break
 
-    # Parse properties (usually last column)
-    if len(table_row) >= 4:
-        properties = _parse_properties(table_row[-1])
-        if properties:
-            item["properties"] = properties
+    properties_text = _get_column_value(table_row, column_map, "properties")
+    properties = _parse_properties(properties_text)
+    if properties:
+        item["properties"] = properties
 
-            # Check for versatile in properties
-            for prop in properties:
-                if prop.startswith("versatile"):
-                    versatile_dmg = _parse_versatile_damage(prop)
-                    if versatile_dmg:
-                        item["versatile_damage"] = versatile_dmg
+        versatile = _parse_versatile_damage_from_properties(properties)
+        if versatile:
+            item["versatile_damage"] = versatile
 
-            # Infer weapon_type from properties if not set
-            if "weapon_type" not in item:
-                if "thrown" in properties or "ammunition" in properties:
-                    item["weapon_type"] = "ranged"
-                else:
-                    item["weapon_type"] = "melee"
+        range_info = _parse_range(properties)
+        if range_info:
+            item["range"] = range_info
 
-    # Parse cost
-    cost = _parse_cost(table_row)
+        ranged_prop = any(
+            prop.startswith("thrown")
+            or prop.startswith("ammunition")
+            or prop.startswith("range")
+            for prop in properties
+        )
+
+        if ranged_prop:
+            item["weapon_type"] = "ranged"
+        elif "weapon_type" not in item:
+            item["weapon_type"] = "melee"
+
+    _apply_common_fields(item, table_row, column_map)
+
+
+def _parse_general_fields(
+    item: dict[str, Any],
+    table_row: list[str],
+    section: dict[str, Any],
+    column_map: dict[str, int],
+) -> None:
+    subcategory = section.get("subcategory")
+    if subcategory:
+        item["sub_category"] = subcategory
+
+    _apply_common_fields(item, table_row, column_map)
+
+
+def _apply_common_fields(
+    item: dict[str, Any], table_row: list[str], column_map: dict[str, int]
+) -> None:
+    cost = _parse_cost(table_row, column_map)
     if cost:
         item["cost"] = cost
 
-    # Parse weight
-    weight = _parse_weight(table_row)
-    if weight:
-        item["weight"] = weight
+    weight_lb, weight_raw = _parse_weight(table_row, column_map)
+    if weight_lb is not None or weight_raw is not None:
+        item["weight_lb"] = weight_lb
+        item["weight_raw"] = weight_raw
 
 
-def _parse_general_fields(item: dict[str, Any], table_row: list[str]) -> None:
-    """Parse fields for general items (gear, mounts, trade goods)."""
-    # Parse cost
-    cost = _parse_cost(table_row)
-    if cost:
-        item["cost"] = cost
+def _detect_column_map(  # noqa: C901
+    headers: list[str] | None, table_row: list[str], category: str
+) -> dict[str, int]:
+    column_map: dict[str, int] = {}
 
-    # Parse weight if present
-    weight = _parse_weight(table_row)
-    if weight:
-        item["weight"] = weight
+    if headers:
+        for index, header in enumerate(headers):
+            key = _match_header(header)
+            if key:
+                column_map.setdefault(key, index)
 
-    # Quantity if present (for trade goods like "1 lb of wheat")
-    if len(table_row) >= 2:
-        qty_text = table_row[1].strip()
-        if qty_text and any(c.isdigit() for c in qty_text) and "lb" not in qty_text.lower():
-            # Might be quantity
-            item["quantity"] = qty_text
+    if category == "armor" and "armor_class" not in column_map:
+        for idx, cell in enumerate(table_row):
+            lower = cell.lower()
+            if "ac" in lower or "dex" in lower:
+                column_map["armor_class"] = idx
+                break
+
+    if "cost" not in column_map:
+        for idx, cell in enumerate(table_row):
+            if _parse_cost_value(cell):
+                column_map["cost"] = idx
+                break
+
+    if "weight" not in column_map:
+        for idx, cell in enumerate(table_row):
+            weight_candidate = _parse_weight_value(cell)
+            if weight_candidate[0] is not None or weight_candidate[1] is not None:
+                column_map["weight"] = idx
+                break
+
+    if category == "armor":
+        if "strength" not in column_map:
+            for idx, cell in enumerate(table_row):
+                if "str" in cell.lower():
+                    column_map["strength"] = idx
+                    break
+        if "stealth" not in column_map:
+            for idx, cell in enumerate(table_row):
+                if "stealth" in cell.lower():
+                    column_map["stealth"] = idx
+                    break
+
+    if category == "weapon":
+        if "damage" not in column_map:
+            for idx, cell in enumerate(table_row):
+                if _parse_damage(cell):
+                    column_map["damage"] = idx
+                    break
+        if "properties" not in column_map and table_row:
+            column_map["properties"] = len(table_row) - 1
+    else:
+        if "properties" not in column_map and table_row:
+            column_map["properties"] = len(table_row) - 1
+
+    return column_map
 
 
-def _parse_cost(table_row: list[str]) -> dict[str, Any] | None:
-    """Parse cost from table row.
+def _match_header(header: str) -> str | None:
+    normalized = re.sub(r"[^a-z0-9]+", " ", header.lower()).strip()
+    header_map = {
+        "armor_class": ["armor class", "ac"],
+        "cost": ["cost"],
+        "weight": ["weight"],
+        "strength": ["strength"],
+        "stealth": ["stealth"],
+        "damage": ["damage"],
+        "properties": ["properties", "property"],
+    }
 
-    Examples: "15 gp", "5 sp", "1 cp", "50 gp"
-    Returns: {"amount": 15, "currency": "gp"}
-    """
-    for col in table_row:
-        col_lower = col.lower().strip()
-        # Match patterns like "15 gp", "5 sp"
-        match = re.search(r"(\d+(?:,\d{3})*)\s*(cp|sp|ep|gp|pp)", col_lower)
-        if match:
-            amount_str = match.group(1).replace(",", "")
-            currency = match.group(2)
+    for key, tokens in header_map.items():
+        for token in tokens:
+            if normalized == token or token in normalized:
+                return key
+    return None
+
+
+def _parse_cost(table_row: list[str], column_map: dict[str, int]) -> dict[str, Any] | None:
+    cost_text = _get_column_value(table_row, column_map, "cost")
+    if cost_text:
+        cost = _parse_cost_value(cost_text)
+        if cost:
+            return cost
+
+    for cell in table_row:
+        cost = _parse_cost_value(cell)
+        if cost:
+            return cost
+
+    return None
+
+
+_COST_PATTERN = re.compile(r"(\d+(?:,\d{3})*)\s*(cp|sp|ep|gp|pp)", re.IGNORECASE)
+
+
+def _parse_cost_value(cell: str | None) -> dict[str, Any] | None:
+    if not cell:
+        return None
+
+    match = _COST_PATTERN.search(cell.lower())
+    if not match:
+        return None
+
+    amount = int(match.group(1).replace(",", ""))
+    currency = match.group(2)
+    return {"amount": amount, "currency": currency}
+
+
+def _parse_weight(
+    table_row: list[str], column_map: dict[str, int]
+) -> tuple[float | None, str | None]:
+    weight_text = _get_column_value(table_row, column_map, "weight")
+    if weight_text:
+        parsed = _parse_weight_value(weight_text)
+        if parsed[0] is not None or parsed[1] is not None:
+            return parsed
+
+    for cell in table_row:
+        parsed = _parse_weight_value(cell)
+        if parsed[0] is not None or parsed[1] is not None:
+            return parsed
+
+    return (None, None)
+
+
+def _parse_weight_value(weight_str: str | None) -> tuple[float | None, str | None]:
+    if weight_str is None:
+        return (None, None)
+
+    weight_raw = weight_str.strip()
+    if not weight_raw:
+        return (None, None)
+
+    normalized = weight_raw.lower().replace("lbs.", "lb.").replace("lbs", "lb")
+    normalized = normalized.replace("pounds", "lb")
+
+    if normalized in {"—", "-", "–"}:
+        return (None, weight_raw)
+
+    if "lb" not in normalized:
+        return (None, weight_raw if any(ch.isdigit() for ch in weight_raw) else None)
+
+    value_part = normalized.split("lb")[0].strip()
+    value_part = value_part.replace("½", "1/2").replace("¼", "1/4").replace("¾", "3/4")
+    value_part = re.sub(r"[\-\u2013]", " ", value_part)
+    value_part = value_part.replace(",", "")
+
+    try:
+        value = _parse_fractional_number(value_part)
+    except (ValueError, ZeroDivisionError):
+        value = None
+
+    if value is None:
+        return (None, weight_raw)
+
+    return (float(value), weight_raw)
+
+
+def _parse_fractional_number(value_part: str) -> float | None:
+    if not value_part:
+        return None
+
+    pieces = [piece for piece in value_part.split() if piece]
+    if not pieces:
+        return None
+
+    total = 0.0
+    found = False
+    for piece in pieces:
+        if "/" in piece:
+            total += float(Fraction(piece))
+            found = True
+        else:
             try:
-                amount = int(amount_str)
-                return {"amount": amount, "currency": currency}
+                total += float(piece)
+                found = True
             except ValueError:
-                continue
+                return None
 
-    return None
-
-
-def _parse_weight(table_row: list[str]) -> str | None:
-    """Parse weight from table row.
-
-    Examples: "10 lb.", "3 lb", "1/4 lb"
-    Returns: "10 lb." as string
-    """
-    for col in table_row:
-        col_lower = col.lower().strip()
-        if "lb" in col_lower and any(c.isdigit() for c in col_lower):
-            # Clean up weight string
-            weight = col.strip()
-            # Remove trailing period if present, then add back for consistency
-            weight = weight.rstrip(".")
-            if weight:
-                return f"{weight}."
-
-    return None
+    return total if found else None
 
 
 def _parse_armor_class(ac_text: str) -> dict[str, Any] | None:
-    """Parse armor class value.
-
-    Examples:
-        "11 + Dex modifier" -> {"base": 11, "dex_bonus": true}
-        "16" -> {"base": 16, "dex_bonus": false}
-        "12 + Dex modifier (max 2)" -> {"base": 12, "dex_bonus": true, "max_bonus": 2}
-    """
     ac_text = ac_text.strip()
-
-    # Extract base AC number
     match = re.search(r"(\d+)", ac_text)
     if not match:
         return None
 
     base = int(match.group(1))
-    ac_dict: dict[str, Any] = {"base": base}
+    armor_class: dict[str, Any] = {"base": base}
 
-    # Check for dex modifier
-    if "dex" in ac_text.lower():
-        ac_dict["dex_bonus"] = True
-
-        # Check for max bonus
-        max_match = re.search(r"max[^\d]*(\d+)", ac_text.lower())
+    lower = ac_text.lower()
+    if "dex" in lower:
+        armor_class["dex_bonus"] = True
+        max_match = re.search(r"max[^\d]*(\d+)", lower)
         if max_match:
-            ac_dict["max_bonus"] = int(max_match.group(1))
+            armor_class["max_bonus"] = int(max_match.group(1))
     else:
-        ac_dict["dex_bonus"] = False
+        armor_class["dex_bonus"] = False
 
-    return ac_dict
+    return armor_class
 
 
-def _parse_damage(damage_text: str) -> dict[str, str] | None:
-    """Parse weapon damage.
+def _parse_strength_requirement(text: str | None) -> int | None:
+    if not text:
+        return None
 
-    Examples:
-        "1d8 slashing" -> {"dice": "1d8", "type": "slashing"}
-        "1d6 piercing" -> {"dice": "1d6", "type": "piercing"}
-    """
+    match = re.search(r"(\d+)", text)
+    if match:
+        return int(match.group(1))
+    return None
+
+
+def _parse_stealth(text: str | None) -> bool | None:
+    if not text:
+        return None
+
+    lower = text.lower().strip()
+    if "disadvantage" in lower:
+        return True
+    if lower in {"—", "-", "–", "none"}:
+        return False
+    return None
+
+
+def _parse_damage(damage_text: str | None) -> dict[str, str] | None:
+    if not damage_text:
+        return None
+
     damage_text = damage_text.strip()
-
-    # Match patterns like "1d8 slashing", "2d6 bludgeoning"
     match = re.match(r"(\d+d\d+)\s+(\w+)", damage_text)
     if match:
         return {"dice": match.group(1), "type": match.group(2)}
@@ -280,82 +411,81 @@ def _parse_damage(damage_text: str) -> dict[str, str] | None:
     return None
 
 
-def _parse_properties(prop_text: str) -> list[str] | None:
-    """Parse weapon/item properties.
-
-    Examples:
-        "Finesse, light, thrown (range 20/60)" -> ["finesse", "light", "thrown", "range 20/60"]
-        "Heavy, two-handed" -> ["heavy", "two-handed"]
-    """
-    if not prop_text or prop_text.strip() in ["—", "-", ""]:
+def _parse_properties(prop_text: str | None) -> list[str] | None:
+    if not prop_text:
         return None
 
-    # Split on commas
-    props = []
-    parts = prop_text.split(",")
+    if prop_text.strip() in {"—", "-", ""}:
+        return None
 
-    for part in parts:
-        part = part.strip()
-        if part and part not in ["—", "-"]:
-            # Normalize to lowercase except for values in parentheses
-            if "(" in part:
-                # Keep range values intact
-                props.append(part.lower())
-            else:
-                props.append(part.lower())
+    properties: list[str] = []
+    for part in prop_text.split(","):
+        cleaned = part.strip()
+        if cleaned and cleaned not in {"—", "-"}:
+            properties.append(cleaned.lower())
 
-    return props if props else None
+    return properties if properties else None
 
 
-def _parse_versatile_damage(versatile_prop: str) -> dict[str, str] | None:
-    """Parse versatile damage from property string.
-
-    Example: "versatile (1d10)" -> {"dice": "1d10"}
-    """
-    match = re.search(r"versatile\s*\(([^)]+)\)", versatile_prop, re.IGNORECASE)
-    if match:
-        damage_str = match.group(1).strip()
-        # Extract just the dice (1d10) without damage type
-        dice_match = re.search(r"(\d+d\d+)", damage_str)
-        if dice_match:
-            return {"dice": dice_match.group(1)}
-
+def _parse_versatile_damage_from_properties(
+    properties: list[str],
+) -> dict[str, str] | None:
+    for prop in properties:
+        versatile = _parse_versatile_damage(prop)
+        if versatile:
+            return versatile
     return None
 
 
+def _parse_versatile_damage(versatile_prop: str) -> dict[str, str] | None:
+    match = re.search(r"versatile\s*\(([^)]+)\)", versatile_prop, re.IGNORECASE)
+    if not match:
+        return None
+
+    dice_match = re.search(r"(\d+d\d+)", match.group(1))
+    if dice_match:
+        return {"dice": dice_match.group(1)}
+    return None
+
+
+def _parse_range(properties: list[str]) -> dict[str, int] | None:
+    for prop in properties:
+        match = re.search(r"range[^\d]*(\d+)\s*/\s*(\d+)", prop, re.IGNORECASE)
+        if match:
+            return {"normal": int(match.group(1)), "long": int(match.group(2))}
+    return None
+
+
+def _get_column_value(
+    table_row: list[str], column_map: dict[str, int], key: str
+) -> str | None:
+    idx = column_map.get(key)
+    if idx is None or idx >= len(table_row):
+        return None
+    return table_row[idx].strip()
+
+
+def _stringify_section(section: dict[str, Any]) -> str | None:
+    if not isinstance(section, dict):
+        return None
+
+    category = section.get("category")
+    subcategory = section.get("subcategory")
+    if category and subcategory:
+        return f"{category}:{subcategory}"
+    return category or subcategory
+
+
 def _generate_id(name: str) -> str:
-    """Generate ID from item name with item: namespace prefix.
-
-    Examples:
-        "Longsword" -> "item:longsword"
-        "Chain Mail" -> "item:chain-mail"
-        "Rope, hempen (50 feet)" -> "item:rope-hempen-50-feet"
-    """
-    # Lowercase and replace spaces/punctuation with hyphens
-    id_str = name.lower()
-    id_str = re.sub(r"[^\w\s-]", "", id_str)  # Remove special chars except space/hyphen
-    id_str = re.sub(r"[\s_]+", "-", id_str)  # Replace spaces/underscores with hyphen
-    id_str = re.sub(r"-+", "-", id_str)  # Collapse multiple hyphens
-    id_str = id_str.strip("-")  # Remove leading/trailing hyphens
-
-    return f"item:{id_str}"
+    identifier = name.lower()
+    identifier = re.sub(r"[^\w\s-]", "", identifier)
+    identifier = re.sub(r"[\s_]+", "-", identifier)
+    identifier = re.sub(r"-+", "-", identifier).strip("-")
+    return f"item:{identifier}"
 
 
 def _generate_simple_name(name: str) -> str:
-    """Generate simple name for sorting/display.
-
-    Examples:
-        "Longsword" -> "longsword"
-        "Chain Mail" -> "chain mail"
-        "Rope, hempen (50 feet)" -> "rope hempen"
-    """
-    # Remove parenthetical content
     simple = re.sub(r"\([^)]*\)", "", name)
-    # Remove commas
     simple = simple.replace(",", "")
-    # Lowercase and strip
     simple = simple.lower().strip()
-    # Collapse multiple spaces
-    simple = re.sub(r"\s+", " ", simple)
-
-    return simple
+    return re.sub(r"\s+", " ", simple)
