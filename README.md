@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.4.2)
+### Build pipeline (v0.5.0)
 
-The build pipeline extracts monster and equipment data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** and **114 equipment items** with full provenance tracking.
+The build pipeline extracts monster and equipment data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** and **111 equipment items** with full provenance tracking.
 
 **Development (fast iteration):**
 ```bash
@@ -173,8 +173,9 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.1.0** - Foundation (CI, build infrastructure, validation)
 - 🚧 **v0.2.0** - End-to-end pipeline with fixture data
 - 📋 **v0.3.0** - PDF extraction module
-- 📋 **v0.4.0** - Extraction quality improvements
-- 📋 **v0.5.0** - Additional entities (equipment, lineages, etc.)
+- ✅ **v0.4.0** - Extraction quality improvements
+- ✅ **v0.5.0** - Equipment dataset complete (111 items)
+- 📋 **v0.6.0** - Spells or table metadata discovery
 
 ## Use Cases
 

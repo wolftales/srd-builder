@@ -94,7 +94,7 @@ Every dataset file includes a `_meta` section documenting its structure:
     "format": "unified_items_array",
     "entity_count": 296,
     "generated_at": "2025-10-31T05:23:10Z",
-    "builder_version": "0.4.2"
+    "builder_version": "0.5.0"
   },
   "items": [ ... ]
 }
