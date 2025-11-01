@@ -23,8 +23,11 @@
 ## 🗑️ DELETE - Obsolete/Redundant
 
 ### Root Level
-- **CRUFT_AUDIT.md** (92 lines) - This very doc makes it obsolete, delete after consolidation
-- **CONTRIBUTING.md** - Empty or boilerplate? Check and delete if not needed
+- **CRUFT_AUDIT.md** (92 lines) - Superseded by this plan, archive it
+  - Most items already done (docs in archive/)
+  - Remaining items: scripts review (minor), templates update (minor)
+  - CONSOLIDATION_PLAN covers all doc cleanup
+- **CONTRIBUTING.md** - Keep (has useful workflow guidelines)
 
 ### docs/
 - **GPT_REVIEW_equipment_status.md** (426 lines) - Historical GPT consultation, superseded by v0.5.0
