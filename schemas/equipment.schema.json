@@ -3,7 +3,7 @@
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
   "version": "1.1.0",
   "title": "Equipment Item",
-  "description": "Schema for individual equipment items (weapons, armor, gear) from the SRD.",
+  "description": "Schema for individual equipment items (weapons, armor, gear, mounts, trade goods) from the SRD. v1.1.0 covers base SRD items; optional future fields prepare for magic items and variants.",
   "type": "object",
   "required": [
     "id",
@@ -31,30 +31,18 @@
     },
     "summary": {
       "type": "string",
-      "description": "One-sentence description for tooltips and previews"
+      "description": "One-sentence description for tooltips and previews (optional)"
     },
     "category": {
       "type": "string",
       "enum": [
         "weapon",
         "armor",
-        "shield",
         "gear",
-        "tool",
         "mount",
-        "vehicle",
-        "trade_good",
-        "service"
+        "trade_good"
       ],
-      "description": "Primary equipment category"
-    },
-    "weapon_category": {
-      "type": "string",
-      "enum": [
-        "simple",
-        "martial"
-      ],
-      "description": "Weapon proficiency requirement (weapons only)"
+      "description": "Primary equipment category (matches actual data categories)"
     },
     "weapon_type": {
       "type": "string",
@@ -101,9 +89,8 @@
       "description": "Item cost"
     },
     "weight": {
-      "type": "number",
-      "minimum": 0,
-      "description": "Weight in pounds"
+      "type": "string",
+      "description": "Weight as string from source (e.g., '10 lb.', '1\u00bd lb.') - normalization to number pending"
     },
     "damage": {
       "type": "object",
@@ -133,8 +120,7 @@
     "versatile_damage": {
       "type": "object",
       "required": [
-        "dice",
-        "type"
+        "dice"
       ],
       "additionalProperties": false,
       "properties": {
@@ -150,20 +136,39 @@
             "piercing",
             "slashing"
           ],
-          "description": "Damage type"
+          "description": "Damage type (optional - defaults to same as base damage.type)"
         }
       },
-      "description": "Damage when wielded two-handed (versatile weapons)"
+      "description": "Damage when wielded two-handed (versatile weapons). Type defaults to base damage type if omitted."
     },
     "armor_class": {
-      "type": "integer",
-      "minimum": 0,
-      "description": "Base armor class provided by armor or shield"
+      "type": "object",
+      "required": [
+        "base"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Base armor class value"
+        },
+        "dex_bonus": {
+          "type": "boolean",
+          "description": "Whether armor allows adding Dexterity modifier (currently always false in data)"
+        },
+        "max_dex_bonus": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Maximum Dexterity bonus that can be added (for medium armor, future)"
+        }
+      },
+      "description": "Armor class provided by armor (armor only)"
     },
     "strength_requirement": {
       "type": "integer",
       "minimum": 0,
-      "description": "Minimum Strength score required (heavy armor)"
+      "description": "Minimum Strength score required (heavy armor, future)"
     },
     "stealth_disadvantage": {
       "type": "boolean",
@@ -174,10 +179,13 @@
       "items": {
         "type": "string"
       },
-      "description": "Weapon properties (e.g., 'versatile', 'finesse', 'heavy', 'light', 'thrown', 'ammunition', 'loading')"
+      "description": "Weapon properties as raw strings (e.g., 'versatile', 'finesse', 'thrown (range 20/60)'). Range extraction to structured range field is pending."
     },
     "range": {
       "type": "object",
+      "required": [
+        "normal"
+      ],
       "additionalProperties": false,
       "properties": {
         "normal": {
@@ -191,7 +199,11 @@
           "description": "Long range in feet (with disadvantage)"
         }
       },
-      "description": "Range for ranged/thrown weapons"
+      "description": "Range for ranged/thrown weapons (future - currently in properties array)"
+    },
+    "quantity": {
+      "type": "string",
+      "description": "Quantity or packaging info (e.g., 'bolts (20)', '50 gp') - appears on gear/mounts/trade goods"
     },
     "page": {
       "type": "integer",
@@ -200,7 +212,53 @@
     },
     "src": {
       "type": "string",
-      "description": "Source document identifier (e.g., 'SRD_CC_v5.1')"
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "variant_of": {
+      "type": "string",
+      "pattern": "^item:[a-z0-9_-]+$",
+      "description": "FUTURE: Reference to base item this is a variant of (e.g., magic items referencing mundane base)"
+    },
+    "is_magic": {
+      "type": "boolean",
+      "description": "FUTURE: Whether this is a magic item"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "very rare",
+        "legendary",
+        "artifact"
+      ],
+      "description": "FUTURE: Magic item rarity"
+    },
+    "requires_attunement": {
+      "type": "boolean",
+      "description": "FUTURE: Whether magic item requires attunement"
+    },
+    "modifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type",
+          "value"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "What the modifier affects (e.g., 'attack', 'damage', 'ac')"
+          },
+          "value": {
+            "type": "integer",
+            "description": "Modifier value (typically +1, +2, +3 for magic items)"
+          }
+        }
+      },
+      "description": "FUTURE: Numeric modifiers provided by magic items"
     }
   }
 }
