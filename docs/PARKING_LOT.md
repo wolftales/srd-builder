@@ -170,4 +170,158 @@ Following the **filename vs namespace** pattern from terminology.aliases.md:
 
 ---
 
+## Blackmoor Integration Feedback
+
+**Date Raised:** 2025-11-01 (review of v0.4.2, updated with v0.5.0)
+**Status:** Active development priority
+**Source:** Primary consumer and reason for srd-builder existence
+
+### Context
+
+Blackmoor reviewed srd-builder v0.4.2 package and provided comprehensive feedback. They are building a VTT (Virtual Tabletop) engine with combat formulas that need structured monster/equipment data.
+
+**What They Love ✅**
+- Schema v1.1.0: "well-executed and production-ready"
+- Documentation: SCHEMAS.md and DATA_DICTIONARY.md are "fantastic"
+- Namespacing (monster:, item:): "perfect"
+- simple_name field: "excellent for indexing"
+- Version tracking in _meta: "exactly what's needed"
+- Structured data (armor_class, hit_points as objects)
+- Note: We already support by_cr and by_type indexes in indexer.py
+
+### High Priority - Action Data Parsing
+
+**Current State:**
+Actions have inconsistent parsing - some have structured fields, some don't.
+
+**Example of good parsing:**
+```json
+{
+  "name": "Tentacle",
+  "simple_name": "tentacle",
+  "damage_type": "bludgeoning",  // ✅ Good!
+  "damage_dice": "2d6 + 5",       // ✅ Good!
+  "to_hit": 9,                    // ✅ Good!
+  "reach": 10,                    // ✅ Good!
+  "text": "..."                   // ✅ Still have raw text
+}
+```
+
+**Request:**
+For ALL Melee Weapon Attack and Ranged Weapon Attack actions, parse:
+- `to_hit` (integer)
+- `reach` or `range` (integer or object)
+- `damage_dice` (string like "2d6+5")
+- `damage_type` (string)
+
+**Why:** Blackmoor's combat formulas (`resolve_5e_melee_attack`) need direct access to this data without text parsing.
+
+**Implementation Notes:**
+- Improve parsing in parse_monsters.py action processing
+- Ensure consistency across all 296 monsters
+- Keep raw `text` field for fallback
+- Add test coverage for action field extraction
+
+---
+
+### Medium Priority - Saving Throw Parsing
+
+**Current State:**
+```json
+"saving_throw": "DC 14 Constitution"  // String
+```
+
+**Request:**
+```json
+{
+  "saving_throw": {
+    "dc": 14,
+    "ability": "constitution",
+    "on_save": "half",  // or "none", "half_damage", etc.
+    "raw": "DC 14 Constitution"
+  }
+}
+```
+
+**Why:** Enables automated saving throw resolution in combat engine.
+
+**Implementation Notes:**
+- Parse common patterns: "DC X [Ability]", "DC X [Ability] saving throw"
+- Extract on_save behavior from action text (half damage, negates, etc.)
+- Keep raw field for edge cases
+- Update monster.schema.json to support both formats during transition
+
+---
+
+### Low Priority - Ability Score Modifiers
+
+**Current State:**
+Only raw ability scores provided.
+
+**Request:**
+```json
+{
+  "ability_scores": {
+    "strength": 21,
+    "strength_modifier": 5  // Auto-calculated: (21 - 10) / 2
+  }
+}
+```
+
+**Why:** Common lookup, saves calculation on every use.
+
+**Implementation Notes:**
+- Add in postprocess.py normalization
+- Formula: (score - 10) // 2
+- Consider adding to all ability scores or just when needed
+- Balance: convenience vs data bloat
+
+---
+
+### Equipment Properties (Future)
+
+**Current Status:** Equipment v0.5.0 has 111 items, noted as "still in dev"
+
+**Request:** Once stable, add properties parsing for weapons as structured array:
+```json
+{
+  "properties": ["versatile", "finesse", "two-handed"]
+}
+```
+
+**Why:** Currently properties are in text descriptions, need structured data for rule automation.
+
+**Defer Until:** Equipment schema stabilizes.
+
+---
+
+### Additional Suggestions
+
+1. **build_report.json enhancements** - Add extraction warnings/issues encountered
+2. **Spells (Future)** - High priority for Blackmoor since prompts reference spell mechanics
+3. **Damage Resistance/Immunity** - Current structure with {type, qualifier} is "perfect, keep it"
+
+---
+
+### Implementation Priority
+
+**v0.6.0 or v0.7.0:**
+1. Action data consistency (HIGH - blocks combat integration)
+2. Saving throw parsing (MEDIUM - needed for full combat)
+3. Ability score modifiers (LOW - nice to have)
+
+**Future:**
+4. Equipment properties (defer until schema stable)
+5. Spells extraction (separate milestone)
+
+---
+
+### Related Files
+- `src/srd_builder/parse_monsters.py` - Action parsing logic
+- `src/srd_builder/postprocess.py` - Normalization and computed fields
+- `src/srd_builder/indexer.py` - Already has by_cr, by_type support ✅
+- `docs/external/blackmoor/blackmoor_srd_5_1_package review.md` - Full review
+
+---
+
 ## [Add more parked features here as needed]
