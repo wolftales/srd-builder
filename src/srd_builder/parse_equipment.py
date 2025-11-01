@@ -246,7 +246,7 @@ def _match_header(header: str) -> str | None:
 
     for key, tokens in header_map.items():
         for token in tokens:
-            if normalized == token or token in normalized:
+            if token in normalized:
                 return key
     return None
 
@@ -307,13 +307,19 @@ def _parse_weight_value(weight_str: str | None) -> tuple[float | None, str | Non
     if not weight_raw:
         return (None, None)
 
-    normalized = weight_raw.lower().replace("lbs.", "lb.").replace("lbs", "lb")
-    normalized = normalized.replace("pounds", "lb")
+    normalized = (
+        weight_raw.lower()
+        .replace("lbs.", "lb.")
+        .replace("lbs", "lb")
+        .replace("pounds", "lb")
+    )
 
     if normalized in {"—", "-", "–"}:
         return (None, weight_raw)
 
     if "lb" not in normalized:
+        # Preserve descriptive weights that contain digits (e.g., "10 crates") but
+        # ignore entries without numeric information.
         return (None, weight_raw if any(ch.isdigit() for ch in weight_raw) else None)
 
     value_part = normalized.split("lb")[0].strip()
@@ -323,7 +329,7 @@ def _parse_weight_value(weight_str: str | None) -> tuple[float | None, str | Non
 
     try:
         value = _parse_fractional_number(value_part)
-    except (ValueError, ZeroDivisionError):
+    except ValueError:
         value = None
 
     if value is None:

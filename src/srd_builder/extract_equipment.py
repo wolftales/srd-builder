@@ -413,7 +413,7 @@ def _looks_like_header(row: list[str]) -> bool:
         "type",
     ]
 
-    normalized_cells = [cell.lower() for cell in row if cell]
+    normalized_cells = [cell.lower() for cell in row if cell and cell.strip()]
     if not normalized_cells:
         return False
 

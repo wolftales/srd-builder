@@ -26,7 +26,7 @@
     },
     "simple_name": {
       "type": "string",
-      "pattern": "^[a-z0-9][a-z0-9\\s-]*$",
+      "pattern": "^[a-z][a-z0-9\\s-]*$",
       "description": "Lowercase normalized name for indexing and search"
     },
     "summary": {
@@ -150,7 +150,7 @@
     },
     "quantity": {
       "type": ["integer", "null"],
-      "description": "Default quantity packaged with the item"
+      "description": "Default quantity packaged with the item as an integer. If null, no default quantity is specified or not applicable. Legacy string formats (e.g., 'bolts (20)', '50 gp') are not supported; only integer values are stored."
     },
     "page": {
       "type": "integer",
