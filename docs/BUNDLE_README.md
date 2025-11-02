@@ -74,8 +74,7 @@ srd_5_1/
 └── docs/
     ├── SCHEMAS.md         # Schema design & versioning
     ├── DATA_DICTIONARY.md # Field reference & SRD mappings
-    ├── ALIAS_USAGE.md     # Alias system usage guide
-    └── ALIAS_IMPLEMENTATION.md # Alias technical details
+    └── ARCHITECTURE.md    # Pipeline & design decisions
 ```
 
 ---
@@ -138,31 +137,24 @@ The `index.json` file provides pre-built search indexes for all datasets:
 
 ---
 
-## Alias System (v0.8.0)
+## Alias Support (v0.8.1)
 
-**Terminology Aliases:** Map historical or alternative category names to canonical names:
+**Terminology aliases** map historical category names to canonical:
 
 ```javascript
-// Resolve "races" to "lineages"
-const canonical = index.aliases["races"];  // → "lineages"
-const lineages = index[canonical];          // → index.lineages
-
-// Both work:
-index.lineages.by_name["dwarf"]  // → "lineage:dwarf"
-index[index.aliases["races"]].by_name["dwarf"]  // → "lineage:dwarf"
+// Resolve "races" → "lineages"
+const canonical = index.aliases["races"] || "races";  // → "lineages"
+index[canonical].by_name["dwarf"]  // → "lineage:dwarf"
 ```
 
-**Entity Aliases:** Items can have alternative search terms (future):
+**Entity aliases** enable partial/alternative search terms:
 
-```json
-{
-  "id": "item:flask_or_tankard",
-  "name": "Flask or tankard",
-  "aliases": ["flask", "tankard"]
-}
+```javascript
+// "tankard" finds "Flask or tankard" (future)
+index.equipment.by_name["tankard"]  // → "item:flask_or_tankard"
 ```
 
-See **ALIAS_USAGE.md** for complete guide.
+See **ARCHITECTURE.md** (design) and **SCHEMAS.md** (field details) for more.
 
 ---
 
@@ -172,8 +164,7 @@ See **ALIAS_USAGE.md** for complete guide.
 
 - **SCHEMAS.md** - Schema v1.3.0 design, versioning, use cases, evolution history
 - **DATA_DICTIONARY.md** - Complete field reference with SRD source mappings
-- **ALIAS_USAGE.md** - Alias system usage guide with examples
-- **ALIAS_IMPLEMENTATION.md** - Alias technical implementation details
+- **ARCHITECTURE.md** - Pipeline design, indexing, alias system architecture
 - **meta.json** - License, attribution, file manifest
 - **build_report.json** - Extraction statistics
 - **schemas/*.json** - JSON Schema validation

@@ -49,6 +49,23 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
 ┌─────────────────────────────────────────────────────────────┐
 │ POSTPROCESS (postprocess.py)                               │
 │ • Normalize legendary actions (add name to entries)        │
+│ • Calculate challenge ratings                              │
+│ • Deduplicate defense arrays                               │
+│ • Generate stable IDs                                      │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ INDEX (indexer.py)                                         │
+│ • Build by_name, by_cr, by_type lookups                   │
+│ • Expand entity aliases into by_name indexes               │
+│ • Add terminology aliases (races→lineages)                 │
+│ • Track conflicts                                          │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ CONTINUE EXISTING PIPELINE                                 │
 │ • Fix CR formatting (handle fractions, "0", edge cases)    │
 │ • Clean defense fields (arrays, deduplication)             │
 │ • Generate IDs (monster:aboleth from name)                 │
@@ -270,6 +287,46 @@ tests/
 - Consumers need license, page index, extraction status
 - PDF hash verification catches corrupted/wrong source files
 - Different audiences need different metadata (builder vs consumer)
+
+### 7. Alias System (v0.8.1)
+
+**Decision:** Three-level alias pattern for flexible searches and backward compatibility.
+
+**Architecture:**
+
+1. **Index-level (terminology)**: Category mappings in `index.json`
+   - Maps historical/alternative names to canonical: `"races"` → `"lineages"`
+   - Both singular and plural: `"race"`/`"races"` → `"lineage"`/`"lineages"`
+   - Used by consumers to resolve category names before lookup
+
+2. **Entity-level (search terms)**: Optional `aliases` array on entities
+   - Compound items: `flask_or_tankard.aliases = ["flask", "tankard"]`
+   - Historical terms, common variations, partial names
+   - Stored in entity data, automatically indexed
+
+3. **Indexer-level (automatic expansion)**: Build pipeline handles indexing
+   - `indexer.py` reads entity `aliases` field
+   - Adds each alias as lookup key in `by_name` indexes
+   - Result: `by_name["tankard"]` → `"item:flask_or_tankard"`
+
+**Rationale:**
+- **Backward compatibility**: Legacy code using "race" continues to work
+- **Discoverability**: Aliases programmatically accessible in `index.json`
+- **Natural search**: Find items using partial/alternative names
+- **Clean separation**: Terminology (index) vs entity data (aliases field)
+- **No breaking changes**: Additive only, doesn't affect existing lookups
+
+**Implementation:**
+- Added optional `aliases: string[]` to all entity schemas (v1.3.0)
+- Modified `_build_by_name_map()` to expand entity aliases
+- Added top-level `aliases` object to `index.json`
+- Documented in `meta.json` for reference
+
+**What we learned:**
+- Initial attempt (aliases only in `meta.json`) didn't help searches
+- Consumers use `index.json` for lookups, not `meta.json`
+- Three levels needed: terminology, entity data, automatic indexing
+- One-way resolution is sufficient (no bidirectional needed)
 
 ---
 

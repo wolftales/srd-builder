@@ -31,6 +31,7 @@ All dataset files produced by srd-builder conform to schema version 1.3.0, which
 - Nested entries with `{name, text}` structure (traits, actions, features)
 - Source tracking: `page` and `src` fields on all entities
 - Normalized IDs: `simple_name` for search/indexing
+- Optional aliases: `aliases: string[]` for alternative search terms (v1.3.0)
 
 ---
 
