@@ -1,5 +1,5 @@
 {
-  "_comment": "Template showing the normalized monster structure (monster.schema.json v1.2.0)",
+  "_comment": "Template showing the normalized monster structure (monster.schema.json v1.3.0)",
   "_note": "This is NOT real data - it's a template for extraction scripts",
   "id": "monster:example-monster",
   "simple_name": "example_monster",
