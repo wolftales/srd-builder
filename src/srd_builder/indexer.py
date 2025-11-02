@@ -8,7 +8,7 @@ from typing import Any
 
 from srd_builder.postprocess import normalize_id
 
-__all__ = ["build_monster_index", "build_indexes"]
+__all__ = ["build_monster_index", "build_spell_index", "build_indexes"]
 
 
 def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> dict[str, list[str]]:
@@ -111,12 +111,77 @@ def _build_entity_index(monsters: list[dict[str, Any]]) -> dict[str, dict[str, s
     return index
 
 
+def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical spell lookup tables."""
+
+    by_name, _ = _build_by_name_map(spells)
+    by_level: defaultdict[str, list[str]] = defaultdict(list)
+    by_school: defaultdict[str, list[str]] = defaultdict(list)
+    by_concentration: defaultdict[str, list[str]] = defaultdict(list)
+    by_ritual: defaultdict[str, list[str]] = defaultdict(list)
+
+    for spell in spells:
+        spell_id = fallback_id(spell)
+        level = spell.get("level", 0)
+        school = str(spell.get("school", "unknown"))
+
+        # Extract concentration and ritual from casting object
+        casting = spell.get("casting", {})
+        concentration = casting.get("concentration", False)
+        ritual = casting.get("ritual", False)
+
+        by_level[str(level)].append(spell_id)
+        by_school[school].append(spell_id)
+
+        if concentration:
+            by_concentration["true"].append(spell_id)
+        else:
+            by_concentration["false"].append(spell_id)
+
+        if ritual:
+            by_ritual["true"].append(spell_id)
+        else:
+            by_ritual["false"].append(spell_id)
+
+    # Sort by level (numeric)
+    sorted_by_level = _stable_dict(sorted(by_level.items(), key=lambda item: int(item[0])))
+    sorted_by_school = _stable_dict(sorted(by_school.items()))
+    sorted_by_concentration = _stable_dict(sorted(by_concentration.items()))
+    sorted_by_ritual = _stable_dict(sorted(by_ritual.items()))
+
+    for mapping in (sorted_by_level, sorted_by_school, sorted_by_concentration, sorted_by_ritual):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_level": sorted_by_level,
+        "by_school": sorted_by_school,
+        "by_concentration": sorted_by_concentration,
+        "by_ritual": sorted_by_ritual,
+    }
+
+
+def _build_spell_entity_index(spells: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for spells."""
+    index: dict[str, dict[str, str]] = {}
+    for spell in spells:
+        spell_id = fallback_id(spell)
+        index[spell_id] = {
+            "type": "spell",
+            "file": "spells.json",
+            "name": spell.get("name", ""),
+        }
+    return index
+
+
 def build_indexes(
     monsters: list[dict[str, Any]],
+    spells: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster and entity indexes for dataset output."""
+    """Aggregate monster, spell, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -135,6 +200,20 @@ def build_indexes(
             "unique_sizes": len(monster_indexes["by_size"]),
         },
     }
+
+    # Add spell indexes if spells provided
+    if spells:
+        spell_indexes = build_spell_index(spells)
+        spell_entity_index = _build_spell_entity_index(spells)
+
+        payload["spells"] = spell_indexes
+        entity_index.update(spell_entity_index)
+        payload["entities"] = entity_index
+        payload["stats"]["total_spells"] = len(spells)
+        payload["stats"]["total_entities"] = len(entity_index)
+        payload["stats"]["unique_spell_levels"] = len(spell_indexes["by_level"])
+        payload["stats"]["unique_spell_schools"] = len(spell_indexes["by_school"])
+
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}
     return payload

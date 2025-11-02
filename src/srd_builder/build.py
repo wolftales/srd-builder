@@ -21,10 +21,12 @@ from . import __version__
 from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
+from .extract_spells import extract_spells
 from .indexer import build_indexes
 from .parse_equipment import parse_equipment_records
 from .parse_monsters import parse_monster_records
-from .postprocess import clean_equipment_record, clean_monster_record
+from .parse_spells import parse_spell_records
+from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
 
 
 def _meta_block(ruleset: str) -> dict[str, str]:
@@ -81,6 +83,8 @@ def _generate_meta_json(
     monsters_page_range: tuple[int, int] | None = None,
     equipment_complete: bool = False,
     equipment_page_range: tuple[int, int] | None = None,
+    spells_complete: bool = False,
+    spells_page_range: tuple[int, int] | None = None,
 ) -> dict[str, Any]:
     """Generate rich metadata for dist/meta.json with provenance.
 
@@ -110,17 +114,21 @@ def _generate_meta_json(
             "builder_version": __version__,
             "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
         },
-        "page_index": _build_page_index(monsters_page_range, equipment_page_range),
+        "page_index": _build_page_index(
+            monsters_page_range, equipment_page_range, spells_page_range
+        ),
         "files": {
             "meta": "meta.json",
             "build_report": "build_report.json",
             "index": "index.json",
             "monsters": "monsters.json",
             "equipment": "equipment.json",
+            "spells": "spells.json",
         },
         "extraction_status": {
             "monsters": "complete" if monsters_complete else "in_progress",
             "equipment": "complete" if equipment_complete else "in_progress",
+            "spells": "complete" if spells_complete else "in_progress",
         },
         "$schema_version": "1.1.0",
     }
@@ -132,6 +140,7 @@ def _write_datasets(
     dist_data_dir: Path,
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
+    spells: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -150,7 +159,17 @@ def _write_datasets(
             encoding="utf-8",
         )
 
-    index_payload = build_indexes(processed_monsters)
+    # Write spells if available
+    processed_spells = None
+    if spells:
+        processed_spells = [clean_spell_record(spell) for spell in spells]
+        spells_doc = _wrap_with_meta({"items": processed_spells}, ruleset=ruleset)
+        (dist_data_dir / "spells.json").write_text(
+            _render_json(spells_doc),
+            encoding="utf-8",
+        )
+
+    index_payload = build_indexes(processed_monsters, processed_spells)
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
@@ -250,7 +269,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     schemas_src = repo_root / "schemas"
     schemas_dst = target_dir / "schemas"
     schemas_dst.mkdir(exist_ok=True)
-    for schema_file in ["monster.schema.json", "equipment.schema.json"]:
+    for schema_file in ["monster.schema.json", "equipment.schema.json", "spell.schema.json"]:
         src = schemas_src / schema_file
         if src.exists():
             (schemas_dst / schema_file).write_text(
@@ -322,6 +341,7 @@ def _extract_raw_monsters(raw_dir: Path) -> Path | None:
 def _build_page_index(
     monsters_page_range: tuple[int, int] | None,
     equipment_page_range: tuple[int, int] | None,
+    spells_page_range: tuple[int, int] | None,
 ) -> dict[str, dict[str, int]]:
     """Build page_index section for meta.json."""
     page_index: dict[str, dict[str, int]] = {}
@@ -329,6 +349,8 @@ def _build_page_index(
         page_index["monsters"] = {"start": monsters_page_range[0], "end": monsters_page_range[1]}
     if equipment_page_range:
         page_index["equipment"] = {"start": equipment_page_range[0], "end": equipment_page_range[1]}
+    if spells_page_range:
+        page_index["spells"] = {"start": spells_page_range[0], "end": spells_page_range[1]}
     return page_index
 
 
@@ -378,7 +400,55 @@ def _load_raw_equipment(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
-def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False) -> Path:
+def _extract_raw_spells(raw_dir: Path) -> Path | None:
+    """Extract spells from PDF if present.
+
+    Returns:
+        Path to extracted spells_raw.json, or None if no PDF found
+    """
+    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    if not pdf_files:
+        return None
+
+    pdf_path = pdf_files[0]
+    print(f"Extracting spells from {pdf_path.name}...")
+
+    # Run extraction
+    try:
+        extracted_data = extract_spells(pdf_path)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        print(f"⚠️ Spell extraction skipped: {exc}")
+        return None
+
+    # Write to raw directory
+    output_path = raw_dir / "spells_raw.json"
+    output_path.write_text(
+        json.dumps(extracted_data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    spell_count = extracted_data["_meta"]["spell_count"]
+    warnings = extracted_data["_meta"]["total_warnings"]
+    print(f"✓ Extracted {spell_count} spells (warnings: {warnings})")
+    print(f"✓ Saved to {output_path}")
+
+    return output_path
+
+
+def _load_raw_spells(raw_dir: Path) -> list[dict[str, Any]]:
+    """Load raw spell data from extraction output."""
+    raw_source = raw_dir / "spells_raw.json"
+    if raw_source.exists():
+        data = json.loads(raw_source.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "spells" in data:
+            return data["spells"]
+        raise TypeError("spells_raw.json must contain 'spells' key with array")
+    return []
+
+
+def build(  # noqa: C901
+    ruleset: str, output_format: str, out_dir: Path, bundle: bool = False
+) -> Path:
     layout = ensure_ruleset_layout(ruleset=ruleset, out_dir=out_dir)
     target_dir = layout["dist_ruleset"]
 
@@ -392,17 +462,24 @@ def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False)
     # Extract equipment from PDF (v0.5.0)
     _extract_raw_equipment(raw_dir=layout["raw"])
 
+    # Extract spells from PDF (v0.6.0)
+    _extract_raw_spells(raw_dir=layout["raw"])
+
     raw_monsters = _load_raw_monsters(layout["raw"])
     parsed_monsters = parse_monster_records(raw_monsters)
 
     raw_equipment = _load_raw_equipment(layout["raw"])
     parsed_equipment = parse_equipment_records(raw_equipment)
 
+    raw_spells = _load_raw_spells(layout["raw"])
+    parsed_spells = parse_spell_records(raw_spells)
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
+        spells=parsed_spells if parsed_spells else None,
     )
 
     # Read PDF hash from pdf_meta.json (if present)
@@ -431,6 +508,13 @@ def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False)
         if all_pages:
             equipment_page_range = (min(all_pages), max(all_pages))
 
+    # Compute page range from raw spells
+    spells_page_range = None
+    if raw_spells:
+        all_pages = [page for spell in raw_spells if (page := spell.get("page"))]
+        if all_pages:
+            spells_page_range = (min(all_pages), max(all_pages))
+
     # Generate rich meta.json for consumers (includes license, page_index, etc.)
     meta_json = _generate_meta_json(
         pdf_hash=pdf_hash,
@@ -438,6 +522,8 @@ def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False)
         monsters_page_range=monsters_page_range,
         equipment_complete=len(parsed_equipment) > 0,
         equipment_page_range=equipment_page_range,
+        spells_complete=len(parsed_spells) > 0,
+        spells_page_range=spells_page_range,
     )
     meta_path = target_dir / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")
