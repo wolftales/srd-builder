@@ -186,9 +186,11 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
 - ✅ **v0.6.5** - Version management tooling
 - 🎯 **v0.7.0** - Reference tables dataset (~15 tables)
-- 🎯 **v0.8.0** - Classes & Lineages (character creation)
+- 🎯 **v0.8.0** - Classes & Lineages (character creation + terminology aliases)
 - 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
-- 🎯 **v1.0.0** - Unified build & first GitHub release 🚀
+- 🎯 **v0.10.0** - Features dataset (class/racial features)
+- 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
+- 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
 
 ## Testing
 

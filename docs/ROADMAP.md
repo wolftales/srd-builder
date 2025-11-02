@@ -818,11 +818,78 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v1.0.0 — Unified Build & Validation**
+## **v0.10.0 — Features Dataset** **[DATA]**
+
+**Priority:** MEDIUM
+**Effort:** Medium (derived from classes/lineages)
+**Consumer Impact:** NEW - Standalone searchable features
+
+**Goal:** Extract class features and racial traits as standalone, searchable entities.
+
+**Why Features?**
+- Enables feature search without parsing class tables ("find all features that grant advantage")
+- Clean API for character builders
+- Reference for multiclassing feature interactions
+- Originally scoped in Week 5 of initial plan
+
+**Scope:**
+- Class features (Action Surge, Spellcasting, Rage, etc.)
+- Racial traits (Darkvision, Stonecunning, Lucky, etc.)
+- Feature progressions (scales with level)
+- Cross-references to parent class/lineage
+
+**Schema:**
+```json
+{
+  "id": "feature:action_surge",
+  "simple_name": "action_surge",
+  "name": "Action Surge",
+  "summary": "Take an additional action on your turn",
+  "source": "class:fighter",
+  "level_acquired": 2,
+  "text": "...",
+  "mechanics": {
+    "recharge": "short_rest"
+  }
+}
+```
+
+---
+
+## **v0.11.0 — Rules Dataset** **[DATA]**
+
+**Priority:** MEDIUM
+**Effort:** High (complex text parsing)
+**Consumer Impact:** NEW - Core mechanics and variant rules
+
+**Goal:** Extract core mechanics, variant rules, and optional rules from SRD 5.1.
+
+**Why Rules?**
+- Combat rules (attack, damage, cover)
+- Spellcasting rules (concentration, components)
+- Conditions mechanics (detailed effects)
+- Variant rules (feats, multiclassing)
+- Originally scoped in Week 6 of initial plan
+
+**Challenges:**
+- Most complex text parsing (not tables or stat blocks)
+- Least structured data in SRD
+- Requires careful rule text segmentation
+
+**Scope:**
+- Core mechanics (ability checks, saving throws, combat)
+- Spellcasting rules
+- Movement and exploration
+- Variant rules (feats, multiclassing prerequisites)
+- Optional rules
+
+---
+
+## **v1.0.0 — Complete SRD 5.1 in JSON** 🚀
 
 **Goal:** Single `build_all()` to process all entities and a top-level `validate_all()` for all schemas and PDFs.
 
-**Complete SRD 5.1 Coverage:**
+**Complete SRD 5.1 Coverage (9 datasets):**
 - ✅ Monsters (296)
 - ✅ Equipment (106)
 - ✅ Spells (319)
@@ -830,36 +897,25 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - ✅ Classes (~13)
 - ✅ Lineages (~9)
 - ✅ Conditions (~15)
+- ✅ Features (~150-200)
+- ✅ Rules (core mechanics)
+
+**Why This is v1.0.0:**
+- Complete extraction of SRD 5.1 content
+- Cannot move to SRD 5.2.1 until 5.1 is complete
+- First stable release with full dataset
+- Ready for consumer integration
 
 **First GitHub Release:**
-- Complete dataset bundle
+- Complete dataset bundle (all 9 JSON files)
 - Full changelog (v0.1.0 → v1.0.0)
 - Consumer documentation
 - Example code
 - License attribution
 
----
-
-## **v1.x+ — Rules & Features** **[FUTURE]**
-
-**Deferred Post-1.0:**
-
-### Rules Dataset
-**Priority:** LOW (most complex, least structured)
-**Goal:** Extract core mechanics, variant rules, optional rules
-**Why Later:**
-- Most complex text parsing (not tables or stat blocks)
-- Least structured data in SRD
-- Low immediate consumer value (most apps use hardcoded rules)
-- Better suited for v2.0 after 1.0 proves the architecture
-
-### Features Dataset
-**Priority:** LOW (derived from classes/lineages)
-**Goal:** Extract class features, racial traits as standalone entities
-**Why Later:**
-- Mostly duplicates data already in classes.json and lineages.json
-- Complex cross-referencing (features shared across classes)
-- Better to wait for consumer feedback on classes structure
+**Post-1.0.0:**
+- v1.x.x - Bug fixes, data quality improvements for SRD 5.1
+- v2.0.0 - SRD 5.2.1 extraction (new ruleset)
 
 ---
 
