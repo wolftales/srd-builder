@@ -491,4 +491,116 @@ This is part of a larger pattern:
 
 ---
 
+## Equipment Name Aliases
+
+**Date Raised:** 2025-11-02
+**Status:** Identified, deferred
+**Priority:** MEDIUM (UX improvement)
+**Related:** See "terminology.aliases Field in meta.json" above - same pattern applies
+
+### The Problem
+
+Some equipment items have compound names that hurt searchability:
+- **"Flask or tankard"** - searching for "tankard" alone won't find this
+- **"Jug or pitcher"** - searching for "pitcher" alone won't find this
+
+This is the same issue as terminology aliases (conditions, game terms) but for equipment names.
+
+### Proposed Solution
+
+Apply the same alias pattern as terminology - add `aliases` array to equipment items:
+
+```json
+{
+  "id": "item:flask_or_tankard",
+  "name": "Flask or tankard",
+  "simple_name": "flask_or_tankard",
+  "aliases": ["flask", "tankard"],
+  "capacity": "1 pint liquid",
+  "container": true,
+  "cost": {
+    "value": 2,
+    "unit": "cp"
+  }
+}
+```
+
+With index enhancement:
+```json
+{
+  "equipment": {
+    "by_name": {
+      "flask or tankard": "item:flask_or_tankard",
+      "flask": "item:flask_or_tankard",
+      "tankard": "item:flask_or_tankard",
+      "jug or pitcher": "item:jug_or_pitcher",
+      "jug": "item:jug_or_pitcher",
+      "pitcher": "item:jug_or_pitcher"
+    }
+  }
+}
+```
+
+### Implementation Phases
+
+1. **Schema Update:**
+   - Add optional `aliases: string[]` to equipment.schema.json
+   - Document field in SCHEMAS.md
+
+2. **Parser Enhancement:**
+   - Add aliases to compound-named items in parse_equipment.py
+   - Initially just "Flask or tankard" and "Jug or pitcher"
+
+3. **Indexer Update:**
+   - Modify indexer.py to expand by_name with alias entries
+   - Each alias becomes a separate lookup key pointing to same ID
+
+4. **Testing:**
+   - Verify search/lookup works for component names
+   - Test that "tankard" → "item:flask_or_tankard"
+   - Test that "pitcher" → "item:jug_or_pitcher"
+
+5. **Documentation:**
+   - Document alias pattern in SCHEMAS.md
+   - Consider unified alias docs with terminology aliases
+
+### When This Will Bite Us
+
+- **Search UI:** When consumers build search/filter and users can't find "tankard"
+- **Inventory Systems:** When matching item references from adventures/modules
+- **Cross-referencing:** When other sources reference "pitcher" but we only have "jug or pitcher"
+- **AI/LLM queries:** When players ask "do I have a tankard?" and system can't find it
+
+### Future Considerations
+
+Should this pattern extend to other compound/quantity names?
+- **"Arrows (20)"** - alias "arrow" or "arrows"?
+- **"Caltrops (bag of 20)"** - alias "caltrop" or "caltrops"?
+- **"Ball bearings (bag of 1,000)"** - alias "ball bearing"?
+
+May need quantity-aware alias handling if we expand beyond simple compound names.
+
+### Alignment with Terminology Pattern
+
+Both equipment aliases and terminology aliases solve the same UX problem:
+- **Core issue:** Multiple valid names for the same concept
+- **Solution:** Store all valid names, map to canonical ID
+- **Schema pattern:** Optional `aliases` array on entities
+- **Index pattern:** Expand lookup keys to include aliases
+- **Consumer benefit:** Flexible search without guessing exact name
+
+Consider implementing both together for consistency.
+
+### Implementation Checklist (When Triggered)
+
+- [ ] Add `aliases` field to equipment.schema.json
+- [ ] Add aliases to "Flask or tankard" and "Jug or pitcher"
+- [ ] Update indexer to expand by_name with aliases
+- [ ] Add tests for alias lookup
+- [ ] Document alias pattern in SCHEMAS.md
+- [ ] Consider unified alias documentation with terminology
+- [ ] Evaluate other compound-named items for aliases
+
+---
+
 ## [Add more parked features here as needed]

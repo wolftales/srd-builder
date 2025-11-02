@@ -24,7 +24,7 @@ def _clean_text(text: str) -> str:
     return text.strip()
 
 
-def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]]:  # noqa: C901
     """Parse raw spell data into structured spell records.
 
     Args:
@@ -40,6 +40,15 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         header_text = _clean_text(raw_spell.get("header_text", ""))
         description_text = _clean_text(raw_spell.get("description_text", ""))
         level_and_school = _clean_text(raw_spell.get("level_and_school", ""))
+
+        # Fix edge case: multi-page spells where description ended up in header_text
+        # Pattern: "Duration: X System Reference Document 5.1 [page] [actual description]"
+        if description_text == "" and "System Reference Document" in header_text:
+            # Split at the SRD marker - everything after is the description
+            parts = re.split(r"System\s+Reference\s+Document\s+5\.1\s+\d+", header_text, maxsplit=1)
+            if len(parts) == 2:
+                header_text = parts[0].strip()
+                description_text = parts[1].strip()
 
         # Parse level and school
         level, school = _parse_level_and_school(level_and_school)
