@@ -64,12 +64,12 @@ This document tracks features that have been discussed but deferred for later im
 #### 1. Adventuring Gear Category Label
 **Impact:** Schema expects "adventuring_gear" but data shows "gear"
 **Root Cause:** Category mapping uses "gear" but should use "adventuring_gear"
+**Alternative:** Could treat "gear" as terminology alias (see terminology.aliases discussion)
 **Fix Required:**
-- Update category mapping in `parse_equipment.py`
-- Regenerate fixtures
-- Minor breaking change but improves schema compliance
-
-#### 2. Container Capacity Gaps (documented separately below)
+- Option A: Update category mapping in `parse_equipment.py` to use "adventuring_gear"
+- Option B: Keep "gear" and add terminology alias mapping
+- Regenerate fixtures if changed
+- Minor breaking change but improves schema compliance (Option A) or adds discoverability (Option B)#### 2. Container Capacity Gaps (documented separately below)
 See "Container Capacity Hardcoded Values" section.
 
 ### Monster Parsing Gaps

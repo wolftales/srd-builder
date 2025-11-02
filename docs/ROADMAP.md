@@ -514,6 +514,48 @@ This is a **breaking change** but migration is straightforward - just remove one
 
 ---
 
+## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 DEFERRED
+
+**Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
+
+**Problem:** Current heuristic approach works but doesn't scale
+- Equipment armor subcategory fix used name-based inference (pragmatic but brittle)
+- PDF table layouts are complex, context tracking unreliable
+- Each new table requires custom debugging and fixes
+- No validation capability ("did we extract all tables?")
+
+**Solution:** Table metadata discovery system
+```python
+discover_tables() → table_metadata.json
+{
+  "tables": [
+    {
+      "id": "equipment_armor",
+      "pages": [63, 64],
+      "headers": ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"],
+      "row_count": 6,
+      "sections": [
+        {"name": "Light Armor", "rows": 3},
+        {"name": "Medium Armor", "rows": 5},
+        {"name": "Heavy Armor", "rows": 4}
+      ]
+    }
+  ]
+}
+```
+
+**Benefits:**
+- Deterministic column mapping (no heuristics)
+- Validation: compare extracted items to expected row counts
+- Documentation: PDF structure visible to maintainers
+- Prevents future cycles of per-table fixes
+
+**Estimated Effort:** 2-3 hours
+
+**Priority:** DEFERRED — Spells have different extraction pattern (prose vs tables), may not need this
+
+---
+
 ## **v0.6.2 — Spells Dataset** ✅ COMPLETE **[DATA]**
 
 **Released:** November 2025
@@ -580,7 +622,25 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 
 ---
 
-## **v0.6.1 — Conditions Dataset** (Quick Win) **[DATA]**
+## **v0.7.0 — Parsing Gap Fixes** 🎯 NEXT **[DATA]**
+
+**Priority:** HIGH
+**Consumer Impact:** Significant improvements to spell and equipment data quality
+
+**Goal:** Close critical parsing gaps identified in v0.6.3 confidence assessment.
+
+**Target Fixes:**
+1. **Ritual flag extraction** (CRITICAL) - Fix 0% → ~10% (30 ritual spells)
+2. **Area-of-effect parsing** - Boost effects from 44% → 55%+
+3. **Equipment category** - "gear" → "adventuring_gear" (68 items)
+4. **Healing effects** - Parse healing dice/amounts
+5. **Attack roll effects** - Detect spell attacks
+
+See [PARKING_LOT.md - Data Parsing Gaps](PARKING_LOT.md) for full details.
+
+---
+
+## **v0.8.0 — Conditions Dataset** (Quick Win) **[DATA]**
 
 **Priority:** MEDIUM
 **Effort:** Low (small dataset)
@@ -614,49 +674,7 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 
 ---
 
-## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 DEFERRED
-
-**Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
-
-**Problem:** Current heuristic approach works but doesn't scale
-- Equipment armor subcategory fix used name-based inference (pragmatic but brittle)
-- PDF table layouts are complex, context tracking unreliable
-- Each new table requires custom debugging and fixes
-- No validation capability ("did we extract all tables?")
-
-**Solution:** Table metadata discovery system
-```python
-discover_tables() → table_metadata.json
-{
-  "tables": [
-    {
-      "id": "equipment_armor",
-      "pages": [63, 64],
-      "headers": ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"],
-      "row_count": 6,
-      "sections": [
-        {"name": "Light Armor", "rows": 3},
-        {"name": "Medium Armor", "rows": 5},
-        {"name": "Heavy Armor", "rows": 4}
-      ]
-    }
-  ]
-}
-```
-
-**Benefits:**
-- Deterministic column mapping (no heuristics)
-- Validation: compare extracted items to expected row counts
-- Documentation: PDF structure visible to maintainers
-- Prevents future cycles of per-table fixes
-
-**Estimated Effort:** 2-3 hours
-
-**Priority:** DEFERRED — Spells have different extraction pattern (prose vs tables), may not need this
-
----
-
-## **v0.7.0 — Classes & Lineages** (Lower Priority)
+## **v0.9.0 — Classes & Lineages** (Lower Priority)
 
 **Goal:** Extract character creation content.
 
