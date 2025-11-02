@@ -73,8 +73,7 @@ srd_5_1/
 │   └── table.schema.json
 └── docs/
     ├── SCHEMAS.md         # Schema design & versioning
-    ├── DATA_DICTIONARY.md # Field reference & SRD mappings
-    └── ARCHITECTURE.md    # Pipeline & design decisions
+    └── DATA_DICTIONARY.md # Field reference & SRD mappings
 ```
 
 ---
@@ -154,7 +153,7 @@ index[canonical].by_name["dwarf"]  // → "lineage:dwarf"
 index.equipment.by_name["tankard"]  // → "item:flask_or_tankard"
 ```
 
-See **ARCHITECTURE.md** (design) and **SCHEMAS.md** (field details) for more.
+See **SCHEMAS.md** for field details.
 
 ---
 
@@ -164,7 +163,6 @@ See **ARCHITECTURE.md** (design) and **SCHEMAS.md** (field details) for more.
 
 - **SCHEMAS.md** - Schema v1.3.0 design, versioning, use cases, evolution history
 - **DATA_DICTIONARY.md** - Complete field reference with SRD source mappings
-- **ARCHITECTURE.md** - Pipeline design, indexing, alias system architecture
 - **meta.json** - License, attribution, file manifest
 - **build_report.json** - Extraction statistics
 - **schemas/*.json** - JSON Schema validation
