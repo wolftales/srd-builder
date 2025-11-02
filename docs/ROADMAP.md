@@ -622,7 +622,7 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 
 ---
 
-## **v0.7.0 — Parsing Gap Fixes** 🎯 NEXT **[DATA]**
+## **v0.6.4 — Parsing Gap Fixes** 🎯 NEXT **[DATA QUALITY]**
 
 **Priority:** HIGH
 **Consumer Impact:** Significant improvements to spell and equipment data quality
@@ -632,11 +632,32 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 **Target Fixes:**
 1. **Ritual flag extraction** (CRITICAL) - Fix 0% → ~10% (30 ritual spells)
 2. **Area-of-effect parsing** - Boost effects from 44% → 55%+
-3. **Equipment category** - "gear" → "adventuring_gear" (68 items)
+3. **Equipment category** - "gear" → "adventuring_gear" (68 items, or use terminology alias)
 4. **Healing effects** - Parse healing dice/amounts
 5. **Attack roll effects** - Detect spell attacks
 
+**Why v0.6.4 (not v0.7.0)?**
+These are quality improvements to existing v0.6.x spell/equipment data, not new datasets. Keeping within v0.6.x patch series maintains semantic versioning and allows v0.7.0 to remain Classes & Lineages as originally planned.
+
 See [PARKING_LOT.md - Data Parsing Gaps](PARKING_LOT.md) for full details.
+
+---
+
+## **v0.7.0 — Classes & Lineages** **[DATA]**
+
+**Goal:** Extract character creation content.
+
+**Scope:**
+- Classes (complex with level progression tables)
+- Lineages/Races (character creation features)
+
+**Priority:** MEDIUM - Important for character creation, but NPCs use monster stats
+
+**Why Classes Next?**
+- Core D&D content for character building
+- Complex extraction (level progression tables)
+- Validates table extraction architecture
+- Complements existing monster, equipment, and spell data
 
 ---
 
@@ -671,18 +692,6 @@ See [PARKING_LOT.md - Data Parsing Gaps](PARKING_LOT.md) for full details.
 - speed_modifier (e.g., restrained, grappled)
 - advantage_on / disadvantage_on
 - prevents (e.g., unconscious prevents actions)
-
----
-
-## **v0.9.0 — Classes & Lineages** (Lower Priority)
-
-**Goal:** Extract character creation content.
-
-**Scope:**
-- Classes (complex with level progression tables)
-- Lineages/Races (character creation features)
-
-**Priority:** LOWER - Less immediately useful (NPCs use monster stats), can defer until character sheet features needed.
 
 ---
 
