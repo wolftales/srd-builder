@@ -603,4 +603,100 @@ Consider implementing both together for consistency.
 
 ---
 
+## Code Complexity Technical Debt
+
+**Date Raised:** 2025-11-02
+**Status:** Technical debt - bypassed with noqa comments
+**Priority:** MEDIUM - should address before complexity becomes unmaintainable
+
+### The Problem
+
+Several parsing functions exceed Ruff's complexity limit (C901, max 10) and have been suppressed with `# noqa: C901` comments:
+
+1. **parse_equipment.py: `parse_equipment_records()`** - Complexity 11
+   - Handles deduplication logic for duplicate table entries
+   - Merges capacity data from Container Capacity table
+   - Applies hardcoded CONTAINER_CAPACITIES fallback
+
+2. **parse_spells.py: `parse_spell_records()`** - Complexity 11
+   - Parses spell headers (casting time, range, components, duration)
+   - Fixes edge case for multi-page spells
+   - Extracts effects and scaling from description
+
+3. **validate.py: `check_data_quality()`** - Complexity 13
+   - Checks for empty spell text
+   - Checks for duplicate IDs across multiple index sections
+   - Nested loops for validating index structure
+
+### Why This Is Technical Debt
+
+- **Maintainability:** Complex functions are harder to understand and modify
+- **Testing:** Large functions are harder to test comprehensively
+- **Bugs:** Higher complexity correlates with higher bug rates
+- **Code review:** Reviewers struggle with complex functions
+- **Suppressions mask the problem:** `# noqa` comments don't fix the underlying issue
+
+### Proper Solution
+
+**Refactoring Strategy:**
+
+1. **Extract helper functions** - Break complex logic into smaller, focused functions
+   - `parse_equipment_records()`: Extract deduplication logic, capacity merging
+   - `parse_spell_records()`: Extract header parsing, effect extraction
+   - `check_data_quality()`: Extract per-check functions
+
+2. **Use early returns** - Reduce nesting depth with guard clauses
+
+3. **Data-driven approaches** - Replace conditionals with lookup tables where appropriate
+
+4. **Measure improvement** - Run complexity analysis before/after refactoring
+
+### Implementation Phases
+
+**Phase 1: parse_equipment_records() (Priority: HIGH - blocks hardcoded capacity fix)**
+- [ ] Extract `_deduplicate_items()` function
+- [ ] Extract `_merge_capacity_data()` function
+- [ ] Extract `_apply_hardcoded_capacities()` function
+- [ ] Reduce main function to orchestration only
+- [ ] Target complexity: ≤ 8
+
+**Phase 2: parse_spell_records() (Priority: MEDIUM)**
+- [ ] Extract `_parse_spell_header()` function (casting, range, components, duration)
+- [ ] Extract `_fix_multipage_spell_text()` function
+- [ ] Extract effect/scaling extraction into separate module
+- [ ] Target complexity: ≤ 8
+
+**Phase 3: check_data_quality() (Priority: MEDIUM)**
+- [ ] Extract `_check_empty_spell_text()` function
+- [ ] Extract `_check_index_duplicates()` function
+- [ ] Make extensible for adding new checks
+- [ ] Target complexity: ≤ 6
+
+**Phase 4: Establish Complexity Guidelines**
+- [ ] Document complexity limits in CONTRIBUTING.md
+- [ ] Add complexity reporting to CI
+- [ ] Require complexity justification in PR reviews for functions > 8
+
+### When This Will Bite Us
+
+- When adding new parsing logic (equipment variants, magic items)
+- When debugging extraction issues (hard to trace through complex functions)
+- When onboarding new contributors (steep learning curve)
+- When refactoring table extraction (tightly coupled with parsing)
+
+### Related Technical Debt
+
+- Container capacity hardcoding (see above) - tied to equipment parser complexity
+- Table extraction improvements - will add more complexity without refactoring
+- Multiple ruleset support - will multiply complexity if not addressed
+
+### Success Metrics
+
+- All `# noqa: C901` comments removed
+- All functions ≤ 10 complexity (ideally ≤ 8)
+- Improved test coverage of extracted functions
+- Faster PR review times for parsing changes
+
+---
+
 ## [Add more parked features here as needed]
