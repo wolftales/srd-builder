@@ -863,12 +863,6 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v1.0.0 — Unified Build & Validation**
-
-**Goal:** single `build_all()` to process all entities and a top-level `validate_all()` for all schemas and PDFs.
-
----
-
 ### Principles
 
 * **Source of truth:** the PDF, not pre-existing JSON.
