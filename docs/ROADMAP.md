@@ -673,6 +673,38 @@ These are quality improvements to existing v0.6.x spell/equipment data, not new 
 
 ---
 
+## **v0.6.5 — Version Management Tooling** ✅ COMPLETE **[TOOLING]**
+
+**Released:** November 2025
+**Priority:** LOW (developer experience improvement)
+**Consumer Impact:** None (internal tooling only)
+
+**Goal:** Automate version bump workflow to eliminate manual errors.
+
+**What Shipped:**
+- `scripts/bump_version.py` - Automated version management script
+  - Updates `__version__` in `__init__.py`
+  - Regenerates all test fixtures with new version + schema version
+  - Updates README.md build pipeline version
+  - Runs full test suite for verification
+  - Creates detailed git commit with all changes
+
+**Usage:**
+```bash
+python scripts/bump_version.py 0.6.6
+make bump-version VERSION=0.6.6
+python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
+```
+
+**Benefits:**
+- Eliminates manual fixture regeneration steps
+- Ensures version consistency across 5+ files
+- Catches missing ROADMAP.md documentation via test
+- Standardizes commit messages
+- Reduces release preparation time
+
+---
+
 ## **v0.7.0 — Classes & Lineages** **[DATA]**
 
 **Goal:** Extract character creation content.
