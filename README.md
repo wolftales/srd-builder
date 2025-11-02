@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.6.3)
+### Build pipeline (v0.6.4)
 
 The build pipeline extracts monster, equipment, and spell data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, and **319 spells** with full provenance tracking.
 
@@ -179,6 +179,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.5.1** - Action parsing & ability modifiers (schema v1.2.0)
 - ✅ **v0.6.2** - Spells dataset complete (319 spells, schema v1.3.0)
 - ✅ **v0.6.3** - Fixed build_report.json path reference
+- ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
 
 ## Testing
 
