@@ -102,9 +102,9 @@ def test_schema_version_consistency():
             version = schema["version"]
             versions[schema_file.name] = version
 
-    # All schemas should be on version 1.1.0 currently
+    # All schemas should be on version 1.2.0 currently
     # (This test will need updating when we have different versions)
-    current_version = "1.1.0"
+    current_version = "1.2.0"
     for schema_file, version in versions.items():
         assert (
             version == current_version

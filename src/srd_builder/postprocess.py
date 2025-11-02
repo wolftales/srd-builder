@@ -14,6 +14,7 @@ __all__ = [
     "structure_defenses",
     "standardize_challenge",
     "add_ability_modifiers",
+    "parse_action_structures",
     "polish_text",
     "polish_text_fields",
     "clean_monster_record",
@@ -293,6 +294,30 @@ def add_ability_modifiers(monster: dict[str, Any]) -> dict[str, Any]:
     return patched
 
 
+def parse_action_structures(monster: dict[str, Any]) -> dict[str, Any]:
+    """Parse structured fields from action text.
+
+    Extracts attack_type, to_hit, reach/range, damage, saving_throw from
+    action text while preserving original text for fallback.
+    """
+    from srd_builder.parse_actions import parse_action_fields
+
+    patched = {**monster}
+
+    for key in ("actions", "legendary_actions", "reactions"):
+        if key not in monster:
+            continue
+        parsed_entries: list[dict[str, Any]] = []
+        for entry in monster.get(key, []):
+            if not isinstance(entry, dict):
+                parsed_entries.append(entry)
+                continue
+            parsed_entries.append(parse_action_fields(entry))
+        patched[key] = parsed_entries
+
+    return patched
+
+
 def polish_text(text: str | None) -> str | None:
     """Clean OCR artifacts, spacing, and boilerplate from text fields."""
 
@@ -426,6 +451,7 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
         structure_defenses,
         standardize_challenge,
         add_ability_modifiers,
+        parse_action_structures,
         polish_text_fields,
         dedup_defensive_lists,
         prune_empty_fields,
