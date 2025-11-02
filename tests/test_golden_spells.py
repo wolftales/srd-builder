@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from srd_builder import __version__
+from srd_builder.constants import SCHEMA_VERSION
 from srd_builder.parse_spells import parse_spell_records
 from srd_builder.postprocess import clean_spell_record
 
@@ -13,7 +14,7 @@ from srd_builder.postprocess import clean_spell_record
 def _meta(ruleset: str) -> dict[str, str]:
     return {
         "ruleset": ruleset,
-        "schema_version": "1.3.0",
+        "schema_version": SCHEMA_VERSION,
         "source": "SRD_CC_v5.1",
         "build_report": "../build_report.json",
         "generated_by": f"srd-builder v{__version__}",
