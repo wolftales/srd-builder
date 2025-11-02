@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci output bundle
+.PHONY: init lint test format pre-commit ci output bundle bump-version
 
 init:
 	pip install -e ".[dev]"
@@ -33,3 +33,10 @@ output:
 
 bundle:
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
+
+bump-version:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Usage: make bump-version VERSION=0.6.5"; \
+		exit 1; \
+	fi
+	python scripts/bump_version.py $(VERSION)

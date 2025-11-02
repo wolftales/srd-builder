@@ -121,6 +121,10 @@ make pre-commit    # Run all pre-commit hooks
 make lint          # Ruff + Black formatting checks
 make test          # Run pytest
 make ci            # Full CI simulation (lint + test)
+
+# Version bump (automates __init__.py, fixtures, README, tests, commit)
+python scripts/bump_version.py 0.6.5
+python scripts/bump_version.py 0.7.0 --no-commit  # Preview changes without committing
 ```
 
 ### Validation
