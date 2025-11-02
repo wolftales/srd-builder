@@ -22,7 +22,7 @@ def build_srd_toc(pdf_path: Path) -> dict[str, Any]:
     """
     pdf = pymupdf.open(pdf_path)
 
-    toc = {
+    toc: dict[str, Any] = {
         "metadata": {
             "total_pages": len(pdf),
             "pdf_sha256": None,  # Will be filled from pdf_meta.json
