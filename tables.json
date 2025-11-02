@@ -1,0 +1,1194 @@
+[
+  {
+    "id": "table:ability_scores_and_modifiers",
+    "simple_name": "ability_scores_and_modifiers",
+    "name": "Ability Scores and Modifiers",
+    "columns": [
+      {
+        "name": "Score",
+        "type": "integer"
+      },
+      {
+        "name": "Modifier",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        1,
+        "-5"
+      ],
+      [
+        2,
+        "-4"
+      ],
+      [
+        3,
+        "-4"
+      ],
+      [
+        4,
+        "-3"
+      ],
+      [
+        5,
+        "-3"
+      ],
+      [
+        6,
+        "-2"
+      ],
+      [
+        7,
+        "-2"
+      ],
+      [
+        8,
+        "-1"
+      ],
+      [
+        9,
+        "-1"
+      ],
+      [
+        10,
+        "0"
+      ],
+      [
+        11,
+        "0"
+      ],
+      [
+        12,
+        "+1"
+      ],
+      [
+        13,
+        "+1"
+      ],
+      [
+        14,
+        "+2"
+      ],
+      [
+        15,
+        "+2"
+      ],
+      [
+        16,
+        "+3"
+      ],
+      [
+        17,
+        "+3"
+      ],
+      [
+        18,
+        "+4"
+      ],
+      [
+        19,
+        "+4"
+      ],
+      [
+        20,
+        "+5"
+      ],
+      [
+        21,
+        "+5"
+      ],
+      [
+        22,
+        "+6"
+      ],
+      [
+        23,
+        "+6"
+      ],
+      [
+        24,
+        "+7"
+      ],
+      [
+        25,
+        "+7"
+      ],
+      [
+        26,
+        "+8"
+      ],
+      [
+        27,
+        "+8"
+      ],
+      [
+        28,
+        "+9"
+      ],
+      [
+        29,
+        "+9"
+      ],
+      [
+        30,
+        "+10"
+      ]
+    ],
+    "page": 7,
+    "category": "character_creation",
+    "section": "Chapter 1: Characters",
+    "notes": "Calculated from formula: (score - 10) // 2",
+    "summary": "Core mechanic: ability score to modifier conversion"
+  },
+  {
+    "id": "table:proficiency_bonus",
+    "simple_name": "proficiency_bonus",
+    "name": "Proficiency Bonus by Level",
+    "columns": [
+      {
+        "name": "Level",
+        "type": "integer"
+      },
+      {
+        "name": "Proficiency Bonus",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        1,
+        "+2"
+      ],
+      [
+        2,
+        "+2"
+      ],
+      [
+        3,
+        "+2"
+      ],
+      [
+        4,
+        "+2"
+      ],
+      [
+        5,
+        "+3"
+      ],
+      [
+        6,
+        "+3"
+      ],
+      [
+        7,
+        "+3"
+      ],
+      [
+        8,
+        "+3"
+      ],
+      [
+        9,
+        "+4"
+      ],
+      [
+        10,
+        "+4"
+      ],
+      [
+        11,
+        "+4"
+      ],
+      [
+        12,
+        "+4"
+      ],
+      [
+        13,
+        "+5"
+      ],
+      [
+        14,
+        "+5"
+      ],
+      [
+        15,
+        "+5"
+      ],
+      [
+        16,
+        "+5"
+      ],
+      [
+        17,
+        "+6"
+      ],
+      [
+        18,
+        "+6"
+      ],
+      [
+        19,
+        "+6"
+      ],
+      [
+        20,
+        "+6"
+      ]
+    ],
+    "page": 15,
+    "category": "character_creation",
+    "section": "Chapter 1: Characters",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Needed for classes dataset (v0.8.0)"
+  },
+  {
+    "id": "table:experience_by_cr",
+    "simple_name": "experience_by_cr",
+    "name": "Experience Points by Challenge Rating",
+    "columns": [
+      {
+        "name": "Challenge Rating",
+        "type": "string"
+      },
+      {
+        "name": "XP",
+        "type": "integer"
+      }
+    ],
+    "rows": [
+      [
+        "0",
+        0
+      ],
+      [
+        "1/8",
+        25
+      ],
+      [
+        "1/4",
+        50
+      ],
+      [
+        "1/2",
+        100
+      ],
+      [
+        "1",
+        200
+      ],
+      [
+        "2",
+        450
+      ],
+      [
+        "3",
+        700
+      ],
+      [
+        "4",
+        1100
+      ],
+      [
+        "5",
+        1800
+      ],
+      [
+        "6",
+        2300
+      ],
+      [
+        "7",
+        2900
+      ],
+      [
+        "8",
+        3900
+      ],
+      [
+        "9",
+        5000
+      ],
+      [
+        "10",
+        5900
+      ],
+      [
+        "11",
+        7200
+      ],
+      [
+        "12",
+        8400
+      ],
+      [
+        "13",
+        10000
+      ],
+      [
+        "14",
+        11500
+      ],
+      [
+        "15",
+        13000
+      ],
+      [
+        "16",
+        15000
+      ],
+      [
+        "17",
+        18000
+      ],
+      [
+        "18",
+        20000
+      ],
+      [
+        "19",
+        22000
+      ],
+      [
+        "20",
+        25000
+      ],
+      [
+        "21",
+        33000
+      ],
+      [
+        "22",
+        41000
+      ],
+      [
+        "23",
+        50000
+      ],
+      [
+        "24",
+        62000
+      ],
+      [
+        "25",
+        75000
+      ],
+      [
+        "26",
+        90000
+      ],
+      [
+        "27",
+        105000
+      ],
+      [
+        "28",
+        120000
+      ],
+      [
+        "29",
+        135000
+      ],
+      [
+        "30",
+        155000
+      ]
+    ],
+    "page": 57,
+    "category": "combat",
+    "section": "Chapter 9: Combat",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "XP calculation for encounters"
+  },
+  {
+    "id": "table:spell_slots_by_level",
+    "simple_name": "spell_slots_by_level",
+    "name": "Spell Slots by Character Level",
+    "columns": [
+      {
+        "name": "Level",
+        "type": "integer"
+      },
+      {
+        "name": "1st",
+        "type": "integer"
+      },
+      {
+        "name": "2nd",
+        "type": "integer"
+      },
+      {
+        "name": "3rd",
+        "type": "integer"
+      },
+      {
+        "name": "4th",
+        "type": "integer"
+      },
+      {
+        "name": "5th",
+        "type": "integer"
+      },
+      {
+        "name": "6th",
+        "type": "integer"
+      },
+      {
+        "name": "7th",
+        "type": "integer"
+      },
+      {
+        "name": "8th",
+        "type": "integer"
+      },
+      {
+        "name": "9th",
+        "type": "integer"
+      },
+      {
+        "name": "Cantrips Known",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        1,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        4,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        4,
+        4,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        5,
+        4,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        6,
+        4,
+        3,
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        7,
+        4,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        8,
+        4,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        9,
+        4,
+        3,
+        3,
+        3,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        10,
+        4,
+        3,
+        3,
+        3,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        11,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        12,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        13,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        14,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        15,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        16,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        17,
+        4,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        18,
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        19,
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        1,
+        1,
+        1,
+        0
+      ],
+      [
+        20,
+        4,
+        3,
+        3,
+        3,
+        3,
+        2,
+        2,
+        1,
+        1,
+        0
+      ]
+    ],
+    "page": 201,
+    "category": "magic",
+    "section": "Chapter 10: Spellcasting",
+    "notes": "Full caster progression (Cleric, Druid, Wizard). Reference data from SRD 5.1",
+    "summary": "Needed for classes dataset (v0.8.0). May be split by class."
+  },
+  {
+    "id": "table:cantrip_damage",
+    "simple_name": "cantrip_damage",
+    "name": "Cantrip Damage by Character Level",
+    "columns": [
+      {
+        "name": "Character Level",
+        "type": "range"
+      },
+      {
+        "name": "Damage",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "1st-4th",
+        "1 die"
+      ],
+      [
+        "5th-10th",
+        "2 dice"
+      ],
+      [
+        "11th-16th",
+        "3 dice"
+      ],
+      [
+        "17th-20th",
+        "4 dice"
+      ]
+    ],
+    "page": 201,
+    "category": "magic",
+    "section": "Chapter 10: Spellcasting",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Scaling damage for cantrips"
+  },
+  {
+    "id": "table:travel_pace",
+    "simple_name": "travel_pace",
+    "name": "Travel Pace",
+    "columns": [
+      {
+        "name": "Pace",
+        "type": "string"
+      },
+      {
+        "name": "Distance per Minute",
+        "type": "string"
+      },
+      {
+        "name": "Distance per Hour",
+        "type": "string"
+      },
+      {
+        "name": "Distance per Day",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "Fast",
+        "400 feet",
+        "4 miles",
+        "30 miles"
+      ],
+      [
+        "Normal",
+        "300 feet",
+        "3 miles",
+        "24 miles"
+      ],
+      [
+        "Slow",
+        "200 feet",
+        "2 miles",
+        "18 miles"
+      ]
+    ],
+    "page": 242,
+    "category": "exploration",
+    "section": "Chapter 8: Adventuring",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Distance per hour/day at different paces"
+  },
+  {
+    "id": "table:food_drink_lodging",
+    "simple_name": "food_drink_lodging",
+    "name": "Food, Drink, and Lodging",
+    "columns": [
+      {
+        "name": "Item",
+        "type": "string"
+      },
+      {
+        "name": "Cost",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "Ale (gallon)",
+        "2 sp"
+      ],
+      [
+        "Ale (mug)",
+        "4 cp"
+      ],
+      [
+        "Banquet (per person)",
+        "10 gp"
+      ],
+      [
+        "Bread (loaf)",
+        "2 cp"
+      ],
+      [
+        "Cheese (hunk)",
+        "1 sp"
+      ],
+      [
+        "Inn stay per day (Squalid)",
+        "7 cp"
+      ],
+      [
+        "Inn stay per day (Poor)",
+        "1 sp"
+      ],
+      [
+        "Inn stay per day (Modest)",
+        "5 sp"
+      ],
+      [
+        "Inn stay per day (Comfortable)",
+        "8 sp"
+      ],
+      [
+        "Inn stay per day (Wealthy)",
+        "2 gp"
+      ],
+      [
+        "Inn stay per day (Aristocratic)",
+        "4 gp"
+      ],
+      [
+        "Meals per day (Squalid)",
+        "3 cp"
+      ],
+      [
+        "Meals per day (Poor)",
+        "6 cp"
+      ],
+      [
+        "Meals per day (Modest)",
+        "3 sp"
+      ],
+      [
+        "Meals per day (Comfortable)",
+        "5 sp"
+      ],
+      [
+        "Meals per day (Wealthy)",
+        "8 sp"
+      ],
+      [
+        "Meals per day (Aristocratic)",
+        "2 gp"
+      ],
+      [
+        "Wine (common, pitcher)",
+        "2 sp"
+      ],
+      [
+        "Wine (fine, bottle)",
+        "10 gp"
+      ]
+    ],
+    "page": 158,
+    "category": "equipment",
+    "section": "Chapter 5: Equipment",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Service costs for inns/taverns"
+  },
+  {
+    "id": "table:services",
+    "simple_name": "services",
+    "name": "Services",
+    "columns": [
+      {
+        "name": "Service",
+        "type": "string"
+      },
+      {
+        "name": "Cost",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "Coach cab (between towns)",
+        "3 cp per mile"
+      ],
+      [
+        "Coach cab (within city)",
+        "1 cp"
+      ],
+      [
+        "Hireling (skilled)",
+        "2 gp per day"
+      ],
+      [
+        "Hireling (untrained)",
+        "2 sp per day"
+      ],
+      [
+        "Messenger",
+        "2 cp per mile"
+      ],
+      [
+        "Road or gate toll",
+        "1 cp"
+      ],
+      [
+        "Ship's passage",
+        "1 sp per mile"
+      ]
+    ],
+    "page": 159,
+    "category": "downtime",
+    "section": "Chapter 5: Equipment",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Hireling and service costs"
+  },
+  {
+    "id": "table:creature_size",
+    "simple_name": "creature_size",
+    "name": "Size Categories",
+    "columns": [
+      {
+        "name": "Size",
+        "type": "string"
+      },
+      {
+        "name": "Space",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "Tiny",
+        "2\u00bd by 2\u00bd ft."
+      ],
+      [
+        "Small",
+        "5 by 5 ft."
+      ],
+      [
+        "Medium",
+        "5 by 5 ft."
+      ],
+      [
+        "Large",
+        "10 by 10 ft."
+      ],
+      [
+        "Huge",
+        "15 by 15 ft."
+      ],
+      [
+        "Gargantuan",
+        "20 by 20 ft. or larger"
+      ]
+    ],
+    "page": 191,
+    "category": "reference",
+    "section": "Chapter 9: Combat",
+    "notes": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)",
+    "summary": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)"
+  },
+  {
+    "id": "table:carrying_capacity",
+    "simple_name": "carrying_capacity",
+    "name": "Carrying Capacity",
+    "columns": [
+      {
+        "name": "Strength Score",
+        "type": "integer"
+      },
+      {
+        "name": "Carrying Capacity (lbs)",
+        "type": "integer"
+      }
+    ],
+    "rows": [
+      [
+        1,
+        15
+      ],
+      [
+        2,
+        30
+      ],
+      [
+        3,
+        45
+      ],
+      [
+        4,
+        60
+      ],
+      [
+        5,
+        75
+      ],
+      [
+        6,
+        90
+      ],
+      [
+        7,
+        105
+      ],
+      [
+        8,
+        120
+      ],
+      [
+        9,
+        135
+      ],
+      [
+        10,
+        150
+      ],
+      [
+        11,
+        165
+      ],
+      [
+        12,
+        180
+      ],
+      [
+        13,
+        195
+      ],
+      [
+        14,
+        210
+      ],
+      [
+        15,
+        225
+      ],
+      [
+        16,
+        240
+      ],
+      [
+        17,
+        255
+      ],
+      [
+        18,
+        270
+      ],
+      [
+        19,
+        285
+      ],
+      [
+        20,
+        300
+      ],
+      [
+        21,
+        315
+      ],
+      [
+        22,
+        330
+      ],
+      [
+        23,
+        345
+      ],
+      [
+        24,
+        360
+      ],
+      [
+        25,
+        375
+      ],
+      [
+        26,
+        390
+      ],
+      [
+        27,
+        405
+      ],
+      [
+        28,
+        420
+      ],
+      [
+        29,
+        435
+      ],
+      [
+        30,
+        450
+      ]
+    ],
+    "page": 176,
+    "category": "reference",
+    "section": "Chapter 7: Using Ability Scores",
+    "notes": "Calculated from formula: Strength \u00d7 15",
+    "summary": "Encumbrance rules (Strength \u00d7 15)"
+  },
+  {
+    "id": "table:lifestyle_expenses",
+    "simple_name": "lifestyle_expenses",
+    "name": "Lifestyle Expenses",
+    "columns": [
+      {
+        "name": "Lifestyle",
+        "type": "string"
+      },
+      {
+        "name": "Cost per Day",
+        "type": "string"
+      }
+    ],
+    "rows": [
+      [
+        "Wretched",
+        "\u2014"
+      ],
+      [
+        "Squalid",
+        "1 sp"
+      ],
+      [
+        "Poor",
+        "2 sp"
+      ],
+      [
+        "Modest",
+        "1 gp"
+      ],
+      [
+        "Comfortable",
+        "2 gp"
+      ],
+      [
+        "Wealthy",
+        "4 gp"
+      ],
+      [
+        "Aristocratic",
+        "10 gp minimum"
+      ]
+    ],
+    "page": 157,
+    "category": "downtime",
+    "section": "Chapter 5: Equipment",
+    "notes": "Reference data from SRD 5.1",
+    "summary": "Daily living costs (wretched to aristocratic)"
+  }
+]

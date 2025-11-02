@@ -22,11 +22,14 @@ from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
 from .extract_spells import extract_spells
+from .extract_tables import extract_tables_to_json
 from .indexer import build_indexes
 from .parse_equipment import parse_equipment_records
 from .parse_monsters import parse_monster_records
 from .parse_spells import parse_spell_records
+from .parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
+from .table_indexer import TableIndexer
 
 
 def _meta_block(ruleset: str) -> dict[str, str]:
@@ -85,6 +88,7 @@ def _generate_meta_json(
     equipment_page_range: tuple[int, int] | None = None,
     spells_complete: bool = False,
     spells_page_range: tuple[int, int] | None = None,
+    table_page_index: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate rich metadata for dist/meta.json with provenance.
 
@@ -115,7 +119,7 @@ def _generate_meta_json(
             "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
         },
         "page_index": _build_page_index(
-            monsters_page_range, equipment_page_range, spells_page_range
+            monsters_page_range, equipment_page_range, spells_page_range, table_page_index
         ),
         "files": {
             "meta": "meta.json",
@@ -124,11 +128,13 @@ def _generate_meta_json(
             "monsters": "monsters.json",
             "equipment": "equipment.json",
             "spells": "spells.json",
+            "tables": "tables.json",
         },
         "extraction_status": {
             "monsters": "complete" if monsters_complete else "in_progress",
             "equipment": "complete" if equipment_complete else "in_progress",
             "spells": "complete" if spells_complete else "in_progress",
+            "tables": "complete",
         },
         "$schema_version": SCHEMA_VERSION,
     }
@@ -141,6 +147,7 @@ def _write_datasets(
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
     spells: list[dict[str, Any]] | None = None,
+    tables: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -172,6 +179,14 @@ def _write_datasets(
         _render_json(spells_doc),
         encoding="utf-8",
     )
+
+    # Write tables (v0.7.0)
+    if tables:
+        tables_doc = _wrap_with_meta({"items": tables}, ruleset=ruleset)
+        (dist_data_dir / "tables.json").write_text(
+            _render_json(tables_doc),
+            encoding="utf-8",
+        )
 
     index_payload = build_indexes(processed_monsters, processed_spells, processed_equipment)
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
@@ -273,7 +288,12 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     schemas_src = repo_root / "schemas"
     schemas_dst = target_dir / "schemas"
     schemas_dst.mkdir(exist_ok=True)
-    for schema_file in ["monster.schema.json", "equipment.schema.json", "spell.schema.json"]:
+    for schema_file in [
+        "monster.schema.json",
+        "equipment.schema.json",
+        "spell.schema.json",
+        "table.schema.json",
+    ]:
         src = schemas_src / schema_file
         if src.exists():
             (schemas_dst / schema_file).write_text(
@@ -348,8 +368,17 @@ def _build_page_index(
     monsters_page_range: tuple[int, int] | None,
     equipment_page_range: tuple[int, int] | None,
     spells_page_range: tuple[int, int] | None,
-) -> dict[str, dict[str, int]]:
-    """Build page_index section for meta.json."""
+    table_page_index: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build page_index section for meta.json.
+
+    Combines simple page ranges with comprehensive table_indexer data.
+    """
+    # Start with table indexer data if available (most comprehensive)
+    if table_page_index:
+        return table_page_index
+
+    # Fallback to simple page ranges
     page_index: dict[str, dict[str, int]] = {}
     if monsters_page_range:
         page_index["monsters"] = {"start": monsters_page_range[0], "end": monsters_page_range[1]}
@@ -452,6 +481,66 @@ def _load_raw_spells(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
+def _extract_raw_tables(raw_dir: Path) -> Path | None:
+    """Extract reference tables from PDF.
+
+    Returns:
+        Path to extracted tables_raw.json, or None if no PDF found
+    """
+    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    if not pdf_files:
+        return None
+
+    pdf_path = pdf_files[0]
+    print(f"Extracting tables from {pdf_path.name}...")
+
+    try:
+        output_path = raw_dir / "tables_raw.json"
+        extract_tables_to_json(pdf_path, output_path, skip_failures=True)
+        print(f"✓ Saved to {output_path}")
+        return output_path
+    except Exception as exc:  # pragma: no cover
+        print(f"⚠️ Table extraction skipped: {exc}")
+        return None
+
+
+def _load_raw_tables(raw_dir: Path) -> list[dict[str, Any]]:
+    """Load raw table data from extraction output."""
+    raw_source = raw_dir / "tables_raw.json"
+    if raw_source.exists():
+        data = json.loads(raw_source.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "tables" in data:
+            return data["tables"]
+        raise TypeError("tables_raw.json must contain 'tables' key with array")
+    return []
+
+
+def _generate_table_page_index(
+    raw_dir: Path, extracted_table_ids: list[str] | None = None
+) -> dict[str, Any] | None:
+    """Generate page_index data from table_indexer for meta.json.
+
+    Args:
+        raw_dir: Directory containing the PDF
+        extracted_table_ids: List of table IDs that were successfully extracted
+
+    Returns:
+        Page index dictionary or None if no PDF found
+    """
+    pdf_files = sorted(Path(raw_dir).glob("*.pdf"))
+    if not pdf_files:
+        return None
+
+    pdf_path = pdf_files[0]
+    try:
+        indexer = TableIndexer(pdf_path)
+        page_index = indexer.generate_page_index_for_meta(extracted_table_ids)
+        return page_index
+    except Exception as exc:  # pragma: no cover
+        print(f"⚠️ Table page index generation skipped: {exc}")
+        return None
+
+
 def build(  # noqa: C901
     ruleset: str, output_format: str, out_dir: Path, bundle: bool = False
 ) -> Path:
@@ -471,6 +560,9 @@ def build(  # noqa: C901
     # Extract spells from PDF (v0.6.0)
     _extract_raw_spells(raw_dir=layout["raw"])
 
+    # Extract tables from PDF (v0.7.0)
+    _extract_raw_tables(raw_dir=layout["raw"])
+
     raw_monsters = _load_raw_monsters(layout["raw"])
     parsed_monsters = parse_monster_records(raw_monsters)
 
@@ -480,12 +572,22 @@ def build(  # noqa: C901
     raw_spells = _load_raw_spells(layout["raw"])
     parsed_spells = parse_spell_records(raw_spells)
 
+    # Parse tables (v0.7.0)
+    raw_tables = _load_raw_tables(layout["raw"])
+    parsed_tables = None
+    if raw_tables:
+        from scripts.table_targets import TARGET_TABLES
+
+        targets_by_id = {t["id"]: t for t in TARGET_TABLES}
+        parsed_tables = [parse_single_table(raw, targets_by_id) for raw in raw_tables]
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
         spells=parsed_spells if parsed_spells else None,
+        tables=parsed_tables if parsed_tables else None,
     )
 
     # Read PDF hash from pdf_meta.json (if present)
@@ -521,6 +623,11 @@ def build(  # noqa: C901
         if all_pages:
             spells_page_range = (min(all_pages), max(all_pages))
 
+    # Generate comprehensive page_index from table_indexer (v0.7.0)
+    # Pass list of successfully extracted table IDs for accurate reporting
+    extracted_table_ids = [t["id"] for t in parsed_tables] if parsed_tables else None
+    table_page_index = _generate_table_page_index(layout["raw"], extracted_table_ids)
+
     # Generate rich meta.json for consumers (includes license, page_index, etc.)
     meta_json = _generate_meta_json(
         pdf_hash=pdf_hash,
@@ -530,6 +637,7 @@ def build(  # noqa: C901
         equipment_page_range=equipment_page_range,
         spells_complete=len(parsed_spells) > 0,
         spells_page_range=spells_page_range,
+        table_page_index=table_page_index,
     )
     meta_path = target_dir / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")
