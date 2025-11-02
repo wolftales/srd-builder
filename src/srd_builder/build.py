@@ -130,7 +130,7 @@ def _generate_meta_json(
             "equipment": "complete" if equipment_complete else "in_progress",
             "spells": "complete" if spells_complete else "in_progress",
         },
-        "$schema_version": "1.1.0",
+        "$schema_version": SCHEMA_VERSION,
     }
 
 
