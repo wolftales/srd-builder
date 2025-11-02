@@ -191,10 +191,12 @@ Blackmoor reviewed srd-builder v0.4.2 package and provided comprehensive feedbac
 **Note on Index Features:**
 Blackmoor's review requested `by_cr` and `by_type` indexes be added. However, these have been present in index.json since the indexer was first created (commit 7a1b633, before v0.4.2). The review may have been based on documentation rather than examining the actual generated index.json file. The "Gap" they identified in section B was actually about **their own code** lacking utility functions to consume the index, not missing features in srd-builder.
 
-### High Priority - Action Data Parsing
+### ✅ Action Data Parsing - IMPLEMENTED (v1.2.0)
 
-**Current State:**
-Actions have inconsistent parsing - some have structured fields, some don't.
+**Status:** COMPLETE
+
+**Previous State:**
+Actions had inconsistent parsing - some had structured fields, some didn't.
 
 **Example of good parsing:**
 ```json
@@ -209,20 +211,19 @@ Actions have inconsistent parsing - some have structured fields, some don't.
 }
 ```
 
-**Request:**
-For ALL Melee Weapon Attack and Ranged Weapon Attack actions, parse:
-- `to_hit` (integer)
-- `reach` or `range` (integer or object)
-- `damage_dice` (string like "2d6+5")
-- `damage_type` (string)
+**Delivered:**
+- 472/884 total action entries (53.4%) with structured combat data
+- Fields: attack_type, to_hit, reach/range, damage, saving_throw
+- Preserves original text field for fallback
+- 14 comprehensive tests (all passing)
+- Applies to actions, legendary_actions, and reactions
 
-**Why:** Blackmoor's combat formulas (`resolve_5e_melee_attack`) need direct access to this data without text parsing.
+**Implementation:**
+- New parse_actions.py module with regex-based extraction
+- Integrated into postprocess.py pipeline
+- Example: Aboleth Tentacle has attack_type, to_hit, reach, damage, damage_options, saving_throw
 
-**Implementation Notes:**
-- Improve parsing in parse_monsters.py action processing
-- Ensure consistency across all 296 monsters
-- Keep raw `text` field for fallback
-- Add test coverage for action field extraction
+**Why:** Enables Blackmoor's combat formulas (`resolve_5e_melee_attack`) to access data without text parsing.
 
 ---
 
@@ -325,8 +326,9 @@ For ALL Melee Weapon Attack and Ranged Weapon Attack actions, parse:
 
 ### Implementation Status
 
-**✅ COMPLETED:**
-- Ability score modifiers (v0.5.0+)
+**✅ COMPLETED (v1.2.0):**
+- Ability score modifiers
+- Action data parsing (472/884 actions with structured fields)
 
 **Blackmoor Integration Status (as of 2025-11-01):**
 - ✅ Full SRD v0.5.0 integration (296 monsters, 111 equipment)
@@ -336,13 +338,35 @@ For ALL Melee Weapon Attack and Ranged Weapon Attack actions, parse:
 - ✅ All tests passing
 - 🎉 **Integration complete and working!**
 
-**v0.6.0 or v0.7.0 (Nice-to-Have):**
-1. Action data consistency (HIGH - would improve combat integration)
-2. Saving throw parsing (MEDIUM - would enable automated saving throws)
-3. Equipment properties normalization (LOW - minor cleanup)
+**Next Priorities (from Blackmoor 2025-11-01):**
 
-**Future:**
-4. Spells extraction (separate milestone, high priority for VTT)
+1. **Spells** (HIGH - v0.6.0 target)
+   - D&D gameplay is spell-heavy for casters
+   - Complements monsters (many have spellcasting) and equipment
+   - Critical for character actions in combat/narrative
+   - Schema proposal: docs/external/blackmoor/spell_schema_proposal.md
+   - Estimated ~300-400 spells in SRD 5.1
+
+2. **Conditions** (MEDIUM - quick win)
+   - Referenced constantly (poisoned, stunned, charmed, etc.)
+   - Needed for monster abilities and spell effects
+   - Small dataset (~15-20 conditions)
+   - Simple schema: {id, name, simple_name, text, mechanics}
+
+3. **Equipment Properties Normalization** (LOW)
+   - Remove embedded data from properties array
+   - Current: ["versatile (1d10)"] → Target: ["versatile"]
+   - Non-blocking (Blackmoor integration already complete)
+
+4. **Saving Throw Parsing** (MEDIUM - deferred)
+   - Would enable automated saving throw resolution
+   - Change from string to object (MAJOR version bump required)
+   - Current: "DC 14 Constitution" → Target: {dc: 14, ability: "constitution", on_save: "half"}
+
+5. **Classes & Lineages/Races** (LOWER priority)
+   - More complex extraction (multi-page, tables, progression)
+   - Character creation features
+   - Can defer until character sheet features needed
 
 ---
 

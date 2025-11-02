@@ -319,6 +319,8 @@ Metadata structure now provides complete provenance for downstream consumers:
 
 ## **v0.5.0 — Equipment Dataset** ✅ COMPLETE
 
+**Released:** October 31, 2025
+
 **Released:** November 1, 2025
 
 **Goal:** Extract equipment from SRD 5.1 tables with proper column mapping and structured parsing.
@@ -379,7 +381,122 @@ dist/srd_5_1/
 
 ---
 
-## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 PLANNED
+## **v0.5.1 — Action Parsing & Ability Modifiers** ✅ COMPLETE
+
+**Released:** November 1, 2025
+
+**Goal:** Deliver HIGH priority Blackmoor requests for structured combat data.
+
+**Delivered**
+
+* **Action Parsing (472/884 actions)**
+  - New parse_actions.py module with regex-based field extraction
+  - Fields: attack_type, to_hit, reach/range, damage (average/dice/type), saving_throw
+  - Applies to actions, legendary_actions, and reactions
+  - Preserves original text field for fallback
+  - 14 comprehensive tests (all passing)
+
+* **Ability Score Modifiers**
+  - Calculated (score - 10) // 2 for all abilities
+  - Added *_modifier fields alongside base scores
+  - Example: {"strength": 21, "strength_modifier": 5}
+  - 5 tests (all passing)
+
+* **Schema Version Management**
+  - Semantic versioning: MAJOR.MINOR.PATCH
+  - v1.1.0 → v1.2.0 (MINOR bump for additive changes)
+  - Synchronized all schemas (monster, equipment, spell)
+  - Test suite: 82/83 passing (1 pre-existing failure)
+
+**Benefits for Blackmoor:**
+- Direct access to combat stats without text parsing
+- Enables automated attack resolution
+- Supports damage calculation in VTT combat engine
+- Structured saving throw data for DC checks
+
+**Quality Metrics:**
+- Coverage: 472/884 actions (53.4%) with attack_type parsing
+- Remaining 47% are non-attack actions (Multiattack, utility abilities)
+- All new features have comprehensive test coverage
+- Fixtures updated to current extraction format
+
+---
+
+## **v0.6.0 — Spells Dataset** 🎯 NEXT
+
+**Target:** December 2025
+**Priority:** HIGH (Blackmoor customer request)
+
+**Goal:** Extract and structure D&D 5e spells from SRD 5.1.
+
+**Why Spells Next?**
+- D&D gameplay is spell-heavy for casters
+- Complements monsters (many have spellcasting) and equipment
+- Critical for character actions in combat/narrative systems
+- Different extraction pattern than tables (validates architecture)
+
+**Scope**
+- Estimated ~300-400 spells in SRD 5.1
+- Schema proposal: docs/external/blackmoor/spell_schema_proposal.md
+- Fields: level, school, casting_time, range, components, duration, concentration
+- Structured data: damage, healing, saving_throws, area_of_effect
+- Index by: level, school, name
+
+**Schema Approach (v1.2.0 → v1.3.0)**
+- MINOR bump for additive changes (new spell.schema.json)
+- Core fields: id, simple_name, name, level, school, text
+- Optional fields: damage, healing, save, attack, area_of_effect
+- Components: {verbal: bool, somatic: bool, material: bool, material_description: string}
+- Preserve raw text for complex spells
+
+**Implementation Pattern**
+```
+extract_spells.py → parse_spells.py → postprocess.py → indexer.py
+```
+
+**Success Criteria**
+- [ ] ~300+ spells extracted
+- [ ] Schema v1.3.0 validated
+- [ ] Index by level, school, name
+- [ ] Test coverage: extraction, parsing, validation
+- [ ] Blackmoor integration guide updated
+
+---
+
+## **v0.6.1 — Conditions Dataset** (Quick Win)
+
+**Priority:** MEDIUM
+**Effort:** Low (small dataset)
+
+**Goal:** Extract ~15-20 status conditions from SRD 5.1.
+
+**Why Conditions?**
+- Referenced constantly (poisoned, stunned, charmed, frightened, etc.)
+- Needed for monster abilities and spell effects
+- Small dataset = quick confidence builder
+- Unlocks better monster/spell integration
+
+**Schema (Simple)**
+```json
+{
+  "id": "condition:poisoned",
+  "simple_name": "poisoned",
+  "name": "Poisoned",
+  "text": "A poisoned creature has disadvantage on attack rolls and ability checks.",
+  "mechanics": {
+    "disadvantage_on": ["attack_rolls", "ability_checks"]
+  }
+}
+```
+
+**Optional Structured Fields**
+- speed_modifier (e.g., restrained, grappled)
+- advantage_on / disadvantage_on
+- prevents (e.g., unconscious prevents actions)
+
+---
+
+## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 DEFERRED
 
 **Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
 
@@ -417,29 +534,23 @@ discover_tables() → table_metadata.json
 
 **Estimated Effort:** 2-3 hours
 
-**Priority:** HIGH — Do this before spells/classes to avoid repeating equipment pain
+**Priority:** DEFERRED — Spells have different extraction pattern (prose vs tables), may not need this
 
 ---
 
-## **v0.6.0 — Additional Content Types** 🔄 NEXT
+## **v0.7.0 — Classes & Lineages** (Lower Priority)
 
-**Goal:** Expand extraction to spells, conditions, or classes using improved table infrastructure.
+**Goal:** Extract character creation content.
 
-**Candidates:**
-- **Spells** (~300 items, structured prose, different pattern than tables)
-- **Conditions** (simpler, good confidence builder)
-- **Classes** (complex with level progression tables)
+**Scope:**
+- Classes (complex with level progression tables)
+- Lineages/Races (character creation features)
 
-**Recommendation:** Start with spells (different enough to validate extraction patterns) or conditions (simpler, faster win)
-
-**Architecture:** Each content type follows three-stage pattern:
-```
-extract_<type>.py → parse_<type>.py → postprocess.py → indexer.py
-```
+**Priority:** LOWER - Less immediately useful (NPCs use monster stats), can defer until character sheet features needed.
 
 ---
 
-## **v0.6.0 — Unified Build & Validation**
+## **v1.0.0 — Unified Build & Validation**
 
 **Goal:** single `build_all()` to process all entities and a top-level `validate_all()` for all schemas and PDFs.
 

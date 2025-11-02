@@ -171,41 +171,32 @@ srd-builder/
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 
 - ✅ **v0.1.0** - Foundation (CI, build infrastructure, validation)
-- 🚧 **v0.2.0** - End-to-end pipeline with fixture data
-- 📋 **v0.3.0** - PDF extraction module
-- ✅ **v0.4.0** - Extraction quality improvements
+- ✅ **v0.2.0** - End-to-end pipeline with fixture data
+- ✅ **v0.3.0** - PDF extraction module (296 monsters)
+- ✅ **v0.4.0** - Structured field parsing (AC, HP objects)
 - ✅ **v0.5.0** - Equipment dataset complete (111 items)
-- 📋 **v0.6.0** - Spells or table metadata discovery
+- ✅ **v0.5.1** - Action parsing & ability modifiers (schema v1.2.0)
+- 🎯 **v0.6.0** - Spells dataset (~300 spells, HIGH priority)
 
-## Use Cases
-
-The generated datasets are designed for:
-
-- **VTT Integrations** - Roll20, Foundry VTT, Fantasy Grounds
-- **Mobile Apps** - Character sheets, monster reference, DM tools
-- **AI/LLM Applications** - D&D chatbots, rule assistants, content generation
-- **Campaign Tools** - Encounter builders, initiative trackers
-- **Analysis & Research** - Game balance studies, statistical modeling
-
-### Validation Examples
+## Testing
 
 ```bash
-# Validate with jsonschema (Python)
-jsonschema -i dist/srd_5_1/data/monsters.json schemas/monster.schema.json
+# Run full test suite
+make test
+# OR: pytest
 
-# Or in code
-import json
-from jsonschema import Draft202012Validator
-
-with open('schemas/monster.schema.json') as f:
-    schema = json.load(f)
-with open('dist/srd_5_1/data/monsters.json') as f:
-    data = json.load(f)
-
-validator = Draft202012Validator(schema)
-for error in validator.iter_errors(data['items'][0]):
-    print(error.message)
+# Run specific test categories
+pytest tests/test_parse_actions.py  # Action parsing tests
+pytest tests/test_raw_extraction.py  # Raw PDF extraction validation
+pytest tests/test_golden_monsters.py  # End-to-end pipeline test
 ```
+
+**Test Coverage:**
+- `test_raw_extraction.py` - Validates raw PDF extraction output structure (monsters_raw.json)
+- `test_parse_*.py` - Unit tests for parsing modules (monsters, equipment, actions)
+- `test_golden_*.py` - End-to-end tests comparing pipeline output to fixtures
+- `test_schema_versions.py` - Validates schema version consistency
+- 82/83 tests passing (1 pre-existing failure in test_build_pipeline)
 
 ## Use Cases
 
