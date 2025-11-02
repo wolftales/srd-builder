@@ -699,4 +699,61 @@ Several parsing functions exceed Ruff's complexity limit (C901, max 10) and have
 
 ---
 
+## Ruff Configuration Migration
+
+**Date Raised:** 2025-11-02
+**Status:** Technical debt - deprecated configuration format
+**Priority:** LOW - cosmetic warning, no functional impact
+
+### The Problem
+
+Ruff displays deprecation warning on every run:
+
+```
+warning: The top-level linter settings are deprecated in favour of their counterparts in the `lint` section. Please update the following options in `pyproject.toml`:
+  - 'ignore' -> 'lint.ignore'
+  - 'select' -> 'lint.select'
+```
+
+Current `pyproject.toml` uses old configuration format (top-level settings). Ruff now recommends nesting linter settings under `[tool.ruff.lint]` section.
+
+### Impact
+
+- **Functional:** None - old format still works, just deprecated
+- **UX:** Warning noise on every lint/format run
+- **Future:** May break in future Ruff versions when old format is removed
+
+### Solution
+
+Update `pyproject.toml` to use new configuration format:
+
+**Before:**
+```toml
+[tool.ruff]
+ignore = ["E501", ...]
+select = ["E", "F", ...]
+```
+
+**After:**
+```toml
+[tool.ruff.lint]
+ignore = ["E501", ...]
+select = ["E", "F", ...]
+```
+
+### Implementation
+
+- [ ] Move `ignore` setting from `[tool.ruff]` to `[tool.ruff.lint]`
+- [ ] Move `select` setting from `[tool.ruff]` to `[tool.ruff.lint]`
+- [ ] Check for other top-level linter settings that should move
+- [ ] Test that linting behavior is unchanged
+- [ ] Verify warning disappears
+
+### Related
+
+- Ruff configuration docs: https://docs.astral.sh/ruff/configuration/
+- Should be done alongside other config updates (complexity thresholds, etc.)
+
+---
+
 ## [Add more parked features here as needed]
