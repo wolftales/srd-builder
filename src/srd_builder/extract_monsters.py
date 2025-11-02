@@ -17,6 +17,8 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
+from .constants import EXTRACTOR_VERSION
+
 
 @dataclass
 class ExtractionConfig:
@@ -97,7 +99,7 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
         "monsters": [_monster_to_dict(m) for m in monsters],
         "_meta": {
             "pdf_sha256": pdf_hash,
-            "extractor_version": "0.3.0",
+            "extractor_version": EXTRACTOR_VERSION,
             "pages_processed": page_end - config.page_start + 1,
             "monster_count": len(monsters),
             "total_warnings": total_warnings,

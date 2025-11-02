@@ -5,6 +5,7 @@ from pathlib import Path
 import jsonschema
 
 from srd_builder.build import build
+from srd_builder.constants import EXTRACTOR_VERSION, SCHEMA_VERSION
 
 
 def test_build_pipeline(tmp_path, monkeypatch):
@@ -46,7 +47,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
             "monsters": fixture_data,  # The fixture is already a list
             "_meta": {
                 "pdf_sha256": hashlib.sha256(pdf_path.read_bytes()).hexdigest(),
-                "extractor_version": "0.3.0",
+                "extractor_version": EXTRACTOR_VERSION,
                 "pages_processed": 134,
                 "monster_count": len(fixture_data),
                 "total_warnings": 0,
@@ -76,8 +77,8 @@ def test_build_pipeline(tmp_path, monkeypatch):
     expected_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     assert pdf_meta["pdf_sha256"] == expected_hash
 
-    # Check dist/meta.json (rich consumer metadata)
-    dist_meta_path = dist_ruleset_dir / "meta.json"
+    # Check data/meta.json (rich consumer metadata)
+    dist_meta_path = data_dir / "meta.json"
     assert dist_meta_path.exists()
     dist_meta = json.loads(dist_meta_path.read_text(encoding="utf-8"))
     assert dist_meta["version"] == "5.1"
@@ -95,7 +96,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
     monsters_doc = json.loads(monsters_path.read_text(encoding="utf-8"))
     assert monsters_doc["_meta"] == {
         "ruleset": ruleset,
-        "schema_version": "1.1.0",
+        "schema_version": SCHEMA_VERSION,
         "source": "SRD_CC_v5.1",
         "build_report": "../build_report.json",
         "generated_by": monsters_doc["_meta"]["generated_by"],

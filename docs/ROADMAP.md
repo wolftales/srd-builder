@@ -381,9 +381,46 @@ dist/srd_5_1/
 
 ---
 
-## **v0.5.1 — Action Parsing & Ability Modifiers** ✅ COMPLETE
+## **v0.5.2 — Version Management & Test Infrastructure** ✅ COMPLETE
 
 **Released:** November 1, 2025
+
+**Goal:** Establish robust version management and test organization.
+
+**Delivered**
+
+* **Version Management Consolidation**
+  - Created `constants.py` for shared version constants
+  - Three independent versions: `__version__` (0.5.2), `EXTRACTOR_VERSION` (0.3.0), `SCHEMA_VERSION` (1.2.0)
+  - Removed redundant `FORMAT_VERSION` (was duplicate of `__version__`)
+  - Comprehensive ARCHITECTURE.md documentation with version change matrix
+  - Clear update checklist for releases
+
+* **Test Infrastructure Improvements**
+  - Split tests into unit (90) vs package validation (2) using pytest markers
+  - Unit tests run without requiring `make output` (CI-friendly)
+  - Package tests validate built output structure
+  - Fixed test hardcoded versions - now use constants
+  - New commands: `make test`, `make test-all`, `make test-package`
+
+* **Constants Refactoring**
+  - `EXTRACTOR_VERSION` now shared across all extractors (monsters, equipment, future spells)
+  - Eliminated circular import issues
+  - Single source of truth for all version types
+
+**Benefits:**
+- Versions never get out of sync (tests use constants, not hardcoded values)
+- Clear documentation on when each version changes
+- CI runs fast (no build required for unit tests)
+- Package validation tests ensure output quality
+
+**Test Results:** 92/92 passing
+
+---
+
+## **v0.5.1 — Action Parsing & Ability Modifiers** ✅ COMPLETE
+
+**Released:** October 2025
 
 **Goal:** Deliver HIGH priority Blackmoor requests for structured combat data.
 

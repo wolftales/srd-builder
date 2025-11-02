@@ -2,6 +2,9 @@
 
 Ensures __version__ in __init__.py is the single source of truth and that
 version references in code/data files are consistent.
+
+Note: srd-builder uses two version numbers (package version and schema version).
+See docs/ARCHITECTURE.md#version-management for details.
 """
 
 import json

@@ -301,11 +301,29 @@ tests/
 
 ### Testing
 
+**Test Organization:**
+Tests are split into two categories using pytest markers:
+
+1. **Unit/Integration tests** (default, no build required)
+   - Run with: `make test` or `pytest -m "not package"`
+   - Test parsing logic, postprocessing, extraction algorithms
+   - Mock external dependencies (PDF files, etc.)
+   - Fast feedback for development
+
+2. **Package validation tests** (requires built package)
+   - Run with: `make test-package` or `pytest -m package`
+   - Validate `dist/` output structure and content
+   - Check schema version consistency in built files
+   - Ensure meta.json structure is correct
+   - Run after `make output` or `make bundle`
+
+**Key Principles:**
 1. **Golden files catch everything**: One test covers entire pipeline
 2. **Fixtures need both formats**: raw (for parsing tests) + normalized (for golden)
 3. **Mock PDF extraction**: Avoids PDF dependency in CI
 4. **Small unit tests**: Better for debugging than large integration tests
 5. **Coverage != quality**: 100% coverage can still miss edge cases
+6. **Separate package tests**: Don't require a build for unit tests
 
 ### Project Organization
 
@@ -401,6 +419,147 @@ When adding equipment/spells/classes:
 - Add more edge case tests as we encounter them
 - Improve error messages (better context in warnings)
 - Consider fuzzy matching for typos in source PDF
+
+---
+
+## Version Management
+
+srd-builder uses **three version numbers** that serve different purposes.
+
+### 1. Package Version (`__version__`)
+
+**Location:** `src/srd_builder/__init__.py`
+**Current:** `0.5.2`
+**Format:** Semantic versioning (`X.Y.Z`)
+
+**Purpose:** Software release version - tracks the data/package we produce.
+
+**When it changes:**
+- PATCH (0.5.Z): Bug fixes, documentation updates, non-functional changes
+- MINOR (0.Y.0): New features, new entity types, new optional fields
+- MAJOR (X.0.0): Breaking changes (field renames, type changes, required fields removed)
+
+**Used in:**
+- `pyproject.toml` version field
+- Package distribution (pip install)
+- `meta.json` → `build.builder_version`
+- `build_report.json` → `generated_by`
+- `monsters.json` → `_meta.generated_by`
+- All consumer-facing documentation
+
+**Example changes:**
+- `0.5.0 → 0.5.1`: Added action parsing + ability modifiers (feature)
+- `0.4.2 → 0.5.0`: Added equipment extraction (new entity type)
+
+---
+
+### 2. Extractor Version (`EXTRACTOR_VERSION`)
+
+**Location:** `src/srd_builder/constants.py`
+**Current:** `0.3.0`
+**Format:** Semantic versioning (`X.Y.Z`)
+
+**Purpose:** Tracks the raw extraction format for **all** `*_raw.json` files (monsters_raw, equipment_raw, spells_raw, etc.).
+
+**When it changes:**
+- MINOR: New metadata fields in raw files (font info, positioning data)
+- MAJOR: Breaking changes to raw extraction structure (column detection algorithm, table parsing format)
+
+**Used in:**
+- `monsters_raw.json` → `_meta.extractor_version`
+- `equipment_raw.json` → `_meta.extractor_version`
+- Future: `spells_raw.json`, `classes_raw.json`, etc.
+
+**Why separate from package version?**
+- Extraction format may stay stable across many package releases
+- Documents the intermediate format between PDF and parsed output
+- Useful for debugging extraction issues
+- Changes independently of parsing/postprocessing improvements
+
+**Example changes:**
+- `0.3.0 → 0.4.0`: Add character-level positioning metadata to raw output
+- `0.4.0 → 1.0.0`: Switch from line-based to block-based extraction format
+
+---
+
+### 3. Schema Version
+
+**Location:** `schemas/monster.schema.json`, `constants.py`
+**Current:** `1.2.0`
+**Format:** Semantic versioning (`X.Y.Z`)
+
+**Purpose:** JSON Schema validation rules version - tracks structure of final output data.
+
+**When it changes:**
+- PATCH (1.2.Z): Documentation improvements, example updates (rare)
+- MINOR (1.Y.0): New optional properties, new enum values (backward compatible)
+- MAJOR (X.0.0): Breaking schema changes (new required fields, type changes)
+
+**Used in:**
+- `schemas/monster.schema.json` → `$id` field
+- `build.py` → `SCHEMA_VERSION` constant
+- `meta.json` → `schema_version`
+- `monsters.json` → `_meta.schema_version`
+- Validation in `validate.py`
+
+**Why separate from package version?**
+- Schema defines the data contract for consumers
+- Package version can increment (bug fixes) without changing data structure
+- Consumers can check schema version to know if data is compatible
+- Enables long-term schema stability across multiple package releases
+
+**Example changes:**
+- `1.1.0 → 1.2.0`: Added optional action parsing fields (backward compatible)
+- `1.0.0 → 2.0.0`: Would indicate breaking data structure changes
+
+---
+
+### Version Relationships
+
+```
+EXTRACTOR_VERSION (0.3.0)  →  *_raw.json format  →  [parsing/postprocessing]
+                                                              ↓
+__version__ (0.5.1)  →  Package release  →  monsters.json, equipment.json
+                                                              ↓
+SCHEMA_VERSION (1.2.0)  →  Data contract  →  Consumer validation
+```
+
+**Key insight:** Extractor version tracks "how we extract from PDF" (affects all `*_raw.json` files), while package version tracks "the data/package we produce".
+
+---
+
+### Version Update Checklist
+
+When releasing a new version:
+
+1. **Determine change type:**
+   - Bug fix only? → PATCH package version
+   - New feature/entity type? → MINOR package version
+   - Breaking change? → MAJOR package version (rare)
+
+2. **Update package version:**
+   - Edit `src/srd_builder/__init__.py` → `__version__`
+
+3. **Update extractor version (if raw extraction changed):**
+   - Only if `*_raw.json` format changes (rare)
+   - New metadata fields? → MINOR extractor version
+   - Breaking raw format changes? → MAJOR extractor version
+   - Edit `constants.py` → `EXTRACTOR_VERSION`
+
+4. **Update schema version (if data structure changed):**
+   - New optional fields? → MINOR schema version
+   - Breaking changes? → MAJOR schema version
+   - Edit `constants.py` → `SCHEMA_VERSION`
+   - Edit `schemas/monster.schema.json` → `$id`
+
+5. **Update documentation:**
+   - `README.md` → version references
+   - `ROADMAP.md` → completed version section
+
+6. **Regenerate test fixtures:**
+   - Run: `python -m srd_builder.build --ruleset srd_5_1`
+   - Copy `dist/srd_5_1/data/monsters.json` → `tests/fixtures/srd_5_1/normalized/monsters.json`
+   - Version consistency tests will validate automatically
 
 ---
 

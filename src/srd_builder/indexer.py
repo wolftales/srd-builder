@@ -125,7 +125,6 @@ def build_indexes(
     entity_index = _build_entity_index(monsters)
 
     payload: dict[str, Any] = {
-        "format_version": "v0.5.0",
         "monsters": monster_indexes,
         "entities": entity_index,
         "stats": {

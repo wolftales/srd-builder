@@ -22,6 +22,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
+from .constants import EXTRACTOR_VERSION
 from .context_tracker import ContextTracker
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,7 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
     return {
         "equipment": equipment_items,
         "_meta": {
+            "extractor_version": EXTRACTOR_VERSION,
             "items_extracted": len(equipment_items),
             "pages_processed": list(range(EQUIPMENT_START_PAGE, EQUIPMENT_END_PAGE + 1)),
             "warnings": warnings,

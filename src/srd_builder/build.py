@@ -15,20 +15,16 @@ from collections import OrderedDict
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Final
+from typing import Any
 
 from . import __version__
+from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
 from .indexer import build_indexes
 from .parse_equipment import parse_equipment_records
 from .parse_monsters import parse_monster_records
 from .postprocess import clean_equipment_record, clean_monster_record
-
-RULESETS_DIRNAME: Final = "rulesets"
-DATA_SOURCE: Final = "SRD_CC_v5.1"
-SCHEMA_VERSION: Final = "1.2.0"
-FORMAT_VERSION: Final = "v0.5.0"
 
 
 def _meta_block(ruleset: str) -> dict[str, str]:
@@ -94,7 +90,6 @@ def _generate_meta_json(
     return {
         "version": "5.1",
         "source": DATA_SOURCE,
-        "format_version": FORMAT_VERSION,
         "license": {
             "type": "CC-BY-4.0",
             "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
@@ -112,7 +107,6 @@ def _generate_meta_json(
         },
         "build": {
             "extracted_at": datetime.now(timezone.utc).isoformat(),
-            "extractor_version": FORMAT_VERSION,
             "builder_version": __version__,
             "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
         },

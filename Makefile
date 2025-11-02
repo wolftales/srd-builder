@@ -15,7 +15,13 @@ format:
 	isort .
 
 test:
+	pytest -q -m "not package"
+
+test-all:
 	pytest -q
+
+test-package:
+	pytest -q -m package
 
 pre-commit:
 	pre-commit run --all-files

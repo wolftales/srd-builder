@@ -181,9 +181,17 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 ## Testing
 
 ```bash
-# Run full test suite
+# Run unit/integration tests (no build required)
 make test
+# OR: pytest -m "not package"
+
+# Run ALL tests including package validation (requires built package)
+make test-all
 # OR: pytest
+
+# Run only package validation tests
+make test-package
+# OR: pytest -m package
 
 # Run specific test categories
 pytest tests/test_parse_actions.py  # Action parsing tests
@@ -191,12 +199,19 @@ pytest tests/test_raw_extraction.py  # Raw PDF extraction validation
 pytest tests/test_golden_monsters.py  # End-to-end pipeline test
 ```
 
-**Test Coverage:**
+**Test Categories:**
+- **Unit tests** (no build required): Parsing, postprocessing, extraction logic
+- **Package tests** (requires `make output`): Validates built output in `dist/`
+  - Schema version consistency
+  - Meta.json structure
+  - Dataset structure validation
+
+**Coverage:**
 - `test_raw_extraction.py` - Validates raw PDF extraction output structure (monsters_raw.json)
 - `test_parse_*.py` - Unit tests for parsing modules (monsters, equipment, actions)
 - `test_golden_*.py` - End-to-end tests comparing pipeline output to fixtures
-- `test_schema_versions.py` - Validates schema version consistency
-- 82/83 tests passing (1 pre-existing failure in test_build_pipeline)
+- `test_schema_versions.py` - Schema version consistency (unit + package tests)
+- 92 tests passing
 
 ## Use Cases
 
@@ -227,6 +242,18 @@ validator = Draft202012Validator(schema)
 for error in validator.iter_errors(data['items'][0]):
     print(error.message)
 ```
+
+## Versioning
+
+srd-builder uses **three version numbers**:
+
+- **Package version** (`__version__` = `0.5.2`) - The data/package we produce
+- **Extractor version** (`EXTRACTOR_VERSION` = `0.3.0`) - Raw extraction format for all `*_raw.json` files
+- **Schema version** (`1.2.0`) - JSON Schema validation rules (consumer data contract)
+
+The **package version** tracks each release. The **extractor version** tracks how we extract from PDF (stable since v0.3.0). The **schema version** tracks the final data structure for consumers.
+
+See [ARCHITECTURE.md](docs/ARCHITECTURE.md#version-management) for detailed version management documentation.
 
 ## License
 
