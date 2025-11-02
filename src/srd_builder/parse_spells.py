@@ -42,13 +42,20 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         level_and_school = _clean_text(raw_spell.get("level_and_school", ""))
 
         # Fix edge case: multi-page spells where description ended up in header_text
-        # Pattern: "Duration: X System Reference Document 5.1 [page] [actual description]"
-        if description_text == "" and "System Reference Document" in header_text:
+        # Pattern 1: description_text is empty, all text in header_text
+        # Pattern 2: description_text only has "At Higher Levels.", main description in header_text
+        if "System Reference Document" in header_text:
             # Split at the SRD marker - everything after is the description
             parts = re.split(r"System\s+Reference\s+Document\s+5\.1\s+\d+", header_text, maxsplit=1)
             if len(parts) == 2:
                 header_text = parts[0].strip()
-                description_text = parts[1].strip()
+                extracted_desc = parts[1].strip()
+                # If description_text is empty or just "At Higher Levels.", use extracted
+                if not description_text or description_text == "At Higher Levels.":
+                    description_text = extracted_desc
+                else:
+                    # Prepend extracted description to existing text
+                    description_text = extracted_desc + " " + description_text
 
         # Parse level and school
         level, school = _parse_level_and_school(level_and_school)
