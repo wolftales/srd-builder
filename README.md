@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.7.0)
+### Build pipeline (v0.7.1)
 
 The build pipeline extracts monster, equipment, and spell data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, and **319 spells** with full provenance tracking.
 
@@ -186,7 +186,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
 - ✅ **v0.6.5** - Version management tooling
 - 🎯 **v0.7.0** - Reference tables dataset (~15 tables)
-- 🎯 **v0.8.0** - Classes & Lineages (character creation + terminology aliases)
+- 🎯 **v0.7.1** - Classes & Lineages (character creation + terminology aliases)
 - 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
