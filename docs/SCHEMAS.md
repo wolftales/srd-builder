@@ -4,15 +4,15 @@ This document describes the schema versioning strategy, evolution patterns, and 
 
 ---
 
-## Schema Version: 1.1.0
+## Schema Version: 1.3.0
 
-**Current Version:** `1.1.0`
-**Adopted:** v0.4.0 (October 2025)
+**Current Version:** `1.3.0`
+**Adopted:** v0.6.0 (November 2025)
 **Status:** Stable
 
-### What's Included in Schema v1.1.0
+### What's Included in Schema v1.3.0
 
-All dataset files produced by srd-builder conform to schema version 1.1.0, which includes:
+All dataset files produced by srd-builder conform to schema version 1.3.0, which includes:
 
 **Core Structure:**
 - `_meta` wrapper with dataset metadata
@@ -22,7 +22,7 @@ All dataset files produced by srd-builder conform to schema version 1.1.0, which
 **Entity Namespaces:**
 - `monster:*` - Monster stat blocks
 - `item:*` - Equipment, weapons, armor, gear
-- `spell:*` - Spells (planned)
+- `spell:*` - Spells (v0.6.0)
 - `class:*` - Character classes (planned)
 - `lineage:*` - Lineages/races (planned)
 - `condition:*` - Game conditions (planned)
@@ -42,7 +42,7 @@ All dataset files produced by srd-builder conform to schema version 1.1.0, which
 schemas/
 ├── monster.schema.json       # Monster stat blocks
 ├── equipment.schema.json     # Equipment/items
-├── spell.schema.json         # Spells (planned)
+├── spell.schema.json         # Spells (v1.3.0)
 └── ...
 ```
 
@@ -396,11 +396,117 @@ Prefer structured objects over formatted strings:
 
 ---
 
+## Spell Schema (v1.3.0)
+
+**Added in:** v0.6.0 (November 2025)
+**Schema File:** `schemas/spell.schema.json`
+**Version:** 1.3.0
+
+### Design Philosophy
+
+The spell schema uses **structured nested objects** for related fields, following the established pattern from monster actions. This provides:
+- Clean root-level organization
+- Extensible field grouping
+- Type-safe querying
+- Future-proof structure
+
+### Core Structure
+
+```json
+{
+  "id": "spell:fireball",
+  "simple_name": "fireball",
+  "name": "Fireball",
+  "level": 3,
+  "school": "evocation",
+  "casting": { /* nested object */ },
+  "components": { /* nested object */ },
+  "effects": { /* optional nested object */ },
+  "scaling": { /* optional nested object */ },
+  "text": "Full spell description...",
+  "page": 241
+}
+```
+
+### Nested Objects
+
+**`casting` (required):**
+```json
+{
+  "time": "1 action",
+  "range": {"kind": "ranged", "value": 150, "unit": "feet"},  // or "self"/"touch"
+  "duration": "instantaneous",
+  "concentration": false,
+  "ritual": false
+}
+```
+
+**`components` (required):**
+```json
+{
+  "verbal": true,
+  "somatic": true,
+  "material": true,
+  "material_description": "a tiny ball of bat guano and sulfur"  // optional
+}
+```
+
+**`effects` (optional):**
+```json
+{
+  "damage": {"dice": "8d6", "type": "fire"},
+  "save": {"ability": "dexterity", "on_success": "half_damage"},
+  "area": {"shape": "sphere", "size": 20, "unit": "feet"},
+  "healing": {"dice": "2d8"},  // healing spells
+  "attack": {"type": "ranged_spell"},  // attack roll spells
+  "conditions": ["blinded", "charmed"]  // condition application
+}
+```
+
+**`scaling` (optional):**
+```json
+{
+  "type": "slot",  // or "character_level" for cantrips
+  "base_level": 3,
+  "formula": "+1d6 per slot level above 3rd"  // human-readable
+}
+```
+
+### Scaling Types
+
+1. **Slot-level scaling** (`"type": "slot"`) - Upcast with higher spell slots
+   - Example: Fireball at 4th level does more damage than 3rd
+
+2. **Character-level scaling** (`"type": "character_level"`) - Cantrip scaling
+   - Example: Fire Bolt damage increases at 5th, 11th, 17th character level
+
+### Field Enums
+
+**Schools (8):**
+`abjuration`, `conjuration`, `divination`, `enchantment`, `evocation`, `illusion`, `necromancy`, `transmutation`
+
+**Damage Types (13):**
+`acid`, `bludgeoning`, `cold`, `fire`, `force`, `lightning`, `necrotic`, `piercing`, `poison`, `psychic`, `radiant`, `slashing`, `thunder`
+
+**Abilities (6):**
+`strength`, `dexterity`, `constitution`, `intelligence`, `wisdom`, `charisma`
+
+**Area Shapes (5):**
+`cone`, `cube`, `cylinder`, `line`, `sphere`
+
+### Design Decisions
+
+1. **Nested objects over flat fields** - Mirrors monster actions structure, enables clean extensibility
+2. **Human-readable formula field** - Preserves SRD text, directly displayable to users
+3. **Optional effects wrapper** - Not all spells have damage/healing/saves (utility spells)
+4. **Flexible range type** - Structured object for numeric ranges, special strings for self/touch/sight
+
+---
+
 ## Future Schema Additions
 
-### Planned (v1.2.0)
+### Planned (v1.4.0+)
 
-- `spell.schema.json` - Spell definitions
 - `class.schema.json` - Character classes with features
 - `lineage.schema.json` - Lineages/races with traits
 - `condition.schema.json` - Game conditions

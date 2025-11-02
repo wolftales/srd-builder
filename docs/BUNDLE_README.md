@@ -1,8 +1,8 @@
 # SRD 5.1 Dataset Bundle
 
-**Version:** srd-builder v0.5.0
-**Schema Version:** 1.1.0
-**Generated:** October 31, 2025
+**Version:** srd-builder v0.6.0
+**Schema Version:** 1.3.0
+**Generated:** November 1, 2025
 **Source:** System Reference Document 5.1 (SRD_CC_v5.1)
 
 ---
@@ -11,25 +11,41 @@
 
 Machine-readable D&D 5e SRD data extracted from official PDF:
 
-- **296 Monsters** - Full stat blocks (schema v1.1.0)
-- **114 Equipment Items** - Weapons, armor, gear (schema v1.1.0)
-- **Search Index** - Pre-built lookups
+- **296 Monsters** - Full stat blocks (schema v1.2.0)
+- **114 Equipment Items** - Weapons, armor, gear (schema v1.2.0)
+- **Spells** - Spell data with structured casting/effects (schema v1.3.0)
+- **Search Index** - Pre-built lookups (monsters, equipment, spells)
 
 ---
 
 ## Quick Start
 
 ```javascript
-const data = require('./monsters.json');
-const dragon = data.items.find(m => m.simple_name === 'adult_red_dragon');
+// Monsters
+const monsters = require('./monsters.json');
+const dragon = monsters.items.find(m => m.simple_name === 'adult_red_dragon');
 console.log(dragon.challenge_rating);  // 17
+
+// Spells
+const spells = require('./spells.json');
+const fireball = spells.items.find(s => s.simple_name === 'fireball');
+console.log(fireball.level);  // 3
+console.log(fireball.effects.damage);  // {dice: "8d6", type: "fire"}
 ```
 
 ```python
 import json
+
+# Monsters
 with open('monsters.json') as f:
     monsters = json.load(f)['items']
 dragon = next(m for m in monsters if m['id'] == 'monster:adult_red_dragon')
+
+# Spells
+with open('spells.json') as f:
+    spells = json.load(f)['items']
+fireball = next(s for s in spells if s['id'] == 'spell:fireball')
+print(fireball['effects']['damage'])  # {'dice': '8d6', 'type': 'fire'}
 ```
 
 ---
@@ -40,13 +56,15 @@ dragon = next(m for m in monsters if m['id'] == 'monster:adult_red_dragon')
 srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 114 items
-├── index.json             # Search index
+├── spells.json            # Spell data
+├── index.json             # Search index (monsters, equipment, spells)
 ├── meta.json              # Dataset catalog & license
 ├── README.md              # This file
 ├── build_report.json      # Build process metadata
 ├── schemas/
 │   ├── monster.schema.json
-│   └── equipment.schema.json
+│   ├── equipment.schema.json
+│   └── spell.schema.json
 └── docs/
     ├── SCHEMAS.md         # Schema design & versioning
     └── DATA_DICTIONARY.md # Field reference & SRD mappings
@@ -58,7 +76,7 @@ srd_5_1/
 
 **Read these files for detailed information:**
 
-- **SCHEMAS.md** - Schema v1.1.0 design, versioning, use cases, evolution history
+- **SCHEMAS.md** - Schema v1.3.0 design, versioning, use cases, evolution history
 - **DATA_DICTIONARY.md** - Complete field reference with SRD source mappings
 - **meta.json** - License, attribution, file manifest
 - **build_report.json** - Extraction statistics
@@ -86,6 +104,6 @@ jsonschema -i monsters.json schemas/monster.schema.json
 **Required Attribution:**
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License.
 
-**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.5.0
+**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.6.0
 
 Full license in `meta.json`.

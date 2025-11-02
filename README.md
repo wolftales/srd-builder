@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.5.3)
+### Build pipeline (v0.6.0)
 
-The build pipeline extracts monster and equipment data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** and **111 equipment items** with full provenance tracking.
+The build pipeline extracts monster, equipment, and spell data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, and **spell infrastructure** with full provenance tracking.
 
 **Development (fast iteration):**
 ```bash
@@ -56,7 +56,8 @@ python -m srd_builder.validate --ruleset srd_5_1
 dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 114 items
-├── index.json             # Lookup indexes
+├── spells.json            # Spell data (extraction in progress)
+├── index.json             # Lookup indexes (includes spell indexes)
 ├── meta.json              # Dataset metadata (license, provenance)
 └── build_report.json      # Build metadata (version, timestamp)
 ```
@@ -66,13 +67,15 @@ dist/srd_5_1/
 dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 114 items
-├── index.json             # Lookup indexes
+├── spells.json            # Spell data
+├── index.json             # Lookup indexes (monsters, equipment, spells)
 ├── meta.json              # Dataset metadata (license, provenance)
 ├── README.md              # Consumer documentation
 ├── build_report.json      # Build metadata (version, timestamp)
 ├── schemas/
 │   ├── monster.schema.json
-│   └── equipment.schema.json
+│   ├── equipment.schema.json
+│   └── spell.schema.json
 └── docs/
     ├── SCHEMAS.md
     └── DATA_DICTIONARY.md

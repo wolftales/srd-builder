@@ -2,8 +2,8 @@
 
 This document maps SRD 5.1 source terminology and formats to our normalized schema field names, explaining how we transform raw data into structured JSON.
 
-**Version:** Schema v1.1.0
-**Updated:** 2024-11-01
+**Version:** Schema v1.3.0
+**Updated:** 2025-11-01
 
 ---
 
@@ -544,9 +544,165 @@ Status: Schema exists (`spell.schema.json`) but dataset not yet built. Fields TB
 
 ---
 
+## Spells Dataset (v1.3.0)
+
+### Core Identity
+
+#### `level`
+- **Type:** `integer` (0-9)
+- **SRD Source:** Spell header (e.g., "3rd-level evocation", "Evocation cantrip")
+- **Transformation:** Parse level number; cantrips = 0
+- **Examples:** `0` (cantrip), `1` (1st-level), `3` (3rd-level), `9` (9th-level)
+
+#### `school`
+- **Type:** `string` (enum)
+- **SRD Values:** `abjuration`, `conjuration`, `divination`, `enchantment`, `evocation`, `illusion`, `necromancy`, `transmutation`
+- **SRD Source:** Spell header (e.g., "3rd-level **evocation**")
+- **Transformation:** Extract school name, normalize to lowercase
+
+### Casting Information (`casting` object)
+
+#### `casting.time`
+- **Type:** `string`
+- **SRD Source:** "**Casting Time:**" line
+- **Examples:** `"1 action"`, `"1 bonus action"`, `"1 minute"`, `"10 minutes"`, `"1 hour"`
+- **Transformation:** Direct extraction, preserve original format
+
+#### `casting.range`
+- **Type:** `object` or `string`
+- **SRD Source:** "**Range:**" line
+- **Structured format (numeric):**
+  ```json
+  {"kind": "ranged", "value": 150, "unit": "feet"}
+  ```
+- **Special values (string):** `"self"`, `"touch"`, `"sight"`, `"unlimited"`
+- **Transformation:** Parse numeric + unit OR recognize special keywords
+
+#### `casting.duration`
+- **Type:** `string`
+- **SRD Source:** "**Duration:**" line
+- **Examples:** `"instantaneous"`, `"up to 1 minute"`, `"1 hour"`, `"until dispelled"`
+- **Transformation:** Extract text, remove "Concentration, " prefix (tracked separately)
+
+#### `casting.concentration`
+- **Type:** `boolean`
+- **SRD Source:** "**Duration:**" line (e.g., "Concentration, up to 1 minute")
+- **Transformation:** Detect "Concentration" keyword
+- **Purpose:** Filter concentration spells, manage spell slot usage
+
+#### `casting.ritual`
+- **Type:** `boolean`
+- **SRD Source:** Casting time line (e.g., "1 minute (ritual)")
+- **Transformation:** Detect "(ritual)" marker
+- **Purpose:** Identify spells castable without spell slots
+
+### Components (`components` object)
+
+#### `components.verbal`
+- **Type:** `boolean`
+- **SRD Source:** "**Components:**" line - presence of "V"
+- **Transformation:** `true` if "V" appears in components list
+
+#### `components.somatic`
+- **Type:** `boolean`
+- **SRD Source:** "**Components:**" line - presence of "S"
+- **Transformation:** `true` if "S" appears in components list
+
+#### `components.material`
+- **Type:** `boolean`
+- **SRD Source:** "**Components:**" line - presence of "M"
+- **Transformation:** `true` if "M" appears in components list
+
+#### `components.material_description`
+- **Type:** `string` (optional)
+- **SRD Source:** "**Components:**" line - parenthetical after "M"
+- **Example:** `"M (a tiny ball of bat guano and sulfur)"`
+- **Transformation:** Extract text within parentheses following "M"
+- **Purpose:** Display material requirements, track consumed materials
+
+### Effects (`effects` object, optional)
+
+#### `effects.damage`
+- **Type:** `object` (optional)
+- **Fields:** `{"dice": "8d6", "type": "fire"}`
+- **SRD Source:** Spell description text
+- **Transformation:** Extract damage dice pattern and type from description
+- **Damage Types:** acid, bludgeoning, cold, fire, force, lightning, necrotic, piercing, poison, psychic, radiant, slashing, thunder
+
+#### `effects.healing`
+- **Type:** `object` (optional)
+- **Fields:** `{"dice": "2d8"}`
+- **SRD Source:** Healing amount in description
+- **Transformation:** Extract dice pattern for healing spells
+
+#### `effects.save`
+- **Type:** `object` (optional)
+- **Fields:** `{"ability": "dexterity", "on_success": "half_damage"}`
+- **SRD Source:** Saving throw mention in description
+- **Abilities:** strength, dexterity, constitution, intelligence, wisdom, charisma
+- **Success Outcomes:** `half_damage`, `negates`, `none`, `partial`
+
+#### `effects.attack`
+- **Type:** `object` (optional)
+- **Fields:** `{"type": "ranged_spell"}` or `{"type": "melee_spell"}`
+- **SRD Source:** Attack roll requirement in description
+- **Purpose:** Identify spell attack roll spells (vs. saving throw spells)
+
+#### `effects.area`
+- **Type:** `object` (optional)
+- **Fields:** `{"shape": "sphere", "size": 20, "unit": "feet"}`
+- **SRD Source:** Area description in spell text
+- **Shapes:** cone, cube, cylinder, line, sphere
+- **Purpose:** Visual representation, affected creature calculations
+
+#### `effects.conditions`
+- **Type:** `array` (optional)
+- **Example:** `["blinded", "charmed", "frightened"]`
+- **SRD Source:** Condition applications in description
+- **Purpose:** Track status effects applied by spell
+
+### Scaling (`scaling` object, optional)
+
+#### `scaling.type`
+- **Type:** `string` (enum)
+- **Values:** `"slot"` or `"character_level"`
+- **Purpose:** Distinguish between upcast scaling (leveled spells) and cantrip scaling
+
+**Slot-level scaling (`"slot"`):**
+- Applies when spell is cast with higher-level spell slot
+- Example: Fireball at 4th level does more damage than 3rd level
+
+**Character-level scaling (`"character_level"`):**
+- Applies to cantrips based on caster's level
+- Example: Fire Bolt at 5th, 11th, 17th character level
+
+#### `scaling.base_level`
+- **Type:** `integer`
+- **SRD Source:** Spell level (for slot scaling) or 1 (for character scaling)
+- **Purpose:** Baseline for scaling calculations
+
+#### `scaling.formula`
+- **Type:** `string`
+- **SRD Source:** "At Higher Levels" section or cantrip scaling description
+- **Examples:**
+  - `"+1d6 per slot level above 3rd"` (slot scaling)
+  - `"+1d10 at 5th, 11th, and 17th level"` (character scaling)
+- **Purpose:** Human-readable scaling display, directly displayable to users
+- **Design:** Preserves SRD text rather than over-structuring
+
+### Full Description
+
+#### `text`
+- **Type:** `string`
+- **SRD Source:** Complete spell description from SRD
+- **Transformation:** Concatenated paragraphs, preserves original wording
+- **Purpose:** Full spell details for display, search indexing
+
+---
+
 ## Data Quality Notes
 
-### Known Limitations (v1.1.0)
+### Known Limitations (v1.3.0)
 
 1. **Armor AC Parsing:** `armor_class.base` sometimes contains cost value instead of AC (see `GPT_REVIEW_equipment_status.md`)
 2. **Armor Categories:** Some armor (e.g., Leather) misclassified as medium instead of light
