@@ -517,3 +517,46 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
             patched.pop(key)
 
     return patched
+
+
+def clean_spell_record(spell: dict[str, Any]) -> dict[str, Any]:
+    """Run the canonical post-processing pipeline over a spell record.
+
+    This ensures:
+    - Consistent ID format (spell:*)
+    - simple_name is normalized (lowercase, underscores)
+    - School is lowercase
+    - Empty optional fields are pruned
+    - Field ordering follows schema
+    """
+    patched = {**spell}
+
+    # Generate ID if missing
+    if "id" not in patched and "simple_name" in patched:
+        patched["id"] = f"spell:{patched['simple_name']}"
+
+    # Ensure simple_name is normalized
+    if "simple_name" in patched and isinstance(patched["simple_name"], str):
+        patched["simple_name"] = normalize_id(patched["simple_name"])
+
+    # Normalize school to lowercase
+    if "school" in patched and isinstance(patched["school"], str):
+        patched["school"] = patched["school"].lower()
+
+    # Prune empty optional fields
+    spell_optional_fields = {
+        "effects",
+        "scaling",
+        "classes",
+        "source",
+        "summary",
+    }
+
+    for key in list(patched.keys()):
+        if key not in spell_optional_fields:
+            continue
+        value = patched[key]
+        if value is None or (isinstance(value, list | dict | str) and not value):
+            patched.pop(key)
+
+    return patched
