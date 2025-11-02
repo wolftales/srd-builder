@@ -1,13 +1,6 @@
 {
-  "_comment": "Template showing the equipment structure for extraction (v0.5.0)",
+  "_comment": "Template showing the equipment structure (equipment.schema.json v1.1.0)",
   "_note": "Uses unified items array consistent with monsters.json structure",
-  "_meta": {
-    "ruleset": "srd_5_1",
-    "schema_version": "1.1.0",
-    "source": "SRD_CC_v5.1",
-    "build_report": "../build_report.json",
-    "generated_by": "srd-builder v0.5.0"
-  },
   "items": [
     {
       "id": "item:longsword",
@@ -94,6 +87,25 @@
       },
       "weight_lb": 10,
       "weight_raw": "10 lb.",
+      "page": 150,
+      "source": "SRD_CC_v5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:pot-iron",
+      "name": "Pot, iron",
+      "simple_name": "pot_iron",
+      "summary": "One-sentence description",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10,
+      "weight_raw": "10 lb.",
+      "capacity": "1 gallon liquid",
+      "container": true,
       "page": 150,
       "source": "SRD_CC_v5.1",
       "is_magic": false

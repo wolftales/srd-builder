@@ -1,5 +1,5 @@
 {
-  "_comment": "Template showing the normalized monster structure (v0.4.0)",
+  "_comment": "Template showing the normalized monster structure (monster.schema.json v1.2.0)",
   "_note": "This is NOT real data - it's a template for extraction scripts",
   "id": "monster:example-monster",
   "simple_name": "example_monster",
@@ -18,11 +18,17 @@
   },
   "ability_scores": {
     "strength": 16,
+    "strength_modifier": 3,
     "dexterity": 14,
+    "dexterity_modifier": 2,
     "constitution": 12,
+    "constitution_modifier": 1,
     "intelligence": 10,
+    "intelligence_modifier": 0,
     "wisdom": 13,
-    "charisma": 8
+    "wisdom_modifier": 1,
+    "charisma": 8,
+    "charisma_modifier": -1
   },
   "saving_throws": {
     "strength": 5,
@@ -43,12 +49,20 @@
     {
       "simple_name": "example_attack",
       "name": "Example Attack",
-      "text": "Full description from SRD",
-      "damage_type": "slashing",
-      "damage_dice": "1d8+3",
+      "text": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage.",
+      "attack_type": "melee_weapon",
       "to_hit": 5,
       "reach": 5,
-      "saving_throw": "DC 13 Dexterity"
+      "damage": {
+        "average": 7,
+        "dice": "1d8+3",
+        "type": "slashing"
+      }
+    },
+    {
+      "simple_name": "multiattack",
+      "name": "Multiattack",
+      "text": "The creature makes two attacks: one with its bite and one with its claws."
     }
   ],
   "legendary_actions": [
