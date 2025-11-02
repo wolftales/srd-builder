@@ -44,6 +44,7 @@ def test_dataset_schema_versions_match():
     dataset_schema_map = {
         "monsters.json": "monster.schema.json",
         "equipment.json": "equipment.schema.json",
+        "spells.json": "spell.schema.json",
     }
 
     for dataset_file, schema_file in dataset_schema_map.items():

@@ -159,15 +159,18 @@ def _write_datasets(
             encoding="utf-8",
         )
 
-    # Write spells if available
+    # Write spells (always write, even if empty, to maintain consistent structure)
     processed_spells = None
-    if spells:
+    if spells is not None:
         processed_spells = [clean_spell_record(spell) for spell in spells]
-        spells_doc = _wrap_with_meta({"items": processed_spells}, ruleset=ruleset)
-        (dist_data_dir / "spells.json").write_text(
-            _render_json(spells_doc),
-            encoding="utf-8",
-        )
+    else:
+        processed_spells = []
+
+    spells_doc = _wrap_with_meta({"items": processed_spells}, ruleset=ruleset)
+    (dist_data_dir / "spells.json").write_text(
+        _render_json(spells_doc),
+        encoding="utf-8",
+    )
 
     index_payload = build_indexes(processed_monsters, processed_spells)
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
@@ -275,6 +278,8 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
             (schemas_dst / schema_file).write_text(
                 src.read_text(encoding="utf-8"), encoding="utf-8"
             )
+        else:
+            print(f"  ⚠ Schema not found: {schema_file}")
     print("  ✓ Copied schemas/")
 
     # Copy docs
