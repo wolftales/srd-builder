@@ -55,6 +55,41 @@ def validate_monsters(ruleset: str, limit: int | None = None) -> int:
     return count
 
 
+def validate_spells(ruleset: str, limit: int | None = None) -> int:
+    data_file = DIST_DIR / ruleset / "spells.json"
+    if not data_file.exists():
+        print(f"No spells.json found for ruleset '{ruleset}'. Skipping validation.")
+        return 0
+
+    schema_file = SCHEMA_DIR / "spell.schema.json"
+    if not schema_file.exists():
+        raise FileNotFoundError(
+            "Spell schema is missing. Did you remove schemas/spell.schema.json?"
+        )
+
+    document = load_json(data_file)
+    if not isinstance(document, dict):  # pragma: no cover - defensive guard
+        raise TypeError("spells.json must contain a JSON object")
+    spells = document.get("items", [])
+    if not isinstance(spells, list):
+        raise TypeError("spells.json 'items' must contain a JSON array")
+
+    schema = load_json(schema_file)
+    validator = Draft202012Validator(schema)
+
+    count = 0
+    iterable: Iterable[object] = spells
+    if limit is not None:
+        iterable = islice(iterable, limit)
+
+    for spell in iterable:
+        validator.validate(spell)
+        count += 1
+
+    print(f"Validated {count} spell entries for ruleset '{ruleset}'.")
+    return count
+
+
 def _ensure_build_report(ruleset: str) -> None:
     report_path = DIST_DIR / ruleset / "build_report.json"
     if not report_path.exists():
@@ -103,6 +138,7 @@ def validate_ruleset(ruleset: str, limit: int | None = None) -> None:
     _check_pdf_hash(ruleset)
 
     validate_monsters(ruleset=ruleset, limit=limit)
+    validate_spells(ruleset=ruleset, limit=limit)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
