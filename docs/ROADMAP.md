@@ -847,7 +847,9 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - Data dictionary auto-generated from JSON schemas with full validation rules
 
 **Documentation:**
-- `docs/ALIASES.md` - Alias system guide with usage examples
+- `docs/ARCHITECTURE.md` - Added alias system architecture section
+- `docs/SCHEMAS.md` - Added aliases field documentation
+- `docs/BUNDLE_README.md` - Updated with alias usage examples
 - `docs/DATA_DICTIONARY.md` - Auto-generated field reference (Swagger-style)
 
 ---

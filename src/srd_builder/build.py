@@ -356,7 +356,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     docs_src = repo_root / "docs"
     docs_dst = target_dir / "docs"
     docs_dst.mkdir(exist_ok=True)
-    for doc_file in ["SCHEMAS.md", "DATA_DICTIONARY.md"]:
+    for doc_file in ["SCHEMAS.md", "DATA_DICTIONARY.md", "ARCHITECTURE.md"]:
         src = docs_src / doc_file
         if src.exists():
             (docs_dst / doc_file).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
