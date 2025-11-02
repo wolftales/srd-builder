@@ -92,26 +92,29 @@ def test_template_files_have_version_note():
 
 
 def test_golden_test_uses_version_constant():
-    """Golden test should import and use __version__, not hardcode it."""
+    """Golden test should use _meta_block from build.py, not duplicate logic."""
     test_path = Path("tests/test_golden_monsters.py")
     content = test_path.read_text(encoding="utf-8")
 
-    # Should import __version__
+    # Should import _meta_block from build.py
     assert (
-        "from srd_builder import __version__" in content
-    ), "test_golden_monsters.py must import __version__"
+        "from srd_builder.build import _meta_block" in content
+    ), "test_golden_monsters.py must import _meta_block from build.py"
 
-    # Should use it in _meta function
+    # Should use _meta_block, not define its own _meta function
+    assert "_meta_block(" in content, "test_golden_monsters.py should use _meta_block()"
+
+    # Should not define duplicate _meta function
     assert (
-        'f"srd-builder v{__version__}"' in content
-    ), "test_golden_monsters.py should use __version__ in generated_by"
+        "def _meta(" not in content
+    ), "test_golden_monsters.py should not duplicate _meta logic - use _meta_block from build.py"
 
     # Should not hardcode version strings
     lines = content.split("\n")
     for i, line in enumerate(lines, 1):
         if line.strip().startswith("#"):
             continue
-        # Check for hardcoded version patterns (not in f-strings with __version__)
+        # Check for hardcoded version patterns
         if re.search(r'["\']srd-builder v0\.\d+\.\d+["\']', line):
             pytest.fail(
                 f"test_golden_monsters.py:{i} appears to hardcode a version: {line.strip()}"

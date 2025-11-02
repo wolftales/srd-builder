@@ -4,6 +4,89 @@ This document tracks features that have been discussed but deferred for later im
 
 ---
 
+## Data Parsing Gaps - HIGH PRIORITY 🎯
+
+**Status:** Active work needed for v0.7.0+
+**Priority:** HIGH - These gaps significantly impact data utility
+
+### Spell Parsing Gaps
+
+**Current Status (v0.6.3):**
+- ✅ 319/319 spells extracted (100%)
+- ✅ Text quality: 0 spells with <50 chars
+- ⚠️ Effects coverage: 44% (140/319)
+- ❌ Ritual flag: 0% - **BROKEN**
+- ❌ Area-of-effect: 0%
+- ❌ Healing effects: 0%
+- ❌ Attack roll effects: 0%
+
+#### 1. Ritual Flag Extraction (CRITICAL BUG)
+**Impact:** 0/319 spells have `ritual: true` despite ~30 ritual spells in SRD
+**Root Cause:** Raw extraction puts casting time in `casting_time: null`, loses ritual marker
+**Examples:** Detect Magic, Identify, Find Familiar all show `ritual: null` in raw data
+**Fix Required:**
+- Check if raw extraction is capturing ritual from casting time line
+- PDF text typically shows "1 action (ritual)" or "Ritual" component
+- May need to parse from components or casting time text
+
+#### 2. Area-of-Effect Parsing
+**Impact:** 0/319 spells have structured area data
+**Examples:** Fireball (20-foot radius sphere), Burning Hands (15-foot cone), Lightning Bolt (100-foot line)
+**Fix Required:**
+- Add regex patterns: `(\d+)-foot (radius|cone|line|cube|cylinder)`
+- Extract to `effects.area: {shape, size, unit}`
+- Would improve effects coverage from 44% to ~55%+
+
+#### 3. Healing Effects
+**Impact:** 0 spells have structured healing data (but many healing spells exist)
+**Examples:** Cure Wounds, Healing Word, Mass Cure Wounds
+**Current:** Text contains "regains hit points" but not structured
+**Fix Required:**
+- Parse healing dice/amounts similar to damage parsing
+- Add `effects.healing: {dice, bonus, description}`
+
+#### 4. Attack Roll Effects
+**Impact:** 0 spells have attack roll data
+**Examples:** Fire Bolt, Shocking Grasp, Inflict Wounds
+**Current:** Text says "make a ranged/melee spell attack"
+**Fix Required:**
+- Parse attack type (melee/ranged spell attack)
+- Add `effects.attack: {type, description}`
+
+### Equipment Parsing Gaps
+
+**Current Status (v0.6.3):**
+- ✅ 106 items (deduplicated from 111)
+- ✅ 68 "gear" items (adventuring gear category)
+- ⚠️ 8/13 containers have capacity
+- ❌ Category mislabeled as "gear" instead of "adventuring_gear"
+
+#### 1. Adventuring Gear Category Label
+**Impact:** Schema expects "adventuring_gear" but data shows "gear"
+**Root Cause:** Category mapping uses "gear" but should use "adventuring_gear"
+**Fix Required:**
+- Update category mapping in `parse_equipment.py`
+- Regenerate fixtures
+- Minor breaking change but improves schema compliance
+
+#### 2. Container Capacity Gaps (documented separately below)
+See "Container Capacity Hardcoded Values" section.
+
+### Monster Parsing Gaps
+
+**Current Status (v0.6.3):**
+- ✅ 296 monsters extracted
+- ✅ 244/296 (82%) have traits (special abilities)
+- ✅ 293/296 (99%) have actions
+- ✅ 30 legendary creatures
+- ✅ 8 with reactions
+- ✅ Query error showed "special_abilities: 0" but field is actually "traits"
+
+#### Status: No Critical Gaps! ✅
+Monster parsing is in excellent shape. Field is `traits` not `special_abilities` - documentation/query error only.
+
+---
+
 ## terminology.aliases Field in meta.json
 
 **Status:** Deferred until second ruleset or naming conflict
