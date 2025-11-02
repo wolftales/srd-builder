@@ -290,6 +290,19 @@ def _extract_effects(description: str) -> dict[str, Any]:
 
         effects["save"] = {"ability": ability, "on_success": on_success}
 
+    # Extract healing
+    # Pattern: Dice-based healing like "1d8 + your spellcasting ability modifier"
+    healing_pattern = r"regains?\s+(?:a\s+number\s+of\s+)?hit\s+points\s+equal\s+to\s+(\d+d\d+)"
+    healing_match = re.search(healing_pattern, description, re.IGNORECASE)
+    if healing_match:
+        effects["healing"] = {"dice": healing_match.group(1)}
+
+    # Extract spell attack
+    attack_pattern = r"(?:make\s+a\s+)?(melee|ranged)\s+spell\s+attack"
+    attack_match = re.search(attack_pattern, description, re.IGNORECASE)
+    if attack_match:
+        effects["attack"] = {"type": attack_match.group(1).lower() + "_spell"}
+
     # Extract area (handle PDF spacing like "20- foot- radius sphere")
     # Pattern 1: Standard "X-foot radius sphere/cone/cube/cylinder"
     area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
