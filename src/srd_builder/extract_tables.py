@@ -586,7 +586,7 @@ class TableExtractor:
         """Extract Carrying Capacity table (page 176).
 
         Two columns: Strength Score | Carrying Capacity (lbs)
-        \"\"\"
+        """
         # This might be a formula rather than a table
         # Pattern: Strength score × 15
         # Create formula-based table

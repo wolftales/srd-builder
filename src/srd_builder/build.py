@@ -181,14 +181,18 @@ def _write_datasets(
     )
 
     # Write tables (v0.7.0)
-    if tables:
-        tables_doc = _wrap_with_meta({"items": tables}, ruleset=ruleset)
+    # Tables are already fully normalized by parse_single_table, no additional cleaning needed
+    processed_tables = tables if tables else None
+    if processed_tables:
+        tables_doc = _wrap_with_meta({"items": processed_tables}, ruleset=ruleset)
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
             encoding="utf-8",
         )
 
-    index_payload = build_indexes(processed_monsters, processed_spells, processed_equipment)
+    index_payload = build_indexes(
+        processed_monsters, processed_spells, processed_equipment, processed_tables
+    )
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),

@@ -217,14 +217,51 @@ def _build_equipment_entity_index(equipment: list[dict[str, Any]]) -> dict[str, 
     return index
 
 
+def build_table_index(tables: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical table lookup tables."""
+
+    by_name, _ = _build_by_name_map(tables)
+    by_category: defaultdict[str, list[str]] = defaultdict(list)
+
+    for table in tables:
+        table_id = fallback_id(table)
+        category = str(table.get("category", "reference"))
+
+        by_category[category].append(table_id)
+
+    sorted_by_category = _stable_dict(sorted(by_category.items()))
+
+    for key, ids in sorted_by_category.items():
+        sorted_by_category[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_category": sorted_by_category,
+    }
+
+
+def _build_table_entity_index(tables: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for tables."""
+    index: dict[str, dict[str, str]] = {}
+    for table in tables:
+        table_id = fallback_id(table)
+        index[table_id] = {
+            "type": "table",
+            "file": "tables.json",
+            "name": table.get("name", ""),
+        }
+    return index
+
+
 def build_indexes(
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
+    tables: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, table, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -277,6 +314,24 @@ def build_indexes(
         payload["stats"]["total_entities"] = total
         payload["stats"]["unique_equipment_categories"] = len(equipment_indexes["by_category"])
         payload["stats"]["unique_equipment_rarities"] = len(equipment_indexes["by_rarity"])
+
+    # Add table indexes if tables provided (including empty list)
+    if tables is not None:
+        table_indexes = build_table_index(tables)
+        table_entity_index = _build_table_entity_index(tables)
+
+        payload["tables"] = table_indexes
+        entities["tables"] = table_entity_index
+        payload["stats"]["total_tables"] = len(tables)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        total += len(table_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["unique_table_categories"] = len(table_indexes["by_category"])
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}
