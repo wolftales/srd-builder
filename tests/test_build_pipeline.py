@@ -65,8 +65,6 @@ def test_build_pipeline(tmp_path, monkeypatch):
 
     dist_ruleset_dir = out_dir / ruleset
     assert dist_ruleset_dir.exists()
-    data_dir = dist_ruleset_dir / "data"
-    assert data_dir.is_dir()
 
     assert raw_dir.is_dir()
 
@@ -77,8 +75,8 @@ def test_build_pipeline(tmp_path, monkeypatch):
     expected_hash = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
     assert pdf_meta["pdf_sha256"] == expected_hash
 
-    # Check data/meta.json (rich consumer metadata)
-    dist_meta_path = data_dir / "meta.json"
+    # Check meta.json at package root (rich consumer metadata)
+    dist_meta_path = dist_ruleset_dir / "meta.json"
     assert dist_meta_path.exists()
     dist_meta = json.loads(dist_meta_path.read_text(encoding="utf-8"))
     assert dist_meta["version"] == "5.1"
@@ -88,8 +86,9 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert "files" in dist_meta
     assert "extraction_status" in dist_meta
 
-    monsters_path = data_dir / "monsters.json"
-    index_path = data_dir / "index.json"
+    # Check data files at package root (flat structure)
+    monsters_path = dist_ruleset_dir / "monsters.json"
+    index_path = dist_ruleset_dir / "index.json"
     assert monsters_path.exists()
     assert index_path.exists()
 

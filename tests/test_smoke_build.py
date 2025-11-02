@@ -10,7 +10,7 @@ def test_build_writes_report_and_datasets(tmp_path: Path) -> None:
     assert path.exists()
     assert path.name == "build_report.json"
 
-    monsters_path = out / "srd_5_1" / "data" / "monsters.json"
+    monsters_path = out / "srd_5_1" / "monsters.json"
     assert monsters_path.exists()
     document = json.loads(monsters_path.read_text(encoding="utf-8"))
     assert document["_meta"]["ruleset"] == "srd_5_1"

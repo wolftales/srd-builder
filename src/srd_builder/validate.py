@@ -21,7 +21,7 @@ def load_json(path: Path) -> object:
 
 
 def validate_monsters(ruleset: str, limit: int | None = None) -> int:
-    data_file = DIST_DIR / ruleset / "data" / "monsters.json"
+    data_file = DIST_DIR / ruleset / "monsters.json"
     if not data_file.exists():
         print(f"No monsters.json found for ruleset '{ruleset}'. Skipping validation.")
         return 0

@@ -317,9 +317,10 @@ Metadata structure now provides complete provenance for downstream consumers:
 
 ---
 
-## **v0.5.0 — Equipment Dataset** ✅ COMPLETE
+## **v0.5.0 — Equipment Dataset** ✅ COMPLETE **[DATA]**
 
-**Released:** October 31, 2025
+**Released:** October 2025
+**Consumer Impact:** NEW - 111 equipment items added
 
 **Released:** November 1, 2025
 
@@ -381,46 +382,10 @@ dist/srd_5_1/
 
 ---
 
-## **v0.5.2 — Version Management & Test Infrastructure** ✅ COMPLETE
+## **v0.5.1 — Action Parsing & Ability Modifiers** ✅ COMPLETE **[DATA]**
 
 **Released:** November 1, 2025
-
-**Goal:** Establish robust version management and test organization.
-
-**Delivered**
-
-* **Version Management Consolidation**
-  - Created `constants.py` for shared version constants
-  - Three independent versions: `__version__` (0.5.2), `EXTRACTOR_VERSION` (0.3.0), `SCHEMA_VERSION` (1.2.0)
-  - Removed redundant `FORMAT_VERSION` (was duplicate of `__version__`)
-  - Comprehensive ARCHITECTURE.md documentation with version change matrix
-  - Clear update checklist for releases
-
-* **Test Infrastructure Improvements**
-  - Split tests into unit (90) vs package validation (2) using pytest markers
-  - Unit tests run without requiring `make output` (CI-friendly)
-  - Package tests validate built output structure
-  - Fixed test hardcoded versions - now use constants
-  - New commands: `make test`, `make test-all`, `make test-package`
-
-* **Constants Refactoring**
-  - `EXTRACTOR_VERSION` now shared across all extractors (monsters, equipment, future spells)
-  - Eliminated circular import issues
-  - Single source of truth for all version types
-
-**Benefits:**
-- Versions never get out of sync (tests use constants, not hardcoded values)
-- Clear documentation on when each version changes
-- CI runs fast (no build required for unit tests)
-- Package validation tests ensure output quality
-
-**Test Results:** 92/92 passing
-
----
-
-## **v0.5.1 — Action Parsing & Ability Modifiers** ✅ COMPLETE
-
-**Released:** October 2025
+**Consumer Impact:** NEW - Structured combat fields (attack_type, to_hit, damage, ability modifiers)
 
 **Goal:** Deliver HIGH priority Blackmoor requests for structured combat data.
 
@@ -459,10 +424,101 @@ dist/srd_5_1/
 
 ---
 
-## **v0.6.0 — Spells Dataset** 🎯 NEXT
+## **v0.5.2 — Quality & Stability Release** ✅ COMPLETE **[INFRASTRUCTURE]**
+
+**Released:** November 1, 2025
+**Consumer Impact:** NONE - Same data as v0.5.1, internal improvements only
+
+**Goal:** Internal quality improvements and infrastructure hardening (no customer-facing data changes).
+
+**What's in v0.5.2 for Blackmoor:**
+- **No new data fields** - This is a quality/infrastructure release
+- **Same monster and equipment data** as v0.5.1
+- **Enhanced reliability** - Better version tracking and test coverage
+- **Preparation for spells** - Infrastructure ready for v0.6.0
+
+**For Consumers:**
+- Output files are identical to v0.5.1 (monsters.json, equipment.json)
+- Schema version unchanged (1.2.0)
+- Package version updated to 0.5.2 in `generated_by` metadata
+
+**Technical Improvements (Internal)**
+
+* **Version Management Consolidation**
+  - Created `constants.py` for shared version constants
+  - Three independent versions: `__version__` (0.5.2), `EXTRACTOR_VERSION` (0.3.0), `SCHEMA_VERSION` (1.2.0)
+  - Removed redundant version tracking
+  - Clear documentation on when each version changes
+
+* **Test Infrastructure**
+  - Split tests into unit (90) vs package validation (2)
+  - Faster CI (no build required for unit tests)
+  - 92/92 tests passing
+  - Tests now validate against constants (never get out of sync)
+
+**Summary for Blackmoor:**
+This is a **maintenance release** with no new features or data changes. Safe to skip if you're already on v0.5.1. Recommend waiting for v0.6.0 (Spells) for the next major update.
+
+---
+
+## **v0.5.3 — Package Structure Refactoring** ✅ COMPLETE **[INFRASTRUCTURE]**
+
+**Released:** November 1, 2025
+**Consumer Impact:** BREAKING - File paths changed (simple migration)
+
+**Goal:** Align package structure with standard data package conventions and simplify Blackmoor integration.
+
+**What Changed:**
+- **Data files moved to package root** - No more nested `data/` subdirectory
+- **Simpler paths** - `monsters.json` instead of `data/monsters.json`
+- **Supporting files stay organized** - `schemas/` and `docs/` remain in subdirectories
+
+**Package Structure (Before → After):**
+```
+Before (v0.5.2):              After (v0.5.3):
+dist/srd_5_1/                 dist/srd_5_1/
+├── data/                     ├── monsters.json      ← At root
+│   ├── monsters.json         ├── equipment.json
+│   ├── equipment.json        ├── index.json
+│   ├── index.json            ├── meta.json
+│   └── meta.json             ├── README.md
+├── README.md                 ├── build_report.json
+├── build_report.json         ├── schemas/
+├── schemas/                  └── docs/
+└── docs/
+```
+
+**Migration for Blackmoor:**
+```python
+# Old (v0.5.2):
+monsters_path = ruleset_dir / "data" / "data" / "monsters.json"  # Double nesting!
+
+# New (v0.5.3):
+monsters_path = ruleset_dir / "data" / "monsters.json"  # Clean!
+```
+
+**Why This Change?**
+1. **Standard convention** - Most data packages put data at root, metadata in subdirs
+2. **Simpler integration** - One less directory level to navigate
+3. **Clearer structure** - Immediately visible what files are the actual data
+4. **Customer feedback** - Blackmoor team requested this alignment
+
+**Technical Details:**
+- All 92 tests passing with new structure
+- Validation updated: `python -m srd_builder.validate --ruleset srd_5_1`
+- Documentation updated (README, BUNDLE_README)
+- meta.json file paths updated (no `data/` prefix)
+
+**Summary for Blackmoor:**
+This is a **breaking change** but migration is straightforward - just remove one `"data"` from your path construction. The data content is identical to v0.5.2. Recommend updating to v0.5.3 before v0.6.0 (Spells) to get the cleaner structure.
+
+---
+
+## **v0.6.0 — Spells Dataset** 🎯 NEXT **[DATA]**
 
 **Target:** December 2025
 **Priority:** HIGH (Blackmoor customer request)
+**Consumer Impact:** NEW - ~300-400 spells with structured fields
 
 **Goal:** Extract and structure D&D 5e spells from SRD 5.1.
 
@@ -500,10 +556,11 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 
 ---
 
-## **v0.6.1 — Conditions Dataset** (Quick Win)
+## **v0.6.1 — Conditions Dataset** (Quick Win) **[DATA]**
 
 **Priority:** MEDIUM
 **Effort:** Low (small dataset)
+**Consumer Impact:** NEW - ~15-20 status conditions
 
 **Goal:** Extract ~15-20 status conditions from SRD 5.1.
 

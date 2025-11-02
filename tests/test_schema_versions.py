@@ -37,7 +37,7 @@ def test_dataset_schema_versions_match():
 
     Requires: Built package (run 'make output' first)
     """
-    dist_dir = Path(__file__).parent.parent / "dist" / "srd_5_1" / "data"
+    dist_dir = Path(__file__).parent.parent / "dist" / "srd_5_1"
     schema_dir = Path(__file__).parent.parent / "schemas"
 
     # Map dataset files to their schema files
@@ -80,8 +80,8 @@ def test_meta_json_schema_version():
 
     Requires: Built package (run 'make output' first)
     """
-    # Correct path based on README structure
-    meta_path = Path(__file__).parent.parent / "dist" / "srd_5_1" / "data" / "meta.json"
+    # meta.json at package root (flat structure)
+    meta_path = Path(__file__).parent.parent / "dist" / "srd_5_1" / "meta.json"
 
     if not meta_path.exists():
         pytest.skip("meta.json not built - run 'make output' first")

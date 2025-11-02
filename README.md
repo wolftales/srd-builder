@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.5.0)
+### Build pipeline (v0.5.3)
 
 The build pipeline extracts monster and equipment data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters** and **111 equipment items** with full provenance tracking.
 
@@ -54,24 +54,22 @@ python -m srd_builder.validate --ruleset srd_5_1
 **Development output:**
 ```
 dist/srd_5_1/
-├── build_report.json      # Build metadata (version, timestamp)
-└── data/
-    ├── meta.json          # Dataset metadata (license, provenance)
-    ├── monsters.json      # 296 creature stat blocks
-    ├── equipment.json     # 114 items
-    └── index.json         # Lookup indexes
+├── monsters.json          # 296 creature stat blocks
+├── equipment.json         # 114 items
+├── index.json             # Lookup indexes
+├── meta.json              # Dataset metadata (license, provenance)
+└── build_report.json      # Build metadata (version, timestamp)
 ```
 
 **Production bundle output:**
 ```
 dist/srd_5_1/
+├── monsters.json          # 296 creature stat blocks
+├── equipment.json         # 114 items
+├── index.json             # Lookup indexes
+├── meta.json              # Dataset metadata (license, provenance)
 ├── README.md              # Consumer documentation
-├── build_report.json
-├── data/
-│   ├── meta.json
-│   ├── monsters.json
-│   ├── equipment.json
-│   └── index.json
+├── build_report.json      # Build metadata (version, timestamp)
 ├── schemas/
 │   ├── monster.schema.json
 │   └── equipment.schema.json
@@ -94,7 +92,7 @@ dist/srd_5_1/
 
 ```python
 import json, pathlib
-p = pathlib.Path("dist/srd_5_1/data/monsters.json")
+p = pathlib.Path("dist/srd_5_1/monsters.json")
 data = json.loads(p.read_text(encoding="utf-8"))
 print(f"Schema: {data['_meta']['schema_version']}, Monsters: {len(data['items'])}")
 
@@ -227,7 +225,7 @@ The generated datasets are designed for:
 
 ```bash
 # Validate with jsonschema (Python)
-jsonschema -i dist/srd_5_1/data/monsters.json schemas/monster.schema.json
+jsonschema -i dist/srd_5_1/monsters.json schemas/monster.schema.json
 
 # Or in code
 import json

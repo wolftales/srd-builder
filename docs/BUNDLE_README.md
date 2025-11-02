@@ -20,14 +20,14 @@ Machine-readable D&D 5e SRD data extracted from official PDF:
 ## Quick Start
 
 ```javascript
-const data = require('./data/monsters.json');
+const data = require('./monsters.json');
 const dragon = data.items.find(m => m.simple_name === 'adult_red_dragon');
 console.log(dragon.challenge_rating);  // 17
 ```
 
 ```python
 import json
-with open('data/monsters.json') as f:
+with open('monsters.json') as f:
     monsters = json.load(f)['items']
 dragon = next(m for m in monsters if m['id'] == 'monster:adult_red_dragon')
 ```
@@ -38,13 +38,12 @@ dragon = next(m for m in monsters if m['id'] == 'monster:adult_red_dragon')
 
 ```
 srd_5_1/
-├── README.md
+├── monsters.json          # 296 creature stat blocks
+├── equipment.json         # 114 items
+├── index.json             # Search index
+├── meta.json              # Dataset catalog & license
+├── README.md              # This file
 ├── build_report.json      # Build process metadata
-├── data/
-│   ├── meta.json          # Dataset catalog & license
-│   ├── monsters.json      # 296 creature stat blocks
-│   ├── equipment.json     # 114 items
-│   └── index.json         # Search index
 ├── schemas/
 │   ├── monster.schema.json
 │   └── equipment.schema.json
@@ -75,7 +74,7 @@ srd_5_1/
 - **Schema validation:** All data validates against JSON Schema Draft 2020-12
 
 ```bash
-jsonschema -i data/monsters.json schemas/monster.schema.json
+jsonschema -i monsters.json schemas/monster.schema.json
 ```
 
 ---

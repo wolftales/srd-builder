@@ -114,9 +114,9 @@ def _generate_meta_json(
         "files": {
             "meta": "meta.json",
             "build_report": "build_report.json",
-            "index": "data/index.json",
-            "monsters": "data/monsters.json",
-            "equipment": "data/equipment.json",
+            "index": "index.json",
+            "monsters": "monsters.json",
+            "equipment": "equipment.json",
         },
         "extraction_status": {
             "monsters": "complete" if monsters_complete else "in_progress",
@@ -129,14 +129,14 @@ def _generate_meta_json(
 def _write_datasets(
     *,
     ruleset: str,
-    data_dir: Path,
+    dist_data_dir: Path,
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
     monsters_doc = _wrap_with_meta({"items": processed_monsters}, ruleset=ruleset)
-    (data_dir / "monsters.json").write_text(
+    (dist_data_dir / "monsters.json").write_text(
         _render_json(monsters_doc),
         encoding="utf-8",
     )
@@ -145,14 +145,14 @@ def _write_datasets(
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
         equipment_doc = _wrap_with_meta({"items": processed_equipment}, ruleset=ruleset)
-        (data_dir / "equipment.json").write_text(
+        (dist_data_dir / "equipment.json").write_text(
             _render_json(equipment_doc),
             encoding="utf-8",
         )
 
     index_payload = build_indexes(processed_monsters)
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
-    (data_dir / "index.json").write_text(
+    (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
         encoding="utf-8",
     )
@@ -218,16 +218,13 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     """
 
     dist_ruleset_dir = out_dir / ruleset
-    data_dir = dist_ruleset_dir / "data"
     raw_dir = Path(RULESETS_DIRNAME) / ruleset / "raw"
 
     dist_ruleset_dir.mkdir(parents=True, exist_ok=True)
-    data_dir.mkdir(exist_ok=True)
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     return {
         "dist_ruleset": dist_ruleset_dir,
-        "data": data_dir,
         "raw": raw_dir,
     }
 
@@ -403,7 +400,7 @@ def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False)
 
     _write_datasets(
         ruleset=ruleset,
-        data_dir=layout["data"],
+        dist_data_dir=target_dir,
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
     )
@@ -442,7 +439,7 @@ def build(ruleset: str, output_format: str, out_dir: Path, bundle: bool = False)
         equipment_complete=len(parsed_equipment) > 0,
         equipment_page_range=equipment_page_range,
     )
-    meta_path = layout["data"] / "meta.json"
+    meta_path = target_dir / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")
 
     # Copy collateral for production bundle
