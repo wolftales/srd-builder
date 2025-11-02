@@ -705,25 +705,86 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.7.0 — Classes & Lineages** **[DATA]**
+## **v0.7.0 — Reference Tables Dataset** **[DATA]**
+
+**Priority:** HIGH (foundational for other datasets)
+**Effort:** Low-Medium (leverage existing column_mapper.py)
+**Consumer Impact:** NEW - ~10-15 reference tables
+
+**Goal:** Extract reusable reference tables from SRD 5.1 for consumer use.
+
+**Why Tables First?**
+- Already parsed equipment tables internally - should have captured them for consumers
+- Needed by Classes (level progression, proficiency bonus)
+- Needed by Spells (spell slots by level)
+- Needed by general gameplay (services, travel pace, carrying capacity)
+- Validates our table extraction infrastructure for public consumption
+- Quick win that unblocks other datasets
+
+**Scope:**
+- Experience points by CR
+- Proficiency bonus by level
+- Armor class by armor type (reference)
+- Damage by character level (cantrips)
+- Spell slots by class level
+- Travel pace (hours/day, miles/hour)
+- Services and expenses
+- Carrying capacity / encumbrance
+- Creature size categories (space, hit dice)
+- Ability score modifiers (-5 to +10)
+
+**Schema (Simple)**
+```json
+{
+  "id": "table:experience_by_cr",
+  "simple_name": "experience_by_cr",
+  "name": "Experience Points by Challenge Rating",
+  "summary": "XP rewards for defeating monsters",
+  "columns": ["cr", "xp"],
+  "rows": [
+    {"cr": "0", "xp": 10},
+    {"cr": "1/8", "xp": 25},
+    {"cr": "1/4", "xp": 50}
+  ],
+  "page": 9
+}
+```
+
+**Technical Approach:**
+- Extend `column_mapper.py` to capture tables for output (not just internal parsing)
+- Create `tables.json` output alongside existing datasets
+- Simple extraction (no complex parsing like monsters/spells)
+
+---
+
+## **v0.8.0 — Classes & Lineages** **[DATA]**
 
 **Goal:** Extract character creation content.
 
 **Scope:**
 - Classes (complex with level progression tables)
 - Lineages/Races (character creation features)
+- **Terminology aliases** (add `terminology.aliases` to meta.json: `{"races": "lineages"}`)
 
 **Priority:** MEDIUM - Important for character creation, but NPCs use monster stats
 
-**Why Classes Next?**
+**Why Classes After Tables?**
 - Core D&D content for character building
 - Complex extraction (level progression tables)
+- **Depends on v0.7.0 tables** (proficiency bonus, spell slots)
 - Validates table extraction architecture
 - Complements existing monster, equipment, and spell data
+- Terminology aliases enable backward-compatible naming
+
+**Lineage/Race Terminology:**
+- Output file: `lineages.json`
+- Field namespace: `lineage:*` (e.g., `lineage:dwarf`)
+- meta.json will include: `"terminology": {"aliases": {"races": "lineages"}}`
+- Maintains modern 5e terminology while enabling discoverability
 
 ---
 
-## **v0.8.0 — Conditions Dataset** (Quick Win) **[DATA]**
+## **v0.9.0 — Conditions Dataset** (Quick Win) **[DATA]**
 
 **Priority:** MEDIUM
 **Effort:** Low (small dataset)
@@ -750,10 +811,55 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 }
 ```
 
-**Optional Structured Fields**
+**Optional Structured Fields:**
 - speed_modifier (e.g., restrained, grappled)
 - advantage_on / disadvantage_on
 - prevents (e.g., unconscious prevents actions)
+
+---
+
+## **v1.0.0 — Unified Build & Validation**
+
+**Goal:** Single `build_all()` to process all entities and a top-level `validate_all()` for all schemas and PDFs.
+
+**Complete SRD 5.1 Coverage:**
+- ✅ Monsters (296)
+- ✅ Equipment (106)
+- ✅ Spells (319)
+- ✅ Reference Tables (~15)
+- ✅ Classes (~13)
+- ✅ Lineages (~9)
+- ✅ Conditions (~15)
+
+**First GitHub Release:**
+- Complete dataset bundle
+- Full changelog (v0.1.0 → v1.0.0)
+- Consumer documentation
+- Example code
+- License attribution
+
+---
+
+## **v1.x+ — Rules & Features** **[FUTURE]**
+
+**Deferred Post-1.0:**
+
+### Rules Dataset
+**Priority:** LOW (most complex, least structured)
+**Goal:** Extract core mechanics, variant rules, optional rules
+**Why Later:**
+- Most complex text parsing (not tables or stat blocks)
+- Least structured data in SRD
+- Low immediate consumer value (most apps use hardcoded rules)
+- Better suited for v2.0 after 1.0 proves the architecture
+
+### Features Dataset
+**Priority:** LOW (derived from classes/lineages)
+**Goal:** Extract class features, racial traits as standalone entities
+**Why Later:**
+- Mostly duplicates data already in classes.json and lineages.json
+- Complex cross-referencing (features shared across classes)
+- Better to wait for consumer feedback on classes structure
 
 ---
 

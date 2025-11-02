@@ -184,6 +184,11 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.6.2** - Spells dataset complete (319 spells, schema v1.3.0)
 - ✅ **v0.6.3** - Fixed build_report.json path reference
 - ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
+- ✅ **v0.6.5** - Version management tooling
+- 🎯 **v0.7.0** - Reference tables dataset (~15 tables)
+- 🎯 **v0.8.0** - Classes & Lineages (character creation)
+- 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
+- 🎯 **v1.0.0** - Unified build & first GitHub release 🚀
 
 ## Testing
 
