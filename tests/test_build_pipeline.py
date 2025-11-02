@@ -79,7 +79,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
     dist_meta_path = dist_ruleset_dir / "meta.json"
     assert dist_meta_path.exists()
     dist_meta = json.loads(dist_meta_path.read_text(encoding="utf-8"))
-    assert dist_meta["version"] == "5.1"
+    assert dist_meta["ruleset_version"] == "5.1"
     assert dist_meta["source"] == "SRD_CC_v5.1"
     assert "license" in dist_meta
     assert "page_index" in dist_meta

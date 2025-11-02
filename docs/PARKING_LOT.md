@@ -841,4 +841,88 @@ select = ["E", "F", ...]
 
 ---
 
+## JSON Field Ordering & Consistency (v0.8.1+)
+
+**Priority:** LOW (quality-of-life improvement)
+**Effort:** Medium
+
+### Problem
+
+JSON output files have inconsistent field ordering:
+- **Data files** (`monsters.json`, `equipment.json`, etc.): `_meta` wrapper with `ruleset`, `schema_version`, `source` first (good order)
+- **meta.json**: Was `version`, `source` initially - changed to `source`, `ruleset_version` in v0.8.1
+- Python dicts don't guarantee order in JSON output (though `OrderedDict` used in some places)
+- No consistent policy on field ordering across the codebase
+
+### Current Issues
+
+1. **Field naming inconsistency:**
+   - Initially used `version` in `meta.json` (ambiguous - builder version? ruleset version?)
+   - Changed to `ruleset_version` for clarity
+   - May have other fields with unclear names
+
+2. **Ordering preferences:**
+   - Identification fields (`source`, `ruleset`, `id`) should come first
+   - Metadata/build info should come after core data
+   - User expressed preference for: `source` → `ruleset_version` → `license` → `build` → rest
+
+3. **No enforcement:**
+   - Field order depends on dict insertion order
+   - `json.dumps()` doesn't sort by default
+   - `OrderedDict` used inconsistently
+
+### Proposed Solution
+
+**Phase 1: Document Standards**
+- Create `docs/JSON_STYLE_GUIDE.md` with field ordering rules:
+  - Core identification first (source, id, name, type)
+  - Functional data second (stats, attributes, values)
+  - Metadata last (pages, timestamps, build info)
+- Add to ARCHITECTURE.md under design decisions
+
+**Phase 2: Add Validation**
+- Create test to verify field order in output files
+- Check that identification fields come before metadata
+- Ensure consistent ordering across all JSON outputs
+
+**Phase 3: Implement Helpers**
+```python
+def ordered_meta(*, source, ruleset_version, license, build, **kwargs):
+    """Generate meta.json with consistent field ordering."""
+    return OrderedDict([
+        ("source", source),
+        ("ruleset_version", ruleset_version),
+        ("license", license),
+        ("build", build),
+        *kwargs.items()
+    ])
+```
+
+**Phase 4: Use `json.dumps(sort_keys=True)` Strategically**
+- Consider sorting keys alphabetically within sections
+- Or maintain manual `OrderedDict` for semantic ordering
+- Trade-off: alphabetical is stable but not semantic
+
+### Related Work
+
+- Python 3.7+ guarantees dict insertion order (but not serialization order)
+- `dataclasses` with `asdict()` preserve field definition order
+- Could use Pydantic models for structured data with guaranteed ordering
+
+### Benefits
+
+- Consistent, predictable JSON structure
+- Easier for humans to read and compare
+- Semantic ordering makes core fields immediately visible
+- Git diffs more meaningful with stable ordering
+
+### Deferred Because
+
+- Not urgent - functionality works fine
+- Requires careful review of all JSON output code
+- Need to decide: semantic ordering vs alphabetical
+- v0.8.1 already addressed worst issue (`version` → `ruleset_version` + reordering)
+
+---
+
 ## [Add more parked features here as needed]

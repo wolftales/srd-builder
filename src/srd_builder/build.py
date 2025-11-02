@@ -128,8 +128,8 @@ def _generate_meta_json(
     )
 
     return {
-        "version": version,
         "source": DATA_SOURCE,
+        "ruleset_version": version,
         "license": {
             "type": license_type,
             "url": license_url,
