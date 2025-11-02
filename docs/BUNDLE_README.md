@@ -1,8 +1,8 @@
 # SRD 5.1 Dataset Bundle
 
-**Version:** srd-builder v0.6.0
+**Version:** srd-builder v0.8.0
 **Schema Version:** 1.3.0
-**Generated:** November 1, 2025
+**Generated:** November 2, 2025
 **Source:** System Reference Document 5.1 (SRD_CC_v5.1)
 
 ---
@@ -14,7 +14,9 @@ Machine-readable D&D 5e SRD data extracted from official PDF:
 - **296 Monsters** - Full stat blocks (schema v1.2.0)
 - **114 Equipment Items** - Weapons, armor, gear (schema v1.2.0)
 - **Spells** - Spell data with structured casting/effects (schema v1.3.0)
-- **Search Index** - Pre-built lookups (monsters, equipment, spells)
+- **13 Lineages** - Character lineages (formerly races) with traits, abilities, subraces (schema v1.3.0)
+- **Search Index** - Pre-built lookups with alias support (monsters, equipment, spells, lineages)
+- **Alias System** - Terminology mappings (races→lineages) and entity-level search aliases
 
 ---
 
@@ -57,17 +59,23 @@ srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 114 items
 ├── spells.json            # Spell data
-├── index.json             # Search index (monsters, equipment, spells)
+├── lineages.json          # 13 character lineages (9 base + 4 subraces)
+├── tables.json            # Reference tables
+├── index.json             # Search index with alias support
 ├── meta.json              # Dataset catalog & license
 ├── README.md              # This file
 ├── build_report.json      # Build process metadata
 ├── schemas/
 │   ├── monster.schema.json
 │   ├── equipment.schema.json
-│   └── spell.schema.json
+│   ├── spell.schema.json
+│   ├── lineage.schema.json
+│   └── table.schema.json
 └── docs/
     ├── SCHEMAS.md         # Schema design & versioning
-    └── DATA_DICTIONARY.md # Field reference & SRD mappings
+    ├── DATA_DICTIONARY.md # Field reference & SRD mappings
+    ├── ALIAS_USAGE.md     # Alias system usage guide
+    └── ALIAS_IMPLEMENTATION.md # Alias technical details
 ```
 
 ---
@@ -78,6 +86,10 @@ The `index.json` file provides pre-built search indexes for all datasets:
 
 ```json
 {
+  "aliases": {
+    "races": "lineages",
+    "race": "lineage"
+  },
   "monsters": {
     "by_name": {"aboleth": "monster:aboleth", ...},
     "by_cr": {"0": [...], "1": [...], ...},
@@ -96,16 +108,23 @@ The `index.json` file provides pre-built search indexes for all datasets:
     "by_concentration": {"true": [...], "false": [...]},
     "by_ritual": {"true": [...], "false": [...]}
   },
+  "lineages": {
+    "by_name": {"dwarf": "lineage:dwarf", "elf": "lineage:elf", ...},
+    "by_size": {"Medium": [...], "Small": [...]},
+    "by_speed": {"25": [...], "30": [...]}
+  },
   "entities": {
     "monsters": {"monster:aboleth": {"type": "monster", "file": "monsters.json", "name": "Aboleth"}, ...},
     "equipment": {"item:longsword": {"type": "equipment", "file": "equipment.json", "name": "Longsword"}, ...},
-    "spells": {"spell:fireball": {"type": "spell", "file": "spells.json", "name": "Fireball"}, ...}
+    "spells": {"spell:fireball": {"type": "spell", "file": "spells.json", "name": "Fireball"}, ...},
+    "lineages": {"lineage:dwarf": {"type": "lineage", "file": "lineages.json", "name": "Dwarf"}, ...}
   },
   "stats": {
     "total_monsters": 296,
-    "total_equipment": 111,
+    "total_equipment": 114,
     "total_spells": 0,
-    "total_entities": 407,
+    "total_lineages": 13,
+    "total_entities": 423,
     ...
   }
 }
@@ -114,7 +133,36 @@ The `index.json` file provides pre-built search indexes for all datasets:
 **Usage:**
 - Look up monsters by CR: `index.monsters.by_cr["5"]` → list of CR 5 monster IDs
 - Find all concentration spells: `index.spells.by_concentration["true"]`
+- Use legacy terminology: `index[index.aliases["races"]]` → lineages data
 - Get entity metadata: `index.entities.monsters["monster:aboleth"]` → type, file, name
+
+---
+
+## Alias System (v0.8.0)
+
+**Terminology Aliases:** Map historical or alternative category names to canonical names:
+
+```javascript
+// Resolve "races" to "lineages"
+const canonical = index.aliases["races"];  // → "lineages"
+const lineages = index[canonical];          // → index.lineages
+
+// Both work:
+index.lineages.by_name["dwarf"]  // → "lineage:dwarf"
+index[index.aliases["races"]].by_name["dwarf"]  // → "lineage:dwarf"
+```
+
+**Entity Aliases:** Items can have alternative search terms (future):
+
+```json
+{
+  "id": "item:flask_or_tankard",
+  "name": "Flask or tankard",
+  "aliases": ["flask", "tankard"]
+}
+```
+
+See **ALIAS_USAGE.md** for complete guide.
 
 ---
 
@@ -124,6 +172,8 @@ The `index.json` file provides pre-built search indexes for all datasets:
 
 - **SCHEMAS.md** - Schema v1.3.0 design, versioning, use cases, evolution history
 - **DATA_DICTIONARY.md** - Complete field reference with SRD source mappings
+- **ALIAS_USAGE.md** - Alias system usage guide with examples
+- **ALIAS_IMPLEMENTATION.md** - Alias technical implementation details
 - **meta.json** - License, attribution, file manifest
 - **build_report.json** - Extraction statistics
 - **schemas/*.json** - JSON Schema validation
@@ -132,11 +182,12 @@ The `index.json` file provides pre-built search indexes for all datasets:
 
 ## Key Features
 
-- **Namespaced IDs:** `monster:aboleth`, `item:longsword`, `spell:fireball`
-- **Structured data:** AC, HP, speeds, casting as objects (not strings)
+- **Namespaced IDs:** `monster:aboleth`, `item:longsword`, `spell:fireball`, `lineage:dwarf`
+- **Structured data:** AC, HP, speeds, casting, traits as objects (not strings)
 - **Normalized names:** `simple_name` for search/indexing
-- **Pre-built indexes:** Fast lookups by CR, category, level, etc.
-- **Entity directory:** Nested by type (monsters/equipment/spells)
+- **Pre-built indexes:** Fast lookups by CR, category, level, size, speed, etc.
+- **Entity directory:** Nested by type (monsters/equipment/spells/lineages)
+- **Alias support:** Terminology mappings and entity-level search aliases
 - **Schema validation:** All data validates against JSON Schema Draft 2020-12
 
 ```bash

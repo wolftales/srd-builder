@@ -25,6 +25,14 @@
       "pattern": "^[a-z0-9_]+$",
       "description": "Local identifier without namespace (for sorting, file names)"
     },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this table"
+    },
     "name": {
       "type": "string",
       "minLength": 1,

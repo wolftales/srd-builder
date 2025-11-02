@@ -30,6 +30,14 @@
       "pattern": "^[a-z][a-z0-9\\s-]*$",
       "description": "Lowercase normalized name for indexing and search"
     },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this item (e.g., 'flask' and 'tankard' for 'Flask or tankard')"
+    },
     "summary": {
       "type": "string",
       "description": "One-sentence description for tooltips and previews (optional)"

@@ -815,6 +815,44 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
+## **v0.8.1 — Comprehensive Alias System & PDF Metadata** **[QUALITY]**
+
+**Goal:** Enhance discoverability and eliminate hardcoded metadata.
+
+**Scope:**
+- **Three-level alias pattern:**
+  - Index-level: Terminology aliases in `index.json` (`{"races": "lineages", "race": "lineage"}`)
+  - Entity-level: Optional `aliases` field in all schemas (equipment, lineage, spell, monster, table)
+  - Indexer-level: Automatic alias expansion in `by_name` indexes
+- **PDF metadata extraction:**
+  - Extract version, license, URLs, attribution from PDF page 1
+  - Replace hardcoded values in meta.json with authoritative PDF data
+  - New module: `extract_pdf_metadata.py`
+- **Auto-generated data dictionary:**
+  - `generate_data_dictionary.py` creates `DATA_DICTIONARY.md` from schemas
+  - Swagger/OpenAPI-style field reference
+  - Eliminates manual documentation maintenance
+
+**Why This Matters:**
+- **Discoverability:** Consumers can search by alternative names ("flask", "tankard") → `flask_or_tankard`
+- **Backward compatibility:** Old code using "race" still works via index-level aliases
+- **Authoritative metadata:** PDF is source of truth, not hardcoded values
+- **Maintainability:** Schema changes automatically update documentation
+
+**Implementation Details:**
+- Index-level aliases enable categorical mappings (races → lineages)
+- Entity-level aliases stored in data, automatically indexed
+- `by_name` indexes include all aliases for transparent lookups
+- PDF extraction runs during build, falls back to constants if unavailable
+- Data dictionary auto-generated from JSON schemas with full validation rules
+
+**Documentation:**
+- `docs/ALIAS_USAGE.md` - Consumer usage guide with JavaScript examples
+- `docs/ALIAS_IMPLEMENTATION.md` - Technical implementation details
+- `docs/DATA_DICTIONARY.md` - Auto-generated field reference (Swagger-style)
+
+---
+
 ## **v0.9.0 — Conditions Dataset** (Quick Win) **[DATA]**
 
 **Priority:** MEDIUM

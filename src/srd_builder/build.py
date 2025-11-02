@@ -21,6 +21,7 @@ from . import __version__
 from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
+from .extract_pdf_metadata import extract_pdf_metadata
 from .extract_spells import extract_spells
 from .extract_tables import extract_tables_to_json
 from .indexer import build_indexes
@@ -83,6 +84,7 @@ def _render_json(payload: Any) -> str:
 def _generate_meta_json(
     *,
     pdf_hash: str | None,
+    pdf_metadata: dict[str, Any] | None = None,
     monsters_complete: bool,
     monsters_page_range: tuple[int, int] | None = None,
     equipment_complete: bool = False,
@@ -96,19 +98,42 @@ def _generate_meta_json(
     This is the consumer-facing metadata that includes license info,
     page index for all content types, file manifest, and extraction status.
     """
-    return {
-        "version": "5.1",
-        "source": DATA_SOURCE,
-        "license": {
-            "type": "CC-BY-4.0",
-            "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
-            "attribution": (
+    # Use extracted PDF metadata if available, otherwise fall back to hardcoded defaults
+    version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
+    license_type = pdf_metadata.get("license_type", "CC-BY-4.0") if pdf_metadata else "CC-BY-4.0"
+    license_url = (
+        pdf_metadata.get("license_url", "https://creativecommons.org/licenses/by/4.0/legalcode")
+        if pdf_metadata
+        else "https://creativecommons.org/licenses/by/4.0/legalcode"
+    )
+    attribution = (
+        pdf_metadata.get(
+            "attribution",
+            (
                 "This work includes material taken from the System Reference Document 5.1 "
                 '("SRD 5.1") by Wizards of the Coast LLC and available at '
                 "https://dnd.wizards.com/resources/systems-reference-document. "
                 "The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 "
                 "International License available at https://creativecommons.org/licenses/by/4.0/legalcode."
             ),
+        )
+        if pdf_metadata
+        else (
+            "This work includes material taken from the System Reference Document 5.1 "
+            '("SRD 5.1") by Wizards of the Coast LLC and available at '
+            "https://dnd.wizards.com/resources/systems-reference-document. "
+            "The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 "
+            "International License available at https://creativecommons.org/licenses/by/4.0/legalcode."
+        )
+    )
+
+    return {
+        "version": version,
+        "source": DATA_SOURCE,
+        "license": {
+            "type": license_type,
+            "url": license_url,
+            "attribution": attribution,
             "conversion_note": (
                 "Converted from the original PDF by srd-builder "
                 f"(https://github.com/wolftales/srd-builder) version {__version__}"
@@ -619,6 +644,16 @@ def build(  # noqa: C901
         lineages=parsed_lineages if parsed_lineages else None,
     )
 
+    # Extract metadata from PDF if present (v0.8.1)
+    pdf_metadata = None
+    pdf_files = sorted(layout["raw"].glob("*.pdf"))
+    if pdf_files:
+        try:
+            pdf_metadata = extract_pdf_metadata(pdf_files[0])
+            print(f"✓ Extracted metadata from {pdf_files[0].name}")
+        except Exception as exc:
+            print(f"⚠️ PDF metadata extraction failed: {exc}")
+
     # Read PDF hash from pdf_meta.json (if present)
     pdf_meta_path = layout["raw"] / "pdf_meta.json"
     pdf_hash = None
@@ -660,6 +695,7 @@ def build(  # noqa: C901
     # Generate rich meta.json for consumers (includes license, page_index, etc.)
     meta_json = _generate_meta_json(
         pdf_hash=pdf_hash,
+        pdf_metadata=pdf_metadata,
         monsters_complete=len(parsed_monsters) > 0,
         monsters_page_range=monsters_page_range,
         equipment_complete=len(parsed_equipment) > 0,

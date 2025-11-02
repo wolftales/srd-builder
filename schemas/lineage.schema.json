@@ -27,6 +27,14 @@
       "pattern": "^[a-z_]+$",
       "description": "Snake_case identifier for programmatic use"
     },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this lineage (e.g., historical 'race' terminology)"
+    },
     "name": {
       "type": "string",
       "description": "Display name of the lineage"

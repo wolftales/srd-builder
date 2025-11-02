@@ -89,6 +89,7 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
     return {
         "spells": spells,
         "_meta": {
+            "pdf_filename": pdf_path.name,
             "extractor_version": EXTRACTOR_VERSION,
             "pdf_sha256": pdf_hash,
             "pages_processed": config.page_end - config.page_start + 1,

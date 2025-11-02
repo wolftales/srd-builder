@@ -98,6 +98,7 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
     return {
         "monsters": [_monster_to_dict(m) for m in monsters],
         "_meta": {
+            "pdf_filename": pdf_path.name,
             "pdf_sha256": pdf_hash,
             "extractor_version": EXTRACTOR_VERSION,
             "pages_processed": page_end - config.page_start + 1,

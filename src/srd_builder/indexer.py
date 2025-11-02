@@ -54,6 +54,18 @@ def _build_by_name_map(
             # Same identifier encountered; skip without recording conflict.
             continue
         by_name[key] = monster_id
+
+        # Add entity-level aliases to by_name map
+        aliases = monster.get("aliases", [])
+        if isinstance(aliases, list):
+            for alias in aliases:
+                alias_key = str(alias).lower()
+                # Skip if alias conflicts with existing entry
+                if alias_key in by_name and by_name[alias_key] != monster_id:
+                    conflicts.setdefault(alias_key, []).append(monster_id)
+                    continue
+                by_name[alias_key] = monster_id
+
     sorted_conflicts = {key: sorted(ids) for key, ids in sorted(conflicts.items())}
     return dict(sorted(by_name.items())), sorted_conflicts
 
@@ -421,4 +433,11 @@ def build_indexes(  # noqa: C901
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}
+
+    # Add terminology aliases for categorical mappings
+    payload["aliases"] = {
+        "races": "lineages",
+        "race": "lineage",
+    }
+
     return payload

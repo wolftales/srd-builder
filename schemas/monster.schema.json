@@ -26,6 +26,14 @@
       "pattern": "^[a-z0-9_]+$",
       "description": "Normalized identifier without the entity prefix"
     },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this monster"
+    },
     "name": {
       "type": "string",
       "minLength": 1,

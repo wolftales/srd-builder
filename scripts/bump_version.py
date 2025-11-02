@@ -162,7 +162,7 @@ def run_tests() -> bool:
 
 
 def commit_changes(new_version: str) -> None:
-    """Commit all changes."""
+    """Commit all changes and create git tag."""
     print("\nCommitting changes...")
 
     run_command(["git", "add", "-A"])
@@ -184,6 +184,12 @@ All tests passing."""
 
     run_command(["git", "commit", "-m", commit_msg])
     print(f"✓ Committed version bump to v{new_version}")
+
+    # Create annotated git tag
+    print("\nCreating git tag...")
+    tag_msg = f"v{new_version}"
+    run_command(["git", "tag", "-a", f"v{new_version}", "-m", tag_msg])
+    print(f"✓ Created git tag v{new_version}")
 
 
 def main() -> None:
@@ -229,14 +235,14 @@ def main() -> None:
         else:
             print("\n⚠ Skipping tests (--no-test flag)")
 
-        # Step 5: Commit
+        # Step 5: Commit and tag
         if not args.no_commit:
             commit_changes(new_version)
             print("\n" + "=" * 60)
             print(f"✓ Version bump to v{new_version} complete!")
             print("\nNext steps:")
             print("  1. Review changes: git show")
-            print("  2. Push to GitHub: git push origin main")
+            print("  2. Push to GitHub: git push origin main --tags")
             print("  3. Update ROADMAP.md if needed")
         else:
             print("\n⚠ Skipping commit (--no-commit flag)")
