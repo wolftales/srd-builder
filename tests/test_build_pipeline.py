@@ -97,7 +97,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
         "ruleset": ruleset,
         "schema_version": SCHEMA_VERSION,
         "source": "SRD_CC_v5.1",
-        "build_report": "../build_report.json",
+        "build_report": "./build_report.json",
         "generated_by": monsters_doc["_meta"]["generated_by"],
     }
     assert monsters_doc["_meta"]["generated_by"].startswith("srd-builder v")

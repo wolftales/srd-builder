@@ -34,7 +34,7 @@ def _meta_block(ruleset: str) -> dict[str, str]:
         "ruleset": ruleset,
         "schema_version": SCHEMA_VERSION,
         "source": DATA_SOURCE,
-        "build_report": "../build_report.json",
+        "build_report": "./build_report.json",
         "generated_by": f"srd-builder v{__version__}",
     }
 

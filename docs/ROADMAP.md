@@ -565,6 +565,21 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 
 ---
 
+## **v0.6.3 — Path Fix** ✅ COMPLETE **[BUGFIX]**
+
+**Released:** November 2025
+**Priority:** LOW (cosmetic fix)
+**Consumer Impact:** Minor - corrected relative path in metadata
+
+**Goal:** Fix incorrect `build_report.json` path reference in output metadata.
+
+**What Shipped:**
+- Fixed `build_report` path from `../build_report.json` to `./build_report.json`
+- All output files now correctly reference build report in same directory
+- Updated test expectations and fixtures to match corrected path
+
+---
+
 ## **v0.6.1 — Conditions Dataset** (Quick Win) **[DATA]**
 
 **Priority:** MEDIUM

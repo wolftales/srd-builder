@@ -14,7 +14,7 @@ def _meta(ruleset: str) -> dict[str, str]:
         "ruleset": ruleset,
         "schema_version": SCHEMA_VERSION,
         "source": "SRD_CC_v5.1",
-        "build_report": "../build_report.json",
+        "build_report": "./build_report.json",
         "generated_by": f"srd-builder v{__version__}",
     }
 
