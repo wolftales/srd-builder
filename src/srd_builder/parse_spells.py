@@ -57,8 +57,11 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
                     # Prepend extracted description to existing text
                     description_text = extracted_desc + " " + description_text
 
-        # Parse level and school
+        # Parse level and school (also check for ritual marker)
         level, school = _parse_level_and_school(level_and_school)
+
+        # Check if spell is ritual (appears in level_and_school line)
+        ritual = "(ritual)" in level_and_school.lower()
 
         # Parse header fields (format: "Casting Time: X\nRange: Y\nComponents: Z\nDuration: W")
         casting_time = "1 action"
@@ -66,7 +69,6 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         components_value = {"verbal": False, "somatic": False, "material": False}
         duration_value = "instantaneous"
         concentration = False
-        ritual = False
 
         # Extract individual header fields
         # Header may be multi-line or single-line with field markers
@@ -78,9 +80,6 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
             r"Casting Time:\s*(.+?)(?=\s+Range:|\s+Components:|\s+Duration:|$)", header_text
         ):
             casting_time = _parse_casting_time(match.group(1).strip())
-            if "(ritual)" in casting_time.lower():
-                ritual = True
-                casting_time = casting_time.replace("(ritual)", "").strip()
 
         # Extract Range
         if match := re.search(r"Range:\s*(.+?)(?=\s+Components:|\s+Duration:|$)", header_text):
@@ -291,15 +290,28 @@ def _extract_effects(description: str) -> dict[str, Any]:
 
         effects["save"] = {"ability": ability, "on_success": on_success}
 
-    # Extract area
-    area_pattern = r"(\d+)-foot[- ](?:radius\s+)?(sphere|cone|cube|cylinder|line)"
+    # Extract area (handle PDF spacing like "20- foot- radius sphere")
+    # Pattern 1: Standard "X-foot radius sphere/cone/cube/cylinder"
+    area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
     area_match = re.search(area_pattern, description, re.IGNORECASE)
     if area_match:
         effects["area"] = {
-            "shape": area_match.group(2).lower(),
+            "shape": area_match.group(3).lower(),
             "size": int(area_match.group(1)),
             "unit": "feet",
         }
+    else:
+        # Pattern 2: Line spells like "100 feet long and 5 feet wide"
+        line_pattern = r"(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?"
+        line_match = re.search(line_pattern, description, re.IGNORECASE)
+        if line_match:
+            effects["area"] = {
+                "shape": "line",
+                "size": int(line_match.group(1)),
+                "unit": "feet",
+            }
+            # Optionally capture width if we want to extend the schema
+            # width = int(line_match.group(2)) if line_match.group(2) else None
 
     return effects
 
