@@ -90,6 +90,55 @@ def validate_spells(ruleset: str, limit: int | None = None) -> int:
     return count
 
 
+def check_data_quality(ruleset: str) -> None:  # noqa: C901
+    """Check data quality issues beyond schema validation.
+
+    Validates:
+    - No spells with empty text fields
+    - No duplicate IDs in index
+    """
+    issues: list[str] = []
+
+    # Check spells for empty text
+    spells_file = DIST_DIR / ruleset / "spells.json"
+    if spells_file.exists():
+        document = load_json(spells_file)
+        if isinstance(document, dict):
+            spells = document.get("items", [])
+            empty_text_spells = [
+                s.get("name", "unknown")
+                for s in spells
+                if isinstance(s, dict) and not s.get("text", "").strip()
+            ]
+            if empty_text_spells:
+                issues.append(f"Spells with empty text: {', '.join(empty_text_spells)}")
+
+    # Check index for duplicates
+    index_file = DIST_DIR / ruleset / "index.json"
+    if index_file.exists():
+        document = load_json(index_file)
+        if isinstance(document, dict):
+            # Check equipment by_rarity for duplicates
+            equipment = document.get("equipment", {})
+            if isinstance(equipment, dict):
+                by_rarity = equipment.get("by_rarity", {})
+                if isinstance(by_rarity, dict):
+                    for rarity, items in by_rarity.items():
+                        if isinstance(items, list):
+                            seen: set[str] = set()
+                            for item_id in items:
+                                if item_id in seen:
+                                    issues.append(
+                                        f"Duplicate in equipment.by_rarity.{rarity}: {item_id}"
+                                    )
+                                seen.add(item_id)
+
+    if issues:
+        raise ValueError("Data quality issues found:\n  - " + "\n  - ".join(issues))
+
+    print(f"OK: Data quality checks passed for ruleset '{ruleset}'.")
+
+
 def _ensure_build_report(ruleset: str) -> None:
     report_path = DIST_DIR / ruleset / "build_report.json"
     if not report_path.exists():
@@ -139,6 +188,7 @@ def validate_ruleset(ruleset: str, limit: int | None = None) -> None:
 
     validate_monsters(ruleset=ruleset, limit=limit)
     validate_spells(ruleset=ruleset, limit=limit)
+    check_data_quality(ruleset=ruleset)
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
