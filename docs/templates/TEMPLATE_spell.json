@@ -1,0 +1,64 @@
+{
+  "_comment": "Template showing the normalized spell structure (spell.schema.json v1.3.0)",
+  "_note": "This is NOT real data - it's a template for extraction scripts",
+  "id": "spell:example_spell",
+  "simple_name": "example_spell",
+  "name": "Example Spell",
+  "level": 3,
+  "school": "evocation",
+  "casting": {
+    "time": "1 action",
+    "range": {
+      "kind": "ranged",
+      "value": 120,
+      "unit": "feet"
+    },
+    "duration": "instantaneous",
+    "concentration": false,
+    "ritual": false
+  },
+  "components": {
+    "verbal": true,
+    "somatic": true,
+    "material": true,
+    "material_description": "a tiny ball of bat guano and sulfur"
+  },
+  "text": "Full spell description text from the SRD. This should include all rules text, mechanics, and any 'At Higher Levels' section.",
+  "effects": {
+    "damage": {
+      "dice": "8d6",
+      "type": "fire"
+    },
+    "healing": {
+      "dice": "2d8+5"
+    },
+    "save": {
+      "ability": "dexterity",
+      "on_success": "half"
+    },
+    "attack": {
+      "type": "ranged_spell"
+    },
+    "area": {
+      "shape": "sphere",
+      "size": 20,
+      "unit": "feet"
+    },
+    "conditions": [
+      "stunned",
+      "prone"
+    ]
+  },
+  "scaling": {
+    "type": "slot",
+    "base_level": 3,
+    "formula": "When you cast this spell using a spell slot of 4th level or higher, the damage increases by 1d6 for each slot level above 3rd"
+  },
+  "classes": [
+    "sorcerer",
+    "wizard"
+  ],
+  "page": 123,
+  "source": "SRD 5.1",
+  "summary": "One-sentence description for tooltips"
+}
