@@ -8,6 +8,24 @@ from typing import Any
 
 from .column_mapper import ColumnMapper
 
+# Container capacity data from SRD 5.1 Container Capacity table (pages 69-70)
+# Maps simple_name to capacity string
+CONTAINER_CAPACITIES = {
+    "backpack": "1 cubic foot/30 pounds of gear",
+    "barrel": "40 gallons liquid, 4 cubic feet solid",
+    "basket": "2 cubic feet/40 pounds of gear",
+    "bottle_glass": "1½ pints liquid",
+    "bucket": "3 gallons liquid, 1/2 cubic foot solid",
+    "chest": "12 cubic feet/300 pounds of gear",
+    "flask_or_tankard": "1 pint liquid",
+    "jug_or_pitcher": "1 gallon liquid",
+    "pot_iron": "1 gallon liquid",
+    "pouch": "1/5 cubic foot/6 pounds of gear",
+    "sack": "1 cubic foot/30 pounds of gear",
+    "vial": "4 ounces liquid",
+    "waterskin": "4 pints liquid",
+}
+
 
 def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:  # noqa: C901
     """Parse raw equipment items into structured records."""
@@ -65,6 +83,18 @@ def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, A
                             break
 
                 items_by_id[item_id] = parsed_item
+
+    # Apply known container capacities from Container Capacity table
+    # This ensures all 13 containers have capacity data even if PDF extraction missed them
+    for item in items_by_id.values():
+        simple_name = item.get("simple_name", "")
+        if simple_name in CONTAINER_CAPACITIES and not item.get("capacity"):
+            item["capacity"] = CONTAINER_CAPACITIES[simple_name]
+
+    # Add container property to items with capacity
+    for item in items_by_id.values():
+        if item.get("capacity"):
+            item["container"] = True
 
     # Convert dict back to list
     parsed = list(items_by_id.values())

@@ -378,4 +378,117 @@ Actions had inconsistent parsing - some had structured fields, some didn't.
 
 ---
 
+## Container Capacity Hardcoded Values
+
+**Date Raised:** 2025-11-02
+**Status:** Technical debt - works but not ideal
+**Priority:** MEDIUM - will bite us when we improve table extraction
+
+### Context
+
+The Container Capacity table (SRD pages 69-70) lists 13 containers with their capacities. PDF table extraction only captured 5/13 entries due to multi-column layout complexity.
+
+**Currently Hardcoded (parse_equipment.py):**
+```python
+CONTAINER_CAPACITIES = {
+    "backpack": "1 cubic foot/30 pounds of gear",
+    "barrel": "40 gallons liquid, 4 cubic feet solid",
+    "basket": "2 cubic feet/40 pounds of gear",
+    "bottle_glass": "1½ pints liquid",
+    "bucket": "3 gallons liquid, 1/2 cubic foot solid",
+    "chest": "12 cubic feet/300 pounds of gear",
+    "flask_or_tankard": "1 pint liquid",
+    "jug_or_pitcher": "1 gallon liquid",
+    "pot_iron": "1 gallon liquid",
+    "pouch": "1/5 cubic foot/6 pounds of gear",
+    "sack": "1 cubic foot/30 pounds of gear",
+    "vial": "4 ounces liquid",
+    "waterskin": "4 pints liquid",
+}
+```
+
+### The Problem
+
+**Extracted via PDF:** 5/13 (Basket, Bucket, Flask, Pot, Waterskin)
+**Missing from extraction:** 8/13 (Backpack, Barrel, Bottle, Chest, Jug, Pouch, Sack, Vial)
+
+**Root Cause:** The Container Capacity table spans pages 69-70 in a multi-column layout. Current table extraction logic struggles with:
+- Split tables across pages
+- Multi-column tables that continue mid-page
+- Table headers that don't align with all columns
+
+### Current Solution (v0.6.2+)
+
+Applied hardcoded capacity values to all 13 containers in equipment parsing:
+- ✅ All 13 containers now have `capacity` field
+- ✅ Added `container: true` property for filtering
+- ✅ Works correctly for consumers
+- ⚠️ Will break if container names change in future SRDs
+- ⚠️ Hardcoded values may drift from source if SRD updates
+
+### Why This Will Bite Us
+
+1. **Future SRDs:** New containers or capacity changes won't be detected
+2. **Table Extraction Improvements:** When we fix multi-column extraction, we'll need to:
+   - Remove hardcoded values
+   - Test that extraction captures all 13 containers
+   - Ensure no regressions
+3. **Maintenance:** Easy to forget this is hardcoded, values could drift
+4. **Other Tables:** Other multi-column/split tables may need similar workarounds
+
+### Proper Solution (Future)
+
+**Phase 1: Improve Table Extraction**
+- Detect multi-column table layouts
+- Track table continuation across pages
+- Merge split rows correctly
+- Handle column headers that span multiple data columns
+
+**Phase 2: Remove Hardcoding**
+- Delete CONTAINER_CAPACITIES dict
+- Verify extraction captures all 13 containers
+- Add test to ensure no hardcoded fallbacks exist
+
+**Phase 3: Validation**
+- Compare extracted values against known-good reference
+- Flag mismatches as warnings
+- Use reference data for validation, not as fallback
+
+### Related Issues
+
+This is part of a larger pattern:
+- Equipment extraction struggles with complex PDF tables
+- Multi-column layouts confuse row association
+- Page breaks mid-table lose context
+- Headers don't always align with data columns
+
+**Other affected tables:**
+- Armor table (pages 65-66) - multiple columns, subcategories
+- Weapon table (pages 66-68) - properties split across columns
+- Tool table (pages 70-71) - tools + artisan's tools
+
+### Implementation Checklist (When Fixing)
+
+- [ ] Research multi-column table detection algorithms
+- [ ] Implement column boundary detection
+- [ ] Handle table continuation across pages
+- [ ] Test on Container Capacity table (should get 13/13)
+- [ ] Remove CONTAINER_CAPACITIES hardcoded dict
+- [ ] Add integration test comparing extracted vs reference data
+- [ ] Document table extraction improvements in CHANGELOG
+
+### Files Affected
+
+- `src/srd_builder/parse_equipment.py` - Contains CONTAINER_CAPACITIES dict
+- `src/srd_builder/extract_equipment.py` - Table extraction logic
+- `tests/test_parse_equipment.py` - Should verify container capacities
+
+### Notes
+
+**Current approach is pragmatic:** Get the data into the right structure now, improve extraction later. This unblocks consumers (Blackmoor) who need container capacities for inventory management.
+
+**Do NOT remove this note** until table extraction properly captures all 13 containers without hardcoded fallbacks.
+
+---
+
 ## [Add more parked features here as needed]
