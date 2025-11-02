@@ -8,7 +8,20 @@ This is a STUB implementation - full parsing will be implemented incrementally.
 
 from __future__ import annotations
 
+import re
 from typing import Any
+
+
+def _clean_text(text: str) -> str:
+    """Clean garbled PDF text.
+
+    Removes Unicode control characters, normalizes whitespace.
+    """
+    # Remove control chars, soft hyphens, non-breaking spaces
+    text = re.sub(r"[\t\r\n\u00ad\u2010\u2011\u00a0]+", " ", text)
+    # Normalize whitespace
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
 
 
 def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -23,10 +36,10 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
     parsed = []
 
     for raw_spell in raw_spells:
-        name = raw_spell.get("name", "Unknown Spell")
-        header_text = raw_spell.get("header_text", "")
-        description_text = raw_spell.get("description_text", "")
-        level_and_school = raw_spell.get("level_and_school", "")
+        name = _clean_text(raw_spell.get("name", "Unknown Spell"))
+        header_text = _clean_text(raw_spell.get("header_text", ""))
+        description_text = _clean_text(raw_spell.get("description_text", ""))
+        level_and_school = _clean_text(raw_spell.get("level_and_school", ""))
 
         # Parse level and school
         level, school = _parse_level_and_school(level_and_school)
@@ -39,22 +52,31 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         concentration = False
         ritual = False
 
-        # Extract individual header lines
-        for line in header_text.split("\n"):
-            line = line.strip()
-            if line.startswith("Casting Time:"):
-                casting_time = _parse_casting_time(line.replace("Casting Time:", "").strip())
-                if "(ritual)" in casting_time.lower():
-                    ritual = True
-                    casting_time = casting_time.replace("(ritual)", "").strip()
-            elif line.startswith("Range:"):
-                range_value = _parse_range(line.replace("Range:", "").strip())
-            elif line.startswith("Components:"):
-                components_value = _parse_components(line.replace("Components:", "").strip())
-            elif line.startswith("Duration:"):
-                duration_value, concentration = _parse_duration(
-                    line.replace("Duration:", "").strip()
-                )
+        # Extract individual header fields
+        # Header may be multi-line or single-line with field markers
+        # Use regex to extract fields by looking for label patterns
+        # Fields end at next label (word followed by colon)
+
+        # Extract Casting Time
+        if match := re.search(
+            r"Casting Time:\s*(.+?)(?=\s+Range:|\s+Components:|\s+Duration:|$)", header_text
+        ):
+            casting_time = _parse_casting_time(match.group(1).strip())
+            if "(ritual)" in casting_time.lower():
+                ritual = True
+                casting_time = casting_time.replace("(ritual)", "").strip()
+
+        # Extract Range
+        if match := re.search(r"Range:\s*(.+?)(?=\s+Components:|\s+Duration:|$)", header_text):
+            range_value = _parse_range(match.group(1).strip())
+
+        # Extract Components
+        if match := re.search(r"Components:\s*(.+?)(?=\s+Duration:|$)", header_text):
+            components_value = _parse_components(match.group(1).strip())
+
+        # Extract Duration
+        if match := re.search(r"Duration:\s*(.+?)$", header_text):
+            duration_value, concentration = _parse_duration(match.group(1).strip())
 
         # Extract effects and scaling from description
         effects = _extract_effects(description_text)
@@ -107,8 +129,9 @@ def _parse_level_and_school(level_school_text: str) -> tuple[int, str]:
         school = text.split()[0] if text.split() else "evocation"
         return (0, school)
 
-    # Parse leveled spell (e.g., "3rd-level evocation")
-    match = re.match(r"(\d+)(?:st|nd|rd|th)-level\s+(\w+)", text)
+    # Parse leveled spell (e.g., "3rd-level evocation", "2nd- level evocation")
+    # Handle optional space after hyphen due to PDF garbling
+    match = re.match(r"(\d+)(?:st|nd|rd|th)-?\s*level\s+(\w+)", text)
     if match:
         level = int(match.group(1))
         school = match.group(2)
@@ -243,10 +266,10 @@ def _extract_effects(description: str) -> dict[str, Any]:
     save_match = re.search(save_pattern, description, re.IGNORECASE)
     if save_match:
         ability = save_match.group(1).lower()
-        # Determine success behavior
-        on_success = "half_damage"
+        # Determine success behavior (schema values: 'none', 'half', 'negates', 'other')
+        on_success = "half"
         if "half as much damage" in description.lower():
-            on_success = "half_damage"
+            on_success = "half"
         elif "negates" in description.lower():
             on_success = "negates"
 
