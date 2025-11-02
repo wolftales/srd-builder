@@ -157,7 +157,7 @@ def _generate_meta_json(
             "tables": "tables.json",
             "lineages": "lineages.json",
         },
-        "terminology": {"aliases": {"races": "lineages"}},
+        "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": {
             "monsters": "complete" if monsters_complete else "in_progress",
             "equipment": "complete" if equipment_complete else "in_progress",
