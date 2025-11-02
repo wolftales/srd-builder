@@ -4,14 +4,14 @@ This document tracks features that have been discussed but deferred for later im
 
 ---
 
-## Data Parsing Gaps - HIGH PRIORITY 🎯
+## Data Parsing Gaps - RESOLVED IN v0.6.4 ✅
 
-**Status:** Active work needed for v0.7.0+
-**Priority:** HIGH - These gaps significantly impact data utility
+**Status:** All critical spell parsing gaps FIXED in v0.6.4
+**Priority:** ~~HIGH~~ → COMPLETE
 
 ### Spell Parsing Gaps
 
-**Current Status (v0.6.3):**
+**v0.6.3 Status:**
 - ✅ 319/319 spells extracted (100%)
 - ✅ Text quality: 0 spells with <50 chars
 - ⚠️ Effects coverage: 44% (140/319)
@@ -20,56 +20,58 @@ This document tracks features that have been discussed but deferred for later im
 - ❌ Healing effects: 0%
 - ❌ Attack roll effects: 0%
 
-#### 1. Ritual Flag Extraction (CRITICAL BUG)
-**Impact:** 0/319 spells have `ritual: true` despite ~30 ritual spells in SRD
-**Root Cause:** Raw extraction puts casting time in `casting_time: null`, loses ritual marker
-**Examples:** Detect Magic, Identify, Find Familiar all show `ritual: null` in raw data
-**Fix Required:**
-- Check if raw extraction is capturing ritual from casting time line
-- PDF text typically shows "1 action (ritual)" or "Ritual" component
-- May need to parse from components or casting time text
+**v0.6.4 Status:**
+- ✅ 319/319 spells extracted (100%)
+- ✅ Text quality: 0 spells with <50 chars
+- ✅ Effects coverage: 52% (166/319) - **+8 percentage points**
+- ✅ Ritual flag: 9% (29/319) - **FIXED** (Detect Magic, Identify, Find Familiar)
+- ✅ Area-of-effect: 17% (55/319) - **NEW** (Fireball, Burning Hands, Lightning Bolt)
+- ✅ Healing effects: 2% (5/319) - **NEW** (Cure Wounds, Healing Word)
+- ✅ Attack roll effects: 6% (19/319) - **NEW** (Fire Bolt, Shocking Grasp)
 
-#### 2. Area-of-Effect Parsing
-**Impact:** 0/319 spells have structured area data
-**Examples:** Fireball (20-foot radius sphere), Burning Hands (15-foot cone), Lightning Bolt (100-foot line)
-**Fix Required:**
-- Add regex patterns: `(\d+)-foot (radius|cone|line|cube|cylinder)`
-- Extract to `effects.area: {shape, size, unit}`
-- Would improve effects coverage from 44% to ~55%+
+#### 1. Ritual Flag Extraction (FIXED ✅)
+**Impact:** 29 spells now correctly flagged as ritual
+**Root Cause:** Raw data had "(ritual)" in `level_and_school` field, not `casting_time`
+**Fix Applied:** Check `level_and_school` field for "(ritual)" marker
+**Examples:** Detect Magic, Identify, Find Familiar, Alarm, Commune
+**Commit:** 3049c70
 
-#### 3. Healing Effects
-**Impact:** 0 spells have structured healing data (but many healing spells exist)
-**Examples:** Cure Wounds, Healing Word, Mass Cure Wounds
-**Current:** Text contains "regains hit points" but not structured
-**Fix Required:**
-- Parse healing dice/amounts similar to damage parsing
-- Add `effects.healing: {dice, bonus, description}`
+#### 2. Area-of-Effect Parsing (IMPLEMENTED ✅)
+**Impact:** 55 spells now have structured area data (17%)
+**Fix Applied:**
+- Regex pattern handles PDF spacing: `(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)`
+- Line spells: `(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?`
+- Extracts to `effects.area: {shape, size, unit}`
+**Examples:** Fireball (20-foot sphere), Burning Hands (15-foot cone), Lightning Bolt (100-foot line)
+**Commit:** 3049c70
 
-#### 4. Attack Roll Effects
-**Impact:** 0 spells have attack roll data
-**Examples:** Fire Bolt, Shocking Grasp, Inflict Wounds
-**Current:** Text says "make a ranged/melee spell attack"
-**Fix Required:**
-- Parse attack type (melee/ranged spell attack)
-- Add `effects.attack: {type, description}`
+#### 3. Healing Effects (IMPLEMENTED ✅)
+**Impact:** 5 spells have dice-based healing data (2%)
+**Fix Applied:** Parse "regains hit points equal to XdX" pattern
+**Schema Note:** Fixed-amount healing (Heal, Mass Heal) excluded - schema requires dice pattern
+**Examples:** Cure Wounds (1d8), Healing Word (1d4), Mass Cure Wounds (3d8), Prayer of Healing (2d8)
+**Commit:** 37927ae
+
+#### 4. Attack Roll Effects (IMPLEMENTED ✅)
+**Impact:** 19 spells have attack type data (6%)
+**Fix Applied:** Parse "make a (melee|ranged) spell attack" pattern
+**Schema-compliant types:** `melee_spell`, `ranged_spell`
+**Examples:** Fire Bolt, Chill Touch (ranged), Shocking Grasp, Contagion (melee)
+**Commit:** 37927ae
 
 ### Equipment Parsing Gaps
 
-**Current Status (v0.6.3):**
+**Current Status (v0.6.4):**
 - ✅ 106 items (deduplicated from 111)
-- ✅ 68 "gear" items (adventuring gear category)
+- ✅ 68 "gear" items (adventuring gear as subcategory/property)
 - ⚠️ 8/13 containers have capacity
-- ❌ Category mislabeled as "gear" instead of "adventuring_gear"
+- ✅ Category "gear" is correct primary category
 
-#### 1. Adventuring Gear Category Label
-**Impact:** Schema expects "adventuring_gear" but data shows "gear"
-**Root Cause:** Category mapping uses "gear" but should use "adventuring_gear"
-**Alternative:** Could treat "gear" as terminology alias (see terminology.aliases discussion)
-**Fix Required:**
-- Option A: Update category mapping in `parse_equipment.py` to use "adventuring_gear"
-- Option B: Keep "gear" and add terminology alias mapping
-- Regenerate fixtures if changed
-- Minor breaking change but improves schema compliance (Option A) or adds discoverability (Option B)#### 2. Container Capacity Gaps (documented separately below)
+#### 1. Adventuring Gear Category Label (CLARIFIED ✅)
+**Status:** RESOLVED - "gear" is correct primary category
+**Investigation:** equipment.schema.json enum includes "gear" as valid category
+**Verification:** All equipment tests pass (test_parse_equipment.py, test_golden_equipment.py)
+**Design Note:** "adventuring_gear" would be a subcategory, property, or terminology alias if needed for discoverability, but "gear" is the correct primary category value#### 2. Container Capacity Gaps (documented separately below)
 See "Container Capacity Hardcoded Values" section.
 
 ### Monster Parsing Gaps
