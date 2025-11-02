@@ -90,6 +90,41 @@ def validate_spells(ruleset: str, limit: int | None = None) -> int:
     return count
 
 
+def validate_lineages(ruleset: str, limit: int | None = None) -> int:
+    data_file = DIST_DIR / ruleset / "lineages.json"
+    if not data_file.exists():
+        print(f"No lineages.json found for ruleset '{ruleset}'. Skipping validation.")
+        return 0
+
+    schema_file = SCHEMA_DIR / "lineage.schema.json"
+    if not schema_file.exists():
+        raise FileNotFoundError(
+            "Lineage schema is missing. Did you remove schemas/lineage.schema.json?"
+        )
+
+    document = load_json(data_file)
+    if not isinstance(document, dict):  # pragma: no cover - defensive guard
+        raise TypeError("lineages.json must contain a JSON object")
+    lineages = document.get("items", [])
+    if not isinstance(lineages, list):
+        raise TypeError("lineages.json 'items' must contain a JSON array")
+
+    schema = load_json(schema_file)
+    validator = Draft202012Validator(schema)
+
+    count = 0
+    iterable: Iterable[object] = lineages
+    if limit is not None:
+        iterable = islice(iterable, limit)
+
+    for lineage in iterable:
+        validator.validate(lineage)
+        count += 1
+
+    print(f"Validated {count} lineage entries for ruleset '{ruleset}'.")
+    return count
+
+
 def check_data_quality(ruleset: str) -> None:  # noqa: C901
     """Check data quality issues beyond schema validation.
 
@@ -188,6 +223,7 @@ def validate_ruleset(ruleset: str, limit: int | None = None) -> None:
 
     validate_monsters(ruleset=ruleset, limit=limit)
     validate_spells(ruleset=ruleset, limit=limit)
+    validate_lineages(ruleset=ruleset, limit=limit)
     check_data_quality(ruleset=ruleset)
 
 

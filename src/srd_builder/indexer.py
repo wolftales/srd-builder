@@ -8,7 +8,13 @@ from typing import Any
 
 from srd_builder.postprocess import normalize_id
 
-__all__ = ["build_monster_index", "build_spell_index", "build_equipment_index", "build_indexes"]
+__all__ = [
+    "build_monster_index",
+    "build_spell_index",
+    "build_equipment_index",
+    "build_lineage_index",
+    "build_indexes",
+]
 
 
 def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> dict[str, list[str]]:
@@ -267,15 +273,60 @@ def _build_table_entity_index(tables: list[dict[str, Any]]) -> dict[str, dict[st
     return index
 
 
-def build_indexes(
+def build_lineage_index(lineages: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical lineage lookup tables."""
+
+    by_name, _ = _build_by_name_map(lineages)
+    by_size: defaultdict[str, list[str]] = defaultdict(list)
+    by_speed: defaultdict[str, list[str]] = defaultdict(list)
+
+    for lineage in lineages:
+        lineage_id = fallback_id(lineage)
+        size = str(lineage.get("size", "Medium"))
+        speed = str(lineage.get("speed", 30))
+
+        by_size[size].append(lineage_id)
+        by_speed[speed].append(lineage_id)
+
+    sorted_by_size = _stable_dict(sorted(by_size.items()))
+    sorted_by_speed = _stable_dict(
+        sorted(by_speed.items(), key=lambda item: int(item[0]) if item[0].isdigit() else 0)
+    )
+
+    for mapping in (sorted_by_size, sorted_by_speed):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_size": sorted_by_size,
+        "by_speed": sorted_by_speed,
+    }
+
+
+def _build_lineage_entity_index(lineages: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for lineages."""
+    index: dict[str, dict[str, str]] = {}
+    for lineage in lineages:
+        lineage_id = fallback_id(lineage)
+        index[lineage_id] = {
+            "type": "lineage",
+            "file": "lineages.json",
+            "name": lineage.get("name", ""),
+        }
+    return index
+
+
+def build_indexes(  # noqa: C901
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
+    lineages: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, table, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, table, lineage, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -346,6 +397,27 @@ def build_indexes(
         total += len(table_entity_index)
         payload["stats"]["total_entities"] = total
         payload["stats"]["unique_table_categories"] = len(table_indexes["by_category"])
+
+    # Add lineage indexes if lineages provided (including empty list)
+    if lineages is not None:
+        lineage_indexes = build_lineage_index(lineages)
+        lineage_entity_index = _build_lineage_entity_index(lineages)
+
+        payload["lineages"] = lineage_indexes
+        entities["lineages"] = lineage_entity_index
+        payload["stats"]["total_lineages"] = len(lineages)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        if tables is not None:
+            total += len(table_entity_index)
+        total += len(lineage_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["unique_lineage_sizes"] = len(lineage_indexes["by_size"])
+        payload["stats"]["unique_lineage_speeds"] = len(lineage_indexes["by_speed"])
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}

@@ -25,6 +25,7 @@ from .extract_spells import extract_spells
 from .extract_tables import extract_tables_to_json
 from .indexer import build_indexes
 from .parse_equipment import parse_equipment_records
+from .parse_lineages import parse_lineages
 from .parse_monsters import parse_monster_records
 from .parse_spells import parse_spell_records
 from .parse_tables import parse_single_table
@@ -129,12 +130,15 @@ def _generate_meta_json(
             "equipment": "equipment.json",
             "spells": "spells.json",
             "tables": "tables.json",
+            "lineages": "lineages.json",
         },
+        "terminology": {"aliases": {"races": "lineages"}},
         "extraction_status": {
             "monsters": "complete" if monsters_complete else "in_progress",
             "equipment": "complete" if equipment_complete else "in_progress",
             "spells": "complete" if spells_complete else "in_progress",
             "tables": "complete",
+            "lineages": "complete",
         },
         "$schema_version": SCHEMA_VERSION,
     }
@@ -148,6 +152,7 @@ def _write_datasets(
     equipment: list[dict[str, Any]] | None = None,
     spells: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
+    lineages: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -190,8 +195,22 @@ def _write_datasets(
             encoding="utf-8",
         )
 
+    # Write lineages (v0.8.0)
+    # Lineages are already fully normalized by parse_lineages, no additional cleaning needed
+    processed_lineages = lineages if lineages else None
+    if processed_lineages:
+        lineages_doc = _wrap_with_meta({"items": processed_lineages}, ruleset=ruleset)
+        (dist_data_dir / "lineages.json").write_text(
+            _render_json(lineages_doc),
+            encoding="utf-8",
+        )
+
     index_payload = build_indexes(
-        processed_monsters, processed_spells, processed_equipment, processed_tables
+        processed_monsters,
+        processed_spells,
+        processed_equipment,
+        processed_tables,
+        processed_lineages,
     )
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
@@ -297,6 +316,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
         "equipment.schema.json",
         "spell.schema.json",
         "table.schema.json",
+        "lineage.schema.json",
     ]:
         src = schemas_src / schema_file
         if src.exists():
@@ -585,6 +605,10 @@ def build(  # noqa: C901
         targets_by_id = {t["id"]: t for t in TARGET_TABLES}
         parsed_tables = [parse_single_table(raw, targets_by_id) for raw in raw_tables]
 
+    # Parse lineages (v0.8.0)
+    # Lineages come from canonical targets, not PDF extraction
+    parsed_lineages = parse_lineages()
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
@@ -592,6 +616,7 @@ def build(  # noqa: C901
         equipment=parsed_equipment if parsed_equipment else None,
         spells=parsed_spells if parsed_spells else None,
         tables=parsed_tables if parsed_tables else None,
+        lineages=parsed_lineages if parsed_lineages else None,
     )
 
     # Read PDF hash from pdf_meta.json (if present)
