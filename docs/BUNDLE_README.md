@@ -72,6 +72,52 @@ srd_5_1/
 
 ---
 
+## Index Structure
+
+The `index.json` file provides pre-built search indexes for all datasets:
+
+```json
+{
+  "monsters": {
+    "by_name": {"aboleth": "monster:aboleth", ...},
+    "by_cr": {"0": [...], "1": [...], ...},
+    "by_type": {"dragon": [...], "undead": [...], ...},
+    "by_size": {"Medium": [...], "Large": [...], ...}
+  },
+  "equipment": {
+    "by_name": {"longsword": "item:longsword", ...},
+    "by_category": {"weapon": [...], "armor": [...], ...},
+    "by_rarity": {"common": [...], "rare": [...], ...}
+  },
+  "spells": {
+    "by_name": {"fireball": "spell:fireball", ...},
+    "by_level": {"0": [...], "1": [...], ...},
+    "by_school": {"evocation": [...], "abjuration": [...], ...},
+    "by_concentration": {"true": [...], "false": [...]},
+    "by_ritual": {"true": [...], "false": [...]}
+  },
+  "entities": {
+    "monsters": {"monster:aboleth": {"type": "monster", "file": "monsters.json", "name": "Aboleth"}, ...},
+    "equipment": {"item:longsword": {"type": "equipment", "file": "equipment.json", "name": "Longsword"}, ...},
+    "spells": {"spell:fireball": {"type": "spell", "file": "spells.json", "name": "Fireball"}, ...}
+  },
+  "stats": {
+    "total_monsters": 296,
+    "total_equipment": 111,
+    "total_spells": 0,
+    "total_entities": 407,
+    ...
+  }
+}
+```
+
+**Usage:**
+- Look up monsters by CR: `index.monsters.by_cr["5"]` → list of CR 5 monster IDs
+- Find all concentration spells: `index.spells.by_concentration["true"]`
+- Get entity metadata: `index.entities.monsters["monster:aboleth"]` → type, file, name
+
+---
+
 ## Documentation
 
 **Read these files for detailed information:**
@@ -86,9 +132,11 @@ srd_5_1/
 
 ## Key Features
 
-- **Namespaced IDs:** `monster:aboleth`, `item:longsword`
-- **Structured data:** AC, HP, speeds as objects (not strings)
+- **Namespaced IDs:** `monster:aboleth`, `item:longsword`, `spell:fireball`
+- **Structured data:** AC, HP, speeds, casting as objects (not strings)
 - **Normalized names:** `simple_name` for search/indexing
+- **Pre-built indexes:** Fast lookups by CR, category, level, etc.
+- **Entity directory:** Nested by type (monsters/equipment/spells)
 - **Schema validation:** All data validates against JSON Schema Draft 2020-12
 
 ```bash

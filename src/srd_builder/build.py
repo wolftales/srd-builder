@@ -151,6 +151,7 @@ def _write_datasets(
     )
 
     # Write equipment if available
+    processed_equipment = None
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
         equipment_doc = _wrap_with_meta({"items": processed_equipment}, ruleset=ruleset)
@@ -172,7 +173,7 @@ def _write_datasets(
         encoding="utf-8",
     )
 
-    index_payload = build_indexes(processed_monsters, processed_spells)
+    index_payload = build_indexes(processed_monsters, processed_spells, processed_equipment)
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),

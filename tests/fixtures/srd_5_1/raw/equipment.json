@@ -1,16 +1,24 @@
-{
-  "id": "item:longsword",
-  "name": "Longsword",
-  "category": "weapon",
-  "cost": "15 gp",
-  "weight": 3,
-  "properties": [
-    "versatile(1d10)"
-  ],
-  "damage": {
-    "normal": "1d8",
-    "type": "slashing"
-  },
-  "page": 149,
-  "src": "SRD_CC_v5.1"
-}
+[
+  {
+    "table_row": [
+      "Longsword",
+      "15 gp",
+      "1d8 slashing",
+      "3 lb.",
+      "Versatile (1d10)"
+    ],
+    "table_headers": [
+      "Name",
+      "Cost",
+      "Damage",
+      "Weight",
+      "Properties"
+    ],
+    "section": {
+      "category": "weapon",
+      "subcategory": "martial melee"
+    },
+    "page": 149,
+    "row_index": 0
+  }
+]

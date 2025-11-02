@@ -8,7 +8,7 @@ from typing import Any
 
 from srd_builder.postprocess import normalize_id
 
-__all__ = ["build_monster_index", "build_spell_index", "build_indexes"]
+__all__ = ["build_monster_index", "build_spell_index", "build_equipment_index", "build_indexes"]
 
 
 def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> dict[str, list[str]]:
@@ -175,44 +175,108 @@ def _build_spell_entity_index(spells: list[dict[str, Any]]) -> dict[str, dict[st
     return index
 
 
+def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical equipment lookup tables."""
+
+    by_name, _ = _build_by_name_map(equipment)
+    by_category: defaultdict[str, list[str]] = defaultdict(list)
+    by_rarity: defaultdict[str, list[str]] = defaultdict(list)
+
+    for item in equipment:
+        item_id = fallback_id(item)
+        category = str(item.get("category", "unknown"))
+        rarity = str(item.get("rarity", "common"))
+
+        by_category[category].append(item_id)
+        by_rarity[rarity].append(item_id)
+
+    sorted_by_category = _stable_dict(sorted(by_category.items()))
+    sorted_by_rarity = _stable_dict(sorted(by_rarity.items()))
+
+    for mapping in (sorted_by_category, sorted_by_rarity):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_category": sorted_by_category,
+        "by_rarity": sorted_by_rarity,
+    }
+
+
+def _build_equipment_entity_index(equipment: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for equipment."""
+    index: dict[str, dict[str, str]] = {}
+    for item in equipment:
+        item_id = fallback_id(item)
+        index[item_id] = {
+            "type": "equipment",
+            "file": "equipment.json",
+            "name": item.get("name", ""),
+        }
+    return index
+
+
 def build_indexes(
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
+    equipment: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
     if by_name:
         monster_indexes["by_name"] = by_name
-    entity_index = _build_entity_index(monsters)
+    monster_entity_index = _build_entity_index(monsters)
+
+    # Build entity structure with nested type-specific keys
+    entities: dict[str, dict[str, dict[str, str]]] = {
+        "monsters": monster_entity_index,
+    }
 
     payload: dict[str, Any] = {
         "monsters": monster_indexes,
-        "entities": entity_index,
+        "entities": entities,
         "stats": {
             "total_monsters": len(monsters),
-            "total_entities": len(entity_index),
+            "total_entities": len(monster_entity_index),
             "unique_crs": len(monster_indexes["by_cr"]),
             "unique_types": len(monster_indexes["by_type"]),
             "unique_sizes": len(monster_indexes["by_size"]),
         },
     }
 
-    # Add spell indexes if spells provided
-    if spells:
+    # Add spell indexes if spells provided (including empty list)
+    if spells is not None:
         spell_indexes = build_spell_index(spells)
         spell_entity_index = _build_spell_entity_index(spells)
 
         payload["spells"] = spell_indexes
-        entity_index.update(spell_entity_index)
-        payload["entities"] = entity_index
+        entities["spells"] = spell_entity_index
         payload["stats"]["total_spells"] = len(spells)
-        payload["stats"]["total_entities"] = len(entity_index)
+        payload["stats"]["total_entities"] = len(monster_entity_index) + len(spell_entity_index)
         payload["stats"]["unique_spell_levels"] = len(spell_indexes["by_level"])
         payload["stats"]["unique_spell_schools"] = len(spell_indexes["by_school"])
+
+    # Add equipment indexes if equipment provided (including empty list)
+    if equipment is not None:
+        equipment_indexes = build_equipment_index(equipment)
+        equipment_entity_index = _build_equipment_entity_index(equipment)
+
+        payload["equipment"] = equipment_indexes
+        entities["equipment"] = equipment_entity_index
+        payload["stats"]["total_equipment"] = len(equipment)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        total += len(equipment_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["unique_equipment_categories"] = len(equipment_indexes["by_category"])
+        payload["stats"]["unique_equipment_rarities"] = len(equipment_indexes["by_rarity"])
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}
