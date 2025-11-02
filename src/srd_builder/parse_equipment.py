@@ -9,10 +9,12 @@ from typing import Any
 from .column_mapper import ColumnMapper
 
 
-def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:  # noqa: C901
     """Parse raw equipment items into structured records."""
 
     parsed: list[dict[str, Any]] = []
+    items_by_id: dict[str, dict[str, Any]] = {}
+
     for raw_item in raw_items:
         try:
             parsed_item = _parse_single_item(raw_item)
@@ -22,8 +24,50 @@ def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, A
             continue
 
         if parsed_item:
-            parsed.append(parsed_item)
+            item_id = parsed_item.get("id", "")
 
+            # Handle duplicates by merging information
+            if item_id in items_by_id:
+                existing = items_by_id[item_id]
+
+                # Merge capacity info from container capacity tables
+                # (entries without cost but with capacity data)
+                if not parsed_item.get("cost"):
+                    table_row = raw_item.get("table_row", [])
+                    # Check columns for capacity text (pint/gallon/cubic)
+                    for col_text in table_row[1:]:
+                        if col_text and any(
+                            unit in col_text.lower() for unit in ["pint", "gallon", "cubic"]
+                        ):
+                            existing["capacity"] = col_text.strip()
+                            break
+                    # Don't add this entry to parsed list, just enriched existing
+                    continue
+
+                # If new item has cost but existing doesn't, replace
+                if parsed_item.get("cost") and not existing.get("cost"):
+                    items_by_id[item_id] = parsed_item
+            else:
+                # New entry - check if it's a capacity-only entry (no cost but has capacity)
+                table_row = raw_item.get("table_row", [])
+                has_capacity = any(
+                    col and any(unit in str(col).lower() for unit in ["pint", "gallon", "cubic"])
+                    for col in table_row[1:]
+                )
+
+                # Add capacity field if found
+                if has_capacity and not parsed_item.get("cost"):
+                    for col_text in table_row[1:]:
+                        if col_text and any(
+                            unit in str(col_text).lower() for unit in ["pint", "gallon", "cubic"]
+                        ):
+                            parsed_item["capacity"] = col_text.strip()
+                            break
+
+                items_by_id[item_id] = parsed_item
+
+    # Convert dict back to list
+    parsed = list(items_by_id.values())
     return parsed
 
 
