@@ -1,5 +1,5 @@
 {
-  "_comment": "Template showing the equipment structure (equipment.schema.json v1.1.0)",
+  "_comment": "Template showing the equipment structure (equipment.schema.json v1.3.0)",
   "_note": "Uses unified items array consistent with monsters.json structure",
   "items": [
     {

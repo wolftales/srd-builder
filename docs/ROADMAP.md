@@ -514,11 +514,11 @@ This is a **breaking change** but migration is straightforward - just remove one
 
 ---
 
-## **v0.6.0 — Spells Dataset** 🎯 NEXT **[DATA]**
+## **v0.6.2 — Spells Dataset** ✅ COMPLETE **[DATA]**
 
-**Target:** December 2025
+**Released:** November 2025
 **Priority:** HIGH (Blackmoor customer request)
-**Consumer Impact:** NEW - ~300-400 spells with structured fields
+**Consumer Impact:** NEW - 319 spells with structured fields
 
 **Goal:** Extract and structure D&D 5e spells from SRD 5.1.
 
@@ -548,11 +548,20 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
 ```
 
 **Success Criteria**
-- [ ] ~300+ spells extracted
-- [ ] Schema v1.3.0 validated
-- [ ] Index by level, school, name
-- [ ] Test coverage: extraction, parsing, validation
-- [ ] Blackmoor integration guide updated
+- [x] ~300+ spells extracted (319 total)
+- [x] Schema v1.3.0 validated
+- [x] Index by level, school, name
+- [x] Test coverage: extraction, parsing, validation
+- [x] Data quality validation (empty text detection, duplicate detection)
+
+**What Shipped:**
+- 319 spells with structured fields (level, school, casting, components, effects)
+- Effects parsing: damage (472/884 actions), healing, saves, attacks, area
+- Scaling: slot-based upcast and character-level cantrip scaling
+- Fixed 7 spells with empty text (multi-page spell description edge case)
+- Equipment deduplication (111→106 items, removed duplicate pot-iron)
+- Container capacity data for 8 containers with `container: true` property
+- Data quality validation catches empty text and duplicate IDs
 
 ---
 
