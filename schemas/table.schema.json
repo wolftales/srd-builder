@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://srd-builder.github.io/schemas/table.schema.json",
+  "title": "SRD 5.1 Reference Table Schema",
+  "description": "Schema for reusable reference tables (experience by CR, spell slots, proficiency bonus, etc.)",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "columns",
+    "rows",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^table:[a-z0-9_]+$",
+      "description": "Globally unique namespaced identifier (e.g., 'table:experience_by_cr')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Local identifier without namespace (for sorting, file names)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable display name (e.g., 'Experience Points by Challenge Rating')"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief description of table purpose and usage"
+    },
+    "columns": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Table column definitions",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Column header text"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "integer",
+              "dice",
+              "range",
+              "mixed"
+            ],
+            "description": "Data type hint for column values"
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional explanation of column contents"
+          }
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Table data rows (array of arrays matching column count)",
+      "items": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "page": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1,
+          "description": "Multiple pages if table spans pages"
+        }
+      ],
+      "description": "SRD page number(s) where table appears"
+    },
+    "section": {
+      "type": "string",
+      "description": "Document section (e.g., 'Chapter 1: Characters', 'Appendix A: Conditions')"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "character_creation",
+        "combat",
+        "magic",
+        "equipment",
+        "exploration",
+        "downtime",
+        "reference"
+      ],
+      "description": "Functional category for grouping tables"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional context, exceptions, or usage notes"
+    }
+  }
+}

@@ -514,26 +514,35 @@ This is a **breaking change** but migration is straightforward - just remove one
 
 ---
 
-## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** 🔄 DEFERRED
+## **v0.5.5 — Table Metadata Discovery (Phase 0.5)** ✅ MERGED INTO v0.7.0
 
-**Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
+**Original Goal:** Build infrastructure for systematic table discovery to prevent per-table debugging cycles.
 
-**Problem:** Current heuristic approach works but doesn't scale
+**Status:** **MERGED** — This work is now part of v0.7.0 (Reference Tables + Table Indexer)
+
+**Why the merge?**
+- v0.7.0 already requires building table extraction infrastructure
+- Building table discovery at same time is efficient (one-time investment)
+- Prevents building reference tables with heuristics, then rebuilding with metadata later
+- Table indexer provides validation baseline for all future table work
+
+**Original Problem:** Current heuristic approach works but doesn't scale
 - Equipment armor subcategory fix used name-based inference (pragmatic but brittle)
 - PDF table layouts are complex, context tracking unreliable
 - Each new table requires custom debugging and fixes
 - No validation capability ("did we extract all tables?")
 
-**Solution:** Table metadata discovery system
+**Solution (Now in v0.7.0):** `table_indexer.py` + `table_metadata.json`
 ```python
-discover_tables() → table_metadata.json
+table_indexer.discover_tables() → table_metadata.json
 {
   "tables": [
     {
       "id": "equipment_armor",
       "pages": [63, 64],
       "headers": ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"],
-      "row_count": 6,
+      "row_count": 14,
+      "bbox": [x, y, width, height],
       "sections": [
         {"name": "Light Armor", "rows": 3},
         {"name": "Medium Armor", "rows": 5},
@@ -549,10 +558,9 @@ discover_tables() → table_metadata.json
 - Validation: compare extracted items to expected row counts
 - Documentation: PDF structure visible to maintainers
 - Prevents future cycles of per-table fixes
+- Enables quality metrics: "extracted 12/12 expected tables"
 
-**Estimated Effort:** 2-3 hours
-
-**Priority:** DEFERRED — Spells have different extraction pattern (prose vs tables), may not need this
+**See:** v0.7.0 for full implementation details
 
 ---
 
@@ -705,55 +713,78 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.7.0 — Reference Tables Dataset** **[DATA]**
+## **v0.7.0 — Reference Tables Dataset + Table Indexer** **[DATA + INFRASTRUCTURE]**
 
-**Priority:** HIGH (foundational for other datasets)
-**Effort:** Low-Medium (leverage existing column_mapper.py)
-**Consumer Impact:** NEW - ~10-15 reference tables
+**Priority:** HIGH (foundational for other datasets + prevents per-table debugging)
+**Effort:** Medium (includes deferred v0.5.5 table metadata work)
+**Consumer Impact:** NEW - ~10-15 reference tables + validation infrastructure
 
-**Goal:** Extract reusable reference tables from SRD 5.1 for consumer use.
+**Goal:** Extract reusable reference tables from SRD 5.1 AND build systematic table discovery infrastructure.
 
-**Why Tables First?**
-- Already parsed equipment tables internally - should have captured them for consumers
+**Why Tables + Indexer Together?**
+- Already building table extraction - perfect time to build it right
 - Needed by Classes (level progression, proficiency bonus)
 - Needed by Spells (spell slots by level)
 - Needed by general gameplay (services, travel pace, carrying capacity)
+- Prevents future per-table debugging cycles (original v0.5.5 motivation)
+- Table metadata enables validation: "Did we extract all expected tables?"
 - Validates our table extraction infrastructure for public consumption
-- Quick win that unblocks other datasets
 
-**Scope:**
-- Experience points by CR
-- Proficiency bonus by level
-- Armor class by armor type (reference)
-- Damage by character level (cantrips)
-- Spell slots by class level
-- Travel pace (hours/day, miles/hour)
-- Services and expenses
-- Carrying capacity / encumbrance
-- Creature size categories (space, hit dice)
-- Ability score modifiers (-5 to +10)
+**Scope - Part 1: Table Indexer (Infrastructure)**
+- **NEW:** `table_indexer.py` - Scan entire PDF for tables
+- Generate `table_metadata.json` with comprehensive metadata:
+  - Table locations (pages, bounding boxes)
+  - Headers and column count
+  - Row counts (actual vs expected)
+  - Section context (chapter, subsection)
+- Validation baseline for extraction quality
+- Prevents "did we miss any tables?" uncertainty
 
-**Schema (Simple)**
+**Scope - Part 2: Reference Tables (Consumer Data)**
+- **HIGH Priority:** ~12 core tables (documented in `scripts/table_targets.py`)
+  - Ability scores and modifiers
+  - Proficiency bonus by level
+  - Experience points by CR
+  - Spell slots by class level
+  - Cantrip damage by level
+  - Travel pace
+  - Services, food/drink/lodging
+  - Creature size categories
+- **MEDIUM/LOW:** Deferred if time-boxed
+  - Carrying capacity, lifestyle expenses, condition effects
+
+**Schema (table.schema.json)**
 ```json
 {
   "id": "table:experience_by_cr",
   "simple_name": "experience_by_cr",
   "name": "Experience Points by Challenge Rating",
   "summary": "XP rewards for defeating monsters",
-  "columns": ["cr", "xp"],
-  "rows": [
-    {"cr": "0", "xp": 10},
-    {"cr": "1/8", "xp": 25},
-    {"cr": "1/4", "xp": 50}
+  "columns": [
+    {"name": "CR", "type": "string"},
+    {"name": "XP", "type": "integer"}
   ],
-  "page": 9
+  "rows": [
+    ["0", 10],
+    ["1/8", 25],
+    ["1", 200]
+  ],
+  "page": 57,
+  "category": "combat"
 }
 ```
 
-**Technical Approach:**
-- Extend `column_mapper.py` to capture tables for output (not just internal parsing)
-- Create `tables.json` output alongside existing datasets
-- Simple extraction (no complex parsing like monsters/spells)
+**Implementation:**
+- `table_indexer.py` - PDF-wide table discovery (uses PyMuPDF find_tables())
+- `extract_tables.py` - Extract specific reference tables (uses metadata)
+- `parse_tables.py` - Normalize to schema (IDs, types, summaries)
+- `scripts/table_targets.py` - Target list with priorities
+
+**Benefits of Combined Approach:**
+- One-time investment in table infrastructure pays dividends
+- Metadata enables quality validation for all future table work
+- Equipment extraction can later use same metadata for validation
+- Classes/features datasets will benefit from proven table patterns
 
 ---
 
