@@ -39,6 +39,23 @@
       "maximum": 9,
       "description": "Spell level (0 = cantrip, 1-9 = spell levels)"
     },
+    "classes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "bard",
+          "cleric",
+          "druid",
+          "paladin",
+          "ranger",
+          "sorcerer",
+          "warlock",
+          "wizard"
+        ]
+      },
+      "description": "Classes that can cast this spell (if specified in SRD)"
+    },
     "school": {
       "type": "string",
       "enum": [
@@ -341,23 +358,6 @@
         }
       },
       "description": "How the spell scales (upcast or cantrip)"
-    },
-    "classes": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": [
-          "bard",
-          "cleric",
-          "druid",
-          "paladin",
-          "ranger",
-          "sorcerer",
-          "warlock",
-          "wizard"
-        ]
-      },
-      "description": "Classes that can cast this spell (if specified in SRD)"
     },
     "text": {
       "type": "string",

@@ -120,6 +120,9 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         if scaling:
             spell["scaling"] = scaling
 
+        # Add classes field (v0.8.0) - requires simple_name to be set first
+        # We'll add this after simple_name is added in postprocessing
+
         parsed.append(spell)
 
     return parsed

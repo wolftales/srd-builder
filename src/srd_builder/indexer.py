@@ -119,6 +119,7 @@ def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
     by_school: defaultdict[str, list[str]] = defaultdict(list)
     by_concentration: defaultdict[str, list[str]] = defaultdict(list)
     by_ritual: defaultdict[str, list[str]] = defaultdict(list)
+    by_class: defaultdict[str, list[str]] = defaultdict(list)
 
     for spell in spells:
         spell_id = fallback_id(spell)
@@ -143,13 +144,25 @@ def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
         else:
             by_ritual["false"].append(spell_id)
 
+        # Index by class (v0.8.0)
+        classes = spell.get("classes", [])
+        for class_name in classes:
+            by_class[class_name].append(spell_id)
+
     # Sort by level (numeric)
     sorted_by_level = _stable_dict(sorted(by_level.items(), key=lambda item: int(item[0])))
     sorted_by_school = _stable_dict(sorted(by_school.items()))
     sorted_by_concentration = _stable_dict(sorted(by_concentration.items()))
     sorted_by_ritual = _stable_dict(sorted(by_ritual.items()))
+    sorted_by_class = _stable_dict(sorted(by_class.items()))
 
-    for mapping in (sorted_by_level, sorted_by_school, sorted_by_concentration, sorted_by_ritual):
+    for mapping in (
+        sorted_by_level,
+        sorted_by_school,
+        sorted_by_concentration,
+        sorted_by_ritual,
+        sorted_by_class,
+    ):
         for key, ids in mapping.items():
             mapping[key] = sorted(ids)
 
@@ -159,6 +172,7 @@ def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
         "by_school": sorted_by_school,
         "by_concentration": sorted_by_concentration,
         "by_ritual": sorted_by_ritual,
+        "by_class": sorted_by_class,
     }
 
 

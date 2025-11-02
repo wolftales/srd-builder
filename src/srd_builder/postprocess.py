@@ -6,6 +6,8 @@ import re
 from collections.abc import Iterable
 from typing import Any
 
+from srd_builder.spell_class_targets import get_spell_classes
+
 __all__ = [
     "normalize_id",
     "unify_simple_name",
@@ -546,6 +548,12 @@ def clean_spell_record(spell: dict[str, Any]) -> dict[str, Any]:
     # Normalize school to lowercase
     if "school" in patched and isinstance(patched["school"], str):
         patched["school"] = patched["school"].lower()
+
+    # Add classes field (v0.8.0) - uses simple_name to lookup spell classes
+    if "simple_name" in patched:
+        classes = get_spell_classes(patched["simple_name"])
+        if classes:
+            patched["classes"] = classes
 
     # Prune empty optional fields
     spell_optional_fields = {
