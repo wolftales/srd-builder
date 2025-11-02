@@ -23,27 +23,65 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
     parsed = []
 
     for raw_spell in raw_spells:
-        # TODO: Implement actual parsing
-        # For now, create minimal stub structure
-        spell = {
-            "name": raw_spell.get("name", "Unknown Spell"),
-            "level": 0,  # Placeholder
-            "school": "evocation",  # Placeholder
+        name = raw_spell.get("name", "Unknown Spell")
+        header_text = raw_spell.get("header_text", "")
+        description_text = raw_spell.get("description_text", "")
+        level_and_school = raw_spell.get("level_and_school", "")
+
+        # Parse level and school
+        level, school = _parse_level_and_school(level_and_school)
+
+        # Parse header fields (format: "Casting Time: X\nRange: Y\nComponents: Z\nDuration: W")
+        casting_time = "1 action"
+        range_value: dict[str, Any] | str = "self"
+        components_value = {"verbal": False, "somatic": False, "material": False}
+        duration_value = "instantaneous"
+        concentration = False
+        ritual = False
+
+        # Extract individual header lines
+        for line in header_text.split("\n"):
+            line = line.strip()
+            if line.startswith("Casting Time:"):
+                casting_time = _parse_casting_time(line.replace("Casting Time:", "").strip())
+                if "(ritual)" in casting_time.lower():
+                    ritual = True
+                    casting_time = casting_time.replace("(ritual)", "").strip()
+            elif line.startswith("Range:"):
+                range_value = _parse_range(line.replace("Range:", "").strip())
+            elif line.startswith("Components:"):
+                components_value = _parse_components(line.replace("Components:", "").strip())
+            elif line.startswith("Duration:"):
+                duration_value, concentration = _parse_duration(
+                    line.replace("Duration:", "").strip()
+                )
+
+        # Extract effects and scaling from description
+        effects = _extract_effects(description_text)
+        scaling = _extract_scaling(description_text, level)
+
+        # Build spell structure
+        spell: dict[str, Any] = {
+            "name": name,
+            "level": level,
+            "school": school,
             "casting": {
-                "time": "1 action",
-                "range": "self",
-                "duration": "Instantaneous",
-                "concentration": False,
-                "ritual": False,
+                "time": casting_time,
+                "range": range_value,
+                "duration": duration_value,
+                "concentration": concentration,
+                "ritual": ritual,
             },
-            "components": {
-                "verbal": False,
-                "somatic": False,
-                "material": False,
-            },
-            "text": raw_spell.get("description_text", ""),
+            "components": components_value,
+            "text": description_text,
             "page": raw_spell.get("pages", [0])[0] if raw_spell.get("pages") else 0,
         }
+
+        # Add optional fields
+        if effects:
+            spell["effects"] = effects
+        if scaling:
+            spell["scaling"] = scaling
 
         parsed.append(spell)
 
@@ -59,7 +97,23 @@ def _parse_level_and_school(level_school_text: str) -> tuple[int, str]:
     Returns:
         Tuple of (level, school)
     """
-    # TODO: Implement parsing
+    import re
+
+    text = level_school_text.lower().strip()
+
+    # Check for cantrip
+    if "cantrip" in text:
+        # Extract school name (word before "cantrip")
+        school = text.split()[0] if text.split() else "evocation"
+        return (0, school)
+
+    # Parse leveled spell (e.g., "3rd-level evocation")
+    match = re.match(r"(\d+)(?:st|nd|rd|th)-level\s+(\w+)", text)
+    if match:
+        level = int(match.group(1))
+        school = match.group(2)
+        return (level, school)
+
     return (0, "evocation")
 
 
@@ -72,8 +126,7 @@ def _parse_casting_time(text: str) -> str:
     Returns:
         Normalized casting time
     """
-    # TODO: Implement parsing
-    return "1 action"
+    return text.strip()
 
 
 def _parse_range(text: str) -> dict[str, Any] | str:
@@ -85,7 +138,33 @@ def _parse_range(text: str) -> dict[str, Any] | str:
     Returns:
         Structured range object or string for special cases
     """
-    # TODO: Implement parsing
+    import re
+
+    text_lower = text.lower().strip()
+
+    # Special ranges
+    if text_lower == "self":
+        return "self"
+    if text_lower == "touch":
+        return "touch"
+    if text_lower == "sight":
+        return "sight"
+    if text_lower == "unlimited":
+        return "unlimited"
+
+    # Numeric range (e.g., "150 feet")
+    match = re.match(r"(\d+)\s+(feet|miles|foot|mile)", text_lower)
+    if match:
+        value = int(match.group(1))
+        unit = match.group(2)
+        # Normalize to plural
+        if unit in ("foot", "feet"):
+            unit = "feet"
+        elif unit in ("mile", "miles"):
+            unit = "miles"
+        return {"kind": "ranged", "value": value, "unit": unit}
+
+    # Fallback to self
     return "self"
 
 
@@ -98,8 +177,16 @@ def _parse_duration(text: str) -> tuple[str, bool]:
     Returns:
         Tuple of (duration, requires_concentration)
     """
-    # TODO: Implement parsing
-    return ("Instantaneous", False)
+    text_lower = text.lower().strip()
+
+    # Check for concentration
+    concentration = "concentration" in text_lower
+
+    # Remove "concentration, " prefix if present
+    if concentration:
+        text_lower = text_lower.replace("concentration,", "").strip()
+
+    return (text_lower, concentration)
 
 
 def _parse_components(text: str) -> dict[str, Any]:
@@ -111,12 +198,20 @@ def _parse_components(text: str) -> dict[str, Any]:
     Returns:
         Components dict with verbal, somatic, material, material_description
     """
-    # TODO: Implement parsing
-    return {
-        "verbal": False,
-        "somatic": False,
-        "material": False,
+    import re
+
+    components: dict[str, Any] = {
+        "verbal": "V" in text.upper(),
+        "somatic": "S" in text.upper(),
+        "material": "M" in text.upper(),
     }
+
+    # Extract material description from parentheses
+    match = re.search(r"M\s*\(([^)]+)\)", text, re.IGNORECASE)
+    if match:
+        components["material_description"] = match.group(1).strip()
+
+    return components
 
 
 def _extract_effects(description: str) -> dict[str, Any]:
@@ -128,8 +223,46 @@ def _extract_effects(description: str) -> dict[str, Any]:
     Returns:
         Effects dict (may be empty if no extractable effects)
     """
-    # TODO: Implement parsing
-    return {}
+    import re
+
+    effects: dict[str, Any] = {}
+
+    # Extract damage
+    damage_pattern = r"(\d+d\d+)\s+(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+damage"
+    damage_match = re.search(damage_pattern, description, re.IGNORECASE)
+    if damage_match:
+        effects["damage"] = {
+            "dice": damage_match.group(1),
+            "type": damage_match.group(2).lower(),
+        }
+
+    # Extract saving throw
+    save_pattern = (
+        r"(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)\s+saving\s+throw"
+    )
+    save_match = re.search(save_pattern, description, re.IGNORECASE)
+    if save_match:
+        ability = save_match.group(1).lower()
+        # Determine success behavior
+        on_success = "half_damage"
+        if "half as much damage" in description.lower():
+            on_success = "half_damage"
+        elif "negates" in description.lower():
+            on_success = "negates"
+
+        effects["save"] = {"ability": ability, "on_success": on_success}
+
+    # Extract area
+    area_pattern = r"(\d+)-foot[- ](?:radius\s+)?(sphere|cone|cube|cylinder|line)"
+    area_match = re.search(area_pattern, description, re.IGNORECASE)
+    if area_match:
+        effects["area"] = {
+            "shape": area_match.group(2).lower(),
+            "size": int(area_match.group(1)),
+            "unit": "feet",
+        }
+
+    return effects
 
 
 def _extract_scaling(description: str, level: int) -> dict[str, Any] | None:
@@ -142,5 +275,29 @@ def _extract_scaling(description: str, level: int) -> dict[str, Any] | None:
     Returns:
         Scaling dict or None if spell doesn't scale
     """
-    # TODO: Implement parsing
+    import re
+
+    # Check for "At Higher Levels" section (slot scaling)
+    higher_levels_match = re.search(
+        r"At Higher Levels\.\s*(.+?)(?:\.|$)", description, re.IGNORECASE | re.DOTALL
+    )
+    if higher_levels_match:
+        formula_text = higher_levels_match.group(1).strip()
+        return {"type": "slot", "base_level": level, "formula": formula_text}
+
+    # Check for character level scaling (cantrips)
+    if level == 0:
+        char_level_pattern = r"(?:increases|becomes).*?(?:5th|11th|17th).*?level"
+        if re.search(char_level_pattern, description, re.IGNORECASE):
+            # Extract the scaling formula
+            formula_match = re.search(
+                r"(\+?\d+d\d+).*?(?:5th|11th|17th)", description, re.IGNORECASE
+            )
+            if formula_match:
+                return {
+                    "type": "character_level",
+                    "base_level": 1,
+                    "formula": formula_match.group(0),
+                }
+
     return None

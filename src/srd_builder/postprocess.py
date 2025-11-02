@@ -531,13 +531,17 @@ def clean_spell_record(spell: dict[str, Any]) -> dict[str, Any]:
     """
     patched = {**spell}
 
-    # Generate ID if missing
-    if "id" not in patched and "simple_name" in patched:
-        patched["id"] = f"spell:{patched['simple_name']}"
+    # Generate simple_name from name if missing
+    if "simple_name" not in patched and "name" in patched:
+        patched["simple_name"] = normalize_id(patched["name"])
 
     # Ensure simple_name is normalized
     if "simple_name" in patched and isinstance(patched["simple_name"], str):
         patched["simple_name"] = normalize_id(patched["simple_name"])
+
+    # Generate ID if missing
+    if "id" not in patched and "simple_name" in patched:
+        patched["id"] = f"spell:{patched['simple_name']}"
 
     # Normalize school to lowercase
     if "school" in patched and isinstance(patched["school"], str):
