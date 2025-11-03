@@ -3,7 +3,7 @@
 This document maps SRD 5.1 source terminology and formats to our normalized schema field names, explaining how we transform raw data into structured JSON.
 
 **Version:** Schema v1.3.0
-**Updated:** 2025-11-01
+**Updated:** 2025-11-02
 
 ---
 
@@ -700,6 +700,211 @@ Status: Schema exists (`spell.schema.json`) but dataset not yet built. Fields TB
 
 ---
 
+## Tables Dataset
+
+Reference tables extracted from SRD including class progression tables.
+
+### Core Identity
+
+#### `id`
+- **Type:** `string`
+- **Pattern:** `table:<normalized_name>`
+- **Examples:** `table:proficiency_bonus`, `table:barbarian_progression`, `table:spell_slots_full_caster`
+- **SRD Source:** Derived from table title/context
+- **Purpose:** Stable identifier for cross-referencing
+
+#### `name`
+- **Type:** `string`
+- **Examples:** `"Proficiency Bonus by Level"`, `"The Barbarian"`, `"Experience Points by Challenge Rating"`
+- **SRD Source:** Table caption or heading from SRD
+- **Purpose:** Display name for UI presentation
+
+### Table Structure
+
+#### `columns`
+- **Type:** `array` of `object`
+- **SRD Format:** Table headers → `{name: "Level", type: "integer"}`
+- **Properties:**
+  - `name` (string): Column header from SRD
+  - `type` (string): `"integer"`, `"string"`, `"mixed"` (auto-detected from data)
+- **Purpose:** Describe table structure for rendering and validation
+
+#### `rows`
+- **Type:** `array` of `array`
+- **SRD Format:** Table rows, preserves cell order matching columns
+- **Examples:**
+  - `[1, "+2", "Rage, Unarmored Defense", 2, "+2"]` (Barbarian level 1)
+  - `[5, 1800]` (CR 5 = 1800 XP)
+- **Transformation:** Numeric values parsed to integers, everything else as strings
+- **Purpose:** Table data ready for display or programmatic access
+
+### Classification
+
+#### `category`
+- **Type:** `string`
+- **Examples:** `"class_progression"`, `"character_creation"`, `"combat"`, `"magic"`, `"reference"`
+- **SRD Source:** Derived from table context and section
+- **Purpose:** Group related tables for navigation
+
+#### `section`
+- **Type:** `string`
+- **Examples:** `"Chapter 3: Classes - Barbarian"`, `"Chapter 9: Combat"`, `"Chapter 1: Characters"`
+- **SRD Source:** SRD chapter/section heading
+- **Purpose:** Citation and context reference
+
+---
+
+## Lineages Dataset
+
+Character lineages (formerly "races") with traits, abilities, and subraces.
+
+### Core Identity
+
+#### `id`
+- **Type:** `string`
+- **Pattern:** `lineage:<normalized_name>`
+- **Examples:** `lineage:dwarf`, `lineage:mountain_dwarf`, `lineage:elf`
+- **SRD Source:** Derived from lineage name
+- **Purpose:** Stable identifier for cross-referencing
+
+#### `is_subrace`
+- **Type:** `boolean`
+- **SRD Values:** `true` for Mountain Dwarf, Hill Dwarf, High Elf, Wood Elf; `false` for base lineages
+- **SRD Source:** SRD structure (nested under parent lineage)
+- **Transformation:** Detect from section hierarchy
+- **Purpose:** Distinguish base lineages from variants
+
+#### `parent_lineage`
+- **Type:** `string` (optional)
+- **Examples:** `"lineage:dwarf"` for Mountain Dwarf, `"lineage:elf"` for High Elf
+- **SRD Source:** Parent lineage section
+- **Purpose:** Link subrace to its base lineage
+
+### Lineage Traits
+
+#### `ability_score_increase`
+- **Type:** `object`
+- **SRD Format:** `"Your Constitution score increases by 2."` → `{Con: 2}`
+- **Properties:** Ability abbreviations (Str, Dex, Con, Int, Wis, Cha) → integer bonus
+- **Transformation:** Parse natural language to structured ability bonuses
+- **Purpose:** Character creation stat calculations
+
+#### `size`
+- **Type:** `string`
+- **SRD Values:** `"Medium"`, `"Small"`
+- **SRD Source:** Size entry in lineage description
+- **Purpose:** Game mechanics (space occupied, weapon size, grappling)
+
+#### `speed`
+- **Type:** `integer`
+- **SRD Format:** `"Your base walking speed is 25 feet."` → `25`
+- **Unit:** feet
+- **SRD Source:** Speed entry in lineage description
+- **Purpose:** Movement calculations in combat/exploration
+
+#### `languages`
+- **Type:** `array` of `string`
+- **SRD Format:** `"You can speak, read, and write Common and Dwarvish."` → `["Common", "Dwarvish"]`
+- **Transformation:** Parse language list from natural language
+- **Purpose:** Communication abilities
+
+#### `traits`
+- **Type:** `array` of `object`
+- **Properties:**
+  - `name` (string): Trait name (e.g., "Darkvision", "Dwarven Resilience")
+  - `description` (string): Full trait text from SRD
+- **SRD Source:** Trait entries from lineage description
+- **Purpose:** Special abilities and features
+
+---
+
+## Classes Dataset
+
+Character classes with progression, features, and proficiencies.
+
+### Core Identity
+
+#### `id`
+- **Type:** `string`
+- **Pattern:** `class:<normalized_name>`
+- **Examples:** `class:barbarian`, `class:wizard`, `class:fighter`
+- **SRD Source:** Derived from class name
+- **Purpose:** Stable identifier for cross-referencing
+
+#### `hit_die`
+- **Type:** `string`
+- **SRD Values:** `"d6"`, `"d8"`, `"d10"`, `"d12"`
+- **SRD Source:** "Hit Dice" or "Hit Points" section header (e.g., "Hit Dice: 1d12 per barbarian level")
+- **Purpose:** HP calculation, multiclassing
+
+#### `primary_abilities`
+- **Type:** `array` of `string`
+- **SRD Values:** `["Str"]` (Barbarian), `["Dex"]` (Rogue), `["Int", "Wis"]` (optional choices)
+- **SRD Source:** "Quick Build" section recommendations
+- **Purpose:** Character optimization guidance
+
+### Proficiencies
+
+#### `proficiencies`
+- **Type:** `object`
+- **Properties:**
+  - `armor` (array): `["light", "medium", "shields"]` or `["all armor"]`
+  - `weapons` (array): `["simple", "martial"]` or specific weapon names
+  - `tools` (array): Tool proficiencies or `[]` if none
+  - `skills` (object): `{choose: 2, from: ["Athletics", "Intimidation", ...]}`
+- **SRD Source:** "Proficiencies" section of class description
+- **Transformation:** Parse armor/weapon categories vs specific items; extract skill choice structure
+- **Purpose:** Character creation and equipment choices
+
+#### `saves`
+- **Type:** `array` of `string` (length: 2)
+- **SRD Values:** Two abilities from `["Str", "Dex", "Con", "Int", "Wis", "Cha"]`
+- **Examples:** `["Str", "Con"]` (Barbarian), `["Int", "Wis"]` (Wizard)
+- **SRD Source:** "Proficiencies" section, saving throw line
+- **Purpose:** Saving throw bonuses
+
+### Class Features
+
+#### `features`
+- **Type:** `array` of `string` (feature IDs)
+- **Pattern:** `feature:<normalized_name>`
+- **Examples:** `["feature:rage", "feature:unarmored_defense", "feature:reckless_attack"]`
+- **SRD Source:** Class feature names from progression table and descriptions
+- **Purpose:** References to full feature definitions (future features dataset)
+
+#### `progression`
+- **Type:** `array` of `object` (20 levels)
+- **Properties:**
+  - `level` (integer): 1-20
+  - `features` (array): Feature names gained at this level
+  - Additional class-specific fields (computed from progression table)
+- **SRD Source:** Class progression table
+- **Purpose:** Level-by-level advancement details
+
+#### `tables_referenced`
+- **Type:** `array` of `string` (table IDs)
+- **Examples:** `["table:proficiency_bonus", "table:barbarian_progression", "table:spell_slots_full_caster"]`
+- **Purpose:** Link to detailed progression tables in tables.json
+
+### Spellcasting (Casters Only)
+
+#### `spellcasting`
+- **Type:** `object` (optional, only present for spellcasting classes)
+- **Properties:**
+  - `ability` (string): `"Int"`, `"Wis"`, or `"Cha"`
+  - `spell_list` (string): `"wizard"`, `"cleric"`, `"bard"`, etc.
+- **SRD Source:** "Spellcasting" feature description
+- **Purpose:** Spell save DC and spell attack modifier calculations
+
+#### `subclasses`
+- **Type:** `array` of `string` (subclass IDs)
+- **Pattern:** `subclass:<normalized_name>`
+- **Examples:** `["subclass:path_of_the_berserker"]` (Barbarian), `["subclass:college_of_lore"]` (Bard)
+- **SRD Source:** Subclass sections within class description
+- **Purpose:** References to subclass definitions (future subclasses dataset)
+
+---
+
 ## Data Quality Notes
 
 ### Known Limitations (v1.3.0)
@@ -724,19 +929,34 @@ Status: Schema exists (`spell.schema.json`) but dataset not yet built. Fields TB
 
 ## Schema Evolution
 
-This dictionary reflects **Schema v1.1.0**. Changes to field meanings, transformations, or additions will be documented here with version annotations.
+This dictionary reflects **Schema v1.3.0**. Changes to field meanings, transformations, or additions will be documented here with version annotations.
 
 **Version History:**
+- **v1.3.0** (2025-11-02): Added tables dataset (23 tables including 12 class progression), lineages dataset (13 lineages), classes dataset (12 classes), `aliases` field for all entities
+- **v1.2.0** (2025-10-30): Added reference tables extraction
+- **v1.1.0**: Structured objects (AC, HP, cost), namespaced IDs, `simple_name` everywhere
 - **v1.0.0** (MVP): Basic extraction with string-heavy formats
-- **v1.1.0** (Current): Structured objects (AC, HP, cost), namespaced IDs, `simple_name` everywhere
 
 See `SCHEMAS.md` for architectural evolution and versioning strategy.
+
+---
+
+## Datasets Summary
+
+**v0.8.2 includes:**
+- **296 Monsters** - Full stat blocks with actions, traits, legendary actions
+- **106 Equipment** - Weapons, armor, adventuring gear
+- **319 Spells** - Complete spell descriptions with structured effects
+- **23 Tables** - Reference tables (12 class progression + 11 general reference)
+- **13 Lineages** - Character lineages (9 base + 4 subraces)
+- **12 Classes** - Character classes with full progression
 
 ---
 
 ## See Also
 
 - **SCHEMAS.md** - Schema versioning strategy and design patterns
+- **ROADMAP.md** - Development roadmap and completed milestones
 - **GPT_REVIEW_equipment_status.md** - Known issues and extraction challenges for equipment
 - **PARKING_LOT.md** - Future enhancements and architectural decisions
 - **Schema Files** - `schemas/*.schema.json` for formal JSON Schema definitions

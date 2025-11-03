@@ -979,4 +979,34 @@ def ordered_meta(*, source, ruleset_version, license, build, **kwargs):
 
 ---
 
+## DATA_DICTIONARY.md: Auto-Generation vs Manual Curation
+
+**Context:** Two approaches exist:
+1. **`scripts/generate_data_dictionary.py`** - Auto-generates basic field documentation from JSON schemas (like Swagger/OpenAPI)
+2. **`docs/DATA_DICTIONARY.md`** - Manually curated with rich context (SRD transformations, extraction notes, domain knowledge)
+
+**Current State:**
+- Generation script exists but **NOT integrated** into build
+- Current DATA_DICTIONARY.md is **manually maintained**
+- Manual version has valuable context the generator can't produce:
+  - SRD terminology mappings (e.g., "Versatile (1d8)" → `versatile_damage`)
+  - Data transformation explanations (e.g., "11 + Dex modifier" → `{base: 11, dex_bonus: true}`)
+  - Extraction notes and quality issues
+  - Cross-dataset patterns and design decisions
+
+**Decision (v0.8.2):**
+- Keep manual curation for now
+- Manual approach provides better developer experience
+- Added tables, lineages, and classes sections manually (v0.8.2)
+
+**Future Considerations:**
+- Could hybrid: auto-generate field lists + manual annotations
+- Could integrate generator as validation (check for missing fields)
+- Could use generator for initial scaffolding of new dataset sections
+- Need to resolve before declaring one approach "official"
+
+**Action:** Revisit in v0.9.0 or v1.0.0 when documentation strategy solidifies
+
+---
+
 ## [Add more parked features here as needed]
