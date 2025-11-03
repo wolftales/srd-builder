@@ -248,14 +248,14 @@ class TableExtractor:
         headers = [str(cell).strip() for cell in extracted[0] if cell]
 
         # Remaining rows are data
-        rows = []
+        rows: list[list[str | int | float]] = []
         for row in extracted[1:]:
             # Skip empty rows
             if not any(cell for cell in row):
                 continue
 
             # Clean cells
-            clean_row = []
+            clean_row: list[str | int | float] = []
             for cell in row:
                 if cell is None or cell == "":
                     clean_row.append("")
@@ -356,7 +356,7 @@ class TableExtractor:
         Due to PDF text extraction issues, use reference data.
         Formula: modifier = (score - 10) // 2
         """
-        rows = []
+        rows: list[list[str | int | float]] = []
         for score in range(1, 31):
             modifier = (score - 10) // 2
             modifier_str = f"+{modifier}" if modifier > 0 else str(modifier)
@@ -381,7 +381,7 @@ class TableExtractor:
         Due to PDF text extraction issues, use reference data.
         """
         # Proficiency bonus by level (SRD 5.1 reference)
-        rows = []
+        rows: list[list[str | int | float]] = []
         for level in range(1, 21):
             if level <= PROF_BONUS_LEVEL_4:
                 bonus = "+2"
@@ -414,7 +414,7 @@ class TableExtractor:
         Due to PDF text extraction issues, use reference data.
         """
         # XP by CR (SRD 5.1 reference)
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["0", 0],
             ["1/8", 25],
             ["1/4", 50],
@@ -469,7 +469,7 @@ class TableExtractor:
         Full caster progression (Cleric, Druid, Wizard).
         """
         # Spell slots by level (full caster progression)
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [3, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -522,7 +522,7 @@ class TableExtractor:
 
         Due to PDF text extraction issues, use reference data.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["1st-4th", "1 die"],
             ["5th-10th", "2 dice"],
             ["11th-16th", "3 dice"],
@@ -545,7 +545,7 @@ class TableExtractor:
 
         Due to PDF text extraction issues, use reference data.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["Fast", "400 feet", "4 miles", "30 miles"],
             ["Normal", "300 feet", "3 miles", "24 miles"],
             ["Slow", "200 feet", "2 miles", "18 miles"],
@@ -569,7 +569,7 @@ class TableExtractor:
 
         Due to PDF text extraction issues, use reference data.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["Ale (gallon)", "2 sp"],
             ["Ale (mug)", "4 cp"],
             ["Banquet (per person)", "10 gp"],
@@ -607,7 +607,7 @@ class TableExtractor:
 
         Due to PDF text extraction issues, use reference data.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["Coach cab (between towns)", "3 cp per mile"],
             ["Coach cab (within city)", "1 cp"],
             ["Hireling (skilled)", "2 gp per day"],
@@ -639,7 +639,7 @@ class TableExtractor:
 
         # Find size categories
         sizes = ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"]
-        rows = []
+        rows: list[list[str | int | float]] = []
 
         for size in sizes:
             # Pattern: "Size by Space" or "Size X by X ft."
@@ -681,7 +681,7 @@ class TableExtractor:
         # This might be a formula rather than a table
         # Pattern: Strength score × 15
         # Create formula-based table
-        rows = []
+        rows: list[list[str | int | float]] = []
         for strength in range(1, 31):  # Strength 1-30
             capacity = strength * 15
             rows.append([strength, capacity])
@@ -704,7 +704,7 @@ class TableExtractor:
 
         Due to PDF text extraction issues, use reference data.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             ["Wretched", "—"],
             ["Squalid", "1 sp"],
             ["Poor", "2 sp"],
@@ -732,7 +732,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features, Rages, Rage Damage
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Rage, Unarmored Defense", 2, "+2"],
             [2, "+2", "Reckless Attack, Danger Sense", 2, "+2"],
             [3, "+2", "Primal Path", 3, "+2"],
@@ -774,7 +774,7 @@ class TableExtractor:
         Columns: Level, Proficiency Bonus, Features, Cantrips Known, Spells Known,
                  Spell Slots (1st-9th)
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Spellcasting, Bardic Inspiration (d6)", 2, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, "+2", "Jack of All Trades, Song of Rest (d6)", 2, 5, 3, 0, 0, 0, 0, 0, 0, 0, 0],
             [3, "+2", "Bard College, Expertise", 2, 6, 4, 2, 0, 0, 0, 0, 0, 0, 0],
@@ -860,7 +860,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features, Cantrips Known, Spell Slots (1st-9th)
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Spellcasting, Divine Domain", 3, 2, 0, 0, 0, 0, 0, 0, 0, 0],
             [
                 2,
@@ -971,7 +971,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features, Cantrips Known, Spell Slots (1st-9th)
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Druidic, Spellcasting", 2, 2, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, "+2", "Wild Shape, Druid Circle", 2, 3, 0, 0, 0, 0, 0, 0, 0, 0],
             [3, "+2", "—", 2, 4, 2, 0, 0, 0, 0, 0, 0, 0],
@@ -1054,7 +1054,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Fighting Style, Second Wind"],
             [2, "+2", "Action Surge (one use)"],
             [3, "+2", "Martial Archetype"],
@@ -1095,7 +1095,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features, Martial Arts, Ki Points, Unarmored Movement
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Unarmored Defense, Martial Arts", "1d4", "—", "—"],
             [2, "+2", "Ki, Unarmored Movement", "1d4", 2, "+10 ft."],
             [3, "+2", "Monastic Tradition, Deflect Missiles", "1d4", 3, "+10 ft."],
@@ -1144,7 +1144,7 @@ class TableExtractor:
         Columns: Level, Proficiency Bonus, Features, Spell Slots (1st-5th)
         Half caster progression.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Divine Sense, Lay on Hands", 0, 0, 0, 0, 0],
             [2, "+2", "Fighting Style, Spellcasting, Divine Smite", 2, 0, 0, 0, 0],
             [3, "+2", "Divine Health, Sacred Oath", 3, 0, 0, 0, 0],
@@ -1186,7 +1186,7 @@ class TableExtractor:
         Columns: Level, Proficiency Bonus, Features, Spells Known, Spell Slots (1st-5th)
         Half caster progression.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Favored Enemy, Natural Explorer", 0, 0, 0, 0, 0, 0],
             [2, "+2", "Fighting Style, Spellcasting", 2, 2, 0, 0, 0, 0],
             [3, "+2", "Ranger Archetype, Primeval Awareness", 3, 3, 0, 0, 0, 0],
@@ -1237,7 +1237,7 @@ class TableExtractor:
 
         Columns: Level, Proficiency Bonus, Features, Sneak Attack
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Expertise, Sneak Attack, Thieves' Cant", "1d6"],
             [2, "+2", "Cunning Action", "1d6"],
             [3, "+2", "Roguish Archetype", "2d6"],
@@ -1279,7 +1279,7 @@ class TableExtractor:
         Columns: Level, Proficiency Bonus, Features, Cantrips Known, Spells Known,
                  Spell Slots (1st-9th), Sorcery Points
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Spellcasting, Sorcerous Origin", 4, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, "—"],
             [2, "+2", "Font of Magic", 4, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [3, "+2", "Metamagic", 4, 4, 4, 2, 0, 0, 0, 0, 0, 0, 0, 3],
@@ -1338,7 +1338,7 @@ class TableExtractor:
                  Spell Slots, Slot Level, Invocations Known
         Pact magic has different slot progression than full/half casters.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Otherworldly Patron, Pact Magic", 2, 2, 1, "1st", 0],
             [2, "+2", "Eldritch Invocations", 2, 3, 2, "1st", 2],
             [3, "+2", "Pact Boon", 2, 4, 2, "2nd", 2],
@@ -1389,7 +1389,7 @@ class TableExtractor:
         Columns: Level, Proficiency Bonus, Features, Cantrips Known, Spell Slots (1st-9th)
         Full caster progression.
         """
-        rows = [
+        rows: list[list[str | int | float]] = [
             [1, "+2", "Spellcasting, Arcane Recovery", 3, 2, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, "+2", "Arcane Tradition", 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
             [3, "+2", "—", 3, 4, 2, 0, 0, 0, 0, 0, 0, 0],
