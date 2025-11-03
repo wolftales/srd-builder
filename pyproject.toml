@@ -45,13 +45,15 @@ packages = ["srd_builder"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-select = ["E", "F", "I", "B", "PL", "UP"]
-ignore = ["E203"]  # compatible with Black slicing
 fix = true
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B", "N", "W", "C90"]
-ignore = ["E501"]
+select = ["E", "F", "I", "UP", "B", "N", "W", "PL"]
+ignore = [
+    "E203",  # compatible with Black slicing
+    "E501",  # line length handled by Black
+    "C901",  # complex functions in extraction code are acceptable
+]
 
 [tool.black]
 line-length = 100
