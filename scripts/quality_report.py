@@ -5,6 +5,7 @@ Analyzes potential issues and edge cases in parsed monsters.
 """
 
 import json
+import sys
 from pathlib import Path
 
 
@@ -201,6 +202,6 @@ if __name__ == "__main__":
 
     if not parsed_path.exists():
         print(f"Error: {parsed_path} not found. Run build first.")
-        exit(1)
+        sys.exit(1)
 
     analyze_quality(parsed_path, raw_path)

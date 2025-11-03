@@ -623,7 +623,7 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                 continue
 
             # Senses
-            if label_clean == "senses" or label_clean == "sense s":
+            if label_clean in ("senses", "sense s"):
                 parsed["senses"] = next_text
                 i = j
                 continue
