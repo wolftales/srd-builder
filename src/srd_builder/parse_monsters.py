@@ -28,6 +28,17 @@ _SPEED_WITH_CONDITION = re.compile(
 )
 _XP_RE = re.compile(r"([\d,]+)\s*XP", re.IGNORECASE)
 
+# PDF extraction constants
+_MIN_BODY_TEXT_SIZE = 9.0  # Minimum font size for body text (Calibri 9pt-10pt)
+_MAX_BODY_TEXT_SIZE = 10.0  # Maximum font size for body text
+_SECTION_HEADER_SIZE = 10.8  # Font size for section headers (Actions, Traits, etc.)
+_TRAIT_NAME_SIZE = 9.5  # Font size for trait/action names (BoldItalic)
+_MAX_BLOCKS_AFTER_NAME = 2  # Maximum blocks to check after monster name for size/type/alignment
+_MAX_LABEL_CONTINUATION_LENGTH = 6  # Maximum characters for split label words (e.g., "Sense" + "s")
+_MAX_VALUE_BLOCKS = 6  # Maximum blocks to collect for multi-block values
+_EXPECTED_ABILITY_SCORES = 6  # Number of ability scores (STR, DEX, CON, INT, WIS, CHA)
+_MIN_SIZE_TYPE_PARTS = 2  # Minimum comma-separated parts in size/type/alignment line
+
 
 def _coerce_int(value: Any) -> int | None:
     if value is None:
@@ -417,7 +428,12 @@ def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, in
             break
 
         # Only collect regular text blocks (9.84pt Calibri)
-        if text and size >= 9.0 and size <= 10.0 and "Calibri" in font:
+        if (
+            text
+            and size >= _MIN_BODY_TEXT_SIZE
+            and size <= _MAX_BODY_TEXT_SIZE
+            and "Calibri" in font
+        ):
             # Clean whitespace: tabs, newlines, carriage returns
             cleaned_text = " ".join(text.split())
             parts.append(cleaned_text)
@@ -467,7 +483,7 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
 
         # Size/type/alignment line (Calibri-Italic, right after name)
         # Handle split across multiple Italic blocks (e.g., Kraken, Mummy, Unicorn)
-        if "Italic" in font and i <= 2:
+        if "Italic" in font and i <= _MAX_BLOCKS_AFTER_NAME:
             # Collect all consecutive Italic blocks (may be split with comma blocks between)
             italic_parts = [text]
             j = i + 1
@@ -511,7 +527,9 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
 
                 # Case 1: Next block is Bold and looks like label continuation (e.g., "Sense" + "s")
                 if "Bold" in peek_font and peek_text and not peek_text[0].isdigit():
-                    if len(peek_text) <= 6 and not any(c in peek_text for c in "():,"):
+                    if len(peek_text) <= _MAX_LABEL_CONTINUATION_LENGTH and not any(
+                        c in peek_text for c in "():,"
+                    ):
                         label_clean += " " + " ".join(peek_text.split()).lower()
                         j += 1
 
@@ -598,7 +616,7 @@ def parse_monster_from_blocks(monster: dict[str, Any]) -> dict[str, Any]:  # noq
                     k += 1
 
                     # Safety: stop after collecting reasonable amount (up to 6 blocks for edge cases)
-                    if len(values_parts) >= 6:
+                    if len(values_parts) >= _MAX_VALUE_BLOCKS:
                         break
 
                 # Parse combined values
@@ -697,7 +715,7 @@ def _parse_size_type_alignment(text: str) -> dict[str, Any]:
     text = " ".join(text.split())
 
     parts = [p.strip() for p in text.split(",")]
-    if len(parts) < 2:
+    if len(parts) < _MIN_SIZE_TYPE_PARTS:
         return {}
 
     # First part: size + type
@@ -727,7 +745,7 @@ def _parse_ability_scores(text: str) -> dict[str, Any]:
     for match in re.finditer(pattern, text):
         scores.append(int(match.group(1)))
 
-    if len(scores) != 6:
+    if len(scores) != _EXPECTED_ABILITY_SCORES:
         return {}
 
     return {
@@ -772,7 +790,7 @@ def _parse_traits_and_actions(  # noqa: C901
         font_size = block.get("size", 0)
 
         # Detect section headers
-        if font_size >= 10.8 and "bold" in font.lower():
+        if font_size >= _SECTION_HEADER_SIZE and "bold" in font.lower():
             if text.lower() == "actions":
                 current_section = "actions"
                 i += 1
@@ -793,7 +811,7 @@ def _parse_traits_and_actions(  # noqa: C901
         is_legendary_section = current_section == "legendary_actions"
 
         is_name_block = (
-            font_size >= 9.5
+            font_size >= _TRAIT_NAME_SIZE
             and text.endswith(".")
             and (is_bold_italic or (is_just_bold and is_legendary_section))
         )
@@ -819,16 +837,20 @@ def _parse_traits_and_actions(  # noqa: C901
                 )
 
                 # Stop at section header
-                if next_font_size >= 10.8 and "bold" in next_font.lower():
+                if next_font_size >= _SECTION_HEADER_SIZE and "bold" in next_font.lower():
                     break
 
                 # Stop at next BoldItalic name (trait/action)
-                if next_font_size >= 9.5 and next_is_bold_italic and next_text.endswith("."):
+                if (
+                    next_font_size >= _TRAIT_NAME_SIZE
+                    and next_is_bold_italic
+                    and next_text.endswith(".")
+                ):
                     break
 
                 # Stop at next Bold name (legendary action) if in legendary section
                 if (
-                    next_font_size >= 9.5
+                    next_font_size >= _TRAIT_NAME_SIZE
                     and next_is_just_bold
                     and is_legendary_section
                     and next_text.endswith(".")

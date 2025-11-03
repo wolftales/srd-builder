@@ -34,6 +34,13 @@ EQUIPMENT_END_PAGE = 72  # Page 73
 # Font patterns for section detection
 SECTION_HEADER_SIZE = 18.0
 SUBSECTION_HEADER_SIZE = 13.92
+FONT_SIZE_TOLERANCE = 0.5  # Tolerance for font size comparisons
+
+# Table validation constants
+MIN_TABLE_COLUMNS = 2  # Minimum columns for a valid equipment table row
+MAX_NAME_FRAGMENT_LENGTH = 3  # Maximum length for split name fragments to merge
+MAX_HEADER_NAME_LENGTH = 25  # Maximum length for likely header keywords
+MAX_DESCRIPTION_LENGTH = 100  # Maximum length before text is likely a description paragraph
 
 # Section keywords for categorization
 ARMOR_KEYWORDS = ["armor", "light armor", "medium armor", "heavy armor"]
@@ -175,7 +182,7 @@ def _get_section_markers(  # noqa: C901
                 subcategory = None
 
                 # Section header (18pt)
-                if abs(size - SECTION_HEADER_SIZE) < 0.5:
+                if abs(size - SECTION_HEADER_SIZE) < FONT_SIZE_TOLERANCE:
                     if "armor" in text:
                         category = "armor"
                     elif "weapon" in text:
@@ -185,10 +192,10 @@ def _get_section_markers(  # noqa: C901
                     elif any(kw in text for kw in MOUNT_KEYWORDS):
                         category = "mount"
                     elif any(kw in text for kw in TRADE_KEYWORDS):
-                        category = "trade_good"
+                        category = "gear"
 
                 # Subsection header (13.92pt)
-                elif abs(size - SUBSECTION_HEADER_SIZE) < 0.5:
+                elif abs(size - SUBSECTION_HEADER_SIZE) < FONT_SIZE_TOLERANCE:
                     if "armor" in text:
                         category = "armor"
                         if "light" in text:
@@ -228,7 +235,7 @@ def _detect_section_context(  # noqa: C901
                 size = span.get("size", 0)
 
                 # Section header (18pt)
-                if abs(size - SECTION_HEADER_SIZE) < 0.5:
+                if abs(size - SECTION_HEADER_SIZE) < FONT_SIZE_TOLERANCE:
                     if "armor" in text:
                         category = "armor"
                     elif "weapon" in text:
@@ -238,10 +245,10 @@ def _detect_section_context(  # noqa: C901
                     elif any(kw in text for kw in MOUNT_KEYWORDS):
                         category = "mount"
                     elif any(kw in text for kw in TRADE_KEYWORDS):
-                        category = "trade_good"
+                        category = "gear"
 
                 # Subsection header (13.92pt)
-                elif abs(size - SUBSECTION_HEADER_SIZE) < 0.5:
+                elif abs(size - SUBSECTION_HEADER_SIZE) < FONT_SIZE_TOLERANCE:
                     if "armor" in text:
                         # Armor subcategories also set the category
                         category = "armor"
@@ -279,7 +286,7 @@ def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
     - Reference tables (Trade Goods pricing, Lifestyle Expenses, Food/Drink)
     - Descriptive text
     """
-    if not row or len(row) < 2:
+    if not row or len(row) < MIN_TABLE_COLUMNS:
         return False
 
     # First column should be item name (not empty, not a header)
@@ -312,7 +319,7 @@ def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
 
     # Filter Food/Drink/Lodging incomplete extractions
     # Single-word entries with only a price in second column are likely reference table fragments
-    if len(row) == 2 and len(name.split()) == 1:
+    if len(row) == MIN_TABLE_COLUMNS and len(name.split()) == 1:
         second_cell = row[1].strip()
         # If second cell is just a price, this is likely a pricing reference, not equipment
         if re.match(r"^\d+\s*(cp|sp|ep|gp|pp)$", second_cell, re.IGNORECASE):
@@ -343,11 +350,11 @@ def _is_equipment_row(row: list[str]) -> bool:  # noqa: C901
         "melee",
         "ranged",
     ]
-    if any(kw in name.lower() for kw in header_keywords) and len(name) < 25:
+    if any(kw in name.lower() for kw in header_keywords) and len(name) < MAX_HEADER_NAME_LENGTH:
         return False
 
     # Skip descriptive text (usually long paragraphs)
-    if len(name) > 100:
+    if len(name) > MAX_DESCRIPTION_LENGTH:
         return False
 
     # Must have at least one non-empty value in other columns (cost, damage, etc.)
@@ -361,20 +368,25 @@ def _merge_split_name(row: list[str]) -> list[str]:
     Merge split item names across first two columns.
     PyMuPDF sometimes splits names like "Longswor" + "d" → "Longsword"
     """
-    if len(row) < 2:
+    if len(row) < MIN_TABLE_COLUMNS:
         return row
 
     first = str(row[0]).strip()
     second = str(row[1]).strip()
 
     # If second column is very short (1-3 chars) and looks like a fragment, merge it
-    if second and len(second) <= 3 and second.isalpha() and not second.islower():
+    if (
+        second
+        and len(second) <= MAX_NAME_FRAGMENT_LENGTH
+        and second.isalpha()
+        and not second.islower()
+    ):
         # Merge and remove second column
         merged_name = first + second.lower()
         return [merged_name] + row[2:]
 
     # If second column is very short and is lowercase, it's likely a fragment
-    if second and len(second) <= 3 and second.islower():
+    if second and len(second) <= MAX_NAME_FRAGMENT_LENGTH and second.islower():
         merged_name = first + second
         return [merged_name] + row[2:]
 

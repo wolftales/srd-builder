@@ -45,6 +45,18 @@ class RawTable:
     notes: str | None = None
 
 
+# Table extraction constants
+MIN_TABLE_ROWS = 2  # Minimum rows required (header + at least one data row)
+MIN_CLI_ARGS = 2  # Minimum command-line arguments required (script name + pdf path)
+CLI_OUTPUT_PATH_ARG_INDEX = 2  # Index of optional output path in sys.argv
+
+# Proficiency bonus breakpoints by level
+PROF_BONUS_LEVEL_4 = 4
+PROF_BONUS_LEVEL_8 = 8
+PROF_BONUS_LEVEL_12 = 12
+PROF_BONUS_LEVEL_16 = 16
+
+
 class TableExtractor:
     """Extract reference tables from SRD PDF using hybrid approach."""
 
@@ -205,7 +217,7 @@ class TableExtractor:
 
         for table in tables:
             extracted = table.extract()
-            if len(extracted) < 2:  # Need header + data
+            if len(extracted) < MIN_TABLE_ROWS:  # Need header + data
                 continue
 
             # Check first row (headers) for matching keywords
@@ -371,13 +383,13 @@ class TableExtractor:
         # Proficiency bonus by level (SRD 5.1 reference)
         rows = []
         for level in range(1, 21):
-            if level <= 4:
+            if level <= PROF_BONUS_LEVEL_4:
                 bonus = "+2"
-            elif level <= 8:
+            elif level <= PROF_BONUS_LEVEL_8:
                 bonus = "+3"
-            elif level <= 12:
+            elif level <= PROF_BONUS_LEVEL_12:
                 bonus = "+4"
-            elif level <= 16:
+            elif level <= PROF_BONUS_LEVEL_16:
                 bonus = "+5"
             else:
                 bonus = "+6"
@@ -1481,12 +1493,16 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < MIN_CLI_ARGS:
         print("Usage: python -m srd_builder.extract_tables <pdf_path> [output_path]")
         sys.exit(1)
 
     pdf_path = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else "tables_raw.json"
+    output_path = (
+        sys.argv[CLI_OUTPUT_PATH_ARG_INDEX]
+        if len(sys.argv) > CLI_OUTPUT_PATH_ARG_INDEX
+        else "tables_raw.json"
+    )
 
     extract_tables_to_json(pdf_path, output_path)
     print(f"\n✓ Extraction complete: {output_path}")
