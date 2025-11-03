@@ -30,7 +30,7 @@ make test
 
 ### Build pipeline (v0.8.2)
 
-The build pipeline extracts monster, equipment, spell, table, and lineage data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, **319 spells**, **11 tables**, and **13 lineages** (9 base + 4 subraces) with full provenance tracking.
+The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, **319 spells**, **23 tables** (12 class progression + 11 reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
 **Development (fast iteration):**
 ```bash
@@ -55,9 +55,12 @@ python -m srd_builder.validate --ruleset srd_5_1
 ```
 dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
-├── equipment.json         # 114 items
-├── spells.json            # Spell data (extraction in progress)
-├── index.json             # Lookup indexes (includes spell indexes)
+├── equipment.json         # 106 items
+├── spells.json            # 319 spells
+├── tables.json            # 23 reference tables (12 class progression + 11 reference)
+├── lineages.json          # 13 character lineages (9 base + 4 subraces)
+├── classes.json           # 12 character classes
+├── index.json             # Lookup indexes (all datasets)
 ├── meta.json              # Dataset metadata (license, provenance)
 └── build_report.json      # Build metadata (version, timestamp)
 ```
@@ -66,16 +69,22 @@ dist/srd_5_1/
 ```
 dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
-├── equipment.json         # 114 items
-├── spells.json            # Spell data
-├── index.json             # Lookup indexes (monsters, equipment, spells)
+├── equipment.json         # 106 items
+├── spells.json            # 319 spells
+├── tables.json            # 23 reference tables
+├── lineages.json          # 13 character lineages
+├── classes.json           # 12 character classes
+├── index.json             # Lookup indexes (all datasets)
 ├── meta.json              # Dataset metadata (license, provenance)
 ├── README.md              # Consumer documentation
 ├── build_report.json      # Build metadata (version, timestamp)
 ├── schemas/
 │   ├── monster.schema.json
 │   ├── equipment.schema.json
-│   └── spell.schema.json
+│   ├── spell.schema.json
+│   ├── table.schema.json
+│   ├── lineage.schema.json
+│   └── class.schema.json
 └── docs/
     ├── SCHEMAS.md
     └── DATA_DICTIONARY.md
