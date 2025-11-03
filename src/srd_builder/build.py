@@ -456,7 +456,7 @@ def _build_page_index(
         return table_page_index
 
     # Fallback to simple page ranges
-    page_index: dict[str, dict[str, int]] = {}
+    page_index: dict[str, dict[str, int | str]] = {}
     page_index["lineages"] = {"start": 3, "end": 7, "description": "Character lineages (races)"}
     page_index["classes"] = {"start": 8, "end": 55, "description": "Character classes"}
     if monsters_page_range:

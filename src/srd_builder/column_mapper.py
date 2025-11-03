@@ -9,6 +9,11 @@ from __future__ import annotations
 
 import re
 
+# Column mapping constants
+MIN_COLUMNS_FOR_PROPERTIES = 2  # Minimum columns before considering properties column
+MIN_ARMOR_AC = 10  # Minimum valid armor AC value
+MAX_ARMOR_AC = 20  # Maximum valid armor AC value
+
 
 class ColumnMapper:
     """Maps table columns to semantic field names.
@@ -148,7 +153,7 @@ class ColumnMapper:
             self._column_map["name"] = 0
 
         # Properties/special is usually the last column
-        if "properties" not in self._column_map and len(row) > 2:
+        if "properties" not in self._column_map and len(row) > MIN_COLUMNS_FOR_PROPERTIES:
             # Don't map if last column looks like weight or cost
             last_col = row[-1]
             if not self._is_cost_value(last_col) and "lb" not in last_col.lower():
@@ -167,7 +172,7 @@ class ColumnMapper:
         # Just a number between 10-20 in armor context
         if self.category == "armor" and re.match(r"^\d{2}$", cell.strip()):
             ac_val = int(cell.strip())
-            return 10 <= ac_val <= 20
+            return MIN_ARMOR_AC <= ac_val <= MAX_ARMOR_AC
         return False
 
     def _is_damage_value(self, cell: str) -> bool:

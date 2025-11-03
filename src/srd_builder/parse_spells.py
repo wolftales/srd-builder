@@ -11,6 +11,9 @@ from __future__ import annotations
 import re
 from typing import Any
 
+# Parsing constants
+EXPECTED_SRD_MARKER_PARTS = 2  # Expected parts after splitting on SRD marker
+
 
 def _clean_text(text: str) -> str:
     """Clean garbled PDF text.
@@ -47,7 +50,7 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         if "System Reference Document" in header_text:
             # Split at the SRD marker - everything after is the description
             parts = re.split(r"System\s+Reference\s+Document\s+5\.1\s+\d+", header_text, maxsplit=1)
-            if len(parts) == 2:
+            if len(parts) == EXPECTED_SRD_MARKER_PARTS:
                 header_text = parts[0].strip()
                 extracted_desc = parts[1].strip()
                 # If description_text is empty or just "At Higher Levels.", use extracted

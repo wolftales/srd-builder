@@ -18,6 +18,10 @@ import re
 from pathlib import Path
 from typing import Any
 
+# CLI constants
+MIN_CLI_ARGS = 2  # Minimum command-line arguments required
+CLI_OUTPUT_PATH_ARG_INDEX = 2  # Index of optional output path in sys.argv
+
 try:
     from scripts.table_targets import TARGET_TABLES
 except ModuleNotFoundError:
@@ -173,12 +177,16 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < MIN_CLI_ARGS:
         print("Usage: python -m srd_builder.parse_tables <raw_tables.json> [output.json]")
         sys.exit(1)
 
     raw_path = sys.argv[1]
-    output_path = sys.argv[2] if len(sys.argv) > 2 else "tables.json"
+    output_path = (
+        sys.argv[CLI_OUTPUT_PATH_ARG_INDEX]
+        if len(sys.argv) > CLI_OUTPUT_PATH_ARG_INDEX
+        else "tables.json"
+    )
 
     parse_tables(raw_path, output_path)
     print(f"\n✓ Parsing complete: {output_path}")

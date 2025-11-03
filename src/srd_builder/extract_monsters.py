@@ -19,6 +19,12 @@ import fitz  # PyMuPDF
 
 from .constants import EXTRACTOR_VERSION
 
+# PDF extraction tolerance constants
+Y_COORDINATE_TOLERANCE = 2.0  # Tolerance for Y-coordinate matching (points)
+FONT_SIZE_TOLERANCE = 0.5  # Tolerance for font size matching (points)
+MAX_VERTICAL_GAP = 30  # Maximum vertical gap between text blocks (points)
+MAX_MONSTER_NAME_LENGTH = 50  # Maximum reasonable monster name length (characters)
+
 
 @dataclass
 class ExtractionConfig:
@@ -262,14 +268,14 @@ def _spans_on_same_line(line: dict[str, Any], span: dict[str, Any]) -> bool:
     # Must have similar Y-coordinate (±2pt tolerance)
     line_y = line["bbox"][1]  # Top Y of line
     span_y = span["bbox"][1]  # Top Y of span
-    if abs(line_y - span_y) > 2.0:
+    if abs(line_y - span_y) > Y_COORDINATE_TOLERANCE:
         return False
 
     # Must have same font and size (for monster name detection)
     # Allow slight size variation (±0.5pt) for rounding differences
     if line["font"] != span["font"]:
         return False
-    if abs(line["size"] - span["size"]) > 0.5:
+    if abs(line["size"] - span["size"]) > FONT_SIZE_TOLERANCE:
         return False
 
     return True
@@ -382,7 +388,7 @@ def _is_monster_name_line(line: dict[str, Any], config: ExtractionConfig) -> boo
     if line["font"] != config.monster_name_font:
         return False
 
-    if abs(line["size"] - config.monster_name_font_size) > 0.5:
+    if abs(line["size"] - config.monster_name_font_size) > FONT_SIZE_TOLERANCE:
         return False
 
     # Must not be a stat block field keyword
@@ -441,7 +447,7 @@ def _has_size_type_line_following(
         next_y = next_line["bbox"][1]
 
         # Stop if we've gone too far vertically
-        if next_y - current_y > 30:
+        if next_y - current_y > MAX_VERTICAL_GAP:
             break
 
         # Check if this is a size/type line (Calibri-Italic with size keywords)
@@ -493,7 +499,7 @@ def _looks_like_monster_name(text: str) -> bool:
         return False
 
     # Monster names are typically capitalized and not too long
-    return text[0].isupper() and len(text) < 50
+    return text[0].isupper() and len(text) < MAX_MONSTER_NAME_LENGTH
 
 
 def _is_section_marker(text: str) -> bool:

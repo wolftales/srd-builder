@@ -22,6 +22,12 @@ from .constants import EXTRACTOR_VERSION
 
 logger = logging.getLogger(__name__)
 
+# Table detection constants
+MIN_TABLE_ROWS = 2  # Minimum rows required (header + at least one data row)
+SECTION_HEADER_SIZE = 18.0  # Font size for section headers (18pt+)
+MIN_SECTION_HEADER_LENGTH = 3  # Minimum text length for section headers
+MIN_KEYWORD_MATCHES = 2  # Minimum keyword matches to identify table
+
 
 @dataclass
 class TableMetadata:
@@ -147,7 +153,7 @@ class TableIndexer:
             for table_idx, table in enumerate(table_finder.tables):
                 rows = table.extract()
 
-                if not rows or len(rows) < 2:  # Need at least header + 1 data row
+                if not rows or len(rows) < MIN_TABLE_ROWS:  # Need at least header + 1 data row
                     continue
 
                 # Extract headers (first row)
@@ -205,7 +211,7 @@ class TableIndexer:
                         text = span.get("text", "").strip()
 
                         # Large headers (18pt+) are usually section markers
-                        if size >= 18.0 and len(text) > 3:
+                        if size >= SECTION_HEADER_SIZE and len(text) > MIN_SECTION_HEADER_LENGTH:
                             return text
 
         except Exception as e:
@@ -247,7 +253,7 @@ class TableIndexer:
         for table_id, keywords in patterns.items():
             # Check if multiple keywords appear in headers
             matches = sum(1 for kw in keywords if kw in header_text)
-            if matches >= 2:  # At least 2 keywords match
+            if matches >= MIN_KEYWORD_MATCHES:  # At least 2 keywords match
                 return table_id
 
         return None
@@ -298,7 +304,7 @@ class TableIndexer:
             Dictionary suitable for meta.json page_index field
         """
         # Known page ranges from extraction modules
-        page_index = {
+        page_index: dict[str, Any] = {
             "monsters": {
                 "start": 261,
                 "end": 394,
@@ -322,7 +328,7 @@ class TableIndexer:
         }
 
         # Add reference tables from target list
-        reference_tables = []
+        reference_tables: list[dict[str, str]] = []
         try:
             try:
                 from scripts.table_targets import TARGET_TABLES
@@ -360,14 +366,14 @@ class TableIndexer:
 
         return page_index
 
-    def check_target_coverage(self, target_pages: list[int]) -> dict[str, list[int]]:
+    def check_target_coverage(self, target_pages: list[int]) -> dict[str, Any]:
         """Check which target pages have discovered tables.
 
         Args:
             target_pages: List of page numbers to check
 
         Returns:
-            Dict with 'found' and 'missing' page lists
+            Dict with 'found' (list[int]), 'missing' (list[int]), and 'coverage_percent' (float)
         """
         discovered_pages = {t.page for t in self.tables}
 

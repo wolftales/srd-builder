@@ -27,6 +27,12 @@ SPELL_LEVEL_FONT = "Cambria-Italic"
 FIELD_LABEL_FONT = "Cambria-Bold"
 HIGHER_LEVELS_FONT = "Cambria-BoldItalic"
 
+# Extraction constants
+FONT_SIZE_TOLERANCE = 0.5  # Tolerance for font size matching (points)
+MIN_DESCRIPTION_LENGTH = 50  # Minimum description length to consider complete
+MIN_HEADER_LENGTH = 30  # Minimum header length to consider complete
+MIN_CLI_ARGS = 2  # Minimum command-line arguments required
+
 
 @dataclass
 class ExtractionConfig:
@@ -132,7 +138,10 @@ def _extract_page_spells(  # noqa: C901
                 size = span.get("size", 0)
 
                 # Detect spell name (12pt GillSans-SemiBold)
-                if config.spell_name_font in font and abs(size - config.spell_name_size) < 0.5:
+                if (
+                    config.spell_name_font in font
+                    and abs(size - config.spell_name_size) < FONT_SIZE_TOLERANCE
+                ):
                     # Save previous spell
                     if current_spell:
                         spells.append(current_spell)
@@ -250,7 +259,9 @@ def _merge_multipage_spells(spells: list[dict[str, Any]]) -> list[dict[str, Any]
             next_has_name = bool(next_spell.get("name", "").strip())
 
             # Merge if: current incomplete AND next has no name (continuation)
-            if (desc_len < 50 or header_len < 30) and not next_has_name:
+            if (
+                desc_len < MIN_DESCRIPTION_LENGTH or header_len < MIN_HEADER_LENGTH
+            ) and not next_has_name:
                 # Merge with next spell's content
                 current["header_text"] += " " + next_spell.get("header_text", "")
                 current["description_text"] += " " + next_spell.get("description_text", "")
@@ -270,7 +281,7 @@ def main() -> None:  # pragma: no cover
     """CLI entry point for spell extraction."""
     import sys
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != MIN_CLI_ARGS:
         print(f"Usage: {sys.argv[0]} <pdf_path>")
         sys.exit(1)
 
