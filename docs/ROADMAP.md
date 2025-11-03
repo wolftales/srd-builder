@@ -713,8 +713,9 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.7.0 — Reference Tables Dataset + Table Indexer** **[DATA + INFRASTRUCTURE]**
+## **v0.7.0 — Reference Tables Dataset + Table Indexer** **[DATA + INFRASTRUCTURE]** ✅ **COMPLETE**
 
+**Status:** SHIPPED - Reference tables extracted and indexed
 **Priority:** HIGH (foundational for other datasets + prevents per-table debugging)
 **Effort:** Medium (includes deferred v0.5.5 table metadata work)
 **Consumer Impact:** NEW - ~10-15 reference tables + validation infrastructure
@@ -788,13 +789,14 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.8.0 — Classes & Lineages** **[DATA]**
+## **v0.8.0 — Classes & Lineages** **[DATA]** ✅ **COMPLETE**
 
+**Status:** SHIPPED - Lineages extracted (13 entries), Classes deferred to v0.8.2
 **Goal:** Extract character creation content.
 
 **Scope:**
-- Classes (complex with level progression tables)
-- Lineages/Races (character creation features)
+- Classes (complex with level progression tables) - **Pages 8-55**
+- Lineages/Races (character creation features) - **Pages 3-7**
 - **Terminology aliases** (add `terminology.aliases` to meta.json: `{"races": "lineages"}`)
 
 **Priority:** MEDIUM - Important for character creation, but NPCs use monster stats
@@ -813,13 +815,20 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - meta.json will include: `"terminology": {"aliases": {"races": "lineages"}}`
 - Maintains modern 5e terminology while enabling discoverability
 
+**Classes Details:**
+- 12 classes: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard
+- Output file: `classes.json`
+- Field namespace: `class:*` (e.g., `class:fighter`)
+- Includes: hit die, proficiencies, features, subclasses, level progression
+
 ---
 
-## **v0.8.1 — Comprehensive Alias System & PDF Metadata** **[QUALITY]**
+## **v0.8.1 — Comprehensive Alias System & PDF Metadata** **[QUALITY]** ✅ **COMPLETE**
 
+**Status:** SHIPPED - Three-level alias system, PDF metadata extraction, auto-generated data dictionary
 **Goal:** Enhance discoverability and eliminate hardcoded metadata.
 
-**Scope:**
+**Scope:
 - **Three-level alias pattern:**
   - Index-level: Terminology aliases in `index.json` (`{"races": "lineages", "race": "lineage"}`)
   - Entity-level: Optional `aliases` field in all schemas (equipment, lineage, spell, monster, table)
@@ -851,6 +860,42 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - `docs/SCHEMAS.md` - Added aliases field documentation
 - `docs/BUNDLE_README.md` - Updated with alias usage examples
 - `docs/DATA_DICTIONARY.md` - Auto-generated field reference (Swagger-style)
+
+---
+
+## **v0.8.2 — Classes Dataset** **[DATA]** ✅ **COMPLETE**
+
+**Status:** SHIPPED - All 12 classes implemented with progression data
+**Priority:** HIGH - Needed for Blackmoor distribution
+**Effort:** Medium
+**Consumer Impact:** NEW - 12 character classes with full progression
+
+**Goal:** Complete character creation datasets with classes implementation.
+
+**Scope:**
+- 12 classes: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard
+- Output file: `classes.json`
+- Field namespace: `class:*` (e.g., `class:fighter`)
+- Includes: hit die, proficiencies, features, subclasses, level progression
+- Table references: Each class references progression table + proficiency_bonus + spell slots (if applicable)
+
+**Implementation:**
+- `schemas/class.schema.json` v1.3.0 - Matches schema standards with aliases support
+- `src/srd_builder/class_targets.py` - Canonical class data from pages 8-55
+- `src/srd_builder/parse_classes.py` - Pure parsing (no I/O)
+- `src/srd_builder/indexer.py` - Added `build_class_index()` with by_name, by_hit_die, by_primary_ability
+- `src/srd_builder/build.py` - Integrated classes into build pipeline
+
+**Deferred to Future:**
+- Class progression tables extraction (12 tables, pages 8-55)
+- Currently class progression data is in `progression` field as simplified text
+- Full table extraction documented in `docs/PARKING_LOT.md`
+
+**Meta.json Updates:**
+- `page_index.classes`: Pages 8-55
+- `page_index.lineages`: Pages 3-7 (fixed - was missing)
+- `files.classes`: "classes.json"
+- `extraction_status.classes`: "complete"
 
 ---
 

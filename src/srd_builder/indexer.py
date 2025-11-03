@@ -13,6 +13,7 @@ __all__ = [
     "build_spell_index",
     "build_equipment_index",
     "build_lineage_index",
+    "build_class_index",
     "build_indexes",
 ]
 
@@ -329,16 +330,63 @@ def _build_lineage_entity_index(lineages: list[dict[str, Any]]) -> dict[str, dic
     return index
 
 
+def build_class_index(classes: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical class lookup tables."""
+
+    by_name, _ = _build_by_name_map(classes)
+    by_hit_die: defaultdict[str, list[str]] = defaultdict(list)
+    by_primary_ability: defaultdict[str, list[str]] = defaultdict(list)
+
+    for class_record in classes:
+        class_id = fallback_id(class_record)
+        hit_die = str(class_record.get("hit_die", "d8"))
+        primary_abilities = class_record.get("primary_abilities", [])
+
+        by_hit_die[hit_die].append(class_id)
+
+        # Add to each primary ability (some classes have multiple)
+        if isinstance(primary_abilities, list):
+            for ability in primary_abilities:
+                by_primary_ability[str(ability)].append(class_id)
+
+    sorted_by_hit_die = _stable_dict(sorted(by_hit_die.items()))
+    sorted_by_primary_ability = _stable_dict(sorted(by_primary_ability.items()))
+
+    for mapping in (sorted_by_hit_die, sorted_by_primary_ability):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_hit_die": sorted_by_hit_die,
+        "by_primary_ability": sorted_by_primary_ability,
+    }
+
+
+def _build_class_entity_index(classes: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for classes."""
+    index: dict[str, dict[str, str]] = {}
+    for class_record in classes:
+        class_id = fallback_id(class_record)
+        index[class_id] = {
+            "type": "class",
+            "file": "classes.json",
+            "name": class_record.get("name", ""),
+        }
+    return index
+
+
 def build_indexes(  # noqa: C901
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
+    classes: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, table, lineage, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, table, lineage, class, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -430,6 +478,29 @@ def build_indexes(  # noqa: C901
         payload["stats"]["total_entities"] = total
         payload["stats"]["unique_lineage_sizes"] = len(lineage_indexes["by_size"])
         payload["stats"]["unique_lineage_speeds"] = len(lineage_indexes["by_speed"])
+
+    # Add class indexes if classes provided (including empty list)
+    if classes is not None:
+        class_indexes = build_class_index(classes)
+        class_entity_index = _build_class_entity_index(classes)
+
+        payload["classes"] = class_indexes
+        entities["classes"] = class_entity_index
+        payload["stats"]["total_classes"] = len(classes)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        if tables is not None:
+            total += len(table_entity_index)
+        if lineages is not None:
+            total += len(lineage_entity_index)
+        total += len(class_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["unique_hit_dice"] = len(class_indexes["by_hit_die"])
+        payload["stats"]["unique_primary_abilities"] = len(class_indexes["by_primary_ability"])
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}

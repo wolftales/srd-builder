@@ -25,6 +25,7 @@ from .extract_pdf_metadata import extract_pdf_metadata
 from .extract_spells import extract_spells
 from .extract_tables import extract_tables_to_json
 from .indexer import build_indexes
+from .parse_classes import parse_classes
 from .parse_equipment import parse_equipment_records
 from .parse_lineages import parse_lineages
 from .parse_monsters import parse_monster_records
@@ -92,6 +93,7 @@ def _generate_meta_json(
     spells_complete: bool = False,
     spells_page_range: tuple[int, int] | None = None,
     table_page_index: dict[str, Any] | None = None,
+    classes_complete: bool = False,
 ) -> dict[str, Any]:
     """Generate rich metadata for dist/meta.json with provenance.
 
@@ -156,6 +158,7 @@ def _generate_meta_json(
             "spells": "spells.json",
             "tables": "tables.json",
             "lineages": "lineages.json",
+            "classes": "classes.json",
         },
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": {
@@ -164,6 +167,7 @@ def _generate_meta_json(
             "spells": "complete" if spells_complete else "in_progress",
             "tables": "complete",
             "lineages": "complete",
+            "classes": "complete" if classes_complete else "in_progress",
         },
         "$schema_version": SCHEMA_VERSION,
     }
@@ -178,6 +182,7 @@ def _write_datasets(
     spells: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
+    classes: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -230,12 +235,23 @@ def _write_datasets(
             encoding="utf-8",
         )
 
+    # Write classes (v0.8.2)
+    # Classes are already fully normalized by parse_classes, no additional cleaning needed
+    processed_classes = classes if classes else None
+    if processed_classes:
+        classes_doc = _wrap_with_meta({"items": processed_classes}, ruleset=ruleset)
+        (dist_data_dir / "classes.json").write_text(
+            _render_json(classes_doc),
+            encoding="utf-8",
+        )
+
     index_payload = build_indexes(
         processed_monsters,
         processed_spells,
         processed_equipment,
         processed_tables,
         processed_lineages,
+        processed_classes,
     )
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
@@ -342,6 +358,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
         "spell.schema.json",
         "table.schema.json",
         "lineage.schema.json",
+        "class.schema.json",
     ]:
         src = schemas_src / schema_file
         if src.exists():
@@ -425,10 +442,23 @@ def _build_page_index(
     """
     # Start with table indexer data if available (most comprehensive)
     if table_page_index:
+        # Add lineages and classes to table_page_index since they're not in TableIndexer
+        table_page_index["lineages"] = {
+            "start": 3,
+            "end": 7,
+            "description": "Character lineages (races)",
+        }
+        table_page_index["classes"] = {
+            "start": 8,
+            "end": 55,
+            "description": "Character classes",
+        }
         return table_page_index
 
     # Fallback to simple page ranges
     page_index: dict[str, dict[str, int]] = {}
+    page_index["lineages"] = {"start": 3, "end": 7, "description": "Character lineages (races)"}
+    page_index["classes"] = {"start": 8, "end": 55, "description": "Character classes"}
     if monsters_page_range:
         page_index["monsters"] = {"start": monsters_page_range[0], "end": monsters_page_range[1]}
     if equipment_page_range:
@@ -634,6 +664,10 @@ def build(  # noqa: C901
     # Lineages come from canonical targets, not PDF extraction
     parsed_lineages = parse_lineages()
 
+    # Parse classes (v0.8.2)
+    # Classes come from canonical targets, not PDF extraction
+    parsed_classes = parse_classes()
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
@@ -642,6 +676,7 @@ def build(  # noqa: C901
         spells=parsed_spells if parsed_spells else None,
         tables=parsed_tables if parsed_tables else None,
         lineages=parsed_lineages if parsed_lineages else None,
+        classes=parsed_classes if parsed_classes else None,
     )
 
     # Extract metadata from PDF if present (v0.8.1)
@@ -703,6 +738,7 @@ def build(  # noqa: C901
         spells_complete=len(parsed_spells) > 0,
         spells_page_range=spells_page_range,
         table_page_index=table_page_index,
+        classes_complete=len(parsed_classes) > 0,
     )
     meta_path = target_dir / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")

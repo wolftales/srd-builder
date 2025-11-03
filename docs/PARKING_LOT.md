@@ -4,6 +4,40 @@ This document tracks features that have been discussed but deferred for later im
 
 ---
 
+## **v0.8.2 Classes - Table Extraction** ✅ COMPLETE
+
+**Status:** All 12 class progression tables extracted and integrated!
+
+**Extracted Tables (pages 8-55):**
+- ✅ `table:barbarian_progression` - Rage damage, rages per day, class features by level
+- ✅ `table:bard_progression` - Cantrips known, spells known, spell slots, bardic inspiration die
+- ✅ `table:cleric_progression` - Cantrips known, spell slots by level, channel divinity uses
+- ✅ `table:druid_progression` - Cantrips known, spell slots, wild shape limits
+- ✅ `table:fighter_progression` - Class features, extra attacks by level
+- ✅ `table:monk_progression` - Martial arts die, ki points, unarmored movement
+- ✅ `table:paladin_progression` - Spell slots (half caster), divine smite dice
+- ✅ `table:ranger_progression` - Spell slots (half caster), favored enemies
+- ✅ `table:rogue_progression` - Sneak attack dice, class features
+- ✅ `table:sorcerer_progression` - Cantrips known, spells known, spell slots, sorcery points
+- ✅ `table:warlock_progression` - Cantrips known, spells known, spell slots (pact magic), invocations
+- ✅ `table:wizard_progression` - Cantrips known, spell slots
+
+**Implementation:**
+- Added 12 table targets to `scripts/table_targets.py`
+- Added 12 manual extraction methods to `src/srd_builder/extract_tables.py`
+- Each table has 20 rows (levels 1-20) with class-specific columns
+- Total: 23 tables in tables.json (12 class progression + 11 reference tables)
+- All tests pass (113 tests)
+
+**References:**
+- Table targets: `scripts/table_targets.py`
+- Extraction logic: `src/srd_builder/extract_tables.py`
+- Class data: `src/srd_builder/class_targets.py`
+- Parse logic: `src/srd_builder/parse_classes.py` (includes table references)
+- Schema: `schemas/class.schema.json`
+
+---
+
 ## Data Parsing Gaps - RESOLVED IN v0.6.4 ✅
 
 **Status:** All critical spell parsing gaps FIXED in v0.6.4
@@ -880,12 +914,32 @@ JSON output files have inconsistent field ordering:
   - Metadata last (pages, timestamps, build info)
 - Add to ARCHITECTURE.md under design decisions
 
-**Phase 2: Add Validation**
+**Phase 2: Semantic Entity Keys (Breaking Change)**
+- **Current:** All data files use generic `"items"` wrapper: `{"_meta": {...}, "items": [...]}`
+- **Proposed:** Use entity-specific keys for clarity: `{"_meta": {...}, "monsters": [...]}`
+- **Benefits:**
+  - Self-documenting (no need to check filename or _meta to know content type)
+  - Type-safe for consumers (TypeScript/JSON Schema benefits)
+  - Matches index.json structure (already uses `"monsters"`, `"spells"`, `"classes"`)
+  - Better developer experience
+- **Impact:**
+  - Breaking change requiring schema version bump (1.3.0 → 2.0.0)
+  - All 6 data files need update: monsters, equipment, spells, tables, lineages, classes
+  - Consumer code needs update to use entity-specific keys
+  - Must be applied consistently in single version (no partial migration)
+- **Implementation:**
+  - Update `_wrap_with_meta()` in `build.py` to accept entity type parameter
+  - Change `{"items": [...]}` to `{entity_type: [...]}`
+  - Update all test fixtures to match new structure
+  - Document in CHANGELOG as breaking change
+- **Suggested for:** v0.9.0 or v1.0.0 (after classes stabilize)
+
+**Phase 3: Add Validation**
 - Create test to verify field order in output files
 - Check that identification fields come before metadata
 - Ensure consistent ordering across all JSON outputs
 
-**Phase 3: Implement Helpers**
+**Phase 4: Implement Helpers**
 ```python
 def ordered_meta(*, source, ruleset_version, license, build, **kwargs):
     """Generate meta.json with consistent field ordering."""
@@ -898,7 +952,7 @@ def ordered_meta(*, source, ruleset_version, license, build, **kwargs):
     ])
 ```
 
-**Phase 4: Use `json.dumps(sort_keys=True)` Strategically**
+**Phase 5: Use `json.dumps(sort_keys=True)` Strategically**
 - Consider sorting keys alphabetically within sections
 - Or maintain manual `OrderedDict` for semantic ordering
 - Trade-off: alphabetical is stable but not semantic

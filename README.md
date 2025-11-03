@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.8.1)
+### Build pipeline (v0.8.2)
 
 The build pipeline extracts monster, equipment, spell, table, and lineage data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, **319 spells**, **11 tables**, and **13 lineages** (9 base + 4 subraces) with full provenance tracking.
 
