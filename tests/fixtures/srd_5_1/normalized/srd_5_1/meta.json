@@ -1,0 +1,213 @@
+{
+  "source": "SRD_CC_v5.1",
+  "ruleset_version": "5.1",
+  "license": {
+    "type": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "attribution": "This work includes material taken from the System Reference Document 5.1 (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
+    "conversion_note": "Converted from the original PDF by srd-builder (https://github.com/wolftales/srd-builder) version 0.8.3"
+  },
+  "build": {
+    "extracted_at": "2025-11-04T01:49:41.890074+00:00",
+    "builder_version": "0.8.3",
+    "pdf_hash": "sha256:2504d2a0abb0a4d491a939be4f17910a2dde0312570ab8d208080225ccf0a1f0"
+  },
+  "page_index": {
+    "monsters": {
+      "start": 261,
+      "end": 394,
+      "description": "Monster stat blocks (A-Z)"
+    },
+    "equipment": {
+      "start": 62,
+      "end": 73,
+      "description": "Equipment tables (armor, weapons, gear, mounts)"
+    },
+    "spells_list": {
+      "start": 105,
+      "end": 113,
+      "description": "Spell lists by class"
+    },
+    "spells_descriptions": {
+      "start": 114,
+      "end": 194,
+      "description": "Spell descriptions (A-Z)"
+    },
+    "reference_tables": [
+      {
+        "id": "table:ability_scores_and_modifiers",
+        "name": "Ability Scores and Modifiers",
+        "page": "7",
+        "category": "character_creation"
+      },
+      {
+        "id": "table:proficiency_bonus",
+        "name": "Proficiency Bonus by Level",
+        "page": "15",
+        "category": "character_creation"
+      },
+      {
+        "id": "table:barbarian_progression",
+        "name": "The Barbarian",
+        "page": "8",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:bard_progression",
+        "name": "The Bard",
+        "page": "11",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:cleric_progression",
+        "name": "The Cleric",
+        "page": "16",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:druid_progression",
+        "name": "The Druid",
+        "page": "25",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:fighter_progression",
+        "name": "The Fighter",
+        "page": "26",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:monk_progression",
+        "name": "The Monk",
+        "page": "28",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:paladin_progression",
+        "name": "The Paladin",
+        "page": "31",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:ranger_progression",
+        "name": "The Ranger",
+        "page": "37",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:rogue_progression",
+        "name": "The Rogue",
+        "page": "39",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:sorcerer_progression",
+        "name": "The Sorcerer",
+        "page": "42",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:warlock_progression",
+        "name": "The Warlock",
+        "page": "44",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:wizard_progression",
+        "name": "The Wizard",
+        "page": "46",
+        "category": "class_progression"
+      },
+      {
+        "id": "table:experience_by_cr",
+        "name": "Experience Points by Challenge Rating",
+        "page": "57",
+        "category": "combat"
+      },
+      {
+        "id": "table:spell_slots_by_level",
+        "name": "Spell Slots by Character Level",
+        "page": "201",
+        "category": "magic"
+      },
+      {
+        "id": "table:cantrip_damage",
+        "name": "Cantrip Damage by Character Level",
+        "page": "201",
+        "category": "magic"
+      },
+      {
+        "id": "table:travel_pace",
+        "name": "Travel Pace",
+        "page": "242",
+        "category": "exploration"
+      },
+      {
+        "id": "table:food_drink_lodging",
+        "name": "Food, Drink, and Lodging",
+        "page": "158",
+        "category": "equipment"
+      },
+      {
+        "id": "table:services",
+        "name": "Services",
+        "page": "159",
+        "category": "downtime"
+      },
+      {
+        "id": "table:creature_size",
+        "name": "Size Categories",
+        "page": "191",
+        "category": "reference"
+      },
+      {
+        "id": "table:carrying_capacity",
+        "name": "Carrying Capacity",
+        "page": "176",
+        "category": "reference"
+      },
+      {
+        "id": "table:lifestyle_expenses",
+        "name": "Lifestyle Expenses",
+        "page": "157",
+        "category": "downtime"
+      }
+    ],
+    "lineages": {
+      "start": 3,
+      "end": 7,
+      "description": "Character lineages (races)"
+    },
+    "classes": {
+      "start": 8,
+      "end": 55,
+      "description": "Character classes"
+    }
+  },
+  "files": {
+    "meta": "meta.json",
+    "build_report": "build_report.json",
+    "index": "index.json",
+    "monsters": "monsters.json",
+    "equipment": "equipment.json",
+    "spells": "spells.json",
+    "tables": "tables.json",
+    "lineages": "lineages.json",
+    "classes": "classes.json"
+  },
+  "terminology": {
+    "aliases": {
+      "race": "lineage",
+      "races": "lineages"
+    }
+  },
+  "extraction_status": {
+    "monsters": "complete",
+    "equipment": "complete",
+    "spells": "complete",
+    "tables": "complete",
+    "lineages": "complete",
+    "classes": "complete"
+  },
+  "$schema_version": "1.3.0"
+}

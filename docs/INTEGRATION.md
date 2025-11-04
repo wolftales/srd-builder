@@ -77,6 +77,58 @@ dist/srd_5_1/
 3. Use `schemas/` for validation if needed
 4. Reference `meta.json` and `build_report.json` for versioning/metadata
 
+---
+
+## Real-World Integration Validation
+
+### Blackmoor Integration Review (v0.8.3 - November 2025)
+
+**Overview:**
+The Blackmoor VTT project performed comprehensive real-world integration testing of the v0.8.3 data package across all 6 datasets. This was the first external consumer integration test, providing critical validation of data quality and usability.
+
+**Dataset Quality Assessment:**
+
+| Dataset | Rating | Status | Issues Found |
+|---------|--------|--------|--------------|
+| Monsters (296) | ⭐⭐⭐⭐⭐ | Production Ready | None - stable since v0.2.0 |
+| Equipment (106) | ⭐⭐⭐⭐⭐ | Production Ready | None - v0.8.3 cleanup successful |
+| Tables (23) | ⭐⭐⭐⭐⭐ | Production Ready | None - excellent structure |
+| Spells (319) | ⭐⭐⭐⭐ | Reference Only | Missing range field (critical) |
+| Lineages (13) | ⭐⭐⭐ | Reference Only | Missing ability score increases |
+| Classes (12) | ⭐⭐⭐ | Reference Only | Missing primary ability & saves |
+
+**Key Findings:**
+
+✅ **Production Ready (50% of datasets)**
+- 3 of 6 datasets are production-ready on first integration
+- Structure and extraction quality validated by real usage
+- No architectural changes needed
+
+🔴 **Critical Gaps Discovered (Not in TODO.md)**
+1. **Lineage ability scores** - Human missing +1 all stats (blocks character creation)
+2. **Class primary ability & saves** - Fighter missing Str/Dex and save proficiencies (blocks character sheets)
+3. **Spell range field** - All 319 spells missing range (blocks spell targeting/attacks)
+
+**Impact:**
+- Identified character creation blockers not visible in internal testing
+- Prioritized v0.8.4 work based on real consumer needs
+- Validated that extraction approach and structure are sound
+- Proved dataset quality when complete (3/3 complete datasets = 5 stars)
+
+**Blackmoor Priorities for v0.8.4:**
+1. Add missing fields to lineages (ability scores, subrace links)
+2. Add missing fields to classes (primary ability, saving throws)
+3. Add range field to all spells
+4. Complete spell healing coverage (2% → 100%)
+
+**Lessons Learned:**
+- External integration reveals gaps internal testing misses
+- Structure quality is excellent when data is complete
+- Incomplete extraction (missing fields) != poor design
+- Real consumer feedback is invaluable for prioritization
+
+---
+
 ### For srd-builder (Producer)
 1. Extract content from SRD PDF
 2. Normalize and structure data

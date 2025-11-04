@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "version": "1.3.0",
-  "last_modified": "2025-11-01",
+  "version": "1.4.0",
+  "last_modified": "2025-11-03",
   "title": "SRD 5.1 Equipment Item",
   "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",

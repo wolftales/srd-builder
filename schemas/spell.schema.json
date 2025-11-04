@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/spell.schema.json",
-  "version": "1.3.0",
-  "last_modified": "2025-11-01",
+  "version": "1.4.0",
+  "last_modified": "2025-11-03",
   "title": "Spell",
   "type": "object",
   "additionalProperties": true,
@@ -95,29 +95,37 @@
           "description": "Casting time (e.g., '1 action', '1 bonus action', '1 minute')"
         },
         "range": {
-          "description": "Spell range",
-          "oneOf": [
-            {
+          "type": "object",
+          "description": "Spell range and targeting information",
+          "required": [
+            "type"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "self",
+                "touch",
+                "ranged",
+                "sight",
+                "unlimited"
+              ],
+              "description": "Targeting mechanism - how you select the target"
+            },
+            "distance": {
               "type": "object",
+              "description": "How far the spell can be cast (for ranged spells)",
               "required": [
-                "kind",
                 "value",
                 "unit"
               ],
               "additionalProperties": false,
               "properties": {
-                "kind": {
-                  "type": "string",
-                  "enum": [
-                    "ranged",
-                    "self"
-                  ],
-                  "description": "Type of range"
-                },
                 "value": {
                   "type": "integer",
                   "minimum": 0,
-                  "description": "Numeric range value"
+                  "description": "Numeric distance value"
                 },
                 "unit": {
                   "type": "string",
@@ -129,17 +137,54 @@
                 }
               }
             },
-            {
-              "type": "string",
-              "enum": [
-                "self",
-                "touch",
-                "sight",
-                "unlimited"
+            "area": {
+              "type": "object",
+              "description": "Area of effect (for AOE spells like 'Self (15-foot cone)')",
+              "required": [
+                "shape",
+                "size"
               ],
-              "description": "Special range values"
+              "additionalProperties": false,
+              "properties": {
+                "shape": {
+                  "type": "string",
+                  "enum": [
+                    "radius",
+                    "sphere",
+                    "cone",
+                    "cube",
+                    "line",
+                    "cylinder"
+                  ],
+                  "description": "Shape of the affected area"
+                },
+                "size": {
+                  "type": "object",
+                  "description": "Dimensions of the area",
+                  "required": [
+                    "value",
+                    "unit"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "value": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Size value"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "enum": [
+                        "feet",
+                        "miles"
+                      ],
+                      "description": "Unit of measurement"
+                    }
+                  }
+                }
+              }
             }
-          ]
+          }
         },
         "duration": {
           "type": "string",

@@ -8,14 +8,14 @@ PROVENANCE: Each lineage includes page number and section reference
 from typing import Final
 
 # Lineage data structure
-# Each lineage has: name, ability_increases, size, speed, traits, languages, page, subraces (optional)
+# Each lineage has: name, ability_modifiers, size, speed, traits, languages, page, subraces (optional)
 
 LINEAGE_DATA: Final[list[dict]] = [
     {
         "name": "Dwarf",
         "simple_name": "dwarf",
         "page": 3,
-        "ability_increases": {"constitution": 2},
+        "ability_modifiers": {"constitution": 2},
         "size": "Medium",
         "speed": 25,
         "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
@@ -48,7 +48,7 @@ LINEAGE_DATA: Final[list[dict]] = [
             {
                 "name": "Hill Dwarf",
                 "simple_name": "hill_dwarf",
-                "ability_increases": {"wisdom": 1},
+                "ability_modifiers": {"wisdom": 1},
                 "traits": [
                     {
                         "name": "Dwarven Toughness",
@@ -62,7 +62,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Elf",
         "simple_name": "elf",
         "page": 4,
-        "ability_increases": {"dexterity": 2},
+        "ability_modifiers": {"dexterity": 2},
         "size": "Medium",
         "speed": 30,
         "age": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
@@ -91,7 +91,7 @@ LINEAGE_DATA: Final[list[dict]] = [
             {
                 "name": "High Elf",
                 "simple_name": "high_elf",
-                "ability_increases": {"intelligence": 1},
+                "ability_modifiers": {"intelligence": 1},
                 "traits": [
                     {
                         "name": "Elf Weapon Training",
@@ -113,7 +113,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Halfling",
         "simple_name": "halfling",
         "page": 4,
-        "ability_increases": {"dexterity": 2},
+        "ability_modifiers": {"dexterity": 2},
         "size": "Small",
         "speed": 25,
         "age": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
@@ -138,7 +138,7 @@ LINEAGE_DATA: Final[list[dict]] = [
             {
                 "name": "Lightfoot Halfling",
                 "simple_name": "lightfoot_halfling",
-                "ability_increases": {"charisma": 1},
+                "ability_modifiers": {"charisma": 1},
                 "traits": [
                     {
                         "name": "Naturally Stealthy",
@@ -152,7 +152,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Human",
         "simple_name": "human",
         "page": 5,
-        "ability_increases": {
+        "ability_modifiers": {
             "strength": 1,
             "dexterity": 1,
             "constitution": 1,
@@ -173,7 +173,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Dragonborn",
         "simple_name": "dragonborn",
         "page": 5,
-        "ability_increases": {"strength": 2, "charisma": 1},
+        "ability_modifiers": {"strength": 2, "charisma": 1},
         "size": "Medium",
         "speed": 30,
         "age": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
@@ -201,7 +201,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Gnome",
         "simple_name": "gnome",
         "page": 6,
-        "ability_increases": {"intelligence": 2},
+        "ability_modifiers": {"intelligence": 2},
         "size": "Small",
         "speed": 25,
         "age": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
@@ -222,7 +222,7 @@ LINEAGE_DATA: Final[list[dict]] = [
             {
                 "name": "Rock Gnome",
                 "simple_name": "rock_gnome",
-                "ability_increases": {"constitution": 1},
+                "ability_modifiers": {"constitution": 1},
                 "traits": [
                     {
                         "name": "Artificer's Lore",
@@ -240,8 +240,8 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Half-Elf",
         "simple_name": "half_elf",
         "page": 6,
-        "ability_increases": {"charisma": 2, "other": 2},  # +2 to Cha, +1 to two others
-        "ability_increase_note": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+        "ability_modifiers": {"charisma": 2, "other": 2},  # +2 to Cha, +1 to two others
+        "ability_modifier_note": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
         "size": "Medium",
         "speed": 30,
         "age": "Half-elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
@@ -268,7 +268,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Half-Orc",
         "simple_name": "half_orc",
         "page": 7,
-        "ability_increases": {"strength": 2, "constitution": 1},
+        "ability_modifiers": {"strength": 2, "constitution": 1},
         "size": "Medium",
         "speed": 30,
         "age": "Half-orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
@@ -299,7 +299,7 @@ LINEAGE_DATA: Final[list[dict]] = [
         "name": "Tiefling",
         "simple_name": "tiefling",
         "page": 7,
-        "ability_increases": {"intelligence": 1, "charisma": 2},
+        "ability_modifiers": {"intelligence": 1, "charisma": 2},
         "size": "Medium",
         "speed": 30,
         "age": "Tieflings mature at the same rate as humans but live a few years longer.",

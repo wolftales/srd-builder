@@ -11,7 +11,7 @@ Feature descriptions are referenced by ID to avoid duplication.
 from typing import Final
 
 # Class data structure
-# Each class has: name, simple_name, hit_die, primary_abilities, saves,
+# Each class has: name, simple_name, hit_die, primary_abilities, saving_throw_proficiencies,
 # proficiencies, features, subclasses, progression, page
 
 CLASS_DATA: Final[list[dict]] = [
@@ -20,8 +20,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "barbarian",
         "page": 8,
         "hit_die": "d12",
-        "primary_abilities": ["Str"],
-        "saves": ["Str", "Con"],
+        "primary_abilities": ["strength"],
+        "saving_throw_proficiencies": ["strength", "constitution"],
         "proficiencies": {
             "armor": ["light", "medium", "shields"],
             "weapons": ["simple", "martial"],
@@ -82,8 +82,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "bard",
         "page": 11,
         "hit_die": "d8",
-        "primary_abilities": ["Cha"],
-        "saves": ["Dex", "Cha"],
+        "primary_abilities": ["charisma"],
+        "saving_throw_proficiencies": ["dexterity", "charisma"],
         "proficiencies": {
             "armor": ["light"],
             "weapons": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
@@ -135,8 +135,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "cleric",
         "page": 16,
         "hit_die": "d8",
-        "primary_abilities": ["Wis"],
-        "saves": ["Wis", "Cha"],
+        "primary_abilities": ["wisdom"],
+        "saving_throw_proficiencies": ["wisdom", "charisma"],
         "proficiencies": {
             "armor": ["light", "medium", "shields"],
             "weapons": ["simple"],
@@ -194,8 +194,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "druid",
         "page": 25,
         "hit_die": "d8",
-        "primary_abilities": ["Wis"],
-        "saves": ["Int", "Wis"],
+        "primary_abilities": ["wisdom"],
+        "saving_throw_proficiencies": ["intelligence", "wisdom"],
         "proficiencies": {
             "armor": ["light", "medium", "shields"],
             "weapons": [
@@ -267,8 +267,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "fighter",
         "page": 26,
         "hit_die": "d10",
-        "primary_abilities": ["Str", "Dex"],
-        "saves": ["Str", "Con"],
+        "primary_abilities": ["strength", "dexterity"],
+        "saving_throw_proficiencies": ["strength", "constitution"],
         "proficiencies": {
             "armor": ["all", "shields"],
             "weapons": ["simple", "martial"],
@@ -324,8 +324,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "monk",
         "page": 28,
         "hit_die": "d8",
-        "primary_abilities": ["Dex", "Wis"],
-        "saves": ["Str", "Dex"],
+        "primary_abilities": ["dexterity", "wisdom"],
+        "saving_throw_proficiencies": ["strength", "dexterity"],
         "proficiencies": {
             "armor": [],
             "weapons": ["simple", "shortswords"],
@@ -391,8 +391,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "paladin",
         "page": 31,
         "hit_die": "d10",
-        "primary_abilities": ["Str", "Cha"],
-        "saves": ["Wis", "Cha"],
+        "primary_abilities": ["strength", "charisma"],
+        "saving_throw_proficiencies": ["wisdom", "charisma"],
         "proficiencies": {
             "armor": ["all", "shields"],
             "weapons": ["simple", "martial"],
@@ -456,8 +456,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "ranger",
         "page": 37,
         "hit_die": "d10",
-        "primary_abilities": ["Dex", "Wis"],
-        "saves": ["Str", "Dex"],
+        "primary_abilities": ["dexterity", "wisdom"],
+        "saving_throw_proficiencies": ["strength", "dexterity"],
         "proficiencies": {
             "armor": ["light", "medium", "shields"],
             "weapons": ["simple", "martial"],
@@ -523,8 +523,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "rogue",
         "page": 39,
         "hit_die": "d8",
-        "primary_abilities": ["Dex"],
-        "saves": ["Dex", "Int"],
+        "primary_abilities": ["dexterity"],
+        "saving_throw_proficiencies": ["dexterity", "intelligence"],
         "proficiencies": {
             "armor": ["light"],
             "weapons": ["simple", "hand crossbows", "longswords", "rapiers", "shortswords"],
@@ -589,8 +589,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "sorcerer",
         "page": 42,
         "hit_die": "d6",
-        "primary_abilities": ["Cha"],
-        "saves": ["Con", "Cha"],
+        "primary_abilities": ["charisma"],
+        "saving_throw_proficiencies": ["constitution", "charisma"],
         "proficiencies": {
             "armor": [],
             "weapons": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],
@@ -647,8 +647,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "warlock",
         "page": 44,
         "hit_die": "d8",
-        "primary_abilities": ["Cha"],
-        "saves": ["Wis", "Cha"],
+        "primary_abilities": ["charisma"],
+        "saving_throw_proficiencies": ["wisdom", "charisma"],
         "proficiencies": {
             "armor": ["light"],
             "weapons": ["simple"],
@@ -707,8 +707,8 @@ CLASS_DATA: Final[list[dict]] = [
         "simple_name": "wizard",
         "page": 46,
         "hit_die": "d6",
-        "primary_abilities": ["Int"],
-        "saves": ["Int", "Wis"],
+        "primary_abilities": ["intelligence"],
+        "saving_throw_proficiencies": ["intelligence", "wisdom"],
         "proficiencies": {
             "armor": [],
             "weapons": ["daggers", "darts", "slings", "quarterstaffs", "light crossbows"],

@@ -672,6 +672,7 @@ extract_spells.py → parse_spells.py → postprocess.py → indexer.py
    - All equipment tests passing
 
 **Impact:**
+- Ritual flag: 0% → 100% (29 spells, manually verified v0.8.2)
 - Effects coverage: 44% → 52% (+8 percentage points, 140→166 spells)
 - All 113 tests passing
 - Schemas remain at v1.3.0 (no breaking changes)
@@ -899,11 +900,177 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.9.0 — Conditions Dataset** (Quick Win) **[DATA]**
+## **v0.8.3 — Equipment Cleanup** **[QUALITY]** ✅ **COMPLETE**
 
-**Priority:** MEDIUM
-**Effort:** Low (small dataset)
-**Consumer Impact:** NEW - ~15-20 status conditions
+**Status:** SHIPPED - Equipment properties cleaned, proficiency field added
+**Priority:** HIGH - Data quality improvement for Blackmoor
+**Effort:** Low
+**Consumer Impact:** IMPROVED - Cleaner data, better weapon indexing
+
+**Goal:** Clean equipment data and add weapon proficiency field.
+
+**Changes:**
+1. **Clean Properties Array**
+   - Stripped embedded data from properties: `"versatile (1d10)"` → `"versatile"`
+   - Fixed Unicode dash issues: `"two-­‐handed"` → `"two_handed"`
+   - Extracted embedded data to structured fields before cleaning
+
+2. **Added Proficiency Field**
+   - New field: `proficiency: "simple" | "martial"` for weapons
+   - Section-based extraction with name-based fallback
+   - Independent from `weapon_type` field for flexible querying
+
+3. **Updated Indexes**
+   - Added `by_proficiency` index: simple (7), martial (11)
+   - Added `by_weapon_type` index: melee (7), ranged (8)
+   - Enables queries: "all simple weapons", "all martial melee weapons"
+
+4. **Data Integrity**
+   - `versatile_damage` extracted before property cleaning
+   - `range` extracted before property cleaning
+   - All structured fields preserved
+
+**Files Modified:**
+- `src/srd_builder/parse_equipment.py` - Property cleaning, proficiency extraction
+- `src/srd_builder/extract_equipment.py` - Fixed weapon subcategory markers
+- `src/srd_builder/indexer.py` - Added proficiency and weapon_type indexes
+- `src/srd_builder/postprocess.py` - Added proficiency to optional fields
+- `tests/test_parse_equipment.py` - Updated for clean properties
+
+**Schema:** 1.3.0 (no bump - additive changes only, pre-handoff)
+
+---
+
+## **v0.8.4 — Character Creation Blockers** **[QUALITY]** 🔴 CRITICAL
+
+**Status:** PLANNED - Blackmoor integration blockers
+**Priority:** CRITICAL - Blocks character creation entirely
+**Effort:** Low (small extraction improvements)
+**Consumer Impact:** CRITICAL - Unblocks character creation flow
+
+**Goal:** Add missing critical fields to lineages, classes, and spells to unblock Blackmoor's character creation.
+
+**Blackmoor Feedback:**
+Real-world integration testing revealed 3 critical gaps not in TODO.md:
+1. Lineages missing ability score increases (Human has no +1 all stats)
+2. Classes missing primary ability and saving throw proficiencies
+3. Spells missing range field (blocks ranged spell attacks)
+
+**Changes:**
+
+1. **Lineage Ability Score Increases** 🔴 CRITICAL
+   - Extract from lineage descriptions (pages 3-7)
+   - Example: Human → `ability_score_increases: [{ability: "all", value: 1}]`
+   - Example: Dwarf → `ability_score_increases: [{ability: "constitution", value: 2}]`
+   - Impact: Unblocks character creation, enables ability score calculations
+
+2. **Class Primary Ability & Saves** 🔴 CRITICAL
+   - Extract primary ability from class descriptions (pages 8-55)
+   - Extract saving throw proficiencies from class features
+   - Example: Fighter → `primary_ability: ["str", "dex"]` (choice)
+   - Example: Fighter → `saving_throw_proficiencies: ["str", "con"]`
+   - Impact: Enables character sheet generation, multiclass prerequisites
+
+3. **Subrace Parent Lineage Links** 🔴 CRITICAL
+   - Add `parent_lineage` reference field to subraces
+   - Example: High Elf → `parent_lineage: "lineage:elf"`
+   - Impact: Enables trait inheritance resolution
+
+4. **Spell Range Field** 🔴 CRITICAL
+   - Extract range from all 319 spell headers
+   - Format: `range: {value: 120, unit: "feet", type: "ranged"}`
+   - Handle special cases: "touch", "self", "sight", "unlimited"
+   - Impact: Enables ranged spell attacks, spell targeting, VTT integration
+
+**Implementation:**
+- `src/srd_builder/parse_lineages.py` - Add ability score extraction
+- `src/srd_builder/parse_classes.py` - Add primary ability and saves extraction
+- `src/srd_builder/parse_spells.py` - Add range field extraction
+- Update schemas: lineage.schema.json, class.schema.json, spell.schema.json
+
+**Testing:**
+- Verify Human has +1 all stats
+- Verify Fighter has Str/Dex choice and Str/Con saves
+- Verify High Elf links to Elf parent
+- Verify all 319 spells have range field
+
+**Schema:** 1.3.1 (minor - new fields added)
+
+---
+
+## **v0.8.5 — Spell Enhancements** **[QUALITY]**
+
+**Status:** PLANNED - Spell mechanics polish
+**Priority:** HIGH - Needed for spellcasting gameplay
+**Effort:** Medium
+**Consumer Impact:** IMPROVED - Complete spell mechanics
+
+**Goal:** Complete spell mechanics coverage for healing, area of effect, and edge cases.
+
+**Blackmoor Feedback:**
+- Healing coverage at 2% (5/319 spells) - missing critical healing spells
+- Area of effect at 17% (55/319 spells) - need 50%+ for tactical play
+- Fixed-amount healing not supported (Heal spell: 70 HP)
+
+**Changes:**
+
+1. **Spell Healing Coverage** 🟡 HIGH
+   - Current: 2% (5 spells)
+   - Target: 100% (all healing spells)
+   - Extract healing from spell text patterns
+   - Include: Cure Wounds, Healing Word, Mass Heal, etc.
+
+2. **Fixed-Amount Healing** 🟡 HIGH
+   - Support fixed healing amounts (not just dice)
+   - Example: Heal → `healing: {type: "fixed", amount: 70}`
+   - Example: Cure Wounds → `healing: {type: "dice", dice: "1d8", modifier: "spellcasting"}`
+   - Impact: Critical for high-level cleric/druid gameplay
+
+3. **Area of Effect Improvements** 🟡 MEDIUM
+   - Current: 17% (55 spells)
+   - Target: 50%+ (160+ spells)
+   - Extract from spell descriptions
+   - Handle: cone, cube, cylinder, sphere, line
+
+4. **Spell Range Edge Cases** 🟡 MEDIUM
+   - Support "unlimited" range (Sending, Dream, Scrying)
+   - Support conditional ranges (Misty Step: self teleport 30 ft)
+   - Document range types: ranged, touch, self, sight, unlimited
+
+**Implementation:**
+- `src/srd_builder/parse_spells.py` - Expand healing/area extraction
+- Update spell.schema.json for fixed healing type
+
+**Testing:**
+- Verify Heal has fixed amount (70 HP)
+- Verify Cure Wounds has dice-based healing
+- Verify Fireball has area (20-foot-radius sphere)
+- Verify Sending has unlimited range
+
+**Schema:** 1.3.2 (minor - healing type expansion)
+
+---
+
+## **v0.9.0 — Table Extraction Expansion** **[QUALITY]** 🔧 INFRASTRUCTURE
+
+**Status:** PLANNED - Infrastructure improvement
+**Priority:** HIGH - Unblocks future work
+**Effort:** High (significant extraction work)
+**Consumer Impact:** IMPROVED - 23 → 50+ tables + better extraction for v0.10+
+
+**Goal:** Expand table extraction to cover all reference tables and improve extraction capabilities.
+
+**Strategic Rationale:**
+Improving table extraction NOW provides immediate benefits for upcoming work:
+- v0.10.0 Conditions: Many conditions are in structured tables
+- v0.11.0 Features: Class features are in progression tables
+- Future datasets: Better table extraction = easier extraction overall
+
+**Current State:**
+- 23 tables extracted (v0.7.0)
+- Quality: ⭐⭐⭐⭐⭐ Production ready
+- Missing: Armor, Weapons, Equipment pricing, and other reference tables
+- Limitation: Current extraction handles simple tables well, complex tables need work
 
 **Goal:** Extract ~15-20 status conditions from SRD 5.1.
 
@@ -912,6 +1079,28 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - Needed for monster abilities and spell effects
 - Small dataset = quick confidence builder
 - Unlocks better monster/spell integration
+- Benefits from v0.9.0 table extraction improvements (if conditions are in tables)
+
+**Changes:**
+
+1. **Extract Conditions** (~15-20 entries)
+   - Blinded, Charmed, Deafened, Frightened, Grappled
+   - Incapacitated, Invisible, Paralyzed, Petrified, Poisoned
+   - Prone, Restrained, Stunned, Unconscious, Exhaustion
+   - Extract from appendix or conditions section
+   - Leverage improved table extraction if applicable
+
+2. **Structured Mechanics**
+   - Disadvantage on attack rolls/ability checks
+   - Movement restrictions
+   - Save modifiers
+   - Auto-fail conditions
+
+**Implementation:**
+- `src/srd_builder/extract_conditions.py` - PDF extraction
+- `src/srd_builder/parse_conditions.py` - Pure parsing
+- `schemas/condition.schema.json` - Schema definition
+- Add to build.py pipeline
 
 **Schema (Simple)**
 ```json
@@ -931,9 +1120,64 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - advantage_on / disadvantage_on
 - prevents (e.g., unconscious prevents actions)
 
+**Changes:**
+
+1. **Equipment Tables** (HIGH)
+   - Armor table (pages 63-64) - 6 armor types
+   - Weapons table (pages 65-66) - 18 weapons
+   - Gear pricing and availability
+   - Quick reference format alongside detailed equipment.json items
+
+2. **Table Extraction Improvements** (HIGH)
+   - Handle multi-page tables
+   - Better header detection
+   - Improved column alignment
+   - Handle merged cells and complex layouts
+
+3. **Class Progression Tables** (MEDIUM)
+   - Already have data in classes.json
+   - Reformat as standalone table structures
+   - Enable table-based lookups
+   - 12 tables (one per class)
+
+4. **Additional Reference Tables** (LOW)
+   - Trade goods pricing
+   - Services and hirelings
+   - Travel expenses
+   - Downtime activities
+
+**Why Separate Tables?**
+- Equipment items in equipment.json: Detailed integration data
+- Equipment tables in tables.json: Quick reference for comparison
+- Both needed for different use cases
+
+**Impact on Future Work:**
+- Better table extraction = easier conditions extraction (v0.10.0)
+- Improved header detection = better feature parsing (v0.11.0)
+- Infrastructure investment pays dividends immediately
+
+**Implementation:**
+- `src/srd_builder/extract_tables.py` - Expand table detection and parsing
+- Handle multi-page tables
+- Preserve table formatting (headers, structure)
+- Improve column alignment algorithms
+
+**Testing:**
+- Verify armor table has all 6 types
+- Verify weapons table has all 18 weapons
+- Verify class progression tables match classes.json data
+- Test multi-page table handling
+
+**Schema:** 1.4.0 (minor - table structure improvements)
+
 ---
 
-## **v0.10.0 — Features Dataset** **[DATA]**
+## **v0.10.0 — Conditions Dataset** (Quick Win) **[DATA]**
+
+**Status:** PLANNED - New dataset
+**Priority:** MEDIUM
+**Effort:** Low (small dataset, benefits from v0.9.0 table improvements)
+**Consumer Impact:** NEW - ~15-20 status conditions
 
 **Priority:** MEDIUM
 **Effort:** Medium (derived from classes/lineages)
@@ -946,6 +1190,7 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - Clean API for character builders
 - Reference for multiclassing feature interactions
 - Originally scoped in Week 5 of initial plan
+- Benefits from v0.9.0 table extraction improvements (class progression tables)
 
 **Scope:**
 - Class features (Action Surge, Spellcasting, Rage, etc.)

@@ -214,6 +214,8 @@ def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
     by_name, _ = _build_by_name_map(equipment)
     by_category: defaultdict[str, list[str]] = defaultdict(list)
     by_rarity: defaultdict[str, list[str]] = defaultdict(list)
+    by_proficiency: defaultdict[str, list[str]] = defaultdict(list)
+    by_weapon_type: defaultdict[str, list[str]] = defaultdict(list)
 
     for item in equipment:
         item_id = fallback_id(item)
@@ -223,10 +225,27 @@ def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
         by_category[category].append(item_id)
         by_rarity[rarity].append(item_id)
 
+        # Index by proficiency (weapons only)
+        proficiency = item.get("proficiency")
+        if proficiency:
+            by_proficiency[str(proficiency)].append(item_id)
+
+        # Index by weapon_type (weapons only)
+        weapon_type = item.get("weapon_type")
+        if weapon_type:
+            by_weapon_type[str(weapon_type)].append(item_id)
+
     sorted_by_category = _stable_dict(sorted(by_category.items()))
     sorted_by_rarity = _stable_dict(sorted(by_rarity.items()))
+    sorted_by_proficiency = _stable_dict(sorted(by_proficiency.items()))
+    sorted_by_weapon_type = _stable_dict(sorted(by_weapon_type.items()))
 
-    for mapping in (sorted_by_category, sorted_by_rarity):
+    for mapping in (
+        sorted_by_category,
+        sorted_by_rarity,
+        sorted_by_proficiency,
+        sorted_by_weapon_type,
+    ):
         for key, ids in mapping.items():
             mapping[key] = sorted(ids)
 
@@ -234,6 +253,8 @@ def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
         "by_name": by_name,
         "by_category": sorted_by_category,
         "by_rarity": sorted_by_rarity,
+        "by_proficiency": sorted_by_proficiency,
+        "by_weapon_type": sorted_by_weapon_type,
     }
 
 

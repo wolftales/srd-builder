@@ -1,0 +1,2271 @@
+{
+  "_meta": {
+    "ruleset": "srd_5_1",
+    "schema_version": "1.3.0",
+    "source": "SRD_CC_v5.1",
+    "build_report": "./build_report.json",
+    "generated_by": "srd-builder v0.8.3"
+  },
+  "items": [
+    {
+      "id": "class:barbarian",
+      "simple_name": "barbarian",
+      "name": "Barbarian",
+      "hit_die": "d12",
+      "primary_abilities": [
+        "strength"
+      ],
+      "saving_throw_proficiencies": [
+        "strength",
+        "constitution"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light",
+          "medium",
+          "shields"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Animal Handling",
+            "Athletics",
+            "Intimidation",
+            "Nature",
+            "Perception",
+            "Survival"
+          ]
+        }
+      },
+      "features": [
+        "feature:rage",
+        "feature:unarmored_defense",
+        "feature:reckless_attack",
+        "feature:danger_sense",
+        "feature:primal_path",
+        "feature:extra_attack",
+        "feature:fast_movement",
+        "feature:feral_instinct",
+        "feature:brutal_critical",
+        "feature:relentless_rage",
+        "feature:persistent_rage",
+        "feature:indomitable_might",
+        "feature:primal_champion"
+      ],
+      "subclasses": [
+        "subclass:path_of_the_berserker"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Rage",
+            "Unarmored Defense"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Reckless Attack",
+            "Danger Sense"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Primal Path"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack",
+            "Fast Movement"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Path feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Feral Instinct"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Brutal Critical (1 die)"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Path feature"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Relentless Rage"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Brutal Critical (2 dice)"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Path feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Persistent Rage"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Brutal Critical (3 dice)"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Indomitable Might"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Primal Champion"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 8,
+      "extraction_metadata": {
+        "source_pages": [
+          8
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Barbarian class from SRD 5.1"
+      },
+      "tables_referenced": [
+        "table:barbarian_progression",
+        "table:proficiency_bonus"
+      ]
+    },
+    {
+      "id": "class:bard",
+      "simple_name": "bard",
+      "name": "Bard",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "charisma"
+      ],
+      "saving_throw_proficiencies": [
+        "dexterity",
+        "charisma"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light"
+        ],
+        "weapons": [
+          "simple",
+          "hand crossbows",
+          "longswords",
+          "rapiers",
+          "shortswords"
+        ],
+        "tools": [
+          "three musical instruments of your choice"
+        ],
+        "skills": {
+          "choose": 3,
+          "from": [
+            "any"
+          ]
+        }
+      },
+      "features": [
+        "feature:spellcasting",
+        "feature:bardic_inspiration",
+        "feature:jack_of_all_trades",
+        "feature:song_of_rest",
+        "feature:bard_college",
+        "feature:expertise",
+        "feature:font_of_inspiration",
+        "feature:countercharm",
+        "feature:magical_secrets",
+        "feature:superior_inspiration"
+      ],
+      "subclasses": [
+        "subclass:college_of_lore"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Spellcasting",
+            "Bardic Inspiration (d6)"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Jack of All Trades",
+            "Song of Rest (d6)"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Bard College",
+            "Expertise"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Bardic Inspiration (d8)",
+            "Font of Inspiration"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Countercharm",
+            "Bard College feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Song of Rest (d8)"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Bardic Inspiration (d10)",
+            "Expertise",
+            "Magical Secrets"
+          ]
+        },
+        {
+          "level": 11,
+          "features": []
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Song of Rest (d10)"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Magical Secrets",
+            "Bard College feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Bardic Inspiration (d12)"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Song of Rest (d12)"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Magical Secrets"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Superior Inspiration"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 11,
+      "extraction_metadata": {
+        "source_pages": [
+          11
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Bard class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Cha",
+        "spell_list": "bard"
+      },
+      "tables_referenced": [
+        "table:bard_progression",
+        "table:proficiency_bonus",
+        "table:spell_slots_full_caster"
+      ]
+    },
+    {
+      "id": "class:cleric",
+      "simple_name": "cleric",
+      "name": "Cleric",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "wisdom"
+      ],
+      "saving_throw_proficiencies": [
+        "wisdom",
+        "charisma"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light",
+          "medium",
+          "shields"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "History",
+            "Insight",
+            "Medicine",
+            "Persuasion",
+            "Religion"
+          ]
+        }
+      },
+      "features": [
+        "feature:spellcasting",
+        "feature:divine_domain",
+        "feature:channel_divinity",
+        "feature:ability_score_improvement",
+        "feature:destroy_undead",
+        "feature:divine_intervention"
+      ],
+      "subclasses": [
+        "subclass:life_domain"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Spellcasting",
+            "Divine Domain"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Channel Divinity (1/rest)",
+            "Divine Domain feature"
+          ]
+        },
+        {
+          "level": 3,
+          "features": []
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Destroy Undead (CR 1/2)"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Channel Divinity (2/rest)",
+            "Divine Domain feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement",
+            "Destroy Undead (CR 1)",
+            "Divine Domain feature"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Divine Intervention"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Destroy Undead (CR 2)"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Destroy Undead (CR 3)"
+          ]
+        },
+        {
+          "level": 15,
+          "features": []
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Destroy Undead (CR 4)",
+            "Divine Domain feature"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Channel Divinity (3/rest)"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Divine Intervention improvement"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 16,
+      "extraction_metadata": {
+        "source_pages": [
+          16
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Cleric class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Wis",
+        "spell_list": "cleric"
+      },
+      "tables_referenced": [
+        "table:cleric_progression",
+        "table:proficiency_bonus",
+        "table:spell_slots_full_caster"
+      ]
+    },
+    {
+      "id": "class:druid",
+      "simple_name": "druid",
+      "name": "Druid",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "wisdom"
+      ],
+      "saving_throw_proficiencies": [
+        "intelligence",
+        "wisdom"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light",
+          "medium",
+          "shields"
+        ],
+        "weapons": [
+          "clubs",
+          "daggers",
+          "darts",
+          "javelins",
+          "maces",
+          "quarterstaffs",
+          "scimitars",
+          "sickles",
+          "slings",
+          "spears"
+        ],
+        "tools": [
+          "herbalism kit"
+        ],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Arcana",
+            "Animal Handling",
+            "Insight",
+            "Medicine",
+            "Nature",
+            "Perception",
+            "Religion",
+            "Survival"
+          ]
+        }
+      },
+      "features": [
+        "feature:druidic",
+        "feature:spellcasting",
+        "feature:wild_shape",
+        "feature:druid_circle",
+        "feature:timeless_body",
+        "feature:beast_spells",
+        "feature:archdruid"
+      ],
+      "subclasses": [
+        "subclass:circle_of_the_land"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Druidic",
+            "Spellcasting"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Wild Shape",
+            "Druid Circle"
+          ]
+        },
+        {
+          "level": 3,
+          "features": []
+        },
+        {
+          "level": 4,
+          "features": [
+            "Wild Shape improvement",
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": []
+        },
+        {
+          "level": 6,
+          "features": [
+            "Druid Circle feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Wild Shape improvement",
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Druid Circle feature"
+          ]
+        },
+        {
+          "level": 11,
+          "features": []
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Druid Circle feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": []
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": []
+        },
+        {
+          "level": 18,
+          "features": [
+            "Timeless Body",
+            "Beast Spells"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Archdruid"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 25,
+      "extraction_metadata": {
+        "source_pages": [
+          25
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Druid class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Wis",
+        "spell_list": "druid"
+      },
+      "tables_referenced": [
+        "table:druid_progression",
+        "table:proficiency_bonus",
+        "table:spell_slots_full_caster"
+      ]
+    },
+    {
+      "id": "class:fighter",
+      "simple_name": "fighter",
+      "name": "Fighter",
+      "hit_die": "d10",
+      "primary_abilities": [
+        "strength",
+        "dexterity"
+      ],
+      "saving_throw_proficiencies": [
+        "strength",
+        "constitution"
+      ],
+      "proficiencies": {
+        "armor": [
+          "all",
+          "shields"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Acrobatics",
+            "Animal Handling",
+            "Athletics",
+            "History",
+            "Insight",
+            "Intimidation",
+            "Perception",
+            "Survival"
+          ]
+        }
+      },
+      "features": [
+        "feature:fighting_style",
+        "feature:second_wind",
+        "feature:action_surge",
+        "feature:martial_archetype",
+        "feature:extra_attack",
+        "feature:indomitable"
+      ],
+      "subclasses": [
+        "subclass:champion"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Fighting Style",
+            "Second Wind"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Action Surge (one use)"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Martial Archetype"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Martial Archetype feature"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Indomitable (one use)"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Martial Archetype feature"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Extra Attack (2)"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Indomitable (two uses)"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Martial Archetype feature"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Action Surge (two uses)",
+            "Indomitable (three uses)"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Martial Archetype feature"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Extra Attack (3)"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 26,
+      "extraction_metadata": {
+        "source_pages": [
+          26
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Fighter class from SRD 5.1"
+      },
+      "tables_referenced": [
+        "table:fighter_progression",
+        "table:proficiency_bonus"
+      ]
+    },
+    {
+      "id": "class:monk",
+      "simple_name": "monk",
+      "name": "Monk",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "dexterity",
+        "wisdom"
+      ],
+      "saving_throw_proficiencies": [
+        "strength",
+        "dexterity"
+      ],
+      "proficiencies": {
+        "armor": [],
+        "weapons": [
+          "simple",
+          "shortswords"
+        ],
+        "tools": [
+          "choose one type of artisan's tools or one musical instrument"
+        ],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Acrobatics",
+            "Athletics",
+            "History",
+            "Insight",
+            "Religion",
+            "Stealth"
+          ]
+        }
+      },
+      "features": [
+        "feature:unarmored_defense",
+        "feature:martial_arts",
+        "feature:ki",
+        "feature:unarmored_movement",
+        "feature:monastic_tradition",
+        "feature:deflect_missiles",
+        "feature:slow_fall",
+        "feature:extra_attack",
+        "feature:stunning_strike",
+        "feature:ki_empowered_strikes",
+        "feature:evasion",
+        "feature:stillness_of_mind",
+        "feature:purity_of_body",
+        "feature:tongue_of_the_sun_and_moon",
+        "feature:diamond_soul",
+        "feature:timeless_body",
+        "feature:empty_body",
+        "feature:perfect_self"
+      ],
+      "subclasses": [
+        "subclass:way_of_the_open_hand"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Unarmored Defense",
+            "Martial Arts"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Ki",
+            "Unarmored Movement"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Monastic Tradition",
+            "Deflect Missiles"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Slow Fall",
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack",
+            "Stunning Strike"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Ki-Empowered Strikes",
+            "Monastic Tradition feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Evasion",
+            "Stillness of Mind"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Unarmored Movement improvement"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Purity of Body"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Monastic Tradition feature"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Tongue of the Sun and Moon"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Diamond Soul"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Timeless Body"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Monastic Tradition feature"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Empty Body"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Perfect Self"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 28,
+      "extraction_metadata": {
+        "source_pages": [
+          28
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Monk class from SRD 5.1"
+      },
+      "tables_referenced": [
+        "table:monk_progression",
+        "table:proficiency_bonus"
+      ]
+    },
+    {
+      "id": "class:paladin",
+      "simple_name": "paladin",
+      "name": "Paladin",
+      "hit_die": "d10",
+      "primary_abilities": [
+        "strength",
+        "charisma"
+      ],
+      "saving_throw_proficiencies": [
+        "wisdom",
+        "charisma"
+      ],
+      "proficiencies": {
+        "armor": [
+          "all",
+          "shields"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Athletics",
+            "Insight",
+            "Intimidation",
+            "Medicine",
+            "Persuasion",
+            "Religion"
+          ]
+        }
+      },
+      "features": [
+        "feature:divine_sense",
+        "feature:lay_on_hands",
+        "feature:fighting_style",
+        "feature:spellcasting",
+        "feature:divine_smite",
+        "feature:divine_health",
+        "feature:sacred_oath",
+        "feature:extra_attack",
+        "feature:aura_of_protection",
+        "feature:aura_of_courage",
+        "feature:improved_divine_smite",
+        "feature:cleansing_touch"
+      ],
+      "subclasses": [
+        "subclass:oath_of_devotion"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Divine Sense",
+            "Lay on Hands"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Fighting Style",
+            "Spellcasting",
+            "Divine Smite"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Divine Health",
+            "Sacred Oath"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Aura of Protection"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Sacred Oath feature"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Aura of Courage"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Improved Divine Smite"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Cleansing Touch"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Sacred Oath feature"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": []
+        },
+        {
+          "level": 18,
+          "features": [
+            "Aura improvements"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Sacred Oath feature"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 31,
+      "extraction_metadata": {
+        "source_pages": [
+          31
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Paladin class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Cha",
+        "spell_list": "paladin"
+      },
+      "tables_referenced": [
+        "table:paladin_progression",
+        "table:paladin_spell_slots",
+        "table:proficiency_bonus"
+      ]
+    },
+    {
+      "id": "class:ranger",
+      "simple_name": "ranger",
+      "name": "Ranger",
+      "hit_die": "d10",
+      "primary_abilities": [
+        "dexterity",
+        "wisdom"
+      ],
+      "saving_throw_proficiencies": [
+        "strength",
+        "dexterity"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light",
+          "medium",
+          "shields"
+        ],
+        "weapons": [
+          "simple",
+          "martial"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 3,
+          "from": [
+            "Animal Handling",
+            "Athletics",
+            "Insight",
+            "Investigation",
+            "Nature",
+            "Perception",
+            "Stealth",
+            "Survival"
+          ]
+        }
+      },
+      "features": [
+        "feature:favored_enemy",
+        "feature:natural_explorer",
+        "feature:fighting_style",
+        "feature:spellcasting",
+        "feature:ranger_archetype",
+        "feature:primeval_awareness",
+        "feature:extra_attack",
+        "feature:lands_stride",
+        "feature:hide_in_plain_sight",
+        "feature:vanish",
+        "feature:feral_senses",
+        "feature:foe_slayer"
+      ],
+      "subclasses": [
+        "subclass:hunter"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Favored Enemy",
+            "Natural Explorer"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Fighting Style",
+            "Spellcasting"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Ranger Archetype",
+            "Primeval Awareness"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Extra Attack"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Favored Enemy and Natural Explorer improvements"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Ranger Archetype feature"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement",
+            "Land's Stride"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Natural Explorer improvement",
+            "Hide in Plain Sight"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Ranger Archetype feature"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Favored Enemy improvement",
+            "Vanish"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Ranger Archetype feature"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": []
+        },
+        {
+          "level": 18,
+          "features": [
+            "Feral Senses"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Foe Slayer"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 37,
+      "extraction_metadata": {
+        "source_pages": [
+          37
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Ranger class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Wis",
+        "spell_list": "ranger"
+      },
+      "tables_referenced": [
+        "table:proficiency_bonus",
+        "table:ranger_progression",
+        "table:ranger_spell_slots"
+      ]
+    },
+    {
+      "id": "class:rogue",
+      "simple_name": "rogue",
+      "name": "Rogue",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "dexterity"
+      ],
+      "saving_throw_proficiencies": [
+        "dexterity",
+        "intelligence"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light"
+        ],
+        "weapons": [
+          "simple",
+          "hand crossbows",
+          "longswords",
+          "rapiers",
+          "shortswords"
+        ],
+        "tools": [
+          "thieves' tools"
+        ],
+        "skills": {
+          "choose": 4,
+          "from": [
+            "Acrobatics",
+            "Athletics",
+            "Deception",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Perception",
+            "Performance",
+            "Persuasion",
+            "Sleight of Hand",
+            "Stealth"
+          ]
+        }
+      },
+      "features": [
+        "feature:expertise",
+        "feature:sneak_attack",
+        "feature:thieves_cant",
+        "feature:cunning_action",
+        "feature:roguish_archetype",
+        "feature:uncanny_dodge",
+        "feature:evasion",
+        "feature:reliable_talent",
+        "feature:blindsense",
+        "feature:slippery_mind",
+        "feature:elusive",
+        "feature:stroke_of_luck"
+      ],
+      "subclasses": [
+        "subclass:thief"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Expertise",
+            "Sneak Attack",
+            "Thieves' Cant"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Cunning Action"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Roguish Archetype"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": [
+            "Uncanny Dodge"
+          ]
+        },
+        {
+          "level": 6,
+          "features": [
+            "Expertise"
+          ]
+        },
+        {
+          "level": 7,
+          "features": [
+            "Evasion"
+          ]
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": [
+            "Roguish Archetype feature"
+          ]
+        },
+        {
+          "level": 10,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Reliable Talent"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Roguish Archetype feature"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Blindsense"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Slippery Mind"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Roguish Archetype feature"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Elusive"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Stroke of Luck"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 39,
+      "extraction_metadata": {
+        "source_pages": [
+          39
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Rogue class from SRD 5.1"
+      },
+      "tables_referenced": [
+        "table:proficiency_bonus",
+        "table:rogue_progression"
+      ]
+    },
+    {
+      "id": "class:sorcerer",
+      "simple_name": "sorcerer",
+      "name": "Sorcerer",
+      "hit_die": "d6",
+      "primary_abilities": [
+        "charisma"
+      ],
+      "saving_throw_proficiencies": [
+        "constitution",
+        "charisma"
+      ],
+      "proficiencies": {
+        "armor": [],
+        "weapons": [
+          "daggers",
+          "darts",
+          "slings",
+          "quarterstaffs",
+          "light crossbows"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Arcana",
+            "Deception",
+            "Insight",
+            "Intimidation",
+            "Persuasion",
+            "Religion"
+          ]
+        }
+      },
+      "features": [
+        "feature:spellcasting",
+        "feature:sorcerous_origin",
+        "feature:font_of_magic",
+        "feature:metamagic",
+        "feature:sorcerous_restoration"
+      ],
+      "subclasses": [
+        "subclass:draconic_bloodline"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Spellcasting",
+            "Sorcerous Origin"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Font of Magic"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Metamagic"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": []
+        },
+        {
+          "level": 6,
+          "features": [
+            "Sorcerous Origin feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Metamagic"
+          ]
+        },
+        {
+          "level": 11,
+          "features": []
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Sorcerous Origin feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": []
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Metamagic"
+          ]
+        },
+        {
+          "level": 18,
+          "features": [
+            "Sorcerous Origin feature"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Sorcerous Restoration"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 42,
+      "extraction_metadata": {
+        "source_pages": [
+          42
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Sorcerer class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Cha",
+        "spell_list": "sorcerer"
+      },
+      "tables_referenced": [
+        "table:proficiency_bonus",
+        "table:sorcerer_progression",
+        "table:spell_slots_full_caster"
+      ]
+    },
+    {
+      "id": "class:warlock",
+      "simple_name": "warlock",
+      "name": "Warlock",
+      "hit_die": "d8",
+      "primary_abilities": [
+        "charisma"
+      ],
+      "saving_throw_proficiencies": [
+        "wisdom",
+        "charisma"
+      ],
+      "proficiencies": {
+        "armor": [
+          "light"
+        ],
+        "weapons": [
+          "simple"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Arcana",
+            "Deception",
+            "History",
+            "Intimidation",
+            "Investigation",
+            "Nature",
+            "Religion"
+          ]
+        }
+      },
+      "features": [
+        "feature:otherworldly_patron",
+        "feature:pact_magic",
+        "feature:eldritch_invocations",
+        "feature:pact_boon",
+        "feature:mystic_arcanum",
+        "feature:eldritch_master"
+      ],
+      "subclasses": [
+        "subclass:the_fiend"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Otherworldly Patron",
+            "Pact Magic"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Eldritch Invocations"
+          ]
+        },
+        {
+          "level": 3,
+          "features": [
+            "Pact Boon"
+          ]
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": []
+        },
+        {
+          "level": 6,
+          "features": [
+            "Otherworldly Patron feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Otherworldly Patron feature"
+          ]
+        },
+        {
+          "level": 11,
+          "features": [
+            "Mystic Arcanum (6th level)"
+          ]
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": [
+            "Mystic Arcanum (7th level)"
+          ]
+        },
+        {
+          "level": 14,
+          "features": [
+            "Otherworldly Patron feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": [
+            "Mystic Arcanum (8th level)"
+          ]
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": [
+            "Mystic Arcanum (9th level)"
+          ]
+        },
+        {
+          "level": 18,
+          "features": []
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Eldritch Master"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 44,
+      "extraction_metadata": {
+        "source_pages": [
+          44
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Warlock class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Cha",
+        "spell_list": "warlock"
+      },
+      "tables_referenced": [
+        "table:proficiency_bonus",
+        "table:warlock_progression",
+        "table:warlock_spell_slots"
+      ]
+    },
+    {
+      "id": "class:wizard",
+      "simple_name": "wizard",
+      "name": "Wizard",
+      "hit_die": "d6",
+      "primary_abilities": [
+        "intelligence"
+      ],
+      "saving_throw_proficiencies": [
+        "intelligence",
+        "wisdom"
+      ],
+      "proficiencies": {
+        "armor": [],
+        "weapons": [
+          "daggers",
+          "darts",
+          "slings",
+          "quarterstaffs",
+          "light crossbows"
+        ],
+        "tools": [],
+        "skills": {
+          "choose": 2,
+          "from": [
+            "Arcana",
+            "History",
+            "Insight",
+            "Investigation",
+            "Medicine",
+            "Religion"
+          ]
+        }
+      },
+      "features": [
+        "feature:spellcasting",
+        "feature:arcane_recovery",
+        "feature:arcane_tradition",
+        "feature:spell_mastery",
+        "feature:signature_spells"
+      ],
+      "subclasses": [
+        "subclass:school_of_evocation"
+      ],
+      "progression": [
+        {
+          "level": 1,
+          "features": [
+            "Spellcasting",
+            "Arcane Recovery"
+          ]
+        },
+        {
+          "level": 2,
+          "features": [
+            "Arcane Tradition"
+          ]
+        },
+        {
+          "level": 3,
+          "features": []
+        },
+        {
+          "level": 4,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 5,
+          "features": []
+        },
+        {
+          "level": 6,
+          "features": [
+            "Arcane Tradition feature"
+          ]
+        },
+        {
+          "level": 7,
+          "features": []
+        },
+        {
+          "level": 8,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 9,
+          "features": []
+        },
+        {
+          "level": 10,
+          "features": [
+            "Arcane Tradition feature"
+          ]
+        },
+        {
+          "level": 11,
+          "features": []
+        },
+        {
+          "level": 12,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 13,
+          "features": []
+        },
+        {
+          "level": 14,
+          "features": [
+            "Arcane Tradition feature"
+          ]
+        },
+        {
+          "level": 15,
+          "features": []
+        },
+        {
+          "level": 16,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 17,
+          "features": []
+        },
+        {
+          "level": 18,
+          "features": [
+            "Spell Mastery"
+          ]
+        },
+        {
+          "level": 19,
+          "features": [
+            "Ability Score Improvement"
+          ]
+        },
+        {
+          "level": 20,
+          "features": [
+            "Signature Spells"
+          ]
+        }
+      ],
+      "source": "SRD_CC_v5.1",
+      "page": 46,
+      "extraction_metadata": {
+        "source_pages": [
+          46
+        ],
+        "section": "classes",
+        "extraction_date": "2025-11-03",
+        "extraction_notes": "Wizard class from SRD 5.1"
+      },
+      "spellcasting": {
+        "ability": "Int",
+        "spell_list": "wizard"
+      },
+      "tables_referenced": [
+        "table:proficiency_bonus",
+        "table:spell_slots_full_caster",
+        "table:wizard_progression"
+      ]
+    }
+  ]
+}

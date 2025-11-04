@@ -289,24 +289,20 @@ This document tracks known gaps, parsing improvements, and quality issues for es
 
 ### Known Gaps
 
-#### 1. Ritual Flag Edge Cases 🔵 **LOW PRIORITY**
+#### 1. Ritual Flag ✅ **COMPLETE**
 
-**Status:** Fixed in v0.6.4, but only 29/319 flagged (9%)
-**Impact:** Low (likely complete for SRD)
+**Status:** Fixed in v0.6.4, validated v0.8.2
+**Impact:** None - complete coverage confirmed
 
-**Current Coverage:** 29 ritual spells detected
-**Question:** Are there more ritual spells we're missing?
+**Current Coverage:** 29/319 ritual spells (100% - manually verified)
+**Validation:** Manual count of SRD 5.1 matches extracted count exactly (29 = 29)
 
-**User Note:** "# of ritual spells - we could be good, so this is a low priority. We should try and figure out how many to close this :)"
+**Confidence:** HIGH - Exact match between manual verification and automated extraction
 
-**Action Item:** Cross-reference against authoritative SRD 5.1 spell list to verify 29 is correct count.
+**Extracted Ritual Spells (29):**
+Alarm, Animal Messenger, Augury, Commune, Commune with Nature, Comprehend Languages, Contact Other Plane, Detect Magic, Detect Poison and Disease, Divination, Find Familiar, Floating Disk, Forbiddance, Gentle Repose, Identify, Illusory Script, Instant Summons, Locate Animals or Plants, Magic Mouth, Meld into Stone, Phantom Steed, Purify Food and Drink, Silence, Speak with Animals, Telepathic Bond, Tiny Hut, Unseen Servant, Water Breathing, Water Walk
 
-**Investigation Needed:**
-- Cross-reference SRD spell list with known ritual spells (D&D 5e SRD official list)
-- Verify all ritual markers are captured
-- Likely correct (SRD has fewer ritual spells than full PHB)
-
-**Why Deferred:** v0.6.4 fix works correctly. Verification needed but likely complete coverage for SRD 5.1.
+**Indexed:** `by_ritual` index available in index.json
 
 ---
 

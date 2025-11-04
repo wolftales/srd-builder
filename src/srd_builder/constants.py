@@ -15,7 +15,7 @@ EXTRACTOR_VERSION: Final = "0.3.0"
 
 # Schema version: JSON Schema validation rules
 # Bump when output data structure changes
-SCHEMA_VERSION: Final = "1.3.0"
+SCHEMA_VERSION: Final = "1.4.0"
 
 # Data source identifier
 DATA_SOURCE: Final = "SRD_CC_v5.1"

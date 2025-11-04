@@ -204,6 +204,17 @@ def _get_section_markers(  # noqa: C901
                             subcategory = "medium"
                         elif "heavy" in text:
                             subcategory = "heavy"
+                    elif "melee" in text or "ranged" in text:
+                        # Weapon subcategories
+                        category = "weapon"
+                        if "simple" in text and "melee" in text:
+                            subcategory = "simple_melee"
+                        elif "simple" in text and "ranged" in text:
+                            subcategory = "simple_ranged"
+                        elif "martial" in text and "melee" in text:
+                            subcategory = "martial_melee"
+                        elif "martial" in text and "ranged" in text:
+                            subcategory = "martial_ranged"
 
                 if category:
                     markers.append((y_pos, {"category": category, "subcategory": subcategory}))

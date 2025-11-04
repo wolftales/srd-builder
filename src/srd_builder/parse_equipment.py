@@ -197,6 +197,11 @@ def _parse_weapon_fields(  # noqa: C901
         elif "ranged" in subcategory:
             item["weapon_type"] = "ranged"
 
+    # Extract proficiency level (simple/martial) from section context
+    proficiency = _determine_weapon_proficiency(item, section)
+    if proficiency:
+        item["proficiency"] = proficiency
+
     damage_text = _get_column_value(table_row, column_map, "damage")
     if damage_text:
         damage = _parse_damage(damage_text)
@@ -204,22 +209,24 @@ def _parse_weapon_fields(  # noqa: C901
             item["damage"] = damage
 
     properties_text = _get_column_value(table_row, column_map, "properties")
+
+    # Extract embedded data from RAW properties text BEFORE cleaning
+    if properties_text:
+        versatile = _parse_versatile_damage_from_raw_text(properties_text)
+        if versatile:
+            item["versatile_damage"] = versatile
+
+        range_info = _parse_range_from_raw_text(properties_text)
+        if range_info:
+            item["range"] = range_info
+
+    # Now parse and clean properties (removes embedded data)
     properties = _parse_properties(properties_text)
     if properties:
         item["properties"] = properties
 
-        versatile = _parse_versatile_damage_from_properties(properties)
-        if versatile:
-            item["versatile_damage"] = versatile
-
-        range_info = _parse_range(properties)
-        if range_info:
-            item["range"] = range_info
-
-        ranged_prop = any(
-            prop.startswith("thrown") or prop.startswith("ammunition") or prop.startswith("range")
-            for prop in properties
-        )
+        # Determine weapon type from property names
+        ranged_prop = any(prop in ["thrown", "ammunition", "range"] for prop in properties)
 
         if ranged_prop:
             item["weapon_type"] = "ranged"
@@ -446,23 +453,27 @@ def _parse_properties(prop_text: str | None) -> list[str] | None:
     for part in prop_text.split(","):
         cleaned = part.strip()
         if cleaned and cleaned not in {"—", "-"}:
-            properties.append(cleaned.lower())
+            # Strip embedded data in parentheses (e.g., "versatile (1d10)" → "versatile")
+            prop_name = re.sub(r"\s*\([^)]+\)", "", cleaned).strip()
+            # Fix Unicode dash issues: various dash chars → regular hyphen
+            # Includes: soft hyphen (U+00AD), non-breaking hyphen (U+2011),
+            # figure dash (U+2012), en dash (U+2013), em dash (U+2014)
+            prop_name = re.sub(r"[\u00ad\u2010-\u2014]+", "-", prop_name)
+            # Convert to underscore for consistency
+            prop_name = prop_name.replace("-", "_")
+            # Normalize multiple underscores to single underscore
+            prop_name = re.sub(r"_+", "_", prop_name)
+            properties.append(prop_name.lower())
 
     return properties if properties else None
 
 
-def _parse_versatile_damage_from_properties(
-    properties: list[str],
-) -> dict[str, str] | None:
-    for prop in properties:
-        versatile = _parse_versatile_damage(prop)
-        if versatile:
-            return versatile
-    return None
+def _parse_versatile_damage_from_raw_text(raw_text: str) -> dict[str, str] | None:
+    """Extract versatile damage from raw properties text before cleaning.
 
-
-def _parse_versatile_damage(versatile_prop: str) -> dict[str, str] | None:
-    match = re.search(r"versatile\s*\(([^)]+)\)", versatile_prop, re.IGNORECASE)
+    Example: "Versatile (1d10)" → {"dice": "1d10"}
+    """
+    match = re.search(r"versatile\s*\(([^)]+)\)", raw_text, re.IGNORECASE)
     if not match:
         return None
 
@@ -472,11 +483,15 @@ def _parse_versatile_damage(versatile_prop: str) -> dict[str, str] | None:
     return None
 
 
-def _parse_range(properties: list[str]) -> dict[str, int] | None:
-    for prop in properties:
-        match = re.search(r"range[^\d]*(\d+)\s*/\s*(\d+)", prop, re.IGNORECASE)
-        if match:
-            return {"normal": int(match.group(1)), "long": int(match.group(2))}
+def _parse_range_from_raw_text(raw_text: str) -> dict[str, int] | None:
+    """Extract range from raw properties text before cleaning.
+
+    Example: "Thrown (range 20/60)" → {"normal": 20, "long": 60}
+    Example: "Ammunition (range 80/320)" → {"normal": 80, "long": 320}
+    """
+    match = re.search(r"range[^\d]*(\d+)\s*/\s*(\d+)", raw_text, re.IGNORECASE)
+    if match:
+        return {"normal": int(match.group(1)), "long": int(match.group(2))}
     return None
 
 
@@ -511,6 +526,103 @@ def _generate_simple_name(name: str) -> str:
     simple = simple.replace(",", "")
     simple = simple.lower().strip()
     return re.sub(r"\s+", " ", simple)
+
+
+def _determine_weapon_proficiency(item: dict[str, Any], section: dict[str, Any]) -> str | None:
+    """Determine weapon proficiency level from section context.
+
+    Args:
+        item: The weapon item being parsed
+        section: Section context with category and subcategory
+
+    Returns:
+        "simple" or "martial" if determinable, None otherwise
+    """
+    if item.get("category") != "weapon":
+        return None
+
+    # Try section-based detection first
+    section_text = _stringify_section(section)
+    if section_text:
+        section_lower = section_text.lower()
+        if "simple" in section_lower:
+            return "simple"
+        elif "martial" in section_lower:
+            return "martial"
+
+    # Fallback: check subcategory field directly
+    subcategory = section.get("subcategory", "")
+    if isinstance(subcategory, str):
+        if "simple" in subcategory.lower():
+            return "simple"
+        elif "martial" in subcategory.lower():
+            return "martial"
+
+    # Final fallback: name-based lookup (SRD 5.1 weapon classifications)
+    return _infer_weapon_proficiency(item["name"])
+
+
+def _infer_weapon_proficiency(weapon_name: str) -> str | None:
+    """Infer weapon proficiency from item name.
+
+    Fallback for when PDF section context is unreliable.
+    Based on SRD 5.1 weapon classifications (pages 65-66).
+    """
+    name_lower = weapon_name.lower().strip()
+
+    # Simple weapons (SRD 5.1 page 65)
+    simple_weapons = {
+        "club",
+        "dagger",
+        "greatclub",
+        "handaxe",
+        "javelin",
+        "light hammer",
+        "mace",
+        "quarterstaff",
+        "sickle",
+        "spear",
+        "crossbow",
+        "light crossbow",
+        "dart",
+        "shortbow",
+        "sling",
+    }
+    if name_lower in simple_weapons or "crossbow, light" in name_lower:
+        return "simple"
+
+    # Martial weapons (SRD 5.1 page 66)
+    martial_weapons = {
+        "battleaxe",
+        "flail",
+        "glaive",
+        "greataxe",
+        "greatsword",
+        "halberd",
+        "lance",
+        "longsword",
+        "maul",
+        "morningstar",
+        "pike",
+        "rapier",
+        "scimitar",
+        "shortsword",
+        "trident",
+        "war pick",
+        "warhammer",
+        "whip",
+        "blowgun",
+        "hand crossbow",
+        "heavy crossbow",
+        "longbow",
+        "net",
+    }
+    if name_lower in martial_weapons or any(
+        weapon in name_lower for weapon in ["crossbow, hand", "crossbow, heavy"]
+    ):
+        return "martial"
+
+    return None
 
 
 def _infer_armor_subcategory(armor_name: str) -> str | None:

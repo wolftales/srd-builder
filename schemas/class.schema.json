@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/class.schema.json",
-  "version": "1.3.0",
-  "last_modified": "2025-11-02",
+  "version": "1.4.0",
+  "last_modified": "2025-11-03",
   "title": "D&D 5e SRD Class",
   "description": "Schema for character classes from D&D 5e System Reference Document",
   "type": "object",
@@ -12,7 +12,7 @@
     "name",
     "hit_die",
     "primary_abilities",
-    "saves",
+    "saving_throw_proficiencies",
     "proficiencies",
     "features",
     "progression",
@@ -53,33 +53,33 @@
       "items": {
         "type": "string",
         "enum": [
-          "Str",
-          "Dex",
-          "Con",
-          "Int",
-          "Wis",
-          "Cha"
+          "strength",
+          "dexterity",
+          "constitution",
+          "intelligence",
+          "wisdom",
+          "charisma"
         ]
       },
       "minItems": 1,
       "description": "Primary abilities for multiclassing prerequisites"
     },
-    "saves": {
+    "saving_throw_proficiencies": {
       "type": "array",
       "items": {
         "type": "string",
         "enum": [
-          "Str",
-          "Dex",
-          "Con",
-          "Int",
-          "Wis",
-          "Cha"
+          "strength",
+          "dexterity",
+          "constitution",
+          "intelligence",
+          "wisdom",
+          "charisma"
         ]
       },
       "minItems": 2,
       "maxItems": 2,
-      "description": "Saving throw proficiencies (always 2)"
+      "description": "Saving throw proficiencies granted by this class (always exactly 2)"
     },
     "proficiencies": {
       "type": "object",
@@ -209,9 +209,9 @@
         "ability": {
           "type": "string",
           "enum": [
-            "Int",
-            "Wis",
-            "Cha"
+            "intelligence",
+            "wisdom",
+            "charisma"
           ],
           "description": "Spellcasting ability"
         },

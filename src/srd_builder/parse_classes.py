@@ -51,7 +51,7 @@ def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
         "name": data["name"],
         "hit_die": data["hit_die"],
         "primary_abilities": data["primary_abilities"],
-        "saves": data["saves"],
+        "saving_throw_proficiencies": data["saving_throw_proficiencies"],
         "proficiencies": data["proficiencies"],
         "features": data["features"],
         "subclasses": data.get("subclasses", []),

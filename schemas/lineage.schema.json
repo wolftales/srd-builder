@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://srd-builder.example.com/schemas/lineage.schema.json",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "title": "D&D 5e SRD Lineage (Race)",
   "description": "Schema for character lineages (races) from D&D 5e System Reference Document",
   "type": "object",
@@ -11,7 +11,7 @@
     "name",
     "size",
     "speed",
-    "ability_increases",
+    "ability_modifiers",
     "languages",
     "traits",
     "extraction_metadata"
@@ -39,6 +39,11 @@
       "type": "string",
       "description": "Display name of the lineage"
     },
+    "parent_lineage": {
+      "type": "string",
+      "pattern": "^lineage:[a-z_]+$",
+      "description": "Reference to parent lineage for subraces (e.g., 'lineage:elf' for High Elf). Only present for subraces."
+    },
     "size": {
       "type": "string",
       "enum": [
@@ -52,33 +57,27 @@
       "minimum": 0,
       "description": "Base walking speed in feet"
     },
-    "ability_increases": {
+    "ability_modifiers": {
       "type": "object",
-      "description": "Ability score increases granted by this lineage",
+      "description": "Ability score modifiers granted by this lineage. Positive for bonuses (5e), negative for penalties (3.5e and earlier).",
       "properties": {
         "strength": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "dexterity": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "constitution": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "intelligence": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "wisdom": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "charisma": {
-          "type": "integer",
-          "minimum": 0
+          "type": "integer"
         },
         "other": {
           "type": "integer",
@@ -88,9 +87,9 @@
       },
       "additionalProperties": false
     },
-    "ability_increase_note": {
+    "ability_modifier_note": {
       "type": "string",
-      "description": "Optional explanation for flexible ability increases (e.g., Half-Elf)"
+      "description": "Optional explanation for flexible ability modifiers (e.g., Half-Elf)"
     },
     "age": {
       "type": "string",
@@ -153,7 +152,7 @@
         "required": [
           "name",
           "simple_name",
-          "ability_increases",
+          "ability_modifiers",
           "traits"
         ],
         "properties": {
@@ -166,33 +165,27 @@
             "pattern": "^[a-z_]+$",
             "description": "Snake_case identifier for the subrace"
           },
-          "ability_increases": {
+          "ability_modifiers": {
             "type": "object",
-            "description": "Additional ability score increases from subrace",
+            "description": "Additional ability score modifiers from subrace. Positive for bonuses (5e), negative for penalties (3.5e and earlier).",
             "properties": {
               "strength": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               },
               "dexterity": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               },
               "constitution": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               },
               "intelligence": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               },
               "wisdom": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               },
               "charisma": {
-                "type": "integer",
-                "minimum": 0
+                "type": "integer"
               }
             },
             "additionalProperties": false

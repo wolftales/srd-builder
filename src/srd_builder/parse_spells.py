@@ -68,7 +68,7 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
 
         # Parse header fields (format: "Casting Time: X\nRange: Y\nComponents: Z\nDuration: W")
         casting_time = "1 action"
-        range_value: dict[str, Any] | str = "self"
+        range_value: dict[str, Any] = {"type": "self"}
         components_value = {"verbal": False, "somatic": False, "material": False}
         duration_value = "instantaneous"
         concentration = False
@@ -173,43 +173,60 @@ def _parse_casting_time(text: str) -> str:
     return text.strip()
 
 
-def _parse_range(text: str) -> dict[str, Any] | str:
+def _parse_range(text: str) -> dict[str, Any]:
     """Parse spell range into structured format.
 
     Args:
-        text: Range text (e.g., "150 feet", "Self", "Touch")
+        text: Range text (e.g., "150 feet", "Self (15-foot cone)", "Touch", "Self")
 
     Returns:
-        Structured range object or string for special cases
+        Structured range object with type, optional distance, and optional area.
+        Examples:
+            {"type": "ranged", "distance": {"value": 120, "unit": "feet"}}
+            {"type": "self", "area": {"shape": "cone", "size": {"value": 15, "unit": "feet"}}}
+            {"type": "touch"}
+            {"type": "self"}
     """
     import re
 
-    text_lower = text.lower().strip()
+    text_clean = text.strip()
+    text_lower = text_clean.lower()
 
-    # Special ranges
+    # Pattern: "Self (15-foot cone)" or "Self (10-foot radius)"
+    # Handle various dash/hyphen characters (-, ­, ‐, ‑, –, —)
+    self_area_match = re.match(
+        r"self\s*\((\d+)[\s\-\u00ad\u2010-\u2014]*(?:foot|feet|mile|miles)\s+(radius|sphere|cone|cube|line|cylinder)\)",
+        text_lower,
+    )
+    if self_area_match:
+        size_value = int(self_area_match.group(1))
+        shape = self_area_match.group(2)
+        return {
+            "type": "self",
+            "area": {"shape": shape, "size": {"value": size_value, "unit": "feet"}},
+        }
+
+    # Simple special ranges
     if text_lower == "self":
-        return "self"
+        return {"type": "self"}
     if text_lower == "touch":
-        return "touch"
+        return {"type": "touch"}
     if text_lower == "sight":
-        return "sight"
+        return {"type": "sight"}
     if text_lower == "unlimited":
-        return "unlimited"
+        return {"type": "unlimited"}
 
-    # Numeric range (e.g., "150 feet")
-    match = re.match(r"(\d+)\s+(feet|miles|foot|mile)", text_lower)
-    if match:
-        value = int(match.group(1))
-        unit = match.group(2)
+    # Numeric range (e.g., "150 feet", "1 mile")
+    ranged_match = re.match(r"(\d+)\s+(feet|miles|foot|mile)", text_lower)
+    if ranged_match:
+        value = int(ranged_match.group(1))
+        unit_text = ranged_match.group(2)
         # Normalize to plural
-        if unit in ("foot", "feet"):
-            unit = "feet"
-        elif unit in ("mile", "miles"):
-            unit = "miles"
-        return {"kind": "ranged", "value": value, "unit": unit}
+        unit = "feet" if unit_text in ("foot", "feet") else "miles"
+        return {"type": "ranged", "distance": {"value": value, "unit": unit}}
 
-    # Fallback to self
-    return "self"
+    # Fallback to self for unparseable ranges
+    return {"type": "self"}
 
 
 def _parse_duration(text: str) -> tuple[str, bool]:

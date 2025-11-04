@@ -58,7 +58,7 @@ This document tracks features that have been discussed but deferred for later im
 - ✅ 319/319 spells extracted (100%)
 - ✅ Text quality: 0 spells with <50 chars
 - ✅ Effects coverage: 52% (166/319) - **+8 percentage points**
-- ✅ Ritual flag: 9% (29/319) - **FIXED** (Detect Magic, Identify, Find Familiar)
+- ✅ Ritual flag: 100% (29/319) - **COMPLETE** (manually verified v0.8.2)
 - ✅ Area-of-effect: 17% (55/319) - **NEW** (Fireball, Burning Hands, Lightning Bolt)
 - ✅ Healing effects: 2% (5/319) - **NEW** (Cure Wounds, Healing Word)
 - ✅ Attack roll effects: 6% (19/319) - **NEW** (Fire Bolt, Shocking Grasp)
@@ -1006,6 +1006,41 @@ def ordered_meta(*, source, ruleset_version, license, build, **kwargs):
 - Need to resolve before declaring one approach "official"
 
 **Action:** Revisit in v0.9.0 or v1.0.0 when documentation strategy solidifies
+
+---
+
+## Combined Spell Indexes (e.g., by_ritual + by_class)
+
+**Idea:** Pre-build nested indexes for common combined queries like "ritual spells for wizard"
+
+**Current Approach:** Flat indexes - client-side filtering
+```javascript
+// Current: Client-side intersection
+const ritualSpells = index.spells.by_ritual.true;  // 29 spells
+const wizardSpells = index.spells.by_class.wizard; // ~80 spells
+const wizardRituals = ritualSpells.filter(id => wizardSpells.includes(id));
+```
+
+**Alternative:** Nested indexes
+```json
+"by_class_ritual": {
+  "wizard": {
+    "true": ["spell:detect_magic", "spell:identify", ...],
+    "false": [...]
+  }
+}
+```
+
+**Decision:** Keep flat structure (client-side filtering preferred)
+
+**Rationale:**
+- Client-side filtering is efficient with small datasets (29 rituals, ~50-80 spells per class)
+- Flexible - consumers can combine ANY two dimensions without pre-building every combination
+- Keeps index.json simple and maintainable
+- Avoids combinatorial explosion (ritual×class, concentration×school, ritual×level, etc.)
+- `by_class` is the primary use case and we have it!
+
+**If needed later:** Consumers can build their own derived indexes on first load
 
 ---
 

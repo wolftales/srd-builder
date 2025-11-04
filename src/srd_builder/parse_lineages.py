@@ -52,7 +52,7 @@ def _build_lineage_record(data: dict[str, Any]) -> dict[str, Any]:
         "name": data["name"],
         "size": data["size"],
         "speed": data["speed"],
-        "ability_increases": data["ability_increases"],
+        "ability_modifiers": data["ability_modifiers"],
         "languages": data["languages"],
         "traits": data["traits"],
         "extraction_metadata": {
@@ -64,8 +64,8 @@ def _build_lineage_record(data: dict[str, Any]) -> dict[str, Any]:
     }
 
     # Optional fields
-    if "ability_increase_note" in data:
-        record["ability_increase_note"] = data["ability_increase_note"]
+    if "ability_modifier_note" in data:
+        record["ability_modifier_note"] = data["ability_modifier_note"]
 
     if "age" in data:
         record["age"] = data["age"]
@@ -100,10 +100,11 @@ def _build_subrace_record(
         Complete subrace record that combines parent + subrace traits
     """
     simple_name = subrace_data["simple_name"]
+    parent_simple_name = parent_data["simple_name"]
 
-    # Merge ability increases (parent + subrace)
-    combined_abilities = {**parent_data["ability_increases"]}
-    for ability, bonus in subrace_data["ability_increases"].items():
+    # Merge ability modifiers (parent + subrace)
+    combined_abilities = {**parent_data["ability_modifiers"]}
+    for ability, bonus in subrace_data["ability_modifiers"].items():
         combined_abilities[ability] = combined_abilities.get(ability, 0) + bonus
 
     # Merge traits (parent + subrace)
@@ -113,9 +114,10 @@ def _build_subrace_record(
         "id": f"lineage:{simple_name}",
         "simple_name": simple_name,
         "name": subrace_data["name"],
+        "parent_lineage": f"lineage:{parent_simple_name}",
         "size": parent_data["size"],
         "speed": parent_data["speed"],
-        "ability_increases": combined_abilities,
+        "ability_modifiers": combined_abilities,
         "languages": parent_data["languages"],
         "traits": combined_traits,
         "extraction_metadata": {

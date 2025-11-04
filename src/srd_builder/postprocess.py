@@ -499,6 +499,7 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
         "properties",
         "sub_category",
         "weapon_type",
+        "proficiency",
         "stealth_disadvantage",
         "strength_req",
         "versatile_damage",

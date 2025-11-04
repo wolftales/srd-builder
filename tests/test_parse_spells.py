@@ -45,17 +45,25 @@ def test_parse_casting_time_minutes() -> None:
 
 def test_parse_range_numeric() -> None:
     result = _parse_range("150 feet")
-    assert result == {"kind": "ranged", "value": 150, "unit": "feet"}
+    assert result == {"type": "ranged", "distance": {"value": 150, "unit": "feet"}}
 
 
 def test_parse_range_special_self() -> None:
     result = _parse_range("Self")
-    assert result == "self"
+    assert result == {"type": "self"}
 
 
 def test_parse_range_special_touch() -> None:
     result = _parse_range("Touch")
-    assert result == "touch"
+    assert result == {"type": "touch"}
+
+
+def test_parse_range_with_area() -> None:
+    result = _parse_range("Self (15-foot cone)")
+    assert result == {
+        "type": "self",
+        "area": {"shape": "cone", "size": {"value": 15, "unit": "feet"}},
+    }
 
 
 def test_parse_duration_instantaneous() -> None:

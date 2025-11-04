@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://srd-builder.github.io/schemas/table.schema.json",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "title": "SRD 5.1 Reference Table Schema",
   "description": "Schema for reusable reference tables (experience by CR, spell slots, proficiency bonus, etc.)",
   "type": "object",
