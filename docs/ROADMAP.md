@@ -1258,9 +1258,79 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 
 ---
 
+## **v0.9.5 — Quality & Polish** **[QUALITY]**
+
+**Priority:** HIGH - Required before v1.0.0
+**Effort:** Medium
+**Consumer Impact:** IMPROVED - Better data quality across all datasets
+
+**Goal:** Address remaining data quality issues and technical debt before v1.0.0 release.
+
+**Why Before v1.0.0?**
+- Clean up known technical debt
+- Improve data quality metrics
+- Polish rough edges identified during v0.8.x-v0.9.x development
+- Ensure production-ready state for all datasets
+
+**Scope:**
+
+### Equipment Polish
+1. **Properties Normalization** (MEDIUM)
+   - Clean embedded data: `"versatile (1d10)"` → `"versatile"`
+   - Data already in structured fields (versatile_damage, range)
+   - Impact: Cleaner rule automation
+
+2. **Container Capacity** (HIGH - Technical Debt)
+   - Currently: 8/13 containers from PDF + 5/13 hardcoded
+   - Root cause: Multi-column table extraction issues
+   - Fix: Improve multi-column table handling, remove hardcoded values
+   - See: PARKING_LOT.md for details
+
+3. **Weapon Subcategory Normalization** (LOW)
+   - "Martial Melee" → "martial_melee" (consistent with simple_name style)
+   - Update DATA_DICTIONARY.md with normalized values
+
+### Monster Polish
+1. **Action Parsing Coverage** (MEDIUM)
+   - Current: 472/884 actions (53.4%) with structured fields
+   - Remaining: 412 non-attack actions (Multiattack, utility, buffs)
+   - Opportunity: Parse ability checks, condition infliction patterns
+   - Note: Many already have saving_throw field for debuffs
+
+2. **Legendary Action Cost** (LOW)
+   - Extract "(Costs 2 Actions)" from action names
+   - Add action_cost field (default 1)
+   - Clean names: "Paralyzing Touch (Costs 2 Actions)" → "Paralyzing Touch"
+
+### Cross-Dataset Validation
+1. **ID Resolution** (MEDIUM)
+   - Validate references across datasets (class features → spells, monster spellcasting → spells)
+   - Flag broken references
+   - Build dependency graph
+
+2. **Data Quality Metrics** (LOW)
+   - Document coverage percentages for all effect fields
+   - Create quality dashboard/report
+   - Track improvements over time
+
+**Out of Scope:**
+- Spellcasting trait structure (requires Features dataset v0.10.0)
+- Equipment references in monster actions (requires fuzzy matching)
+- Subrace trait inheritance (current duplication approach is pragmatic)
+- Feature references and multiclassing (depends on Features/Rules datasets)
+
+**Success Criteria:**
+- [ ] Equipment properties cleaned (no embedded data)
+- [ ] Container capacity 13/13 from PDF (no hardcoded values)
+- [ ] Monster action coverage >60% (add ~50 utility actions)
+- [ ] Cross-dataset references validated
+- [ ] All technical debt items from TODO.md addressed or moved to PARKING_LOT
+
+---
+
 ## **v1.0.0 — Complete SRD 5.1 in JSON** 🚀
 
-**Goal:** Single `build_all()` to process all entities and a top-level `validate_all()` for all schemas and PDFs.
+**Goal:** First stable release with complete SRD 5.1 coverage and production-ready quality.
 
 **Complete SRD 5.1 Coverage (9 datasets):**
 - ✅ Monsters (296)

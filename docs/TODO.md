@@ -1,5 +1,13 @@
 # TODO - Known Gaps & Future Improvements
 
+> **📋 NOTE:** This document is being **deprecated**. Active items have been moved to:
+> - **ROADMAP.md v0.9.5** - Quality & Polish milestone (before v1.0.0)
+> - **PARKING_LOT.md** - Deferred features and technical debt
+>
+> This file is kept for historical reference. New quality issues should be added to ROADMAP.md milestone sections.
+
+---
+
 This document tracks known gaps, parsing improvements, and quality issues for established datasets. Unlike ROADMAP.md (new features) and PARKING_LOT.md (deferred features), this focuses on **incremental improvements** to existing data extraction.
 
 ---
