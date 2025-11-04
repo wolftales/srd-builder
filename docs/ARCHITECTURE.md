@@ -24,6 +24,7 @@ SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the com
 | `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
 
 **Progress:** 8/11 datasets complete (73%)
+**Current Schema Version:** v1.4.0 (healing oneOf structure, ability modifiers)
 
 ---
 

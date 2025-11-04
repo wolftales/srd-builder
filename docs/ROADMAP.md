@@ -69,6 +69,14 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 
 **Progress:** 8/11 datasets complete (73%)
 
+**Completed Datasets:**
+- ✅ Monsters (296 entries) - Monster statblocks with structured combat actions
+- ✅ Equipment (111 items) - Weapons (37), Armor (14), Adventuring gear (60)
+- ✅ Spells (319 spells) - Healing (100%), AOE (24.8%), Range (100%)
+- ✅ Tables (23 tables) - Equipment tables, expenses, services
+- ✅ Lineages (13 lineages) - Base lineages (9), Subraces (4)
+- ✅ Classes (12 classes) - Full progression tables (levels 1-20)
+
 **Remaining Work:**
 - v0.9.0: Improve table extraction (infrastructure for v0.10-v0.12)
 - v0.10.0: Conditions dataset (quick win after table improvements)
