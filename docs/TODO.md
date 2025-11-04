@@ -1,7 +1,7 @@
 # TODO - Known Gaps & Future Improvements
 
 > **📋 NOTE:** This document is being **deprecated**. Active items have been moved to:
-> - **ROADMAP.md v0.12.0** - Quality & Polish milestone (final pass before v1.0.0)
+> - **ROADMAP.md v0.13.0** - Quality & Polish milestone (final pass before v1.0.0)
 > - **PARKING_LOT.md** - Deferred features and technical debt
 >
 > This file is kept for historical reference. New quality issues should be added to ROADMAP.md milestone sections.

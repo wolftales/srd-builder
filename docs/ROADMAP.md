@@ -44,8 +44,38 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics)
-- 🎨 v0.12.0 — Quality & Polish (final cleanup)
+- 🎨 v0.13.0 — Quality & Polish (final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
+
+---
+
+## 📦 Dataset Coverage (SRD 5.1 Complete Target)
+
+This section tracks progress toward the complete SRD 5.1 dataset extraction.
+
+| File | Status | Count | Version | Description |
+|------|--------|-------|---------|-------------|
+| `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
+| `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
+| `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
+| `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
+| `tables.json` | ✅ Complete | 23 | v0.7.0 | Reference tables (equipment, expenses, services) |
+| `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
+| `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
+| `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
+| `conditions.json` | 📋 Planned | ~15-20 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
+| `features.json` | 📋 Planned | TBD | v0.11.0 | Class/lineage features (Action Surge, Darkvision) |
+| `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
+
+**Progress:** 8/11 datasets complete (73%)
+
+**Remaining Work:**
+- v0.9.0: Improve table extraction (infrastructure for v0.10-v0.12)
+- v0.10.0: Conditions dataset (quick win after table improvements)
+- v0.11.0: Features dataset (class/racial features with cross-references)
+- v0.12.0: Rules dataset (core mechanics, variant rules)
+- v0.13.0: Quality & Polish (final cleanup, cross-dataset validation)
+- v1.0.0: First stable release with all datasets
 
 ---
 
@@ -1255,7 +1285,47 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 
 ---
 
-## **v0.11.0 — Rules Dataset** **[DATA]**
+## **v0.11.0 — Features Dataset** **[DATA]**
+
+**Status:** PLANNED - New dataset
+**Priority:** MEDIUM
+**Effort:** Medium (derived from classes/lineages)
+**Consumer Impact:** NEW - Standalone searchable features
+
+**Goal:** Extract class features and racial traits as standalone, searchable entities.
+
+**Why Features?**
+- Enables feature search without parsing class tables ("find all features that grant advantage")
+- Clean API for character builders
+- Reference for multiclassing feature interactions
+- Originally scoped in Week 5 of initial plan
+- Benefits from v0.9.0 table extraction improvements (class progression tables)
+
+**Scope:**
+- Class features (Action Surge, Spellcasting, Rage, etc.)
+- Racial traits (Darkvision, Stonecunning, Lucky, etc.)
+- Feature progressions (scales with level)
+- Cross-references to parent class/lineage
+
+**Schema:**
+```json
+{
+  "id": "feature:action_surge",
+  "simple_name": "action_surge",
+  "name": "Action Surge",
+  "summary": "Take an additional action on your turn",
+  "source": "class:fighter",
+  "level_acquired": 2,
+  "text": "...",
+  "mechanics": {
+    "recharge": "short_rest"
+  }
+}
+```
+
+---
+
+## **v0.12.0 — Rules Dataset** **[DATA]**
 
 **Priority:** MEDIUM
 **Effort:** High (complex text parsing)
@@ -1284,7 +1354,7 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 
 ---
 
-## **v0.12.0 — Quality & Polish** **[QUALITY]**
+## **v0.13.0 — Quality & Polish** **[QUALITY]**
 
 **Priority:** HIGH - Required before v1.0.0
 **Effort:** Medium
@@ -1359,7 +1429,11 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 
 **Goal:** First stable release with complete SRD 5.1 coverage and production-ready quality.
 
-**Complete SRD 5.1 Coverage (9 datasets):**
+**Prerequisites:**
+- All datasets complete (v0.10.0 Conditions, v0.11.0 Features, v0.12.0 Rules)
+- v0.13.0 Quality & Polish complete
+
+**Complete SRD 5.1 Coverage (11 datasets):
 - ✅ Monsters (296)
 - ✅ Equipment (106)
 - ✅ Spells (319)

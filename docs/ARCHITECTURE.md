@@ -1,7 +1,29 @@
 # SRD-Builder Architecture
 
-**Version:** v0.4.2
+**Version:** v0.8.5
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
+
+---
+
+## Datasets Overview
+
+SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the complete target list and current status:
+
+| File | Status | Count | Version | Description |
+|------|--------|-------|---------|-------------|
+| `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
+| `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
+| `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
+| `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
+| `tables.json` | ✅ Complete | 23 | v0.7.0 | Reference tables (equipment, expenses, services) |
+| `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
+| `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
+| `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
+| `conditions.json` | 📋 Planned | ~15-20 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
+| `features.json` | 📋 Planned | TBD | v0.11.0 | Class/lineage features (Action Surge, Darkvision) |
+| `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
+
+**Progress:** 8/11 datasets complete (73%)
 
 ---
 
@@ -431,12 +453,12 @@ When adding output formats (YAML, SQLite, etc.):
 
 ## Performance Characteristics
 
-**Current (v0.4.2):**
-- Extraction: ~5-10 seconds (134 pages, 296 monsters)
-- Parsing: ~0.5 seconds (296 monsters)
-- Postprocessing: ~0.1 seconds
+**Current (v0.8.5):**
+- Extraction: ~5-10 seconds per dataset (6 datasets)
+- Parsing: ~0.5 seconds per dataset
+- Postprocessing: ~0.1 seconds per dataset
 - Indexing: ~0.05 seconds
-- Total build: ~6-11 seconds
+- Total build: ~30-60 seconds (all datasets)
 
 **Bottlenecks:**
 - PDF extraction (80-90% of time)
@@ -486,7 +508,7 @@ srd-builder uses **three version numbers** that serve different purposes.
 ### 1. Package Version (`__version__`)
 
 **Location:** `src/srd_builder/__init__.py`
-**Current:** `0.5.2`
+**Current:** `0.8.5`
 **Format:** Semantic versioning (`X.Y.Z`)
 
 **Purpose:** Software release version - tracks the data/package we produce.
@@ -542,7 +564,7 @@ srd-builder uses **three version numbers** that serve different purposes.
 ### 3. Schema Version
 
 **Location:** `schemas/monster.schema.json`, `constants.py`
-**Current:** `1.2.0`
+**Current:** `1.4.0`
 **Format:** Semantic versioning (`X.Y.Z`)
 
 **Purpose:** JSON Schema validation rules version - tracks structure of final output data.
@@ -622,18 +644,39 @@ When releasing a new version:
 
 ## Reference Data
 
-### Monster Extraction Statistics (v0.4.2)
+### Dataset Statistics (v0.8.5)
 
-- **Total monsters**: 296
-- **Source pages**: 261-394 (134 pages)
-- **Field coverage**: 27 fields, 100% required fields
-- **Optional field rates**:
+**Monsters (296 entries):**
+- Source pages: 261-394 (134 pages)
+- Field coverage: 27 fields, 100% required fields
+- Optional field rates:
   - Legendary actions: 10.1%
   - Reactions: 2.7%
   - Condition immunities: 29.7%
   - Damage immunities: 42.6%
   - Damage resistances: 20.3%
   - Damage vulnerabilities: 5.1%
+
+**Equipment (111 items):**
+- Weapons: 37, Armor: 14, Adventuring gear: 60
+- Properties: 11 types (finesse, heavy, light, loading, etc.)
+
+**Spells (319 entries):**
+- Levels: cantrip through 9th level
+- Schools: 8 schools (abjuration, conjuration, etc.)
+- Effects: healing (10 spells, 100%), AOE (79 spells, 24.8%), range (319 spells, 100%)
+
+**Tables (23 entries):**
+- Equipment tables, expenses, services
+- Multi-page handling, column alignment
+
+**Lineages (13 entries):**
+- Base lineages: 9, Subraces: 4
+- Ability modifiers, traits, languages
+
+**Classes (12 entries):**
+- Full progression tables (levels 1-20)
+- Saving throw proficiencies, spellcasting details
 
 ### PDF Typography (SRD 5.1)
 
