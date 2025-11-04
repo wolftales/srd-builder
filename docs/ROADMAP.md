@@ -7,9 +7,6 @@ but the long-term vision remains: ingest **source PDFs** under
 `rulesets/<ruleset>/raw/*.pdf` and produce **deterministic JSON datasets** in
 multiple stages.
 
-> Next milestone: **v0.3.0 focuses entirely on PDF extraction** so the
-> fixtures used today can be replaced with real source pulls.
-
 ```
 PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
         rulesets/<ruleset>/raw/extracted/monsters_raw.json
@@ -21,6 +18,35 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
                        ▼
             dist/<ruleset>/data/monsters.json  ← clean, deterministic output
 ```
+
+---
+
+## 📊 Milestone Status
+
+**Completed:**
+- ✅ v0.1.0 — Foundation (infrastructure & tooling)
+- ✅ v0.2.0 — End-to-End Pipeline (fixture-based validation)
+- ✅ v0.3.0 — PDF Extraction (296 monsters from PDF)
+- ✅ v0.4.0 — Structured Fields (AC, HP parsing)
+- ✅ v0.5.0 — Equipment Dataset (111 items)
+- ✅ v0.5.1 — Action Parsing & Ability Modifiers (structured combat)
+- ✅ v0.6.2 — Spells Dataset (319 spells)
+- ✅ v0.7.0 — Reference Tables (23 tables + indexer)
+- ✅ v0.8.0 — Lineages Dataset (13 lineages)
+- ✅ v0.8.1 — Alias System & PDF Metadata
+- ✅ v0.8.2 — Classes Dataset (12 classes)
+- ✅ v0.8.3 — Equipment Cleanup (proficiency field)
+- ✅ v0.8.4 — Character Creation Blockers (ability modifiers, range structure)
+- ✅ v0.8.5 — Spell Enhancements (healing 100%, AOE +43%)
+
+**Planned:**
+- 🔧 v0.9.0 — Table Extraction Expansion (infrastructure for v0.10+)
+- 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
+- 📖 v0.11.0 — Features Dataset (class/racial features)
+- 📜 v0.12.0 — Rules Dataset (core mechanics)
+- 🎨 v0.12.0 — Quality & Polish (final cleanup)
+- 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
+
 ---
 
 ## **v0.1.0 — Foundation** ✅
