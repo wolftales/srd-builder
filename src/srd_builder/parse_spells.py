@@ -314,11 +314,46 @@ def _extract_effects(description: str) -> dict[str, Any]:
         effects["save"] = {"ability": ability, "on_success": on_success}
 
     # Extract healing
-    # Pattern: Dice-based healing like "1d8 + your spellcasting ability modifier"
-    healing_pattern = r"regains?\s+(?:a\s+number\s+of\s+)?hit\s+points\s+equal\s+to\s+(\d+d\d+)"
-    healing_match = re.search(healing_pattern, description, re.IGNORECASE)
-    if healing_match:
-        effects["healing"] = {"dice": healing_match.group(1)}
+    # Pattern 1: Dice-based with modifier like "4d8 + 15 hit points" (Regenerate)
+    dice_with_modifier_pattern = r"regains?\s+(\d+d\d+\s*[+\-]\s*\d+)\s+hit\s+points"
+    dice_mod_match = re.search(dice_with_modifier_pattern, description, re.IGNORECASE)
+
+    # Pattern 2: Dice-based like "regains a number of hit points equal to 1d8"
+    dice_healing_pattern = (
+        r"regains?\s+(?:a\s+number\s+of\s+)?hit\s+points\s+equal\s+to\s+(\d+d\d+)"
+    )
+    dice_match = re.search(dice_healing_pattern, description, re.IGNORECASE)
+
+    # Pattern 3: "Regain all hit points" (Wish)
+    full_healing_pattern = r"regains?\s+all\s+hit\s+points"
+    full_match = re.search(full_healing_pattern, description, re.IGNORECASE)
+
+    # Pattern 4: Conditional healing like "regain hit points equal to half the damage dealt"
+    conditional_healing_pattern = r"regains?\s+hit\s+points\s+equal\s+to\s+(.+?)(?:\.|,|\s+Until)"
+    conditional_match = re.search(conditional_healing_pattern, description, re.IGNORECASE)
+
+    # Pattern 5: Fixed amount healing like "regain 70 hit points" or "restore up to 700 hit points"
+    fixed_healing_pattern = r"(?:regains?|restore(?:s)?(?:\s+up\s+to)?)\s+(\d+)\s+hit\s+points"
+    fixed_match = re.search(fixed_healing_pattern, description, re.IGNORECASE)
+
+    if dice_mod_match:
+        # Dice with modifier (like Regenerate: 4d8+15)
+        effects["healing"] = {"dice": dice_mod_match.group(1).replace(" ", "")}
+    elif dice_match:
+        # Dice-based (like Cure Wounds: 1d8)
+        effects["healing"] = {"dice": dice_match.group(1)}
+    elif full_match:
+        # Full healing (like Wish: regain all hit points)
+        effects["healing"] = {"condition": "all hit points"}
+    elif conditional_match and not fixed_match:
+        # Conditional healing (like Vampiric Touch: half the necrotic damage dealt)
+        condition_text = conditional_match.group(1).strip()
+        # Only capture if it's not a simple dice pattern we already caught
+        if "d" not in condition_text or "damage" in condition_text.lower():
+            effects["healing"] = {"condition": condition_text}
+    elif fixed_match:
+        # Fixed amount (like Heal: 70 HP, Mass Heal: 700 HP)
+        effects["healing"] = {"amount": int(fixed_match.group(1))}
 
     # Extract spell attack
     attack_pattern = r"(?:make\s+a\s+)?(melee|ranged)\s+spell\s+attack"
@@ -327,27 +362,71 @@ def _extract_effects(description: str) -> dict[str, Any]:
         effects["attack"] = {"type": attack_match.group(1).lower() + "_spell"}
 
     # Extract area (handle PDF spacing like "20- foot- radius sphere")
-    # Pattern 1: Standard "X-foot radius sphere/cone/cube/cylinder"
-    area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
-    area_match = re.search(area_pattern, description, re.IGNORECASE)
-    if area_match:
+    # Pattern 1: Cylinder with dimensions like "10-foot-radius, 40-foot-high cylinder" or "10 feet tall with a 60-foot radius"
+    cylinder_pattern1 = r"(\d+)-?\s*foot[-\s]*radius[-\s]*,\s*(\d+)-?\s*foot[-\s]*high\s+cylinder"
+    cylinder_pattern2 = (
+        r"cylinder\s+that\s+is\s+\d+\s+feet\s+tall\s+with\s+a\s+(\d+)-?\s*foot[-\s]*radius"
+    )
+    cylinder_match1 = re.search(cylinder_pattern1, description, re.IGNORECASE)
+    cylinder_match2 = re.search(cylinder_pattern2, description, re.IGNORECASE)
+
+    if cylinder_match1:
         effects["area"] = {
-            "shape": area_match.group(3).lower(),
-            "size": int(area_match.group(1)),
+            "shape": "cylinder",
+            "size": int(cylinder_match1.group(1)),
+            "unit": "feet",
+        }
+    elif cylinder_match2:
+        effects["area"] = {
+            "shape": "cylinder",
+            "size": int(cylinder_match2.group(1)),
             "unit": "feet",
         }
     else:
-        # Pattern 2: Line spells like "100 feet long and 5 feet wide"
-        line_pattern = r"(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?"
-        line_match = re.search(line_pattern, description, re.IGNORECASE)
-        if line_match:
+        # Pattern 2: Diameter (convert to radius) like "5-foot-diameter sphere"
+        diameter_pattern = r"(\d+)-?\s*foot[-\s]*diameter\s+(sphere|cube)"
+        diameter_match = re.search(diameter_pattern, description, re.IGNORECASE)
+        if diameter_match:
+            # Store diameter as-is (schema uses size generically)
             effects["area"] = {
-                "shape": "line",
-                "size": int(line_match.group(1)),
+                "shape": diameter_match.group(2).lower(),
+                "size": int(diameter_match.group(1)),
                 "unit": "feet",
             }
-            # Optionally capture width if we want to extend the schema
-            # width = int(line_match.group(2)) if line_match.group(2) else None
+        else:
+            # Pattern 3: Standard "X-foot radius sphere/cone/cube/cylinder"
+            area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
+            area_match = re.search(area_pattern, description, re.IGNORECASE)
+            if area_match:
+                effects["area"] = {
+                    "shape": area_match.group(3).lower(),
+                    "size": int(area_match.group(1)),
+                    "unit": "feet",
+                }
+            else:
+                # Pattern 4: Just radius without shape (default to sphere)
+                radius_only_pattern = (
+                    r"(\d+)-?\s*foot[-\s]*radius(?!\s+(sphere|cone|cube|cylinder))"
+                )
+                radius_only_match = re.search(radius_only_pattern, description, re.IGNORECASE)
+                if radius_only_match:
+                    effects["area"] = {
+                        "shape": "sphere",
+                        "size": int(radius_only_match.group(1)),
+                        "unit": "feet",
+                    }
+                else:
+                    # Pattern 5: Line spells like "100 feet long and 5 feet wide"
+                    line_pattern = r"(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?"
+                    line_match = re.search(line_pattern, description, re.IGNORECASE)
+                    if line_match:
+                        effects["area"] = {
+                            "shape": "line",
+                            "size": int(line_match.group(1)),
+                            "unit": "feet",
+                        }
+                        # Optionally capture width if we want to extend the schema
+                        # width = int(line_match.group(2)) if line_match.group(2) else None
 
     return effects
 

@@ -272,18 +272,45 @@
         },
         "healing": {
           "type": "object",
-          "required": [
-            "dice"
-          ],
           "additionalProperties": false,
-          "properties": {
-            "dice": {
-              "type": "string",
-              "pattern": "^\\d+d\\d+(\\s*[+\\-]\\s*\\d+)?$",
-              "description": "Healing dice (e.g., '2d8+5')"
+          "oneOf": [
+            {
+              "required": [
+                "dice"
+              ],
+              "properties": {
+                "dice": {
+                  "type": "string",
+                  "pattern": "^\\d+d\\d+(\\s*[+\\-]\\s*\\d+)?$",
+                  "description": "Healing dice (e.g., '2d8+5')"
+                }
+              }
+            },
+            {
+              "required": [
+                "amount"
+              ],
+              "properties": {
+                "amount": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Fixed healing amount (e.g., 70)"
+                }
+              }
+            },
+            {
+              "required": [
+                "condition"
+              ],
+              "properties": {
+                "condition": {
+                  "type": "string",
+                  "description": "Conditional healing description (e.g., 'half the necrotic damage dealt')"
+                }
+              }
             }
-          },
-          "description": "Healing provided by the spell"
+          ],
+          "description": "Healing provided by the spell (dice-based, fixed amount, or conditional)"
         },
         "save": {
           "type": "object",
