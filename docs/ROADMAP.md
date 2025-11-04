@@ -1258,13 +1258,13 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 
 ---
 
-## **v0.9.5 — Quality & Polish** **[QUALITY]**
+## **v0.12.0 — Quality & Polish** **[QUALITY]**
 
 **Priority:** HIGH - Required before v1.0.0
 **Effort:** Medium
 **Consumer Impact:** IMPROVED - Better data quality across all datasets
 
-**Goal:** Address remaining data quality issues and technical debt before v1.0.0 release.
+**Goal:** Final quality pass before v1.0.0 - address remaining data quality issues and technical debt.
 
 **Why Before v1.0.0?**
 - Clean up known technical debt
@@ -1325,6 +1325,7 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 - [ ] Monster action coverage >60% (add ~50 utility actions)
 - [ ] Cross-dataset references validated
 - [ ] All technical debt items from TODO.md addressed or moved to PARKING_LOT
+- [ ] Ready for v1.0.0 stable release
 
 ---
 
