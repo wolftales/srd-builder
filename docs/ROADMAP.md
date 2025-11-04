@@ -941,10 +941,11 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 
 ---
 
-## **v0.8.4 — Character Creation Blockers** **[QUALITY]** 🔴 CRITICAL
+## **v0.8.4 — Character Creation Blockers** **[QUALITY]** ✅ **COMPLETE**
 
-**Status:** PLANNED - Blackmoor integration blockers
-**Priority:** CRITICAL - Blocks character creation entirely
+**Released:** November 3, 2025
+**Status:** SHIPPED - All character creation blockers resolved
+**Priority:** CRITICAL - Blocked character creation entirely
 **Effort:** Low (small extraction improvements)
 **Consumer Impact:** CRITICAL - Unblocks character creation flow
 
@@ -956,45 +957,47 @@ Real-world integration testing revealed 3 critical gaps not in TODO.md:
 2. Classes missing primary ability and saving throw proficiencies
 3. Spells missing range field (blocks ranged spell attacks)
 
-**Changes:**
+**Delivered:**
 
-1. **Lineage Ability Score Increases** 🔴 CRITICAL
-   - Extract from lineage descriptions (pages 3-7)
-   - Example: Human → `ability_score_increases: [{ability: "all", value: 1}]`
-   - Example: Dwarf → `ability_score_increases: [{ability: "constitution", value: 2}]`
-   - Impact: Unblocks character creation, enables ability score calculations
+1. **Lineage Ability Modifiers** ✅
+   - Renamed: `ability_increases` → `ability_modifiers` (future-proofed for 3.5e negative values)
+   - All 13 lineages updated with modifiers
+   - Example: Human → `ability_modifiers: {strength:1, dexterity:1, constitution:1, intelligence:1, wisdom:1, charisma:1}`
+   - Example: Dwarf → `ability_modifiers: {constitution:2}`
+   - Impact: Enables character creation, supports future editions
 
-2. **Class Primary Ability & Saves** 🔴 CRITICAL
-   - Extract primary ability from class descriptions (pages 8-55)
-   - Extract saving throw proficiencies from class features
-   - Example: Fighter → `primary_ability: ["str", "dex"]` (choice)
-   - Example: Fighter → `saving_throw_proficiencies: ["str", "con"]`
+2. **Class Saving Throw Proficiencies** ✅
+   - Renamed: `saves` → `saving_throw_proficiencies` (clearer naming per Blackmoor)
+   - Normalized: `["Str","Dex"]` → `["strength","dexterity"]` (consistent with rest of schema)
+   - All 12 classes updated
+   - Example: Fighter → `primary_abilities: ["strength","dexterity"]`, `saving_throw_proficiencies: ["strength","constitution"]`
    - Impact: Enables character sheet generation, multiclass prerequisites
 
-3. **Subrace Parent Lineage Links** 🔴 CRITICAL
-   - Add `parent_lineage` reference field to subraces
-   - Example: High Elf → `parent_lineage: "lineage:elf"`
+3. **Subrace Parent Lineage Links** ✅
+   - Added `parent_lineage` reference field to subraces
+   - 4 subraces link to parents: Hill Dwarf → `lineage:dwarf`, High Elf → `lineage:elf`, etc.
    - Impact: Enables trait inheritance resolution
 
-4. **Spell Range Field** 🔴 CRITICAL
-   - Extract range from all 319 spell headers
-   - Format: `range: {value: 120, unit: "feet", type: "ranged"}`
-   - Handle special cases: "touch", "self", "sight", "unlimited"
+4. **Spell Range Field** ✅
+   - Complete range structure redesign: `{type, distance?, area?}`
+   - All 319 spells with range data (183 ranged, 68 self, 65 touch, 14 with area)
+   - Handles complex ranges: "Self (15-foot cone)" → `{type:"self", area:{shape:"cone", size:{value:15, unit:"feet"}}}`
+   - Fixed Unicode dash handling in PDF extraction
    - Impact: Enables ranged spell attacks, spell targeting, VTT integration
 
-**Implementation:**
-- `src/srd_builder/parse_lineages.py` - Add ability score extraction
-- `src/srd_builder/parse_classes.py` - Add primary ability and saves extraction
-- `src/srd_builder/parse_spells.py` - Add range field extraction
-- Update schemas: lineage.schema.json, class.schema.json, spell.schema.json
+**Quality Metrics:**
+- ✅ All 6 datasets production-ready (5-star for Blackmoor)
+- ✅ 114 tests passing
+- ✅ Zero lineages without ability_modifiers
+- ✅ All subraces have parent_lineage
+- ✅ All classes have saving_throw_proficiencies
+- ✅ Zero spells with null range
 
-**Testing:**
-- Verify Human has +1 all stats
-- Verify Fighter has Str/Dex choice and Str/Con saves
-- Verify High Elf links to Elf parent
-- Verify all 319 spells have range field
-
-**Schema:** 1.3.1 (minor - new fields added)
+**Breaking Changes:**
+- Schema: 1.3.0 → 1.4.0
+- Lineages: `ability_increases` → `ability_modifiers`, added `parent_lineage`
+- Classes: `saves` → `saving_throw_proficiencies`, lowercase ability names
+- Spells: Range structure completely redesigned
 
 ---
 
