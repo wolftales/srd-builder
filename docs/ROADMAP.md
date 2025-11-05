@@ -77,20 +77,17 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 
 **Progress:** 8/11 datasets complete (73%)
 
-**Completed Datasets:**
-- ✅ Monsters (296 entries) - Monster statblocks with structured combat actions
-- ✅ Equipment (111 items) - Weapons (37), Armor (14), Adventuring gear (60)
-- ✅ Spells (319 spells) - Healing (100%), AOE (24.8%), Range (100%)
-- ✅ Tables (39 tables) - 15 PDF-extracted + 12 class + 5 reference + 5 misc + 2 calculated convenience
-- ✅ Lineages (13 lineages) - Base lineages (9), Subraces (4)
-- ✅ Classes (12 classes) - Full progression tables (levels 1-20)
+**What You Can Build Right Now:**
+- ✅ **Character Sheet App** - Full classes, lineages, ability scores, equipment, and spell lists
+- ✅ **Monster Manual** - Complete statblocks with structured combat actions (296 creatures)
+- ✅ **Spell Database** - Searchable spell effects with components, range, duration, healing/damage
+- ✅ **Equipment Shop** - Weapons, armor, adventuring gear with costs and properties
+- ✅ **Reference Tables** - Character advancement, spell slots, class progressions, travel pace
 
-**Remaining Work:**
-- v0.10.0: Conditions dataset (~15-20 conditions)
-- v0.11.0: Features dataset (class/racial features with cross-references)
-- v0.12.0: Rules dataset (core mechanics, variant rules, CALCULATED tables as rules)
-- v0.13.0: Quality & Polish (final cleanup, cross-dataset validation)
-- v1.0.0: First stable release with all datasets
+**Missing for Complete 5e Implementation:**
+- ⏳ **Conditions** (v0.10.0) - Status effects (poisoned, frightened, etc.) referenced in spells/abilities
+- ⏳ **Features** (v0.11.0) - Class/racial features (Action Surge, Darkvision) with full descriptions
+- ⏳ **Rules** (v0.12.0) - Core mechanics (advantage, saving throws, combat actions)
 
 **Note on CALCULATED Tables:**
 - `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**
