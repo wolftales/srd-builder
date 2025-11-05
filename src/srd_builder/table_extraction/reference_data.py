@@ -153,57 +153,12 @@ REFERENCE_TABLES: dict[str, dict[str, Any]] = {
 # ============================================================================
 # PRICING TABLES
 # Item/service tables with costs
+# NOTE: food_drink_lodging, services, and lifestyle_expenses moved to TEXT_PARSED_TABLES
+# to use coordinate-based PDF extraction instead of hardcoded data (v0.9.3)
 # ============================================================================
 
 PRICING_TABLES: dict[str, dict[str, Any]] = {
-    "food_drink_lodging": {
-        "headers": ["Item", "Cost"],
-        "rows": [
-            ["Ale (gallon)", "2 sp"],
-            ["Ale (mug)", "4 cp"],
-            ["Banquet (per person)", "10 gp"],
-            ["Bread (loaf)", "2 cp"],
-            ["Cheese (hunk)", "1 sp"],
-            ["Inn stay per day (Squalid)", "7 cp"],
-            ["Inn stay per day (Poor)", "1 sp"],
-            ["Inn stay per day (Modest)", "5 sp"],
-            ["Inn stay per day (Comfortable)", "8 sp"],
-            ["Inn stay per day (Wealthy)", "2 gp"],
-            ["Inn stay per day (Aristocratic)", "4 gp"],
-            ["Meals per day (Squalid)", "3 cp"],
-            ["Meals per day (Poor)", "6 cp"],
-            ["Meals per day (Modest)", "3 sp"],
-            ["Meals per day (Comfortable)", "5 sp"],
-            ["Meals per day (Wealthy)", "8 sp"],
-            ["Meals per day (Aristocratic)", "2 gp"],
-            ["Wine (common, pitcher)", "2 sp"],
-            ["Wine (fine, bottle)", "10 gp"],
-        ],
-    },
-    "services": {
-        "headers": ["Service", "Cost"],
-        "rows": [
-            ["Coach cab (between towns)", "3 cp per mile"],
-            ["Coach cab (within city)", "1 cp"],
-            ["Hireling (skilled)", "2 gp per day"],
-            ["Hireling (untrained)", "2 sp per day"],
-            ["Messenger", "2 cp per mile"],
-            ["Road or gate toll", "1 cp"],
-            ["Ship's passage", "1 sp per mile"],
-        ],
-    },
-    "lifestyle_expenses": {
-        "headers": ["Lifestyle", "Cost per Day"],
-        "rows": [
-            ["Wretched", "—"],
-            ["Squalid", "1 sp"],
-            ["Poor", "2 sp"],
-            ["Modest", "1 gp"],
-            ["Comfortable", "2 gp"],
-            ["Wealthy", "4 gp"],
-            ["Aristocratic", "10 gp minimum"],
-        ],
-    },
+    # All pricing tables now extracted via TEXT_PARSED_TABLES
 }
 
 # ============================================================================
@@ -831,13 +786,14 @@ def get_table_data(simple_name: str) -> dict[str, Any] | None:
     if simple_name in REFERENCE_TABLES:
         return REFERENCE_TABLES[simple_name]
 
-    # Check pricing tables
-    if simple_name in PRICING_TABLES:
-        return PRICING_TABLES[simple_name]
-
-    # Check text-parsed tables (requires PDF path - handled by caller)
+    # Check text-parsed tables first (requires PDF path - handled by caller)
+    # These are extracted directly from PDF using coordinate-based parsing
     if simple_name in TEXT_PARSED_TABLES:
         return {"type": "text_parsed", "config": TEXT_PARSED_TABLES[simple_name]}
+
+    # Check pricing tables (currently empty - all migrated to TEXT_PARSED)
+    if simple_name in PRICING_TABLES:
+        return PRICING_TABLES[simple_name]
 
     # Check calculated tables
     if simple_name in CALCULATED_TABLES:

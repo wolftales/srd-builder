@@ -203,6 +203,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
+- 🎯 **v0.12.0** - Rules Dataset (core mechanics)
+- 🎯 **v0.13.0** - Quality & Polish (final cleanup before v1.0.0)
 - 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
 
 ## Testing

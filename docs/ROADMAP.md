@@ -40,6 +40,11 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.8.5 — Spell Enhancements (healing 100%, AOE +43%)
 - ✅ v0.8.6 — Spell Duration Restructure (concentration discoverability)
 - ✅ v0.9.0 — Text-Based Table Extraction (coordinate breakthrough)
+- ✅ v0.9.1 — Equipment Tables Expansion (adventure gear, tools, containers)
+- ✅ v0.9.2 — Equipment Tables Complete (37 tables total)
+
+**In Progress:**
+- 🔄 v0.9.3 — Text Parser Refactor (Phase 2 of 3 complete, utilities + 5 parsers refactored)
 
 **Planned:**
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
@@ -60,7 +65,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
 | `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
 | `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
-| `tables.json` | ✅ Complete | 23 | v0.7.0 | Reference tables (equipment, expenses, services) |
+| `tables.json` | ✅ Complete | 37 | v0.9.2 | Reference tables (12 class progression + 25 equipment/reference) |
 | `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
 | `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
 | `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
@@ -74,13 +79,13 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ Monsters (296 entries) - Monster statblocks with structured combat actions
 - ✅ Equipment (111 items) - Weapons (37), Armor (14), Adventuring gear (60)
 - ✅ Spells (319 spells) - Healing (100%), AOE (24.8%), Range (100%)
-- ✅ Tables (23 tables) - Equipment tables, expenses, services
+- ✅ Tables (37 tables) - 12 class progression + 25 equipment/reference tables
 - ✅ Lineages (13 lineages) - Base lineages (9), Subraces (4)
 - ✅ Classes (12 classes) - Full progression tables (levels 1-20)
 
 **Remaining Work:**
-- v0.9.0: Improve table extraction (infrastructure for v0.10-v0.12)
-- v0.10.0: Conditions dataset (quick win after table improvements)
+- v0.9.3: Text parser refactor (Phase 3 - remaining 8 complex parsers)
+- v0.10.0: Conditions dataset (~15-20 conditions)
 - v0.11.0: Features dataset (class/racial features with cross-references)
 - v0.12.0: Rules dataset (core mechanics, variant rules)
 - v0.13.0: Quality & Polish (final cleanup, cross-dataset validation)
@@ -1341,6 +1346,175 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 - Apply pattern to remaining equipment tables (donning/doffing, adventure gear, mounts, food/lodging)
 - Refactor to config-driven pattern once proven at scale
 - Extract equipment descriptions (currently table-only)
+
+---
+
+## **v0.9.1 — Equipment Tables Expansion** **[DATA]** ✅ **COMPLETE**
+
+**Released:** November 4, 2025
+**Status:** SHIPPED - Adventure gear, tools, containers extracted
+**Priority:** HIGH - Complete equipment reference tables
+**Effort:** Medium
+**Consumer Impact:** NEW - 7 equipment tables (30 → 33 tables total)
+
+**Goal:** Apply coordinate-based extraction to remaining equipment tables.
+
+**Delivered:**
+
+1. **Adventure Gear Table** ✅
+   - 99 items + 4 category sections (Common Goods, Equipment Packs, Clothing, Magic)
+   - Pages 66-68, multi-page extraction
+   - Weight parsing with optional units, cost parsing with gp/sp/cp
+   - Category metadata preserved in headers array
+
+2. **Donning and Doffing Armor Table** ✅
+   - 4 armor categories (Light, Medium, Heavy, Shield)
+   - Page 68, single column right side
+   - Time-based columns (Don, Doff)
+
+3. **Container Capacity Table** ✅
+   - 13 containers with capacity data
+   - Pages 69-70, two-page extraction
+   - Capacity parsing with units (cubic feet, gallons)
+
+**Quality Metrics:**
+- ✅ 33 tables total (was 30)
+- ✅ All 3 new tables extract correctly
+- ✅ Adventure gear: 99 items + 4 categories ✓
+- ✅ Donning/doffing: 4 armor types ✓
+- ✅ Container capacity: 13 containers ✓
+- ✅ Zero behavioral change for existing 30 tables
+
+**Code Quality:**
+- Extended text_table_parser.py with 3 new parser functions
+- Multi-page extraction patterns refined
+- Category metadata handling established
+- All tests passing
+
+---
+
+## **v0.9.2 — Equipment Tables Complete** **[DATA]** ✅ **COMPLETE**
+
+**Released:** November 4, 2025
+**Status:** SHIPPED - All equipment/reference tables extracted
+**Priority:** HIGH - Complete equipment section
+**Effort:** Medium
+**Consumer Impact:** NEW - 7 more tables (33 → 37 tables total)
+
+**Goal:** Complete equipment section extraction (pages 62-74).
+
+**Delivered:**
+
+1. **Tools Table** ✅
+   - 35 items + 3 category sections (Artisan's Tools, Gaming Sets, Musical Instruments)
+   - Page 70, right column
+
+2. **Mounts and Other Animals** ✅
+   - 8 animals (camel, donkey, elephant, horse variants, mastiff, pony, warhorse)
+   - Pages 71-72, multi-page extraction
+   - 4-column layout: Item | Cost | Speed | Capacity
+
+3. **Tack, Harness, and Drawn Vehicles** ✅
+   - 14 items including saddle types (exotic, military, pack, riding)
+   - Page 72, right column
+   - Special logic for saddle subcategories: "Saddle, exotic" pattern
+
+4. **Waterborne Vehicles** ✅
+   - 6 vehicles (galley, keelboat, longship, rowboat, sailing ship, warship)
+   - Page 72, left column
+
+5. **Trade Goods** ✅
+   - 13 commodity items (wheat, flour, chicken, cow, copper, etc.)
+   - Page 72, bottom right
+
+6. **Lifestyle Expenses** ✅
+   - 7 lifestyle categories (wretched → aristocratic)
+   - Pages 72-73, multi-page extraction
+
+7. **Food, Drink, and Lodging** ✅
+   - 19 items (ale, bread, cheese, inn stays, meals)
+   - Pages 73-74, multi-page extraction
+
+8. **Services** ✅
+   - 7 service types (coach hire, messenger, spell casting, etc.)
+   - Page 74, right column
+
+**Quality Metrics:**
+- ✅ 37 tables total (12 class progression + 25 equipment/reference)
+- ✅ All 7 new tables extract correctly
+- ✅ Equipment section pages 62-74 complete
+- ✅ 111 equipment items across all tables
+- ✅ Zero behavioral change for existing 30 tables
+
+**Code Quality:**
+- Extended text_table_parser.py with 7 new parser functions
+- Multi-page extraction patterns proven at scale
+- Saddle subcategory handling (special case)
+- All tests passing
+
+**Tagged:** v0.9.2-equipment-tables (known good state before refactor)
+
+---
+
+## **v0.9.3 — Text Parser Refactor** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
+
+**Released:** TBD
+**Status:** IN PROGRESS - Phase 2 of 3 complete
+**Priority:** MEDIUM - Code quality improvement
+**Effort:** Medium
+**Consumer Impact:** NONE - Zero behavioral change
+
+**Goal:** Reduce duplication in text_table_parser.py through incremental refactoring.
+
+**Progress:**
+
+**Phase 1: Utilities Module** ✅ COMPLETE (commit dd4d091)
+- Created `text_parser_utils.py` with 8 utility functions
+- Functions: `group_words_by_y()`, `extract_region_rows()`, `find_currency_index()`, etc.
+- Refactored `parse_trade_goods_table()` as proof-of-concept
+- File baseline: 1386 lines
+
+**Phase 2: Simple Parser Refactoring** ✅ COMPLETE (commit df8ba79)
+- Refactored 5 parsers to use utilities:
+  - `parse_services_table()`: 62→42 lines (-20)
+  - `parse_waterborne_vehicles_table()`: 75→49 lines (-26)
+  - `parse_lifestyle_expenses_table()`: 91→49 lines (-42)
+  - `parse_food_drink_lodging_table()`: 94→50 lines (-44)
+  - `parse_trade_goods_table()`: 58→40 lines (-18, from Phase 1)
+- Added `extract_multipage_rows()` utility for spanning tables
+- Total reduction: ~150 lines of duplication
+- File size: 1386 → 1255 lines (-131 lines, -9.5%)
+- All 37 tables validated with correct row counts
+
+**Phase 3: Complex Parser Refactoring** 📋 NOT STARTED
+- 8 remaining unrefactored parsers:
+  - `parse_donning_doffing_armor_table()` - Simple 2-column
+  - `parse_exchange_rates_table()` - 5-column currency grid
+  - `parse_mounts_and_other_animals_table()` - 4-column layout
+  - `parse_adventure_gear_table()` - 4 categories with metadata
+  - `parse_tools_table()` - 3 categories with metadata
+  - `parse_tack_harness_vehicles_table()` - Saddle subcategories (special logic)
+  - `parse_armor_table()` - Multi-column (AC, Strength, Stealth)
+  - `parse_weapons_table()` - Multi-column + categories
+- Estimated reduction: ~300-400 more lines
+- Target: <900 lines total (from 1386 baseline)
+
+**Quality Metrics:**
+- ✅ 5/14 parsers refactored (35% complete)
+- ✅ Zero behavioral change (all 37 tables extract identically)
+- ✅ File reduced 9.5% (1386 → 1255 lines)
+- ✅ All tests passing
+
+**Benefits:**
+- Reduced code duplication
+- Consistent extraction patterns
+- Easier to maintain and extend
+- Foundation for future config-driven architecture
+
+**Next Steps:**
+- User decision: Continue Phase 3 or pause refactor
+- Option A: Refactor remaining 8 parsers (~2-3 hours work)
+- Option B: Defer to future, focus on v0.10.0 Conditions
 
 ---
 
