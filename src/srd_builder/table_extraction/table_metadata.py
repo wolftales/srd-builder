@@ -212,14 +212,20 @@ TABLES: dict[str, dict[str, Any]] = {
         "pattern_type": "text_region",  # Modern data-driven extraction
         "source": "srd",
         "pages": [84],
-        "headers": ["Pace", "Distance per Minute", "Distance per Hour", "Distance per Day"],
-        "region": {"x_min": 320, "x_max": 470, "y_min": 570, "y_max": 655},
-        "column_boundaries": [370, 410, 444],  # Split at x=370, 410, 444 for 4 columns
+        "headers": [
+            "Pace",
+            "Distance per Minute",
+            "Distance per Hour",
+            "Distance per Day",
+            "Effect",
+        ],
+        "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
+        "column_boundaries": [370, 410, 444, 470],  # Split at x=370, 410, 444, 470 for 5 columns
         "chapter": "Movement",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 3},
-        "notes": "Travel pace rates (Fast/Normal/Slow) with 4 columns - modern pattern-based extraction from page 84",
+        "notes": "Travel pace rates (Fast/Normal/Slow) with 5 columns including effects - modern pattern-based extraction from page 84",
     },
     "size_categories": {
         "pattern_type": "text_region",  # Modern data-driven extraction

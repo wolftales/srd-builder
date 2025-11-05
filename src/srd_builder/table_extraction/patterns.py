@@ -411,6 +411,21 @@ def _extract_text_region(
             if row and row[0]:
                 rows.append(row)  # type: ignore[arg-type]
 
+        # Post-process: merge continuation rows (rows where first column is empty)
+        # These are typically units or additional info on subsequent lines
+        merged_rows: list[list[str | int | float]] = []
+        for row in rows:  # type: ignore[assignment]
+            if merged_rows and not row[0]:
+                # Empty first column: merge with previous row
+                for col_idx in range(len(row)):
+                    if row[col_idx]:
+                        prev_val = merged_rows[-1][col_idx]
+                        merged_rows[-1][col_idx] = str(prev_val) + " " + str(row[col_idx])
+            else:
+                # Non-empty first column: new row
+                merged_rows.append(row)  # type: ignore[arg-type]
+        rows = merged_rows
+
     elif num_columns == 2:
         # Two-column table: use column_split_x if provided, otherwise midpoint
         split_x = config.get("column_split_x", (region["x_min"] + region["x_max"]) / 2)
