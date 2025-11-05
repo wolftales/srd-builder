@@ -1798,6 +1798,103 @@ def _extract_split_column(config):  # Reads ALL parameters from config
 
 ---
 
+## **v0.9.7 — Migrate REFERENCE Tables** **[DATA]** 📋 **PLANNED**
+
+**Target Release:** TBD
+**Status:** PLANNING
+**Priority:** MEDIUM - Data completeness
+**Effort:** Medium (~4-6 hours, depends on table locations)
+**Consumer Impact:** LOW - Transparent migration if successful, no impact if tables stay reference
+
+**Goal:** Investigate and migrate extractable REFERENCE tables from hardcoded data to PDF extraction.
+
+**Current State:**
+4 REFERENCE tables in `table_metadata.py`:
+1. `spell_slots_by_level` (20 rows) - Full caster spell progression
+2. `cantrip_damage` (4 rows) - Cantrip damage scaling by level
+3. `travel_pace` (3 rows) - Fast/Normal/Slow travel rates
+4. `creature_size` (6 rows) - Size categories and space
+
+**Investigation Plan:**
+
+Using PAGE_INDEX as guide for likely locations:
+
+1. **cantrip_damage** - Search in:
+   - `spellcasting` section (pages 100-104)
+   - `spell_descriptions` section (pages 114-194)
+   - Look for "cantrip" or "damage dice" tables
+   - Expected: 4-row table with level ranges and dice counts
+
+2. **travel_pace** - Search in:
+   - `movement` section (pages 84-85)
+   - `environment` section (pages 86-87)
+   - Look for "travel pace" or "speed" tables
+   - Expected: 3-row table with Fast/Normal/Slow rates
+
+3. **creature_size** - Search in:
+   - `combat` section (pages 90-99) - likely in "size" subsection
+   - `monsters` section (pages 254-394) - may be in introduction
+   - Look for "size categories" or "space" tables
+   - Expected: 6-row table from Tiny to Gargantuan
+
+4. **spell_slots_by_level** - Investigate:
+   - May be standalone table in `spellcasting` section (pages 100-104)
+   - OR embedded in each class table (already extracted via CLASS_PROGRESSIONS)
+   - Decision: If only in class tables, keep as reference (derived data)
+   - If standalone table exists, extract it
+
+**Success Criteria:**
+
+For each table found in PDF:
+- ✅ Locate exact page number and coordinates
+- ✅ Determine extraction pattern (legacy_parser, text_region, or split_column)
+- ✅ Add configuration to table_metadata.py
+- ✅ Update pattern_type from "reference" to extraction pattern
+- ✅ Verify extraction matches hardcoded data (validation)
+- ✅ Update notes field with "Migrated from reference to PDF extraction"
+
+For tables NOT found as standalone:
+- ✅ Confirm table data is embedded in other content (text or other tables)
+- ✅ Keep pattern_type as "reference"
+- ✅ Update notes to explain why: "Not standalone table - data embedded in [location]"
+- ✅ Update source from "reference" to "derived" if appropriate
+
+**Expected Outcomes:**
+
+**Best case:** All 4 tables found and extracted
+- 4 REFERENCE → 0 REFERENCE (4 migrated to PDF extraction)
+- New extraction patterns for all 4 tables
+
+**Likely case:** 2-3 tables extractable
+- cantrip_damage: Likely found (common reference table)
+- travel_pace: Likely found (common reference table)
+- creature_size: Possibly found (may be in text only)
+- spell_slots_by_level: Likely embedded in class tables (keep reference)
+
+**Worst case:** 0-1 tables extractable
+- Most are embedded in prose or class tables
+- Keep all as reference
+- Document investigation in notes
+
+**Files to Modify:**
+- `src/srd_builder/table_extraction/table_metadata.py` - Update configurations
+- Possibly `src/srd_builder/table_extraction/text_table_parser.py` - Add new parsers if needed
+- `docs/ROADMAP.md` - Document findings and results
+
+**Deliverables:**
+1. Investigation report for each of 4 tables (found/not found, location, reasoning)
+2. Extraction patterns for any extractable tables
+3. Updated table_metadata.py with findings (either extracted or documented why not)
+4. Validation that extractions match hardcoded data (for migrated tables)
+5. Updated documentation in ROADMAP
+
+**Next Steps After v0.9.7:**
+- **v0.9.8:** Migrate CLASS_PROGRESSIONS (12 class tables from PDF)
+- **v0.9.9:** Convert legacy_parser tables to generic patterns
+- **v0.10.0:** Conditions dataset
+
+---
+
 ## **v0.10.0 — Conditions Dataset** **[FEATURE]** 📋 PLANNED
 
 **Status:** PLANNED - Next priority feature
