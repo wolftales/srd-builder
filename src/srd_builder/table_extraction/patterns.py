@@ -343,10 +343,57 @@ def _extract_text_region(
 ) -> RawTable:
     """Extract text-region table (single page region).
 
-    Similar to split_column but for single region.
+    Extracts table from a defined rectangular region on a single page.
+    Handles cases where PyMuPDF splits tables into multiple 1-row tables.
+
+    Config requirements:
+        - pages: [int] - Single page number
+        - headers: list[str] - Column headers
+        - region: dict with x_min, x_max, y_min, y_max coordinates
     """
-    # TODO: Implement once we have more examples
-    raise NotImplementedError(f"text_region pattern not yet implemented for {simple_name}")
+    import pymupdf as fitz
+
+    pages = config["pages"]
+    if not isinstance(pages, list) or len(pages) != 1:
+        raise ValueError(f"{simple_name}: text_region requires single page, got {pages}")
+
+    page_num = pages[0]
+    headers = config["headers"]
+    region = config["region"]
+
+    doc = fitz.open(pdf_path)
+    page_obj = doc[page_num - 1]  # Convert to 0-indexed
+
+    # Find all tables within the specified region
+    tables = page_obj.find_tables()
+    rows: list[list[str | int | float]] = []
+
+    # Collect all table rows within the region
+    for table in tables:
+        bbox = table.bbox
+        # Check if table is within our region
+        if (
+            region["x_min"] <= bbox[0] <= region["x_max"]
+            and region["y_min"] <= bbox[1] <= region["y_max"]
+        ):
+            extracted = table.extract()
+            rows.extend(extracted)
+
+    doc.close()
+
+    # Create RawTable
+    return RawTable(
+        table_id=table_id,
+        simple_name=simple_name,
+        page=page_num,
+        headers=headers,
+        rows=rows,
+        extraction_method="text_region",
+        section=section,
+        chapter=config.get("chapter"),
+        confirmed=config.get("confirmed", False),
+        source=config.get("source", "srd"),
+    )
 
 
 def _extract_multipage_text_region(

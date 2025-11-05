@@ -203,27 +203,30 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 30},
     },
     # ═══════════════════════════════════════════════════════════
-    # PDF EXTRACTED TABLES - Movement and Combat reference tables
+    # PDF EXTRACTED TABLES - Text region extraction (data-driven)
+    # Using modern pattern-based extraction (NOT legacy_parser)
     # ═══════════════════════════════════════════════════════════
     "travel_pace": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "text_region",  # Modern data-driven extraction
         "source": "srd",
         "pages": [84],
-        "parser": "parse_travel_pace_table",
+        "headers": ["Pace", "Distance per Minute", "Distance per Hour", "Distance per Day"],
+        "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
         "chapter": "Movement",
-        "confirmed": False,  # Pending extraction implementation
+        "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 3},
-        "notes": "Travel pace rates (Fast/Normal/Slow) - extracted from page 84",
+        "notes": "Travel pace rates (Fast/Normal/Slow) - modern pattern-based extraction from page 84",
     },
     "creature_size": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "text_region",  # Modern data-driven extraction
         "source": "srd",
         "pages": [92],
-        "parser": "parse_creature_size_table",
+        "headers": ["Size", "Space"],
+        "region": {"x_min": 320, "x_max": 465, "y_min": 200, "y_max": 265},
         "chapter": "Combat",
-        "confirmed": False,  # Pending extraction implementation
+        "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 6},
-        "notes": "Size categories (Tiny through Gargantuan) - extracted from page 92",
+        "notes": "Size categories (Tiny through Gargantuan) - modern pattern-based extraction from page 92",
     },
     # ═══════════════════════════════════════════════════════════
     # CLASS PROGRESSION TABLES - Hardcoded (will extract in v0.9.6)
