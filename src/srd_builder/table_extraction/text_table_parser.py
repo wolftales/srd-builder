@@ -701,3 +701,99 @@ def parse_container_capacity_table(pdf_path: str, pages: list[int]) -> dict[str,
         logger.warning(f"Expected 13 container capacity entries, found {len(items)}")
 
     return {"headers": headers, "rows": items}
+
+
+def parse_tools_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Tools table from PDF.
+
+    Single-column table on page 70 right side.
+    Contains 35 items with 3 category headers:
+    - Artisan's tools (17 items)
+    - Gaming set (2 items)
+    - Musical instrument (8 items)
+
+    Headers: Item | Cost | Weight
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Item", "Cost", "Weight"]
+    items: list[list[str]] = []
+
+    page = doc[pages[0] - 1]
+    words = page.get_text("words")
+
+    rows: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 140 < y0 < 565:  # Right column, Tools section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows:
+                rows[y_key] = []
+            rows[y_key].append((x0, text))
+
+    # Track categories
+    categories: dict[str, dict[str, Any]] = {}
+    current_category: str | None = None
+
+    for y_pos in sorted(rows.keys()):
+        row_words = sorted(rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip main header
+        if row_text in ["Item Cost Weight", "Tools"]:
+            continue
+
+        # Check if this is a category header (no price/weight)
+        has_currency = any(curr in row_text for curr in ["gp", "sp", "cp"])
+        has_dash = "—" in row_text
+
+        if not has_currency and not has_dash:
+            # Category header
+            current_category = row_text
+            categories[current_category] = {"row_index": len(items), "items": []}
+            items.append([row_text, "—", "—"])
+        else:
+            # Regular item - parse into [Item, Cost, Weight]
+            words_list = [text for x, text in row_words]
+
+            # Find currency position
+            currency_idx = None
+            for i, word in enumerate(words_list):
+                if word in ["gp", "sp", "cp"]:
+                    currency_idx = i
+                    break
+
+            if currency_idx:
+                # Item name: everything before cost amount
+                name_parts = words_list[: currency_idx - 1]
+                item_name = " ".join(name_parts)
+
+                # Cost: amount + currency
+                cost_amount = words_list[currency_idx - 1]
+                currency = words_list[currency_idx]
+                cost = f"{cost_amount} {currency}"
+
+                # Weight: everything after currency
+                weight_parts = words_list[currency_idx + 1 :]
+                weight = " ".join(weight_parts) if weight_parts else "—"
+
+                items.append([item_name, cost, weight])
+
+                # Track category membership
+                if current_category:
+                    categories[current_category]["items"].append(
+                        {"name": item_name, "row_index": len(items) - 1}
+                    )
+
+    doc.close()
+
+    if len(items) != 38:  # 35 items + 3 category headers
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 38 total entries (35 items + 3 categories), found {len(items)}")
+
+    return {"headers": headers, "rows": items, "categories": categories}

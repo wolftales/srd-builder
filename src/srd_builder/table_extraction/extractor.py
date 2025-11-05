@@ -234,6 +234,7 @@ class TableExtractor:
             parse_container_capacity_table,
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
+            parse_tools_table,
             parse_weapons_table,
         )
 
@@ -244,6 +245,7 @@ class TableExtractor:
             "parse_container_capacity_table": parse_container_capacity_table,
             "parse_donning_doffing_armor_table": parse_donning_doffing_armor_table,
             "parse_exchange_rates_table": parse_exchange_rates_table,
+            "parse_tools_table": parse_tools_table,
             "parse_weapons_table": parse_weapons_table,
         }
 

@@ -312,6 +312,16 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "Time requirements for putting on/removing armor",
     },
     {
+        "id": "table:tools",
+        "simple_name": "tools",
+        "name": "Tools",
+        "page": [70],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "35 tools with 3 categories (Artisan's tools, Gaming set, Musical instrument)",
+    },
+    {
         "id": "table:armor",
         "simple_name": "armor",
         "name": "Armor",

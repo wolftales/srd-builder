@@ -232,6 +232,10 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_exchange_rates_table",
         "pages": [62],
     },
+    "tools": {
+        "parser": "parse_tools_table",
+        "pages": [70],
+    },
     "weapons": {
         "parser": "parse_weapons_table",
         "pages": [65, 66],
