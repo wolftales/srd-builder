@@ -45,9 +45,9 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.3 — Text Parser Refactor & Migration Tools (utilities + migration guide)
 - ✅ v0.9.4 — Migrate CALCULATED Tables (ability_scores_and_modifiers to PDF extraction)
 - ✅ v0.9.5 — Pattern-Based Architecture Refactor (table_metadata + extraction engines)
+- ✅ v0.9.6 — TOC & Page Index (PAGE_INDEX module with 23 sections, 24 reference tables)
 
 **Planned:**
-- 📋 v0.9.6 — TOC & Page Index (ascending-order table of contents, accurate PDF pages)
 - 📋 v0.9.7 — Migrate REFERENCE Tables (spell_slots_by_level, travel_pace, etc.)
 - 📋 v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 - 📋 v0.9.9 — Equipment Assembly (replace extractor with table-based assembly)
@@ -1673,6 +1673,100 @@ def _extract_split_column(config):  # Reads ALL parameters from config
 - ✅ Zero behavioral change (output identical to v0.9.4)
 - ✅ Code organization: 4 focused modules vs monolithic file
 - ✅ experience_by_cr proves concept (34 rows extracted via generic engine)
+
+---
+
+## **v0.9.6 — TOC & Page Index** **[DOCUMENTATION]** ✅ **COMPLETE**
+
+**Released:** November 5, 2025 (commit 62d5f0f, tag v0.9.6)
+**Status:** COMPLETE - Comprehensive table of contents with accurate page numbers
+**Priority:** MEDIUM - Foundation for future table corrections
+**Effort:** Small (~3 hours)
+**Consumer Impact:** LOW - Improves meta.json page_index accuracy
+
+**Goal:** Create single source of truth for SRD 5.1 PDF content locations with accurate page numbers.
+
+**Problem Statement:**
+- Page numbers scattered across codebase and potentially inaccurate
+- No comprehensive table of contents for 403-page SRD PDF
+- table_targets.py had incorrect pages (TOC references, not actual PDF pages)
+- Need foundation for migrating remaining tables to PDF extraction
+
+**Delivered:**
+
+1. **PAGE_INDEX Module** (`src/srd_builder/page_index.py`) ✅
+   - 23 sections covering 402/403 pages (page 2 is blank)
+   - All page numbers verified from actual PDF extraction
+   - Sections in ascending page order for easy navigation
+   - Dataset cross-references (which pages feed into which JSON outputs)
+   - Structure:
+   ```python
+   PAGE_INDEX: dict[str, Section] = {
+       "legal": {"pages": {"start": 1, "end": 1}, "description": "..."},
+       "lineages": {"pages": {"start": 3, "end": 7}, "dataset": "lineages"},
+       "classes": {"pages": {"start": 8, "end": 55}, "dataset": "classes"},
+       "equipment": {"pages": {"start": 62, "end": 74}, "dataset": "equipment"},
+       "spellcasting": {"pages": {"start": 100, "end": 104}},
+       "spell_descriptions": {"pages": {"start": 114, "end": 194}, "dataset": "spells"},
+       "monsters": {"pages": {"start": 254, "end": 394}, "dataset": "monsters"},
+       "appendix_npcs": {"pages": {"start": 395, "end": 403}},
+       # ... 23 total sections
+   }
+   ```
+
+2. **TABLES_APPENDIX** ✅
+   - 24 reference tables with verified page numbers
+   - Organized by category (Equipment, Character Creation, Combat, etc.)
+   - Page numbers pulled from table_metadata.py (actual PDF pages)
+   - 17 tables with actual pages (extracted from PDF)
+   - 7 calculated/reference tables (page: None)
+   - Example:
+   ```python
+   TABLES_APPENDIX = [
+       {"name": "Armor", "page": 63, "category": "Equipment"},
+       {"name": "Weapons", "page": 65, "category": "Equipment"},
+       {"name": "Adventure Gear", "page": 68, "category": "Equipment"},  # Corrected
+       {"name": "Ability Scores and Modifiers", "page": 76, "category": "Character Creation"},
+       {"name": "Experience Points by Challenge Rating", "page": 258, "category": "Combat"},
+       {"name": "Proficiency Bonus by Level", "page": None, "category": "Reference"},
+       # ... 24 total tables
+   ]
+   ```
+
+3. **Helper Functions** ✅
+   - `get_section_at_page(page: int) -> str | None` - Find section containing page
+   - `get_all_pages_by_dataset(dataset: str) -> list[int]` - All pages for a dataset
+   - `validate_page_coverage() -> dict` - Gap detection (confirms 402/403 pages covered)
+   - `get_tables_toc() -> str` - Formatted table of contents display
+
+4. **build.py Integration** ✅
+   - Updated `_build_page_index()` to use PAGE_INDEX as source of truth
+   - Replaces hardcoded page numbers with authoritative source
+   - meta.json now includes comprehensive page_index
+
+5. **Page Corrections** ✅
+   - Fixed Adventure Gear page: 68 not 69 (in both PAGE_INDEX and table_metadata.py)
+   - All equipment table pages verified from table_metadata.py
+   - Updated normalized fixtures to v0.9.5 with schema v1.4.0
+
+**Coverage Analysis:**
+- Total PDF pages: 403
+- Pages covered: 402/403 (100% of content)
+- Missing: Page 2 (blank page, confirmed)
+- Gaps: None
+
+**Page Number Accuracy:**
+- All page numbers are actual PDF pages (0-indexed + 1)
+- NOT table of contents references (which had wrong page numbers)
+- Verified from actual PDF extraction (table_metadata.py)
+
+**Benefits:**
+- ✅ **Single source of truth:** PAGE_INDEX is authoritative for all page locations
+- ✅ **Complete coverage:** 23 sections spanning entire 403-page PDF
+- ✅ **Accurate pages:** All numbers verified from actual extraction
+- ✅ **Foundation for corrections:** Can now fix table_targets.py and other incorrect pages
+- ✅ **Documentation:** Professional TOC for 5e SRD content
+- ✅ **Navigation:** Easy to find content locations in PDF
 - ✅ All tests passing
 
 **Migration Status:**
