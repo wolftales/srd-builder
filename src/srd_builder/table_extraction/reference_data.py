@@ -14,12 +14,6 @@ from typing import Any
 # ============================================================================
 
 CALCULATED_TABLES = {
-    "ability_scores_and_modifiers": {
-        "formula": lambda score: (score - 10) // 2,
-        "range": range(1, 31),
-        "headers": ["Score", "Modifier"],
-        "format_modifier": lambda mod: f"+{mod}" if mod > 0 else str(mod),
-    },
     "proficiency_bonus": {
         "data": {
             range(1, 5): "+2",
@@ -167,6 +161,10 @@ PRICING_TABLES: dict[str, dict[str, Any]] = {
 # ============================================================================
 
 TEXT_PARSED_TABLES = {
+    "ability_scores_and_modifiers": {
+        "parser": "parse_ability_scores_and_modifiers_table",
+        "pages": [76],
+    },
     "adventure_gear": {
         "parser": "parse_adventure_gear_table",
         "pages": [69],

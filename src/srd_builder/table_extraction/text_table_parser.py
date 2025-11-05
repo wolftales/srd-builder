@@ -1142,3 +1142,85 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         logger.warning(f"Expected ~8 services, found {len(items)}")
 
     return {"headers": headers, "rows": items, "categories": categories}
+
+
+def parse_ability_scores_and_modifiers_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Ability Scores and Modifiers table from PDF.
+
+    This table is split across two columns on page 76:
+    - Left column (bottom): Headers and first row (10-11, +0)
+    - Right column (top): Remaining rows (12-13 through 30, +1 through +10)
+
+    Args:
+        pdf_path: Path to PDF file
+        pages: List containing page number (should be [76])
+
+    Returns:
+        Dict with structured table data including headers and parsed rows
+    """
+    import pymupdf
+
+    from .text_parser_utils import group_words_by_y
+
+    doc = pymupdf.open(pdf_path)
+    page = doc[pages[0] - 1]  # Convert to 0-indexed
+    words = page.get_text("words")
+    doc.close()
+
+    # Split into left and right columns (X < 300 is left, >= 300 is right)
+    # Left column: from headers (Y~615) down to bottom (Y~690)
+    # Right column: from top (Y~70) down to end of table (Y~180)
+    left_words = [w for w in words if w[0] < 300 and 615 <= w[1] <= 690]
+    right_words = [w for w in words if w[0] >= 300 and 70 <= w[1] <= 180]
+
+    # Group by Y-coordinate
+    left_rows = group_words_by_y(left_words)
+    right_rows = group_words_by_y(right_words)
+
+    headers = ["Score", "Modifier"]
+    parsed_rows: list[list[str]] = []
+
+    # Process left column (scores 1-11, top to bottom)
+    for _y_pos, row_words in sorted(left_rows.items()):  # Top to bottom
+        # row_words is list of (x, text) tuples
+        row_text = " ".join([text for x, text in sorted(row_words, key=lambda w: w[0])])
+
+        # Skip header row
+        if "Score" in row_text or "Modifier" in row_text:
+            continue
+
+        # Look for score-modifier pairs (e.g., "10–11 +0", "1 −5")
+        # Note: PDF uses U+2212 (−) for negative, not hyphen-minus (-)
+        words_list = row_text.split()
+        if len(words_list) >= 2 and (
+            words_list[1].startswith("+")
+            or words_list[1].startswith("-")
+            or words_list[1].startswith("−")
+        ):
+            score = words_list[0]
+            modifier = words_list[1]
+            parsed_rows.append([score, modifier])
+
+    # Process right column (continuation, Y~72-171)
+    for _y_pos, row_words in sorted(right_rows.items()):  # Top to bottom
+        # row_words is list of (x, text) tuples
+        row_text = " ".join([text for x, text in sorted(row_words, key=lambda w: w[0])])
+
+        # Look for score-modifier pairs
+        words_list = row_text.split()
+        if len(words_list) >= 2 and (
+            words_list[1].startswith("+")
+            or words_list[1].startswith("-")
+            or words_list[1].startswith("−")
+        ):
+            score = words_list[0]
+            modifier = words_list[1]
+            parsed_rows.append([score, modifier])
+
+    if len(parsed_rows) < 15 or len(parsed_rows) > 17:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 16 ability score rows, found {len(parsed_rows)}")
+
+    return {"headers": headers, "rows": parsed_rows}

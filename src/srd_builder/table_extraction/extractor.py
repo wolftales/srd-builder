@@ -228,6 +228,7 @@ class TableExtractor:
             RawTable with parsed data
         """
         from .text_table_parser import (
+            parse_ability_scores_and_modifiers_table,
             parse_adventure_gear_table,
             parse_armor_table,
             parse_container_capacity_table,
@@ -246,6 +247,7 @@ class TableExtractor:
 
         # Map parser names to functions
         parsers = {
+            "parse_ability_scores_and_modifiers_table": parse_ability_scores_and_modifiers_table,
             "parse_adventure_gear_table": parse_adventure_gear_table,
             "parse_armor_table": parse_armor_table,
             "parse_container_capacity_table": parse_container_capacity_table,

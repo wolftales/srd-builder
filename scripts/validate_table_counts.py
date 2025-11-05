@@ -18,6 +18,8 @@ from pathlib import Path
 # Expected row counts for SRD 5.1 tables
 # Update these values when migrating to new SRD versions
 EXPECTED_COUNTS = {
+    # Character tables (TEXT_PARSED)
+    "ability_scores_and_modifiers": 16,  # Scores 1-30 (score ranges with modifiers −5 to +10)
     # Equipment tables (TEXT_PARSED)
     "armor": 13,  # 3 light + 6 medium + 4 heavy
     "weapons": 37,  # 14 simple + 23 martial

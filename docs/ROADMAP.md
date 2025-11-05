@@ -1521,16 +1521,17 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 
 ## v0.9.4 - Migrate 3 CALCULATED tables to PDF extraction
 - (2-3 hours)
-- Document any that can't be extracted
-- Commit and tag v0.9.4-calculated-tables
+- ability_scores_and_modifiers, proficiency_bonus, carrying_capacity
+- Commit and tag v0.9.4
 
 ## v0.9.5 - Migrate 5 REFERENCE tables to PDF extraction
 - (3-4 hours)
-- Commit and tag v0.9.5-reference-tables
+- experience_by_cr, spell_slots_by_level, etc.
+- Commit and tag v0.9.5
 
 ## v0.9.6 - Migrate 12 CLASS_PROGRESSIONS to PDF extraction
 - (8-12 hours)
-- Commit and tag v0.9.6-class-progressions
+- Commit and tag v0.9.6
 
 ## v0.9.7 - Replace equipment.json extractor with table-based assembly
 - Use coordinate-extracted tables as source
