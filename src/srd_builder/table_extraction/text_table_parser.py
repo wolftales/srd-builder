@@ -1177,6 +1177,11 @@ def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str,
     Spans pages 73 (bottom right) to 74 (top left).
     Contains food/drink/lodging items with costs.
 
+    Categories:
+    - Inn stay per day: Squalid, Poor, Modest, Comfortable, Wealthy, Aristocratic
+    - Meals per day: Squalid, Poor, Modest, Comfortable, Wealthy, Aristocratic
+    - Ale: Gallon, Mug
+
     Headers: Item | Cost
     """
     from .text_parser_utils import (
@@ -1198,6 +1203,10 @@ def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str,
         ],
     )
 
+    # Track category metadata
+    categories: dict[str, dict[str, Any]] = {}
+    current_category: str | None = None
+
     for _y_pos, words_list in rows_to_sorted_text(rows):
         row_text = " ".join(words_list)
 
@@ -1217,15 +1226,55 @@ def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str,
             # Cost: amount + currency
             cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
 
+            current_row = len(items)
+
+            # Detect categories based on item name patterns
+            lifestyle_levels = {
+                "Squalid",
+                "Poor",
+                "Modest",
+                "Comfortable",
+                "Wealthy",
+                "Aristocratic",
+            }
+
+            if item_name in lifestyle_levels:
+                # Rows 3-8: Inn stay per day (first set of lifestyle levels)
+                # Rows 9-14: Meals per day (second set of lifestyle levels)
+                if current_row == 3 or (
+                    current_category == "Inn stay per day" and current_row == 9
+                ):
+                    if current_row == 3:
+                        current_category = "Inn stay per day"
+                    else:
+                        current_category = "Meals per day"
+                    categories[current_category] = {"row_index": current_row, "items": []}
+
+                if current_category:
+                    categories[current_category]["items"].append(
+                        {"name": item_name, "row_index": current_row}
+                    )
+            elif item_name in {"Gallon", "Mug"}:
+                # Ale category
+                if current_category != "Ale":
+                    current_category = "Ale"
+                    categories[current_category] = {"row_index": current_row, "items": []}
+                categories[current_category]["items"].append(
+                    {"name": item_name, "row_index": current_row}
+                )
+            else:
+                # Standalone item, exit category
+                current_category = None
+
             items.append([item_name, cost])
 
-    if len(items) < 8 or len(items) > 15:
+    if len(items) < 8 or len(items) > 20:
         import logging
 
         logger = logging.getLogger(__name__)
-        logger.warning(f"Expected ~11 food/drink/lodging items, found {len(items)}")
+        logger.warning(f"Expected ~17 food/drink/lodging items, found {len(items)}")
 
-    return {"headers": headers, "rows": items}
+    return {"headers": headers, "rows": items, "categories": categories}
 
 
 def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
@@ -1233,6 +1282,10 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
 
     Single column on page 74 top right.
     Contains service items with costs.
+
+    Categories:
+    - Coach cab: Between towns, Within a city
+    - Hireling: Skilled, Untrained
 
     Headers: Service | Cost
     """
@@ -1245,6 +1298,10 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
 
     headers = ["Service", "Cost"]
     items: list[list[str]] = []
+
+    # Track category metadata
+    categories: dict[str, dict[str, Any]] = {}
+    current_category: str | None = None
 
     rows = extract_region_rows(pdf_path, pages[0], x_min=300, y_min=70, y_max=350)
 
@@ -1266,6 +1323,27 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
             cost_parts = words_list[currency_idx - 1 :]
             cost = " ".join(cost_parts)
 
+            current_row = len(items)
+
+            # Detect categories based on service name patterns
+            if service_name in {"Between towns", "Within a city"}:
+                if current_category != "Coach cab":
+                    current_category = "Coach cab"
+                    categories[current_category] = {"row_index": current_row, "items": []}
+                categories[current_category]["items"].append(
+                    {"name": service_name, "row_index": current_row}
+                )
+            elif service_name in {"Skilled", "Untrained"}:
+                if current_category != "Hireling":
+                    current_category = "Hireling"
+                    categories[current_category] = {"row_index": current_row, "items": []}
+                categories[current_category]["items"].append(
+                    {"name": service_name, "row_index": current_row}
+                )
+            else:
+                # Standalone service, exit category
+                current_category = None
+
             items.append([service_name, cost])
 
     if len(items) < 6 or len(items) > 12:
@@ -1274,4 +1352,4 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         logger = logging.getLogger(__name__)
         logger.warning(f"Expected ~8 services, found {len(items)}")
 
-    return {"headers": headers, "rows": items}
+    return {"headers": headers, "rows": items, "categories": categories}
