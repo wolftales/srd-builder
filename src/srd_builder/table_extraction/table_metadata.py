@@ -222,10 +222,10 @@ TABLES: dict[str, dict[str, Any]] = {
         "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
         "column_boundaries": [
             370,
-            407,
-            440,
+            408,
+            441,
             470,
-        ],  # Adjusted to separate 'feet' from 'miles' properly
+        ],  # Pace(~328) | Min(373-407) | Hour(413-440) | Day(444-469) | Effect(470+)
         "chapter": "Movement",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
