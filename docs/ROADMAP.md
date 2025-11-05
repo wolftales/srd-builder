@@ -46,10 +46,12 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.4 — Migrate CALCULATED Tables (ability_scores_and_modifiers to PDF extraction)
 
 **Planned:**
+- 📋 v0.9.5 — Migrate REFERENCE Tables (experience_by_cr, spell_slots_by_level, etc.)
+- 📋 v0.9.6 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
+- 📋 v0.9.7 — Equipment Assembly (replace extractor with table-based assembly)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
-- 📋 v0.12.0 — Rules Dataset (core mechanics) **← Move CALCULATED tables here**
 - 📖 v0.11.0 — Features Dataset (class/racial features)
-- 📜 v0.12.0 — Rules Dataset (core mechanics)
+- 📜 v0.12.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
 - 🎨 v0.13.0 — Quality & Polish (final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
@@ -65,7 +67,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
 | `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
 | `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
-| `tables.json` | ✅ Complete | 37 | v0.9.2 | Reference tables (12 class progression + 25 equipment/reference) |
+| `tables.json` | ✅ Complete | 37+2 | v0.9.4 | Reference tables (15 PDF-extracted + 12 class + 5 reference + 5 misc + 2 calculated) |
 | `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
 | `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
 | `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
@@ -79,7 +81,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ Monsters (296 entries) - Monster statblocks with structured combat actions
 - ✅ Equipment (111 items) - Weapons (37), Armor (14), Adventuring gear (60)
 - ✅ Spells (319 spells) - Healing (100%), AOE (24.8%), Range (100%)
-- ✅ Tables (37 tables) - 12 class progression + 25 equipment/reference tables
+- ✅ Tables (39 tables) - 15 PDF-extracted + 12 class + 5 reference + 5 misc + 2 calculated convenience
 - ✅ Lineages (13 lineages) - Base lineages (9), Subraces (4)
 - ✅ Classes (12 classes) - Full progression tables (levels 1-20)
 
@@ -91,9 +93,12 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - v1.0.0: First stable release with all datasets
 
 **Note on CALCULATED Tables:**
-- `proficiency_bonus` and `carrying_capacity` are convenience tables derived from game rules
-- Not extractable from PDF (proficiency appears in class tables, carrying capacity is a formula)
-- Should be moved to rules dataset in v0.12.0 as rule-based reference tables
+- `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**
+- These are rules expressed as tables - not extractable from PDF source
+- Proficiency bonus appears in every class progression table (not standalone)
+- Carrying capacity is just the formula "Strength × 15" mentioned in ability scores text
+- **Metadata:** These should be marked as `"source": "calculated"` or `"type": "derived_reference"`
+- **Future (v0.12.0):** Move to rules dataset as rule-based reference tables
 
 ---
 

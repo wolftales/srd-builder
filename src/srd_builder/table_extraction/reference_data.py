@@ -9,8 +9,10 @@ All data is sourced from SRD 5.1 and matches the official rulebook.
 from typing import Any
 
 # ============================================================================
-# CALCULATED REFERENCE TABLES
-# These tables are generated from formulas rather than hardcoded data
+# CALCULATED REFERENCE TABLES (CONVENIENCE/DERIVED)
+# These are "rules expressed as tables" - not extractable from PDF source.
+# They are convenience tables derived from game rules for user reference.
+# Future: Move to rules dataset in v0.12.0 as rule-based reference tables.
 # ============================================================================
 
 CALCULATED_TABLES = {
@@ -23,11 +25,15 @@ CALCULATED_TABLES = {
             range(17, 21): "+6",
         },
         "headers": ["Level", "Proficiency Bonus"],
+        "source_type": "derived",  # Not extracted from PDF
+        "description": "Proficiency bonus by character level (appears in all class tables but not as standalone table)",
     },
     "carrying_capacity": {
         "formula": lambda strength: strength * 15,
         "range": range(1, 31),
         "headers": ["Strength Score", "Carrying Capacity (lbs)"],
+        "source_type": "derived",  # Not extracted from PDF
+        "description": "Carrying capacity formula (Strength × 15) expressed as reference table",
     },
 }
 

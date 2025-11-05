@@ -93,13 +93,17 @@ def extract_by_config(
         # Formula-based calculation (ability scores, carrying capacity)
         rows = _generate_formula_rows(config)
         extraction_method = "calculated"
-        notes = config.get("notes", "Calculated from formula")
+        source_type = config.get("source_type", "calculated")
+        description = config.get("description", "Calculated from formula")
+        notes = f"{description} [source_type: {source_type}]"
 
     elif "data" in config:
         # Lookup-based calculation (proficiency bonus)
         rows = _generate_lookup_rows(config)
         extraction_method = "calculated"
-        notes = config.get("notes", "Calculated from lookup table")
+        source_type = config.get("source_type", "calculated")
+        description = config.get("description", "Calculated from lookup table")
+        notes = f"{description} [source_type: {source_type}]"
 
     else:
         raise ValueError(
