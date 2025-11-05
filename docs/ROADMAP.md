@@ -42,13 +42,12 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.0 — Text-Based Table Extraction (coordinate breakthrough)
 - ✅ v0.9.1 — Equipment Tables Expansion (adventure gear, tools, containers)
 - ✅ v0.9.2 — Equipment Tables Complete (37 tables total)
-
-**In Progress:**
-- 🔄 v0.9.3 — Text Parser Refactor (Phase 2 of 3 complete, utilities + 5 parsers refactored)
-
+- ✅ v0.9.3 — Text Parser Refactor & Migration Tools (utilities + migration guide)
+- ✅ v0.9.4 — Migrate CALCULATED Tables (ability_scores_and_modifiers to PDF extraction)
 
 **Planned:**
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
+- 📋 v0.12.0 — Rules Dataset (core mechanics) **← Move CALCULATED tables here**
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics)
 - 🎨 v0.13.0 — Quality & Polish (final cleanup before v1.0.0)
@@ -85,12 +84,16 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ Classes (12 classes) - Full progression tables (levels 1-20)
 
 **Remaining Work:**
-- v0.9.3: Text parser refactor (Phase 3 - remaining 8 complex parsers)
 - v0.10.0: Conditions dataset (~15-20 conditions)
 - v0.11.0: Features dataset (class/racial features with cross-references)
-- v0.12.0: Rules dataset (core mechanics, variant rules)
+- v0.12.0: Rules dataset (core mechanics, variant rules, CALCULATED tables as rules)
 - v0.13.0: Quality & Polish (final cleanup, cross-dataset validation)
 - v1.0.0: First stable release with all datasets
+
+**Note on CALCULATED Tables:**
+- `proficiency_bonus` and `carrying_capacity` are convenience tables derived from game rules
+- Not extractable from PDF (proficiency appears in class tables, carrying capacity is a formula)
+- Should be moved to rules dataset in v0.12.0 as rule-based reference tables
 
 ---
 
@@ -1519,26 +1522,41 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 
 ---
 
-## v0.9.4 - Migrate 3 CALCULATED tables to PDF extraction
-- (2-3 hours)
-- ability_scores_and_modifiers, proficiency_bonus, carrying_capacity
-- Commit and tag v0.9.4
+## **v0.9.4 — Migrate CALCULATED Tables** **[FEATURE]** ✅ COMPLETE
 
-## v0.9.5 - Migrate 5 REFERENCE tables to PDF extraction
-- (3-4 hours)
-- experience_by_cr, spell_slots_by_level, etc.
-- Commit and tag v0.9.5
+**Released:** 2025-01-05 (commit a0b79ec, tag v0.9.4)
+**Status:** COMPLETE
+**Priority:** LOW - Data cleanup
+**Effort:** Small (2 hours)
+**Consumer Impact:** NONE - Transparent migration
 
-## v0.9.6 - Migrate 12 CLASS_PROGRESSIONS to PDF extraction
-- (8-12 hours)
-- Commit and tag v0.9.6
+**Goal:** Migrate extractable CALCULATED tables to PDF extraction.
 
-## v0.9.7 - Replace equipment.json extractor with table-based assembly
-- Use coordinate-extracted tables as source
-- Assemble equipment.json from: armor + weapons + adventure_gear tables
-- Delete extract_equipment.py (old PyMuPDF approach)
-- Benefit: Single source of truth, better accuracy
-- Effort: 3-4 hours
+**Completed:**
+- ✅ Migrated `ability_scores_and_modifiers` from CALCULATED to TEXT_PARSED
+  - Extract from PDF page 76 (two-column layout)
+  - Left column: scores 1-11 (modifiers −5 to +0)
+  - Right column: scores 12-30 (modifiers +1 to +10)
+  - Handle Unicode minus sign (U+2212) for negative modifiers
+  - 16 total rows (was formula-based, now PDF-extracted)
+- ✅ Added to validation script (expected 16 rows)
+
+**Decision on remaining CALCULATED tables:**
+- `proficiency_bonus` and `carrying_capacity` remain CALCULATED
+- These are **convenience tables** derived from game rules, not extractable from PDF
+- Proficiency bonus appears in every class progression table (not standalone)
+- Carrying capacity is just the formula "Strength × 15" mentioned in text
+- **Future:** Move to rules dataset in v0.12.0 as rule-based reference tables
+
+**Metrics:**
+- TEXT_PARSED tables: 15 (was 14)
+- CALCULATED tables: 2 (was 3)
+- Zero behavioral change for remaining calculated tables
+
+**Key Learning:**
+- Two-column table extraction: Read top-to-bottom within each column
+- PDF uses Unicode minus (U+2212), not hyphen-minus (-)
+- Not all "tables" are extractable - some are rules expressed as tables
 
 ---
 
