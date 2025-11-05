@@ -203,3 +203,72 @@ def validate_page_coverage() -> dict[str, list[int]]:
     gaps = sorted(all_pages - covered)
 
     return {"covered": sorted(covered), "gaps": gaps}
+
+
+# ============================================================================
+# TABLES APPENDIX
+# Complete list of reference tables sorted by page number
+# Page numbers from table_metadata.py (actual PDF pages from extraction)
+# ============================================================================
+
+# All tables in ascending page order
+TABLES_APPENDIX: list[dict[str, str | int | None]] = [
+    # Equipment (pages 62-74)
+    {"name": "Standard Exchange Rates", "page": 62, "category": "Equipment"},
+    {"name": "Armor", "page": 63, "category": "Equipment"},  # 63-64
+    {"name": "Donning and Doffing Armor", "page": 64, "category": "Equipment"},
+    {"name": "Weapons", "page": 65, "category": "Equipment"},  # 65-66
+    {"name": "Adventure Gear", "page": 68, "category": "Equipment"},  # 68-69
+    {"name": "Container Capacity", "page": 69, "category": "Equipment"},  # 69-70
+    {"name": "Tools", "page": 70, "category": "Equipment"},
+    {"name": "Mounts and Other Animals", "page": 71, "category": "Equipment"},  # 71-72
+    {"name": "Tack, Harness, and Drawn Vehicles", "page": 72, "category": "Equipment"},
+    {"name": "Waterborne Vehicles", "page": 72, "category": "Equipment"},
+    {"name": "Trade Goods", "page": 72, "category": "Equipment"},
+    {"name": "Lifestyle Expenses", "page": 72, "category": "Equipment"},  # 72-73
+    {"name": "Food, Drink, and Lodging", "page": 73, "category": "Equipment"},  # 73-74
+    {"name": "Services", "page": 74, "category": "Equipment"},
+    # Character Creation (page 76-77)
+    {"name": "Ability Scores and Modifiers", "page": 76, "category": "Character Creation"},
+    {"name": "Typical Difficulty Classes", "page": 77, "category": "Character Creation"},
+    # Combat (page 258)
+    {"name": "Experience Points by Challenge Rating", "page": 258, "category": "Combat"},
+    # Calculated/Reference tables (no specific page - generated from rules)
+    {"name": "Proficiency Bonus by Level", "page": None, "category": "Character Creation"},
+    {"name": "Carrying Capacity", "page": None, "category": "Reference"},
+    {"name": "Travel Pace", "page": None, "category": "Exploration"},
+    {"name": "Spell Slots by Character Level", "page": None, "category": "Magic"},
+    {"name": "Cantrip Damage by Character Level", "page": None, "category": "Magic"},
+    {"name": "Size Categories", "page": None, "category": "Reference"},
+]
+
+
+def get_tables_toc() -> str:
+    """Generate a formatted Tables appendix for display.
+
+    Returns:
+        Formatted tables list in ascending page order
+    """
+    lines = ["Appendix: Tables", "=" * 80, ""]
+
+    # Sort tables by page (None values at end)
+    sorted_tables = sorted(TABLES_APPENDIX, key=lambda t: (t["page"] is None, t["page"] or 0))
+
+    current_category = None
+    for table in sorted_tables:
+        category = table["category"]
+
+        # Print category header when it changes
+        if category != current_category:
+            if current_category is not None:
+                lines.append("")  # Blank line between categories
+            lines.append(f"{category}:")
+            current_category = category
+
+        # Format page number
+        page = f"{table['page']:>3}" if table["page"] else "  *"
+        lines.append(f"  {page}  {table['name']}")
+
+    lines.append("")
+    lines.append("* = Generated/reference table (not extracted from specific page)")
+    return "\n".join(lines)
