@@ -204,130 +204,83 @@ def parse_exchange_rates_table(pdf_path: str, pages: list[int]) -> dict[str, Any
     """Parse Standard Exchange Rates table from PDF.
 
     Currency conversion table showing CP/SP/EP/GP/PP equivalencies.
+    5x6 grid on page 62.
 
-    Args:
-        pdf_path: Path to PDF file
-        pages: List of page numbers containing the table (usually [62])
-
-    Returns:
-        Dict with structured exchange rates table data
+    Headers: Coin | CP | SP | EP | GP | PP
     """
-    # Extract all rows using coordinate analysis
-    all_rows = _extract_rows_by_coordinate(pdf_path, pages)
+    from .text_parser_utils import extract_region_rows, rows_to_sorted_text
 
-    # Filter for currency rows (contain currency abbreviations in parentheses)
+    headers = ["Coin", "CP", "SP", "EP", "GP", "PP"]
+    items: list[list[str]] = []
+
+    rows = extract_region_rows(pdf_path, pages[0], y_min=530, y_max=590)
+
     currency_markers = ["(cp)", "(sp)", "(ep)", "(gp)", "(pp)"]
-    exchange_rows = [
-        row
-        for row in all_rows
-        if any(marker in row for marker in currency_markers) and len(row) == 7
-    ]
 
-    # Define headers
-    headers = [
-        "Coin",
-        "CP",
-        "SP",
-        "EP",
-        "GP",
-        "PP",
-    ]
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        # Currency rows have 7 words: ['Copper', '(cp)', '1', '1/10', '1/50', '1/100', '1/1,000']
+        if len(words_list) == 7 and any(marker in words_list for marker in currency_markers):
+            coin_name = f"{words_list[0]} {words_list[1]}"
+            row = [coin_name] + words_list[2:]
+            items.append(row)
 
-    # Clean up rows: combine first two columns (e.g., "Copper (cp)" -> "Copper (cp)")
-    cleaned_rows = []
-    for row in exchange_rows:
-        # Row format: ['Copper', '(cp)', '1', '1/10', '1/50', '1/100', '1/1,000']
-        coin_name = f"{row[0]} {row[1]}"
-        cleaned_row = [coin_name] + row[2:]
-        cleaned_rows.append(cleaned_row)
-
-    # Validate expected count (5 currencies: cp, sp, ep, gp, pp)
-    if len(cleaned_rows) != 5:
+    if len(items) != 5:
         import logging
 
-        logging.warning(
-            f"Expected 5 currency types, found {len(cleaned_rows)}. Extraction may be incomplete."
-        )
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 5 currency types, found {len(items)}")
 
-    return {
-        "headers": headers,
-        "rows": cleaned_rows,
-    }
+    return {"headers": headers, "rows": items}
 
 
 def parse_donning_doffing_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     """Parse Donning and Doffing Armor table from PDF.
 
     Time requirements for putting on and taking off armor.
+    4 rows on page 64: Light Armor, Medium Armor, Heavy Armor, Shield.
 
-    Args:
-        pdf_path: Path to PDF file
-        pages: List of page numbers containing the table (usually [64])
-
-    Returns:
-        Dict with structured donning/doffing armor table data
+    Headers: Category | Don | Doff
     """
-    # Extract all rows using coordinate analysis
-    all_rows = _extract_rows_by_coordinate(pdf_path, pages)
+    from .text_parser_utils import extract_region_rows, rows_to_sorted_text
 
-    # Filter for armor time rows
-    # Pattern: armor type + two time values (with "minute" or "action")
+    headers = ["Category", "Don", "Doff"]
+    items: list[list[str]] = []
+
+    rows = extract_region_rows(pdf_path, pages[0], y_min=100, y_max=600)
+
     time_keywords = ["minute", "minutes", "action"]
     armor_types = ["Light", "Medium", "Heavy", "Shield"]
 
-    armor_rows = [
-        row
-        for row in all_rows
-        if any(armor_type in row for armor_type in armor_types)
-        and any(keyword in row for keyword in time_keywords)
-        and 5 <= len(row) <= 8
-    ]
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        # Filter: must contain armor type and time keywords
+        if not any(armor_type in words_list for armor_type in armor_types):
+            continue
+        if not any(keyword in words_list for keyword in time_keywords):
+            continue
+        if len(words_list) < 5 or len(words_list) > 8:
+            continue
 
-    # Define headers
-    headers = [
-        "Category",
-        "Don",
-        "Doff",
-    ]
-
-    # Parse rows
-    parsed_rows: list[list[str]] = []
-    for words in armor_rows:
         # Pattern: ["Light", "Armor", "1", "minute", "1", "minute"]
         # or: ["Shield", "1", "action", "1", "action"]
-        if len(words) >= 5:
-            # Category is first word (or first two words if "Armor" follows)
-            if "Armor" in words and words.index("Armor") == 1:
-                category = f"{words[0]} {words[1]}"
-                time_start = 2
-            else:
-                category = words[0]
-                time_start = 1
+        if "Armor" in words_list and words_list.index("Armor") == 1:
+            category = f"{words_list[0]} {words_list[1]}"
+            time_start = 2
+        else:
+            category = words_list[0]
+            time_start = 1
 
-            # Extract don time (first time value)
-            don_value = words[time_start]
-            don_unit = words[time_start + 1]
-            don = f"{don_value} {don_unit}"
+        don = f"{words_list[time_start]} {words_list[time_start + 1]}"
+        doff = f"{words_list[time_start + 2]} {words_list[time_start + 3]}"
 
-            # Extract doff time (second time value)
-            doff_value = words[time_start + 2]
-            doff_unit = words[time_start + 3]
-            doff = f"{doff_value} {doff_unit}"
+        items.append([category, don, doff])
 
-            parsed_rows.append([category, don, doff])
-
-    # Validate expected count (4 entries: Light, Medium, Heavy, Shield)
-    if len(parsed_rows) != 4:
+    if len(items) != 4:
         import logging
 
-        logging.warning(
-            f"Expected 4 armor categories, found {len(parsed_rows)}. Extraction may be incomplete."
-        )
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 4 armor categories, found {len(items)}")
 
-    return {
-        "headers": headers,
-        "rows": parsed_rows,
-    }
+    return {"headers": headers, "rows": items}
 
 
 def _parse_weapon_row(words: list[str]) -> list[str] | None:
@@ -712,41 +665,30 @@ def parse_tools_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
 
     Headers: Item | Cost | Weight
     """
-    import fitz
+    from .text_parser_utils import (
+        extract_region_rows,
+        find_currency_index,
+        rows_to_sorted_text,
+        should_skip_header,
+    )
 
-    doc = fitz.open(pdf_path)
     headers = ["Item", "Cost", "Weight"]
     items: list[list[str]] = []
-
-    page = doc[pages[0] - 1]
-    words = page.get_text("words")
-
-    rows: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
-
-    for word in words:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 140 < y0 < 565:  # Right column, Tools section
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows:
-                rows[y_key] = []
-            rows[y_key].append((x0, text))
-
-    # Track categories
     categories: dict[str, dict[str, Any]] = {}
     current_category: str | None = None
 
-    for y_pos in sorted(rows.keys()):
-        row_words = sorted(rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
+    rows = extract_region_rows(pdf_path, pages[0], x_min=300, y_min=140, y_max=565)
 
-        # Skip main header
-        if row_text in ["Item Cost Weight", "Tools"]:
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
+
+        # Skip headers
+        if should_skip_header(row_text, ["Item Cost Weight", "Tools"]):
             continue
 
-        # Check if this is a category header (no price/weight)
-        has_currency = any(curr in row_text for curr in ["gp", "sp", "cp"])
-        has_dash = "—" in row_text
+        # Check if category header (no price/weight)
+        has_currency = any(curr in words_list for curr in ["gp", "sp", "cp"])
+        has_dash = "—" in words_list
 
         if not has_currency and not has_dash:
             # Category header
@@ -754,41 +696,26 @@ def parse_tools_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
             categories[current_category] = {"row_index": len(items), "items": []}
             items.append([row_text, "—", "—"])
         else:
-            # Regular item - parse into [Item, Cost, Weight]
-            words_list = [text for x, text in row_words]
-
-            # Find currency position
-            currency_idx = None
-            for i, word in enumerate(words_list):
-                if word in ["gp", "sp", "cp"]:
-                    currency_idx = i
-                    break
+            # Regular item
+            currency_idx = find_currency_index(words_list)
 
             if currency_idx:
-                # Item name: everything before cost amount
-                name_parts = words_list[: currency_idx - 1]
-                item_name = " ".join(name_parts)
-
-                # Cost: amount + currency
-                cost_amount = words_list[currency_idx - 1]
-                currency = words_list[currency_idx]
-                cost = f"{cost_amount} {currency}"
-
-                # Weight: everything after currency
-                weight_parts = words_list[currency_idx + 1 :]
-                weight = " ".join(weight_parts) if weight_parts else "—"
+                item_name = " ".join(words_list[: currency_idx - 1])
+                cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
+                weight = (
+                    " ".join(words_list[currency_idx + 1 :])
+                    if currency_idx + 1 < len(words_list)
+                    else "—"
+                )
 
                 items.append([item_name, cost, weight])
 
-                # Track category membership
                 if current_category:
                     categories[current_category]["items"].append(
                         {"name": item_name, "row_index": len(items) - 1}
                     )
 
-    doc.close()
-
-    if len(items) != 38:  # 35 items + 3 category headers
+    if len(items) != 38:
         import logging
 
         logger = logging.getLogger(__name__)
@@ -801,112 +728,53 @@ def parse_mounts_and_other_animals_table(pdf_path: str, pages: list[int]) -> dic
     """Parse Mounts and Other Animals table from PDF.
 
     Split across pages:
-    - Page 71 right column: First 3 animals (Camel, Donkey, Elephant)
-    - Page 72 left column: Last 5 animals (Horses, Mastiff, Pony, Warhorse)
+    - Page 71 right column: First 3 animals
+    - Page 72 left column: Last 5 animals
 
     Headers: Item | Cost | Speed | Carrying Capacity
     """
-    import fitz
+    from .text_parser_utils import extract_multipage_rows, rows_to_sorted_text, should_skip_header
 
-    doc = fitz.open(pdf_path)
     headers = ["Item", "Cost", "Speed", "Carrying Capacity"]
     items: list[list[str]] = []
 
-    # Page 71 - Right column
-    page71 = doc[pages[0] - 1]
-    words71 = page71.get_text("words")
+    # Extract from both pages
+    rows = extract_multipage_rows(
+        pdf_path,
+        [
+            {"page": pages[0], "x_min": 300, "y_min": 655, "y_max": 750},  # Page 71 right
+            {"page": pages[1], "x_max": 300, "y_min": 70, "y_max": 120},  # Page 72 left
+        ],
+    )
 
-    rows_p71: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
-    for word in words71:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 655 < y0 < 750:  # Right column, mounts section
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p71:
-                rows_p71[y_key] = []
-            rows_p71[y_key].append((x0, text))
-
-    for y_pos in sorted(rows_p71.keys()):
-        row_words = sorted(rows_p71[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
-
-        # Skip header and footer
-        if "Item Cost Speed" in row_text or "System" in row_text or "Carrying" in row_text:
+        # Skip headers and stop at next table
+        if should_skip_header(row_text, ["Item Cost Speed", "System", "Carrying"]):
             continue
+        if "Tack" in row_text:
+            break
 
-        # Parse: Item | Cost | Speed | Capacity
-        words_list = [text for x, text in row_words]
+        # Find "gp" position
+        gp_idx = next((i for i, word in enumerate(words_list) if word == "gp"), None)
 
-        # Find "gp" for cost
-        gp_idx = None
-        for i, word in enumerate(words_list):
-            if word == "gp":
-                gp_idx = i
-                break
-
-        if gp_idx:
-            # Item name: everything before cost amount
-            name_parts = words_list[: gp_idx - 1]
-            item_name = " ".join(name_parts)
+        if gp_idx and gp_idx > 0:
+            # Item name: everything before cost
+            item_name = " ".join(words_list[: gp_idx - 1])
 
             # Cost
             cost = f"{words_list[gp_idx - 1]} gp"
 
-            # Speed: next value after gp (e.g., "50")
-            speed_val = words_list[gp_idx + 1]
+            # Speed: next value after gp
+            speed_val = words_list[gp_idx + 1] if gp_idx + 1 < len(words_list) else ""
             speed_unit = words_list[gp_idx + 2] if gp_idx + 2 < len(words_list) else "ft."
             speed = f"{speed_val} {speed_unit}"
 
             # Capacity: remaining text
-            capacity_parts = words_list[gp_idx + 3 :]
-            capacity = " ".join(capacity_parts)
+            capacity = " ".join(words_list[gp_idx + 3 :])
 
             items.append([item_name, cost, speed, capacity])
-
-    # Page 72 - Left column
-    page72 = doc[pages[1] - 1]
-    words72 = page72.get_text("words")
-
-    rows_p72: dict[float, list[tuple[float, str]]] = {}
-    for word in words72:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 < 300 and 70 < y0 < 120:  # Left column top, before Tack table
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p72:
-                rows_p72[y_key] = []
-            rows_p72[y_key].append((x0, text))
-
-    for y_pos in sorted(rows_p72.keys()):
-        row_words = sorted(rows_p72[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
-
-        # Stop at next table header
-        if "Tack" in row_text:
-            break
-
-        words_list = [text for x, text in row_words]
-
-        # Find "gp"
-        gp_idx = None
-        for i, word in enumerate(words_list):
-            if word == "gp":
-                gp_idx = i
-                break
-
-        if gp_idx:
-            name_parts = words_list[: gp_idx - 1]
-            item_name = " ".join(name_parts)
-            cost = f"{words_list[gp_idx - 1]} gp"
-            speed_val = words_list[gp_idx + 1]
-            speed_unit = words_list[gp_idx + 2] if gp_idx + 2 < len(words_list) else "ft."
-            speed = f"{speed_val} {speed_unit}"
-            capacity_parts = words_list[gp_idx + 3 :]
-            capacity = " ".join(capacity_parts)
-
-            items.append([item_name, cost, speed, capacity])
-
-    doc.close()
 
     if len(items) != 8:
         import logging
