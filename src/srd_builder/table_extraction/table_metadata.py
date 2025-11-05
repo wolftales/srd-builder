@@ -60,7 +60,7 @@ TABLES: dict[str, dict[str, Any]] = {
     "adventure_gear": {
         "pattern_type": "legacy_parser",
         "source": "srd",
-        "pages": [69],
+        "pages": [68],  # Table starts on page 68 and continues to 69
         "parser": "parse_adventure_gear_table",
         "validation": {"expected_rows": 49},
     },
