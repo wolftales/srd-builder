@@ -1224,3 +1224,89 @@ def parse_ability_scores_and_modifiers_table(pdf_path: str, pages: list[int]) ->
         logger.warning(f"Expected 16 ability score rows, found {len(parsed_rows)}")
 
     return {"headers": headers, "rows": parsed_rows}
+
+
+def parse_experience_by_cr_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Experience Points by Challenge Rating table from PDF.
+
+    This table is on page 258 in a two side-by-side format within the left column:
+    - Left sub-table (X<130): CR 0-13 with XP values
+    - Right sub-table (130<X<250): CR 14-30 with XP values
+    - Both in Y range 445-665
+
+    Args:
+        pdf_path: Path to PDF file
+        pages: List containing page number (should be [258])
+
+    Returns:
+        Dict with structured table data including headers and parsed rows
+    """
+    import pymupdf
+
+    from .text_parser_utils import group_words_by_y
+
+    doc = pymupdf.open(pdf_path)
+    page = doc[pages[0] - 1]  # Convert to 0-indexed
+    words = page.get_text("words")
+    doc.close()
+
+    # Split into left and right sub-tables within the left column of the page
+    # Left sub-table: X < 130, Right sub-table: 130 <= X < 250
+    left_words = [w for w in words if w[0] < 130 and 445 <= w[1] <= 665]
+    right_words = [w for w in words if 130 <= w[0] < 250 and 445 <= w[1] <= 665]
+
+    # Group by Y-coordinate
+    left_rows = group_words_by_y(left_words)
+    right_rows = group_words_by_y(right_words)
+
+    headers = ["Challenge Rating", "XP"]
+    parsed_rows: list[list[str | int]] = []
+
+    # Process left sub-table (CR 0-13)
+    for _y_pos, row_words in sorted(left_rows.items()):
+        row_text = " ".join([text for x, text in sorted(row_words, key=lambda w: w[0])])
+
+        # Skip header rows
+        if "Challenge" in row_text or "Rating" in row_text or "XP" in row_text:
+            continue
+
+        words_list = row_text.split()
+        if len(words_list) >= 2:
+            cr = words_list[0]
+            # Handle "0 or 10" case - take just "0"
+            if cr == "0" and "or" in words_list:
+                xp_idx = 3 if len(words_list) > 3 else 1
+            else:
+                xp_idx = 1
+
+            if xp_idx < len(words_list):
+                xp = words_list[xp_idx].replace(",", "")  # Remove commas
+                try:
+                    parsed_rows.append([cr, int(xp)])
+                except ValueError:
+                    pass  # Skip if XP is not a number
+
+    # Process right sub-table (CR 14-30)
+    for _y_pos, row_words in sorted(right_rows.items()):
+        row_text = " ".join([text for x, text in sorted(row_words, key=lambda w: w[0])])
+
+        # Skip header rows
+        if "Challenge" in row_text or "Rating" in row_text or "XP" in row_text:
+            continue
+
+        words_list = row_text.split()
+        if len(words_list) >= 2:
+            cr = words_list[0]
+            xp = words_list[1].replace(",", "")  # Remove commas
+            try:
+                parsed_rows.append([cr, int(xp)])
+            except ValueError:
+                pass  # Skip if XP is not a number
+
+    if len(parsed_rows) < 33 or len(parsed_rows) > 35:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 34 XP/CR rows, found {len(parsed_rows)}")
+
+    return {"headers": headers, "rows": parsed_rows}

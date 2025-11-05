@@ -13,7 +13,7 @@ from typing import Any
 import fitz  # PyMuPDF
 
 from .patterns import RawTable, extract_by_config
-from .reference_data import get_table_data
+from .table_metadata import get_table_metadata
 
 try:
     from scripts.table_targets import TARGET_TABLES, TableTarget
@@ -87,23 +87,21 @@ class TableExtractor:
         simple_name = target["simple_name"]
         page_num = target["page"] if isinstance(target["page"], int) else target["page"][0]
 
-        # Check if we have reference data config for this table
-        config = get_table_data(simple_name)
+        # Check if we have metadata config for this table
+        config = get_table_metadata(simple_name)
 
         if config:
-            # Check if this is a text-parsed table (requires PDF parsing)
-            if isinstance(config, dict) and config.get("type") == "text_parsed":
-                logger.debug(f"  Using text parser for {simple_name}")
-                return self._extract_text_parsed(target, config["config"])
+            # Use unified extraction engine with pattern-based routing
+            pattern_type = config.get("pattern_type")
+            logger.debug(f"  Using pattern '{pattern_type}' for {simple_name}")
 
-            # Use unified extraction engine with static/calculated config
-            logger.debug(f"  Using reference data config for {simple_name}")
             return extract_by_config(
                 table_id=target["id"],
                 simple_name=simple_name,
                 page=target["page"],
                 config=config,
                 section=target["section"],
+                pdf_path=str(self.pdf_path),  # Pass PDF path for extraction patterns
             )
 
         # Fall back to PyMuPDF auto-detection for tables without config
@@ -234,6 +232,7 @@ class TableExtractor:
             parse_container_capacity_table,
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
+            parse_experience_by_cr_table,
             parse_food_drink_lodging_table,
             parse_lifestyle_expenses_table,
             parse_mounts_and_other_animals_table,
@@ -251,6 +250,7 @@ class TableExtractor:
             "parse_adventure_gear_table": parse_adventure_gear_table,
             "parse_armor_table": parse_armor_table,
             "parse_container_capacity_table": parse_container_capacity_table,
+            "parse_experience_by_cr_table": parse_experience_by_cr_table,
             "parse_donning_doffing_armor_table": parse_donning_doffing_armor_table,
             "parse_exchange_rates_table": parse_exchange_rates_table,
             "parse_food_drink_lodging_table": parse_food_drink_lodging_table,
