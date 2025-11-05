@@ -46,9 +46,10 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.4 — Migrate CALCULATED Tables (ability_scores_and_modifiers to PDF extraction)
 - ✅ v0.9.5 — Pattern-Based Architecture Refactor (table_metadata + extraction engines)
 - ✅ v0.9.6 — TOC & Page Index (PAGE_INDEX module with 23 sections, 24 reference tables)
+- ✅ v0.9.7 — Migrate REFERENCE Tables (travel_pace, size_categories extracted; non-SRD tables removed)
 
 **Planned:**
-- 📋 v0.9.7 — Migrate REFERENCE Tables (spell_slots_by_level, travel_pace, etc.)
+- 📋 v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 - 📋 v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 - 📋 v0.9.9 — Equipment Assembly (replace extractor with table-based assembly)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
@@ -1798,15 +1799,77 @@ def _extract_split_column(config):  # Reads ALL parameters from config
 
 ---
 
-## **v0.9.7 — Migrate REFERENCE Tables** **[DATA]** 📋 **PLANNED**
+## **v0.9.7 — Migrate REFERENCE Tables** **[DATA]** ✅ **COMPLETE**
 
-**Target Release:** TBD
-**Status:** PLANNING
+**Released:** November 5, 2025 (commit ba65df6, tag v0.9.7)
+**Status:** COMPLETE
 **Priority:** MEDIUM - Data completeness
-**Effort:** Medium (~4-6 hours, depends on table locations)
-**Consumer Impact:** LOW - Transparent migration if successful, no impact if tables stay reference
+**Effort:** Medium (~8 hours total)
+**Consumer Impact:** BREAKING - Removed 2 non-SRD tables; 2 tables migrated transparently
 
 **Goal:** Investigate and migrate extractable REFERENCE tables from hardcoded data to PDF extraction.
+
+**Delivered:**
+
+1. **Investigation Phase** ✅
+   - Created `docs/REFERENCE_TABLES_INVESTIGATION.md` (238 lines)
+   - Searched entire SRD 5.1 PDF for 4 REFERENCE tables
+   - Found: travel_pace (page 84), size_categories (page 92)
+   - Not found: cantrip_damage, spell_slots_by_level (not standalone tables in SRD)
+
+2. **Decommissioned Non-SRD Tables** ✅
+   - **cantrip_damage** - Not in SRD as standalone table (convenience table only)
+     - Recommendation: Use spell records' scaling field for cantrip damage
+   - **spell_slots_by_level** - Not standalone (embedded in class progression tables)
+     - Recommendation: Use CLASS_PROGRESSIONS tables instead
+   - Impact: BREAKING CHANGE for Blackmoor consumers
+
+3. **Migrated Tables to PDF Extraction** ✅
+   - **travel_pace** (page 84, 5 columns, 3 rows)
+     - Pattern: text_region with coordinate-based extraction
+     - Columns: Pace, Distance per Minute, Distance per Hour, Distance per Day, Effect
+     - Handles multi-line entries (units on separate lines)
+     - column_boundaries: [370, 405, 437, 470] for precise splitting
+
+   - **size_categories** (page 92, 2 columns, 6 rows)
+     - Pattern: text_region with coordinate-based extraction
+     - Columns: Size, Space
+     - All 6 sizes: Tiny, Small, Medium, Large, Huge, Gargantuan
+     - column_split_x: 380 for precise column separation
+
+4. **Modern Architecture Implementation** ✅
+   - Added `text_region` pattern type to patterns.py
+   - Coordinate-based extraction: get_text("words") + group_words_by_y
+   - Configuration-driven: column_boundaries, column_split_x, region coordinates
+   - Continuation row merging for multi-line table entries
+   - NO legacy parsers - pure pattern-based approach
+
+5. **Data Quality** ✅
+   - travel_pace: Perfect extraction with units ("400 feet", "4 miles", "30 miles")
+   - travel_pace: Complete effect text including "−5 penalty to passive Wisdom (Perception) scores"
+   - size_categories: All 6 rows with correct space values ("2½ by 2½ ft." through "20 by 20 ft. or larger")
+   - Both tables marked confirmed: True after validation
+
+**Breaking Changes:**
+- **Removed tables:** cantrip_damage, spell_slots_by_level
+  - Consumers should use spell.scaling field and CLASS_PROGRESSIONS tables instead
+- **Transparent migrations:** travel_pace, size_categories remain in output
+  - Same data, just extracted from PDF instead of hardcoded
+  - Zero consumer impact (data structure unchanged)
+
+**Technical Achievement:**
+- Proved text_region pattern with coordinate-based extraction
+- Successfully extracted complex multi-column tables without legacy parsers
+- Handled continuation rows (multi-line entries) gracefully
+- Pixel-perfect column boundary tuning for accurate data separation
+
+**Files Modified:**
+- `src/srd_builder/table_extraction/table_metadata.py` - Updated configs
+- `src/srd_builder/table_extraction/patterns.py` - Added text_region pattern
+- `src/srd_builder/table_extraction/reference_data.py` - Removed 4 tables with migration notes
+- `src/srd_builder/page_index.py` - Updated TABLES_APPENDIX
+- `scripts/table_targets.py` - Updated size_categories
+- `docs/REFERENCE_TABLES_INVESTIGATION.md` - NEW investigation documentation
 
 **Current State:**
 4 REFERENCE tables in `table_metadata.py`:
