@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.9.0)
+### Build pipeline (v0.9.2)
 
-The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **106 equipment items**, **319 spells**, **23 tables** (12 class progression + 11 reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
+The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
 **Development (fast iteration):**
 ```bash
@@ -57,7 +57,7 @@ dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
-├── tables.json            # 23 reference tables (12 class progression + 11 reference)
+├── tables.json            # 37 reference tables (12 class progression + 25 equipment/reference)
 ├── lineages.json          # 13 character lineages (9 base + 4 subraces)
 ├── classes.json           # 12 character classes
 ├── index.json             # Lookup indexes (all datasets)
@@ -71,7 +71,7 @@ dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
-├── tables.json            # 23 reference tables
+├── tables.json            # 37 reference tables
 ├── lineages.json          # 13 character lineages
 ├── classes.json           # 12 character classes
 ├── index.json             # Lookup indexes (all datasets)
@@ -194,8 +194,12 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.6.3** - Fixed build_report.json path reference
 - ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
 - ✅ **v0.6.5** - Version management tooling
-- 🎯 **v0.7.0** - Reference tables dataset (~15 tables)
-- 🎯 **v0.7.1** - Classes & Lineages (character creation + terminology aliases)
+- ✅ **v0.7.0** - Reference tables dataset (12 class progression tables)
+- ✅ **v0.7.1** - Classes & Lineages (character creation + terminology aliases)
+- ✅ **v0.9.0** - Equipment tables (armor, weapons, exchange rates)
+- ✅ **v0.9.1** - Equipment tables (adventure gear, tools, container capacity)
+- ✅ **v0.9.2** - Equipment tables complete (25 equipment/pricing tables)
+- 🎯 **v0.9.3** - Text parser refactor (config-driven architecture)
 - 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
