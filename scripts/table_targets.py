@@ -328,8 +328,8 @@ TARGET_TABLES: list[TableTarget] = [
         "page": [290, 292],
         "section": "Appendix A: Conditions",
         "category": "conditions",
-        "priority": "MEDIUM",
-        "notes": "Condition status effects and mechanical impacts",
+        "priority": "LOW",
+        "notes": "Condition status effects and mechanical impacts (not yet implemented)",
     },
 ]
 
