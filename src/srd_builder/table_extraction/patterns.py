@@ -407,8 +407,8 @@ def _extract_text_region(
                 col_words = [text for x, text in sorted_words if x_start <= x < x_end]
                 row.append(" ".join(col_words))
 
-            # Only add row if first column (typically the key) is not empty
-            if row and row[0]:
+            # Add all rows, including continuation rows (empty first column)
+            if row:
                 rows.append(row)  # type: ignore[arg-type]
 
         # Post-process: merge continuation rows (rows where first column is empty)

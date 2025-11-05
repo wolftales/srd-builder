@@ -220,7 +220,12 @@ TABLES: dict[str, dict[str, Any]] = {
             "Effect",
         ],
         "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
-        "column_boundaries": [370, 410, 444, 470],  # Split at x=370, 410, 444, 470 for 5 columns
+        "column_boundaries": [
+            370,
+            407,
+            440,
+            470,
+        ],  # Adjusted to separate 'feet' from 'miles' properly
         "chapter": "Movement",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
