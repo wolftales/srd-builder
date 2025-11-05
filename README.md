@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.9.2)
+### Build pipeline (v0.9.5)
 
-The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
+The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking. v0.9.5 introduces pattern-based table extraction with metadata-driven architecture.
 
 **Development (fast iteration):**
 ```bash
@@ -199,7 +199,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - ✅ **v0.9.0** - Equipment tables (armor, weapons, exchange rates)
 - ✅ **v0.9.1** - Equipment tables (adventure gear, tools, container capacity)
 - ✅ **v0.9.2** - Equipment tables complete (25 equipment/pricing tables)
-- 🎯 **v0.9.3** - Text parser refactor (config-driven architecture)
+- ✅ **v0.9.3** - Text parser refactor (utilities + migration guide)
+- ✅ **v0.9.4** - Migrate CALCULATED tables (ability_scores to PDF extraction)
+- ✅ **v0.9.5** - Pattern-based architecture (metadata-driven table extraction)
+- 🎯 **v0.9.6** - TOC & Page Index (accurate page numbers, ascending order)
 - 🎯 **v0.9.0** - Conditions dataset (~15 conditions)
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)

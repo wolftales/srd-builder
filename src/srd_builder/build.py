@@ -438,33 +438,30 @@ def _build_page_index(
 ) -> dict[str, Any]:
     """Build page_index section for meta.json.
 
-    Combines simple page ranges with comprehensive table_indexer data.
+    Uses the authoritative PAGE_INDEX from page_index.py module.
+    This provides complete, verified SRD 5.1 table of contents.
     """
-    # Start with table indexer data if available (most comprehensive)
-    if table_page_index:
-        # Add lineages and classes to table_page_index since they're not in TableIndexer
-        table_page_index["lineages"] = {
-            "start": 3,
-            "end": 7,
-            "description": "Character lineages (races)",
-        }
-        table_page_index["classes"] = {
-            "start": 8,
-            "end": 55,
-            "description": "Character classes",
-        }
-        return table_page_index
+    from .page_index import PAGE_INDEX
 
-    # Fallback to simple page ranges
+    # Convert PAGE_INDEX to meta.json format
+    # Include all sections for complete documentation
     page_index: dict[str, dict[str, int | str]] = {}
-    page_index["lineages"] = {"start": 3, "end": 7, "description": "Character lineages (races)"}
-    page_index["classes"] = {"start": 8, "end": 55, "description": "Character classes"}
-    if monsters_page_range:
-        page_index["monsters"] = {"start": monsters_page_range[0], "end": monsters_page_range[1]}
-    if equipment_page_range:
-        page_index["equipment"] = {"start": equipment_page_range[0], "end": equipment_page_range[1]}
-    if spells_page_range:
-        page_index["spells"] = {"start": spells_page_range[0], "end": spells_page_range[1]}
+
+    for section_name, section in PAGE_INDEX.items():
+        section_data: dict[str, int | str] = {
+            "start": section["pages"]["start"],
+            "end": section["pages"]["end"],
+            "description": section["description"],
+        }
+        dataset = section.get("dataset")
+        if dataset is not None:
+            section_data["dataset"] = dataset
+        page_index[section_name] = section_data
+
+    # Add table-specific entries if table_page_index provided
+    if table_page_index and "reference_tables" in table_page_index:
+        page_index["reference_tables"] = table_page_index["reference_tables"]
+
     return page_index
 
 

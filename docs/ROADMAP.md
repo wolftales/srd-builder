@@ -44,11 +44,13 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.2 — Equipment Tables Complete (37 tables total)
 - ✅ v0.9.3 — Text Parser Refactor & Migration Tools (utilities + migration guide)
 - ✅ v0.9.4 — Migrate CALCULATED Tables (ability_scores_and_modifiers to PDF extraction)
+- ✅ v0.9.5 — Pattern-Based Architecture Refactor (table_metadata + extraction engines)
 
 **Planned:**
-- 📋 v0.9.5 — Migrate REFERENCE Tables (experience_by_cr, spell_slots_by_level, etc.)
-- 📋 v0.9.6 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
-- 📋 v0.9.7 — Equipment Assembly (replace extractor with table-based assembly)
+- 📋 v0.9.6 — TOC & Page Index (ascending-order table of contents, accurate PDF pages)
+- 📋 v0.9.7 — Migrate REFERENCE Tables (spell_slots_by_level, travel_pace, etc.)
+- 📋 v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
+- 📋 v0.9.9 — Equipment Assembly (replace extractor with table-based assembly)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
@@ -502,7 +504,7 @@ dist/srd_5_1/
 
 ## **v0.5.2 — Quality & Stability Release** ✅ COMPLETE **[INFRASTRUCTURE]**
 
-**Released:** November 1, 2025
+**Released:** November 2025
 **Consumer Impact:** NONE - Same data as v0.5.1, internal improvements only
 
 **Goal:** Internal quality improvements and infrastructure hardening (no customer-facing data changes).
@@ -1462,7 +1464,7 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 
 ---
 
-## **v0.9.3 — Text Parser Refactor** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
+## **v0.9.3 — Text Parser Refactor** **[INFRASTRUCTURE]** ✅ **COMPLETE**
 
 **Released:** TBD
 **Status:** IN PROGRESS - Phase 2 of 3 complete
@@ -1559,6 +1561,146 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 - Two-column table extraction: Read top-to-bottom within each column
 - PDF uses Unicode minus (U+2212), not hyphen-minus (-)
 - Not all "tables" are extractable - some are rules expressed as tables
+
+---
+
+## **v0.9.5 — Pattern-Based Architecture Refactor** **[INFRASTRUCTURE]** ✅ **COMPLETE**
+
+**Released:** November 5, 2025 (commit 02e1409)
+**Status:** COMPLETE - Major architectural improvement
+**Priority:** HIGH - Foundation for all future table work
+**Effort:** Medium (~8 hours)
+**Consumer Impact:** NONE - Zero behavioral change, 37/38 tables extract identically
+
+**Goal:** Eliminate hardcoded extraction logic by building metadata-driven pattern system.
+
+**Problem Statement:**
+- Each table had hardcoded parser function with coordinates, headers, transformations embedded in code
+- `parse_experience_by_cr_table()` had magic numbers (130, 250, 445, 665) hardcoded
+- Adding new tables required writing new parser functions (duplication)
+- No separation between "what to extract" (metadata) and "how to extract" (logic)
+
+**Delivered:**
+
+1. **Unified Table Metadata** (`table_metadata.py`) ✅
+   - Single source of truth for all 39 table configurations
+   - Pattern-type routing: `calculated`, `reference`, `split_column`, `legacy_parser`
+   - Source tracking: `srd`, `derived`, `convenience`, `reference`, `custom`
+   - Provenance fields: `chapter`, `confirmed` (extraction verified), `source`
+   - Example config:
+   ```python
+   "experience_by_cr": {
+       "pattern_type": "split_column",
+       "source": "srd",
+       "pages": [258],  # Actual PDF page
+       "headers": ["Challenge Rating", "XP"],
+       "regions": [  # Coordinates in metadata, not code
+           {"x_min": 0, "x_max": 130, "y_min": 445, "y_max": 665},
+           {"x_min": 130, "x_max": 250, "y_min": 445, "y_max": 665}
+       ],
+       "transformations": {"XP": {"remove_commas": True, "cast": "int"}},
+       "chapter": "Chapter 9: Combat",
+       "confirmed": True
+   }
+   ```
+
+2. **Generic Pattern Engines** (`patterns.py`) ✅
+   - `extract_by_config()` - Routes to appropriate engine based on `pattern_type`
+   - `_extract_calculated()` - Formula/lookup table generation (proficiency_bonus, carrying_capacity)
+   - `_extract_reference()` - Static hardcoded data, supports `use_legacy_data` flag
+   - `_extract_split_column()` - Generic side-by-side sub-tables extraction (NEW)
+   - `_extract_legacy_parser()` - Bridge to existing text_table_parser.py functions
+   - All engines preserve provenance (chapter, confirmed, source)
+
+3. **Proof of Concept: experience_by_cr** ✅
+   - Migrated from hardcoded `parse_experience_by_cr_table()` function
+   - Now uses generic `split_column` pattern engine
+   - All coordinates, headers, transformations in config
+   - Extracts 34 rows correctly from page 258
+   - Zero hardcoded values in extraction code
+
+4. **RawTable Provenance** ✅
+   - Added fields: `chapter`, `confirmed`, `source`
+   - Track where data comes from (PDF page, chapter, verification status)
+   - Preserved through extraction → parsing → output pipeline
+
+**Architecture Before vs After:**
+
+**Before:**
+```python
+# reference_data.py - Just function name
+TEXT_PARSED_TABLES = {
+    "experience_by_cr": {"parser": "parse_experience_by_cr_table", "pages": [258]}
+}
+
+# text_table_parser.py - Everything hardcoded
+def parse_experience_by_cr_table(pdf_path, pages):
+    left_words = [w for w in words if w[0] < 130 and 445 <= w[1] <= 665]  # MAGIC NUMBERS
+    headers = ["Challenge Rating", "XP"]  # HARDCODED
+    if cr == "0" and "or" in words_list: ...  # HARDCODED LOGIC
+```
+
+**After:**
+```python
+# table_metadata.py - Complete configuration
+TABLES = {
+    "experience_by_cr": {
+        "pattern_type": "split_column",  # Pattern drives extraction
+        "regions": [...],  # Coordinates in config
+        "headers": [...],  # Headers in config
+        "transformations": {...},  # Logic in config
+        "special_cases": [...]  # Rules in config
+    }
+}
+
+# patterns.py - Generic engine
+def _extract_split_column(config):  # Reads ALL parameters from config
+    regions = config["regions"]
+    headers = config["headers"]
+    # Generic extraction - works for ANY split-column table
+```
+
+**Benefits:**
+- ✅ **Separation of concerns:** Metadata (what) vs extraction logic (how)
+- ✅ **No duplication:** One engine per pattern type, not one function per table
+- ✅ **Extensible:** Add new pattern types without touching extraction code
+- ✅ **Maintainable:** Change coordinates? Update config, not code
+- ✅ **Validated:** Confirmed field tracks extraction verification
+- ✅ **Backward compatible:** legacy_parser pattern bridges to existing functions
+
+**Quality Metrics:**
+- ✅ 37/38 tables extract successfully (condition_effects expected failure)
+- ✅ Zero behavioral change (output identical to v0.9.4)
+- ✅ Code organization: 4 focused modules vs monolithic file
+- ✅ experience_by_cr proves concept (34 rows extracted via generic engine)
+- ✅ All tests passing
+
+**Migration Status:**
+- 16 tables → `legacy_parser` pattern (temporary bridge to text_table_parser.py)
+- 2 tables → `calculated` pattern (proficiency_bonus, carrying_capacity)
+- 5 tables → `reference` pattern (spell_slots, cantrip_damage, travel_pace, creature_size)
+- 12 tables → `reference` pattern with `use_legacy_data` (CLASS_PROGRESSIONS)
+- 1 table → `split_column` pattern (experience_by_cr - NEW generic engine)
+
+**Files Created:**
+- `src/srd_builder/table_extraction/table_metadata.py` (332+ lines)
+
+**Files Modified:**
+- `src/srd_builder/table_extraction/patterns.py` - Added pattern engines
+- `src/srd_builder/table_extraction/extractor.py` - Use table_metadata
+- `src/srd_builder/table_extraction/reference_data.py` - Removed experience_by_cr
+
+**Future Work:**
+- **v0.9.6 - TOC & Page Index:** Build ascending-order table of contents with accurate PDF page numbers
+- **v0.9.7 - Migrate REFERENCE tables:** Convert remaining 4 hardcoded tables to PDF extraction (spell_slots, cantrip_damage, travel_pace, creature_size)
+- **v0.9.8 - Migrate CLASS_PROGRESSIONS:** Extract 12 class tables from PDF (remove use_legacy_data flag)
+- **Future - Convert legacy_parser tables:** Gradually migrate 16 tables to generic patterns (text_region, multipage_text_region)
+- **v0.9.6 - Page number accuracy:** Fix table_targets.py (has wrong page numbers from TOC references)
+
+**Known Issues:**
+- table_targets.py has incorrect page numbers (TOC page references vs actual PDF pages)
+- No centralized page index in ascending order
+- Appendix sections not tracked (e.g., Appendix MM-B: NPCs pages 395-403)
 
 ---
 
