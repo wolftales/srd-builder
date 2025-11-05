@@ -241,10 +241,10 @@ TARGET_TABLES: list[TableTarget] = [
     },
     # Reference
     {
-        "id": "table:creature_size",
-        "simple_name": "creature_size",
+        "id": "table:size_categories",
+        "simple_name": "size_categories",
         "name": "Size Categories",
-        "page": 191,
+        "page": 92,
         "section": "Chapter 9: Combat",
         "category": "reference",
         "priority": "MEDIUM",
