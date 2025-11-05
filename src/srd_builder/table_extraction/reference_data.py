@@ -212,6 +212,10 @@ PRICING_TABLES: dict[str, dict[str, Any]] = {
 # ============================================================================
 
 TEXT_PARSED_TABLES = {
+    "adventure_gear": {
+        "parser": "parse_adventure_gear_table",
+        "pages": [69],
+    },
     "armor": {
         "parser": "parse_armor_table",
         "pages": [63, 64],

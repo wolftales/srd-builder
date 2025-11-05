@@ -282,6 +282,16 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "Currency conversion rates (CP/SP/EP/GP/PP)",
     },
     {
+        "id": "table:adventure_gear",
+        "simple_name": "adventure_gear",
+        "name": "Adventure Gear",
+        "page": [69],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "General adventuring equipment with costs and weights (99 items)",
+    },
+    {
         "id": "table:donning_doffing_armor",
         "simple_name": "donning_doffing_armor",
         "name": "Donning and Doffing Armor",

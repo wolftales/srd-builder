@@ -427,3 +427,117 @@ def _parse_weapon_row(words: list[str]) -> list[str] | None:
 
     except (ValueError, IndexError):
         return None
+
+
+def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Adventure Gear table from PDF.
+
+    This table has a two-column layout where items appear side-by-side.
+    Each row can contain one or two items (left and right columns).
+    Each item has: Name | Cost (amount + currency) | Weight
+
+    Args:
+        pdf_path: Path to PDF file
+        pages: List of page numbers to extract from
+
+    Returns:
+        Dictionary with headers and rows list
+    """
+    import pymupdf
+
+    doc = pymupdf.open(pdf_path)
+    all_items = []
+
+    # Column split threshold (X coordinate)
+    column_split = 300
+
+    for page_num in pages:
+        page = doc[page_num - 1]
+        words = page.get_text("words")
+
+        # Group by Y coordinate
+        rows_dict = defaultdict(list)
+        for word in words:
+            x0, y0, x1, y1, text, *_ = word
+            y_key = round(y0 / Y_GROUPING_TOLERANCE) * Y_GROUPING_TOLERANCE
+            rows_dict[y_key].append((x0, text))
+
+        # Process each row
+        for y_pos in sorted(rows_dict.keys()):
+            row_words = sorted(rows_dict[y_pos], key=lambda w: w[0])
+
+            # Split into left and right columns
+            left_col = [text for x, text in row_words if x < column_split]
+            right_col = [text for x, text in row_words if x >= column_split]
+
+            # Parse left column
+            if left_col and any(coin in left_col for coin in ["gp", "sp", "cp"]):
+                item = _parse_gear_item(left_col)
+                if item:
+                    all_items.append(item)
+
+            # Parse right column
+            if right_col and any(coin in right_col for coin in ["gp", "sp", "cp"]):
+                item = _parse_gear_item(right_col)
+                if item:
+                    all_items.append(item)
+
+    doc.close()
+
+    # Remove duplicates (same item appearing multiple times)
+    seen = set()
+    unique_items = []
+    for item in all_items:
+        item_key = item[0].lower()  # Use name as key
+        if item_key not in seen:
+            seen.add(item_key)
+            unique_items.append(item)
+
+    # Validation
+    if len(unique_items) < 50:
+        print(f"Warning: Expected ~50+ adventure gear items, found {len(unique_items)}")
+
+    headers = ["Item", "Cost", "Weight"]
+    return {"headers": headers, "rows": unique_items}
+
+
+def _parse_gear_item(words: list[str]) -> list[str] | None:
+    """Parse a single gear item from word list.
+
+    Pattern: Name parts... | Cost_amount | Currency | Weight parts...
+
+    Args:
+        words: List of words for this item
+
+    Returns:
+        [name, cost, weight] or None if invalid
+    """
+    # Find currency position
+    cost_idx = -1
+    for i, word in enumerate(words):
+        if word in ["gp", "sp", "cp"]:
+            cost_idx = i
+            break
+
+    if cost_idx < 2:  # Need at least: name + amount + currency
+        return None
+
+    # Skip header rows
+    if "Item" in words or "Cost" in words or "System" in words or "Document" in words:
+        return None
+
+    currency = words[cost_idx]
+    cost_amount = words[cost_idx - 1]
+
+    # Item name: everything before cost amount
+    name_parts = words[: cost_idx - 1]
+    name = " ".join(name_parts)
+
+    # Cost string
+    cost = f"{cost_amount} {currency}"
+
+    # Weight: everything after currency
+    weight_parts = words[cost_idx + 1 :]
+    weight = " ".join(weight_parts) if weight_parts else "—"
+
+    return [name, cost, weight]

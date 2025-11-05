@@ -229,6 +229,7 @@ class TableExtractor:
             RawTable with parsed data
         """
         from .text_table_parser import (
+            parse_adventure_gear_table,
             parse_armor_table,
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
@@ -237,6 +238,7 @@ class TableExtractor:
 
         # Map parser names to functions
         parsers = {
+            "parse_adventure_gear_table": parse_adventure_gear_table,
             "parse_armor_table": parse_armor_table,
             "parse_weapons_table": parse_weapons_table,
             "parse_exchange_rates_table": parse_exchange_rates_table,
