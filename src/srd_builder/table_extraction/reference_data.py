@@ -236,9 +236,21 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_mounts_and_other_animals_table",
         "pages": [71, 72],
     },
+    "tack_harness_vehicles": {
+        "parser": "parse_tack_harness_vehicles_table",
+        "pages": [72],
+    },
     "tools": {
         "parser": "parse_tools_table",
         "pages": [70],
+    },
+    "trade_goods": {
+        "parser": "parse_trade_goods_table",
+        "pages": [72],
+    },
+    "waterborne_vehicles": {
+        "parser": "parse_waterborne_vehicles_table",
+        "pages": [72],
     },
     "weapons": {
         "parser": "parse_weapons_table",

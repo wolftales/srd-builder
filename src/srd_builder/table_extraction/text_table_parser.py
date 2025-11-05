@@ -915,3 +915,219 @@ def parse_mounts_and_other_animals_table(pdf_path: str, pages: list[int]) -> dic
         logger.warning(f"Expected 8 mounts/animals, found {len(items)}")
 
     return {"headers": headers, "rows": items}
+
+
+def parse_tack_harness_vehicles_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Tack, Harness, and Drawn Vehicles table from PDF.
+
+    Single column on page 72 left, Y-range 144-328.
+    Contains ~17 items including Saddle subcategories.
+
+    Headers: Item | Cost | Weight
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Item", "Cost", "Weight"]
+    items: list[list[str]] = []
+
+    page = doc[pages[0] - 1]
+    words = page.get_text("words")
+
+    rows: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 162 < y0 < 330:  # Left column, skip table header at ~144
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows:
+                rows[y_key] = []
+            rows[y_key].append((x0, text))
+
+    for y_pos in sorted(rows.keys()):
+        row_words = sorted(rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip headers and next table
+        if "Item Cost Weight" in row_text or "Waterborne" in row_text:
+            continue
+
+        words_list = [text for x, text in row_words]
+
+        # Find currency (gp, sp, cp) or special markers (×4, ×2)
+        currency_idx = None
+        for i, word in enumerate(words_list):
+            if word in ["gp", "sp", "cp", "×2", "×4"]:
+                currency_idx = i
+                break
+
+        if currency_idx:
+            # Item name: everything before cost/marker
+            name_parts = (
+                words_list[: currency_idx - 1]
+                if words_list[currency_idx] in ["gp", "sp", "cp"]
+                else words_list[:currency_idx]
+            )
+            item_name = " ".join(name_parts)
+
+            # Cost: amount + currency OR special marker (×4, ×2)
+            if words_list[currency_idx] in ["×2", "×4"]:
+                cost = words_list[currency_idx]
+                # Weight follows cost
+                weight_parts = words_list[currency_idx + 1 :]
+                weight = " ".join(weight_parts) if weight_parts else "—"
+            else:
+                cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
+                # Weight: after currency
+                weight_parts = words_list[currency_idx + 1 :]
+                weight = " ".join(weight_parts) if weight_parts else "—"
+
+            items.append([item_name, cost, weight])
+
+    doc.close()
+
+    if len(items) < 15 or len(items) > 20:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected ~17 tack/vehicle items, found {len(items)}")
+
+    return {"headers": headers, "rows": items}
+
+
+def parse_waterborne_vehicles_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Waterborne Vehicles table from PDF.
+
+    Single column on page 72 left, Y-range 358-442.
+    Contains 6 vehicles.
+
+    Headers: Item | Cost | Speed
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Item", "Cost", "Speed"]
+    items: list[list[str]] = []
+
+    page = doc[pages[0] - 1]
+    words = page.get_text("words")
+
+    rows: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 376 < y0 < 445:  # Left column, skip table header at ~358
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows:
+                rows[y_key] = []
+            rows[y_key].append((x0, text))
+
+    for y_pos in sorted(rows.keys()):
+        row_words = sorted(rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip headers
+        if "Item Cost Speed" in row_text:
+            continue
+
+        words_list = [text for x, text in row_words]
+
+        # Find "gp" for cost
+        gp_idx = None
+        for i, word in enumerate(words_list):
+            if word == "gp":
+                gp_idx = i
+                break
+
+        if gp_idx:
+            # Item name: everything before cost amount
+            name_parts = words_list[: gp_idx - 1]
+            item_name = " ".join(name_parts)
+
+            # Cost
+            cost = f"{words_list[gp_idx - 1]} gp"
+
+            # Speed: after gp (value + unit)
+            speed_parts = words_list[gp_idx + 1 :]
+            speed = " ".join(speed_parts)
+
+            items.append([item_name, cost, speed])
+
+    doc.close()
+
+    if len(items) != 6:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 6 waterborne vehicles, found {len(items)}")
+
+    return {"headers": headers, "rows": items}
+
+
+def parse_trade_goods_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Trade Goods table from PDF.
+
+    Single column on page 72 right, Y-range 72-232.
+    Contains 13 goods.
+
+    Headers: Cost | Goods
+    Format: "1 cp | 1 lb. of wheat"
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Cost", "Goods"]
+    items: list[list[str]] = []
+
+    page = doc[pages[0] - 1]
+    words = page.get_text("words")
+
+    rows: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 90 < y0 < 235:  # Right column, skip header at ~72
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows:
+                rows[y_key] = []
+            rows[y_key].append((x0, text))
+
+    for y_pos in sorted(rows.keys()):
+        row_words = sorted(rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip header
+        if "Cost Goods" in row_text:
+            continue
+
+        words_list = [text for x, text in row_words]
+
+        # Find currency (cp, sp, gp) - cost comes first
+        currency_idx = None
+        for i, word in enumerate(words_list):
+            if word in ["cp", "sp", "gp"]:
+                currency_idx = i
+                break
+
+        if currency_idx:
+            # Cost: amount + currency
+            cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
+
+            # Goods: everything after currency
+            goods_parts = words_list[currency_idx + 1 :]
+            goods = " ".join(goods_parts)
+
+            items.append([cost, goods])
+
+    doc.close()
+
+    if len(items) != 13:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 13 trade goods, found {len(items)}")
+
+    return {"headers": headers, "rows": items}

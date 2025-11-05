@@ -234,7 +234,10 @@ class TableExtractor:
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
             parse_mounts_and_other_animals_table,
+            parse_tack_harness_vehicles_table,
             parse_tools_table,
+            parse_trade_goods_table,
+            parse_waterborne_vehicles_table,
             parse_weapons_table,
         )
 
@@ -246,7 +249,10 @@ class TableExtractor:
             "parse_donning_doffing_armor_table": parse_donning_doffing_armor_table,
             "parse_exchange_rates_table": parse_exchange_rates_table,
             "parse_mounts_and_other_animals_table": parse_mounts_and_other_animals_table,
+            "parse_tack_harness_vehicles_table": parse_tack_harness_vehicles_table,
             "parse_tools_table": parse_tools_table,
+            "parse_trade_goods_table": parse_trade_goods_table,
+            "parse_waterborne_vehicles_table": parse_waterborne_vehicles_table,
             "parse_weapons_table": parse_weapons_table,
         }
 
