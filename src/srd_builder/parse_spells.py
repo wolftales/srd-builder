@@ -70,8 +70,10 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         casting_time = "1 action"
         range_value: dict[str, Any] = {"type": "self"}
         components_value = {"verbal": False, "somatic": False, "material": False}
-        duration_value = "instantaneous"
-        concentration = False
+        duration_value: dict[str, Any] = {
+            "requires_concentration": False,
+            "length": "instantaneous",
+        }
 
         # Extract individual header fields
         # Header may be multi-line or single-line with field markers
@@ -94,7 +96,7 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
 
         # Extract Duration
         if match := re.search(r"Duration:\s*(.+?)$", header_text):
-            duration_value, concentration = _parse_duration(match.group(1).strip())
+            duration_value = _parse_duration(match.group(1).strip())
 
         # Extract effects and scaling from description
         effects = _extract_effects(description_text)
@@ -108,10 +110,9 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
             "casting": {
                 "time": casting_time,
                 "range": range_value,
-                "duration": duration_value,
-                "concentration": concentration,
                 "ritual": ritual,
             },
+            "duration": duration_value,
             "components": components_value,
             "text": description_text,
             "page": raw_spell.get("pages", [0])[0] if raw_spell.get("pages") else 0,
@@ -229,25 +230,26 @@ def _parse_range(text: str) -> dict[str, Any]:
     return {"type": "self"}
 
 
-def _parse_duration(text: str) -> tuple[str, bool]:
-    """Parse duration and detect concentration.
+def _parse_duration(text: str) -> dict[str, Any]:
+    """Parse duration into structured object.
 
     Args:
         text: Duration text
 
     Returns:
-        Tuple of (duration, requires_concentration)
+        Duration object with requires_concentration and length
     """
     text_lower = text.lower().strip()
 
     # Check for concentration
-    concentration = "concentration" in text_lower
+    requires_concentration = "concentration" in text_lower
 
     # Remove "concentration, " prefix if present
-    if concentration:
-        text_lower = text_lower.replace("concentration,", "").strip()
+    length = text_lower
+    if requires_concentration:
+        length = text_lower.replace("concentration,", "").strip()
 
-    return (text_lower, concentration)
+    return {"requires_concentration": requires_concentration, "length": length}
 
 
 def _parse_components(text: str) -> dict[str, Any]:

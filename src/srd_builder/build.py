@@ -23,7 +23,6 @@ from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
 from .extract_pdf_metadata import extract_pdf_metadata
 from .extract_spells import extract_spells
-from .extract_tables import extract_tables_to_json
 from .indexer import build_indexes
 from .parse_classes import parse_classes
 from .parse_equipment import parse_equipment_records
@@ -32,6 +31,7 @@ from .parse_monsters import parse_monster_records
 from .parse_spells import parse_spell_records
 from .parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
+from .table_extraction import extract_tables_to_json
 from .table_indexer import TableIndexer
 
 

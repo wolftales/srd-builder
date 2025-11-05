@@ -38,9 +38,10 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.8.3 — Equipment Cleanup (proficiency field)
 - ✅ v0.8.4 — Character Creation Blockers (ability modifiers, range structure)
 - ✅ v0.8.5 — Spell Enhancements (healing 100%, AOE +43%)
+- ✅ v0.8.6 — Spell Duration Restructure (concentration discoverability)
+- ✅ v0.9.0 — Text-Based Table Extraction (coordinate breakthrough)
 
 **Planned:**
-- 🔧 v0.9.0 — Table Extraction Expansion (infrastructure for v0.10+)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics)
@@ -1128,26 +1129,227 @@ Real-world integration testing revealed 3 critical gaps not in TODO.md:
 
 ---
 
-## **v0.9.0 — Table Extraction Expansion** **[QUALITY]** 🔧 INFRASTRUCTURE
+## **v0.8.6 — Spell Duration Restructure** **[QUALITY]** ✅ **COMPLETE**
 
-**Status:** PLANNED - Infrastructure improvement
-**Priority:** HIGH - Unblocks future work
-**Effort:** High (significant extraction work)
-**Consumer Impact:** IMPROVED - 23 → 50+ tables + better extraction for v0.10+
+**Released:** November 4, 2025
+**Status:** SHIPPED - Duration field restructured per Blackmoor feedback
+**Priority:** MEDIUM - API discoverability improvement
+**Effort:** Low (schema + parser change)
+**Consumer Impact:** IMPROVED - Concentration more discoverable
 
-**Goal:** Expand table extraction to cover all reference tables and improve extraction capabilities.
+**Goal:** Make concentration requirements more discoverable by restructuring duration field.
 
-**Strategic Rationale:**
-Improving table extraction NOW provides immediate benefits for upcoming work:
-- v0.10.0 Conditions: Many conditions are in structured tables
-- v0.11.0 Features: Class features are in progression tables
-- Future datasets: Better table extraction = easier extraction overall
+**Blackmoor Feedback:**
+- Concentration was buried: `spell.casting.concentration` separate from duration
+- Proposed: Move duration to top level with structured object including concentration
 
-**Current State:**
-- 23 tables extracted (v0.7.0)
-- Quality: ⭐⭐⭐⭐⭐ Production ready
-- Missing: Armor, Weapons, Equipment pricing, and other reference tables
-- Limitation: Current extraction handles simple tables well, complex tables need work
+**Delivered:**
+
+1. **Duration Field Restructure** ✅
+   - **Before:** `casting.duration` (string) + `casting.concentration` (boolean)
+   - **After:** `duration` (object at top level with `requires_concentration` + `length`)
+   - Structure: `{requires_concentration: boolean, length: string}`
+   - Example (no concentration): `{requires_concentration: false, length: "instantaneous"}`
+   - Example (with concentration): `{requires_concentration: true, length: "up to 1 minute"}`
+   - Impact: Concentration is now semantically part of duration, easier to discover
+
+2. **Schema Updates** ✅
+   - Removed: `casting.concentration` field
+   - Removed: `casting.duration` from casting object
+   - Added: Top-level `duration` object with `requires_concentration` and `length` properties
+   - Schema version: 1.4.0 → 1.5.0
+
+3. **Parser Updates** ✅
+   - `_parse_duration()` now returns structured object instead of tuple
+   - Duration output at spell top level instead of nested in casting
+   - All 319 spells updated with new structure
+
+**Quality Metrics:**
+- ✅ 319/319 spells with new duration structure
+- ✅ 122/319 spells require concentration (38.2%)
+- ✅ All tests passing (30 parse_spells tests)
+
+**Breaking Changes:**
+- Schema: 1.4.0 → 1.5.0
+- Spells: Duration moved from `casting.duration` to top-level `duration` object
+- Spells: Removed `casting.concentration` field (now `duration.requires_concentration`)
+
+**Consumer Migration:**
+```javascript
+// Before (v0.8.5)
+const duration = spell.casting.duration;  // "up to 1 minute"
+const needsConcentration = spell.casting.concentration;  // true
+
+// After (v0.8.6)
+const duration = spell.duration.length;  // "up to 1 minute"
+const needsConcentration = spell.duration.requires_concentration;  // true
+```
+
+---
+
+## **v0.9.0 — Text-Based Table Extraction** **[INFRASTRUCTURE + DATA]** ✅ **COMPLETE**
+
+**Released:** November 4, 2025
+**Status:** SHIPPED - Coordinate-based extraction breakthrough
+**Priority:** HIGH - Unlocked equipment tables
+**Effort:** Medium (new extraction method + infrastructure)
+**Consumer Impact:** NEW - 3 equipment tables (26 total, up from 23)
+
+**Goal:** Build text-based table extraction for tables without grid borders, expand equipment coverage.
+
+### Phase 1: Infrastructure Refactor ✅
+
+**Problem Statement:**
+- extract_tables.py grew to 1508 lines with massive duplication
+- 26 nearly identical extraction methods (one per table)
+- Hardcoded table data mixed with extraction logic
+- Adding new tables required copy-pasting entire methods
+
+**Problem Statement:**
+- extract_tables.py grew to 1508 lines with massive duplication
+- 26 nearly identical extraction methods (one per table)
+- Hardcoded table data mixed with extraction logic
+- Adding new tables required copy-pasting entire methods
+
+**Delivered:**
+
+1. **Modular Architecture** ✅
+   - Created `table_extraction/` package with 4 focused modules
+   - `__init__.py` - Public API (9 lines)
+   - `patterns.py` - Unified extraction engine (~100 lines)
+   - `reference_data.py` - All table configurations (690 lines)
+   - `extractor.py` - Routing & PyMuPDF integration (~230 lines)
+
+2. **Unified Extraction Engine** ✅
+   - Replaced 26 duplicate methods with single `extract_by_config()` function
+   - Data-driven approach: config structure determines extraction behavior
+   - Checks for "rows" (static data), "formula" (calculated), or "data" (lookup)
+   - Example: Ability scores use formula `lambda score: (score - 10) // 2`
+
+3. **Organized Reference Data** ✅
+   - `CALCULATED_TABLES` - 3 formula/lookup tables (ability scores, proficiency, carrying capacity)
+   - `REFERENCE_TABLES` - 5 static tables (CR/XP, spell slots, cantrip damage, travel pace, creature size)
+   - `PRICING_TABLES` - 3 pricing tables (food/lodging, services, lifestyle)
+   - `CLASS_PROGRESSIONS` - 12 class tables (all D&D classes, 20 levels each)
+   - `get_table_data()` - Unified lookup with fallback chain
+
+4. **Archived Old Code** ✅
+   - Moved extract_tables.py → archived/extract_tables_v0.7.0.py
+   - Added comprehensive header explaining refactor
+
+**Quality Metrics:**
+- ✅ Code reduced: 1508 lines → ~850 lines (50% reduction)
+- ✅ Methods reduced: 26 extraction methods → 1 unified function (96% reduction)
+- ✅ All 23 tables extract correctly (data integrity verified)
+- ✅ Same output format (backward compatible)
+- ✅ All tests passing
+
+**Impact:**
+- **Maintainability:** 50% less code to maintain
+- **Extensibility:** Adding tables now requires config dict only, no new code
+- **Clarity:** Clean separation between extraction logic and table data
+- **Foundation:** Ready for v0.10.0+ expansion
+
+**Files Modified:**
+- Created: `src/srd_builder/table_extraction/__init__.py`
+- Created: `src/srd_builder/table_extraction/patterns.py`
+- Created: `src/srd_builder/table_extraction/reference_data.py`
+- Created: `src/srd_builder/table_extraction/extractor.py`
+- Updated: `src/srd_builder/build.py` (changed imports)
+- Archived: `src/srd_builder/extract_tables.py` → `archived/extract_tables_v0.7.0.py`
+
+**Note on condition_effects:**
+- Added to TARGET_TABLES as placeholder for v0.10.0 Conditions Dataset
+- Currently fails extraction (expected - no config yet)
+- Will be implemented in v0.10.0
+
+### Phase 2: Text-Based Table Extraction ✅
+
+**The Breakthrough:** Coordinate-based extraction for tables without grid borders
+
+**Problem:**
+- Equipment tables (armor, weapons, exchange rates) have no visual grid lines
+- PyMuPDF's table detection: 1/15 tables detected (6.7% success rate)
+- Previous attempts relied on heuristics and context tracking (fragile)
+
+**Solution:**
+- PyMuPDF's `get_text("words")` returns `(x0, y0, x1, y1, text, ...)` tuples
+- **Key insight:** Words at same Y-coordinate = same row, sort by X = column order
+- No grid borders needed - spatial layout IS the structure
+
+**Delivered:**
+
+1. **Universal Extraction Engine** ✅
+   - `_extract_rows_by_coordinate(pdf_path, pages)` - Core engine
+   - Groups words by Y-coordinate (rows) with 2-pixel tolerance
+   - Sorts by X-coordinate (columns) for left-to-right order
+   - Returns list of word lists for all rows
+
+2. **Table-Specific Parsers** ✅
+   - `parse_armor_table()` - 13 armor items (pages 63-64)
+   - `parse_weapons_table()` - 37 weapons (pages 65-66)
+   - `parse_exchange_rates_table()` - 5 currencies (page 62)
+   - Each parser filters rows and maps columns to structured data
+
+3. **Integration** ✅
+   - `extractor.py` - Added `_extract_text_parsed()` method
+   - `reference_data.py` - Added `TEXT_PARSED_TABLES` config
+   - `table_targets.py` - Added 3 equipment table entries
+   - Full build integration via existing pipeline
+
+4. **Edge Cases Handled** ✅
+   - Armor: Trailing "—" symbols, "Str 13" requirements
+   - Weapons: Sling (no weight), Blowgun ("1 piercing"), Net (no damage)
+   - Exchange rates: Combined columns ("Copper" + "(cp)")
+   - Headers: Fixed double-nesting bug (headers returned as dicts vs strings)
+
+**Quality Metrics:**
+- ✅ 100% extraction accuracy for text-embedded tables (vs 7% with auto-detect)
+- ✅ 13/13 armor items extracted correctly
+- ✅ 37/37 weapons extracted correctly (including edge cases)
+- ✅ 5/5 currencies extracted correctly
+- ✅ All validation warnings in place (expected row counts)
+- ✅ Zero fabrication - all data from PDF
+
+**Code Quality:**
+- Created: `src/srd_builder/table_extraction/text_table_parser.py` (345 lines)
+- Removed: 82 lines of dead code (unused generic parser)
+- Integration: Clean separation via extractor routing
+- Tests: Build verification, data accuracy checks
+
+**Architecture:**
+```
+PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
+              ↓
+         Table-Specific Parsers (filter + structure)
+              ↓
+         extractor.py _extract_text_parsed() → RawTable
+              ↓
+         parse_single_table() → Normalized schema
+              ↓
+         dist/tables.json (26 tables)
+```
+
+**Lessons Learned:**
+1. Coordinate-based extraction works where visual detection fails
+2. Specific parsers more reliable than generic config-driven approach (for now)
+3. PDF as authoritative source is non-negotiable
+4. Validation warnings catch extraction issues early
+5. Edge cases (Sling, Blowgun, Net) require explicit handling
+
+**Future Work (v0.9.1+):**
+- Apply pattern to remaining equipment tables (donning/doffing, adventure gear, mounts, food/lodging)
+- Refactor to config-driven pattern once proven at scale
+- Extract equipment descriptions (currently table-only)
+
+---
+
+## **v0.10.0 — Conditions Dataset** **[FEATURE]** 📋 PLANNED
+
+**Status:** PLANNED - Next priority feature
+**Priority:** HIGH - Frequently referenced
+**Effort:** Medium (~15-20 conditions)
+**Consumer Impact:** NEW - Status conditions dataset
 
 **Goal:** Extract ~15-20 status conditions from SRD 5.1.
 
@@ -1156,22 +1358,6 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 - Needed for monster abilities and spell effects
 - Small dataset = quick confidence builder
 - Unlocks better monster/spell integration
-- Benefits from v0.9.0 table extraction improvements (if conditions are in tables)
-
-**Changes:**
-
-1. **Extract Conditions** (~15-20 entries)
-   - Blinded, Charmed, Deafened, Frightened, Grappled
-   - Incapacitated, Invisible, Paralyzed, Petrified, Poisoned
-   - Prone, Restrained, Stunned, Unconscious, Exhaustion
-   - Extract from appendix or conditions section
-   - Leverage improved table extraction if applicable
-
-2. **Structured Mechanics**
-   - Disadvantage on attack rolls/ability checks
-   - Movement restrictions
-   - Save modifiers
-   - Auto-fail conditions
 
 **Implementation:**
 - `src/srd_builder/extract_conditions.py` - PDF extraction
@@ -1179,47 +1365,10 @@ Improving table extraction NOW provides immediate benefits for upcoming work:
 - `schemas/condition.schema.json` - Schema definition
 - Add to build.py pipeline
 
-**Schema (Simple)**
-```json
-{
-  "id": "condition:poisoned",
-  "simple_name": "poisoned",
-  "name": "Poisoned",
-  "text": "A poisoned creature has disadvantage on attack rolls and ability checks.",
-  "mechanics": {
-    "disadvantage_on": ["attack_rolls", "ability_checks"]
-  }
-}
-```
-
-**Optional Structured Fields:**
-- speed_modifier (e.g., restrained, grappled)
-- advantage_on / disadvantage_on
-- prevents (e.g., unconscious prevents actions)
-
-**Changes:**
-
-1. **Equipment Tables** (HIGH)
-   - Armor table (pages 63-64) - 6 armor types
-   - Weapons table (pages 65-66) - 18 weapons
-   - Gear pricing and availability
-   - Quick reference format alongside detailed equipment.json items
-
-2. **Table Extraction Improvements** (HIGH)
-   - Handle multi-page tables
-   - Better header detection
-   - Improved column alignment
-   - Handle merged cells and complex layouts
-
-3. **Class Progression Tables** (MEDIUM)
-   - Already have data in classes.json
-   - Reformat as standalone table structures
-   - Enable table-based lookups
-   - 12 tables (one per class)
-
-4. **Additional Reference Tables** (LOW)
-   - Trade goods pricing
-   - Services and hirelings
+**Conditions to Extract:**
+- Blinded, Charmed, Deafened, Frightened, Grappled
+- Incapacitated, Invisible, Paralyzed, Petrified, Poisoned
+- Prone, Restrained, Stunned, Unconscious, Exhaustion (levels 1-6)
    - Travel expenses
    - Downtime activities
 

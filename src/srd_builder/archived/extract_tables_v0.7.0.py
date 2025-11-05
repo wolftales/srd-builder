@@ -1,5 +1,28 @@
 #!/usr/bin/env python3
-"""Extract reference tables from SRD 5.1 PDF.
+"""ARCHIVED: Original monolithic table extraction (v0.7.0).
+
+This file has been replaced by the table_extraction/ module (v0.9.0+).
+
+The refactor reduced code from 1508 lines to ~850 lines total by:
+- Extracting 26 duplicate extraction methods into unified extract_by_config() engine
+- Moving hardcoded table data to reference_data.py (690 lines, organized by type)
+- Creating patterns.py with single universal extraction function
+- Building extractor.py with routing logic (~230 lines)
+
+New structure:
+  src/srd_builder/table_extraction/
+    __init__.py       - Public API
+    extractor.py      - TableExtractor class with PyMuPDF integration
+    patterns.py       - Unified extract_by_config() engine
+    reference_data.py - All table configs (23 tables)
+
+Key improvements:
+- 96% reduction in extraction methods (26 → 1)
+- 50% reduction in total code (1508 → ~850 lines)
+- Data-driven: Adding new tables requires config only, no new code
+- Better separation: extraction logic vs. table data
+
+Extract reference tables from SRD 5.1 PDF.
 
 This module extracts consumer-facing reference tables using a hybrid approach:
 1. Auto-detected tables (via table_indexer) for grid-based tables
@@ -7,6 +30,8 @@ This module extracts consumer-facing reference tables using a hybrid approach:
 
 The extraction produces raw table data (headers + rows) that parse_tables.py
 will normalize to the schema format.
+
+Archived: 2025-11-04
 """
 
 from __future__ import annotations

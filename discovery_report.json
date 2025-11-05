@@ -1,0 +1,729 @@
+{
+  "total_tables": 35,
+  "pages_with_tables": 15,
+  "page_range": [
+    15,
+    321
+  ],
+  "tables_by_page": {
+    "15": 1,
+    "56": 2,
+    "57": 1,
+    "61": 1,
+    "127": 2,
+    "186": 2,
+    "201": 2,
+    "202": 5,
+    "210": 1,
+    "215": 3,
+    "220": 1,
+    "243": 1,
+    "250": 7,
+    "252": 5,
+    "321": 1
+  },
+  "tables_by_id": {
+    "unknown": 35
+  },
+  "tables": [
+    {
+      "page": 15,
+      "table_index": 8,
+      "row_count": 1,
+      "column_count": 14,
+      "bbox": [
+        52.320098876953125,
+        552.9600219726562,
+        559.9201049804688,
+        575.0400349934896
+      ],
+      "headers": [
+        "17th",
+        "+6",
+        "Destroy Undead (CR 4), Divine Dom\nfeature",
+        "ain",
+        "5",
+        "4",
+        "3",
+        "3",
+        "3",
+        "2",
+        "1",
+        "1",
+        "1",
+        "1"
+      ],
+      "section_context": "Cleric",
+      "estimated_id": null
+    },
+    {
+      "page": 56,
+      "table_index": 1,
+      "row_count": 3,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        536.1600341796875,
+        236.8800048828125,
+        580.0800170898438
+      ],
+      "headers": [
+        "0",
+        "",
+        "1",
+        "+2"
+      ],
+      "section_context": "Beyond 1st Level",
+      "estimated_id": null
+    },
+    {
+      "page": 56,
+      "table_index": 6,
+      "row_count": 4,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        646.0800170898438,
+        236.8800048828125,
+        701.0399780273438
+      ],
+      "headers": [
+        "85,000",
+        "",
+        "11",
+        "+4"
+      ],
+      "section_context": "Beyond 1st Level",
+      "estimated_id": null
+    },
+    {
+      "page": 57,
+      "table_index": 5,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        660.47998046875,
+        288.96002197265625,
+        682.5599975585938
+      ],
+      "headers": [
+        "Fighter",
+        "Light armor, medium arm\nweapons, martial weapo",
+        "or, shields, simple"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 61,
+      "table_index": 11,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        644.8114100864956,
+        278.6400146484375,
+        666.7542898995536
+      ],
+      "headers": [
+        "1",
+        "I idolize a particula\nrefer to that perso",
+        "r hero of my faith, and constantly"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 127,
+      "table_index": 1,
+      "row_count": 3,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        605.0399780273438,
+        282.7200012207031,
+        648.9599914550781
+      ],
+      "headers": [
+        "1",
+        "The creature uses all it\nrandom direction. To d\na d8 and assign a direc\ncreature doesn\u2019t take",
+        "s movement to move in a"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 127,
+      "table_index": 2,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        671.0399780273438,
+        282.7200012207031,
+        693.1199951171875
+      ],
+      "headers": [
+        "7\u20138",
+        "The creature uses its a\nattack against a rando",
+        "ction to make a melee"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 186,
+      "table_index": 0,
+      "row_count": 1,
+      "column_count": 6,
+      "bbox": [
+        52.31999969482422,
+        205.4399675641741,
+        288.9599914550781,
+        227.51999991280692
+      ],
+      "headers": [
+        "Permanent\ncircle",
+        "",
+        "\u2014",
+        "\u2014",
+        "\u2014",
+        "01\u2013100"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 186,
+      "table_index": 3,
+      "row_count": 1,
+      "column_count": 6,
+      "bbox": [
+        52.31999969482422,
+        293.2799987792969,
+        288.9599914550781,
+        315.3599940708705
+      ],
+      "headers": [
+        "False\ndestination",
+        "",
+        "01\u201350",
+        "51\u2013100",
+        "\u2014",
+        "\u2014"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 201,
+      "table_index": 8,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        577.4400024414062,
+        278.6400085449219,
+        610.3200073242188
+      ],
+      "headers": [
+        "01\u201320",
+        "The character retreats i\nbecomes paralyzed. The\ncharacter takes any dam",
+        "nto his or her mind and"
+      ],
+      "section_context": "Madness",
+      "estimated_id": null
+    },
+    {
+      "page": 201,
+      "table_index": 9,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        644.2285679408482,
+        278.6400085449219,
+        676.3200073242188
+      ],
+      "headers": [
+        "31\u201340",
+        "The character becomes\nuse his or her action an\nround to flee from the s",
+        "frightened and must"
+      ],
+      "section_context": "Madness",
+      "estimated_id": null
+    },
+    {
+      "page": 202,
+      "table_index": 1,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        122.6400146484375,
+        278.6400076059195,
+        155.5200080871582
+      ],
+      "headers": [
+        "26\u201330",
+        "\u201cI try to become more li\nknow\u2014adopting his or\nmannerisms, and name.",
+        "ke someone else I"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 202,
+      "table_index": 2,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        177.5999755859375,
+        278.6400076059195,
+        210.47995376586914
+      ],
+      "headers": [
+        "36\u201345",
+        "\u201cAchieving my goal is th\nto me, and I\u2019ll ignore ev\nit.\u201d",
+        "e only thing of interest"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 202,
+      "table_index": 3,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        232.55999755859375,
+        278.6400076059195,
+        254.3999900817871
+      ],
+      "headers": [
+        "51\u201355",
+        "\u201cI don\u2019t like the way peo\ntime.\u201d",
+        "ple judge me all the"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 202,
+      "table_index": 4,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        276.47998046875,
+        278.6400076059195,
+        309.36000061035156
+      ],
+      "headers": [
+        "71\u201380",
+        "\u201cI am convinced that po\nhunting me, and their a\ngo. I am sure they\u2019re wa",
+        "werful enemies are"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 202,
+      "table_index": 5,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        331.44000244140625,
+        278.6400076059195,
+        353.2799987792969
+      ],
+      "headers": [
+        "86\u201395",
+        "\u201cI can\u2019t take anything se\nserious the situation, th",
+        "riously. The more"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 210,
+      "table_index": 0,
+      "row_count": 4,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        138.0,
+        278.6400146484375,
+        192.95998764038086
+      ],
+      "headers": [
+        "91\u201399",
+        "A pyramid with a 60-\u00ad\u2010fo\nupward. Inside is a sar\nmummy lord. The pyra\nmummy lord\u2019s lair, an\ntreasure of the GM\u2019s c",
+        "ot-\u00ad\u2010square base bursts"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 215,
+      "table_index": 3,
+      "row_count": 1,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        487.67999267578125,
+        288.9599914550781,
+        509.5199890136719
+      ],
+      "headers": [
+        "1",
+        "1",
+        "Gases, wind, and fog can\u2019t pass\nthe barrier.",
+        "through"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 215,
+      "table_index": 4,
+      "row_count": 1,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        542.6400146484375,
+        288.9599914550781,
+        564.480029296875
+      ],
+      "headers": [
+        "3",
+        "3",
+        "Living matter can\u2019t pass throug\nbarrier.",
+        "h the"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 215,
+      "table_index": 5,
+      "row_count": 2,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        575.52001953125,
+        288.9599914550781,
+        608.4000122070313
+      ],
+      "headers": [
+        "5",
+        "5",
+        "Nothing can pass through the b\nWalls, floors, and ceilings can p\nat your discretion.",
+        "arrier."
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 220,
+      "table_index": 3,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        607.6799926757812,
+        282.7200012207031,
+        640.5599975585938
+      ],
+      "headers": [
+        "01\u201310",
+        "The efreeti attacks you\nrounds, the efreeti dis\nloses its magic.",
+        ". After fighting for 5"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 243,
+      "table_index": 1,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        368.1600036621094,
+        264.7200012207031,
+        401.0400085449219
+      ],
+      "headers": [
+        "86\u201300",
+        "A spatial rift sends eac\nwithin 180 feet of the\nsphere, to a random p",
+        "h creature and object"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 3,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        181.20001220703125,
+        278.6400146484375,
+        203.2800064086914
+      ],
+      "headers": [
+        "11\u201315",
+        "You are stunned until\nbelieving something a",
+        "the start of your next turn,"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 4,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        214.3199462890625,
+        278.6400146484375,
+        247.20000076293945
+      ],
+      "headers": [
+        "21\u201325",
+        "You cast detect thoug\nchose. If you didn\u2019t tar\ninstead take 1d6 psych",
+        "hts on the target you"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 5,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        258.239990234375,
+        278.6400146484375,
+        291.1199951171875
+      ],
+      "headers": [
+        "31\u201333",
+        "Heavy rain falls in a 60\nthe target. The area b\nThe rain falls until the",
+        "-\u00ad\u2010foot radius centered on"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 7,
+      "row_count": 3,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        412.0799865722656,
+        278.6400146484375,
+        456.0
+      ],
+      "headers": [
+        "50\u201353",
+        "You enlarge the target\nenlarge/reduce. If the\nthat spell, or if you did\nbecome the target.",
+        "as if you had cast"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 8,
+      "row_count": 3,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        467.0400085449219,
+        278.6400146484375,
+        510.96002197265625
+      ],
+      "headers": [
+        "59\u201362",
+        "Grass grows on the gr\ncentered on the target\nit grows to ten times it\novergrown for 1 minut",
+        "ound in a 60-\u00ad\u2010foot radius"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 9,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        554.8800048828125,
+        278.6400146484375,
+        576.7200164794922
+      ],
+      "headers": [
+        "66\u201369",
+        "You shrink yourself as\nenlarge/reduce on you",
+        "if you had cast"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 250,
+      "table_index": 11,
+      "row_count": 3,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        653.760009765625,
+        278.6400146484375,
+        697.6799926757812
+      ],
+      "headers": [
+        "88\u201390",
+        "A stream of 1d4 \u00d7 10 g\nshoots from the wand\nand 5 feet wide. Each\ndamage, and the total",
+        "ems, each worth 1 gp,"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    },
+    {
+      "page": 252,
+      "table_index": 0,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        112.3199462890625,
+        288.96001503684306,
+        145.44001007080078
+      ],
+      "headers": [
+        "1",
+        "Aligned: The item s\ndiametrically oppos\nnever neutral.)",
+        "eeks to defeat or destroy those of a"
+      ],
+      "section_context": "Artifacts",
+      "estimated_id": null
+    },
+    {
+      "page": 252,
+      "table_index": 1,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        178.3199462890625,
+        288.96001503684306,
+        200.4000015258789
+      ],
+      "headers": [
+        "3",
+        "Protector: The item\nor kind of creature,",
+        "seeks to defend a particular race"
+      ],
+      "section_context": "Artifacts",
+      "estimated_id": null
+    },
+    {
+      "page": 252,
+      "table_index": 2,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        222.239990234375,
+        288.96001503684306,
+        244.32000732421875
+      ],
+      "headers": [
+        "5",
+        "Templar: The item\ninterests of a partic",
+        "seeks to defend the servants and"
+      ],
+      "section_context": "Artifacts",
+      "estimated_id": null
+    },
+    {
+      "page": 252,
+      "table_index": 3,
+      "row_count": 2,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        266.15997314453125,
+        288.96001503684306,
+        299.2799835205078
+      ],
+      "headers": [
+        "7",
+        "Glory Seeker: The it\nmagic item in the w\nfamous or notoriou",
+        "em seeks renown as the greatest"
+      ],
+      "section_context": "Artifacts",
+      "estimated_id": null
+    },
+    {
+      "page": 252,
+      "table_index": 4,
+      "row_count": 1,
+      "column_count": 3,
+      "bbox": [
+        52.31999969482422,
+        332.1600036621094,
+        288.96001503684306,
+        354.24000549316406
+      ],
+      "headers": [
+        "9",
+        "Destiny Seeker: The\nwielder have key ro",
+        "item is convinced that it and its"
+      ],
+      "section_context": "Artifacts",
+      "estimated_id": null
+    },
+    {
+      "page": 321,
+      "table_index": 2,
+      "row_count": 1,
+      "column_count": 4,
+      "bbox": [
+        52.31999969482422,
+        203.280029296875,
+        288.9599914550781,
+        225.36000061035156
+      ],
+      "headers": [
+        "Large or\nsmaller",
+        "",
+        "As a wyrmling",
+        "Challenge 2 or higher"
+      ],
+      "section_context": null,
+      "estimated_id": null
+    }
+  ],
+  "analysis": {
+    "by_section": {
+      "character_creation": 1,
+      "spells": 4,
+      "combat": 20,
+      "monsters": 1
+    },
+    "total_discovered": 35,
+    "avg_rows": 1.8,
+    "avg_cols": 3.657142857142857
+  }
+}

@@ -3,6 +3,16 @@
 
 This documents the specific reference tables we plan to extract from SRD 5.1.
 These are reusable gameplay tables (not equipment, monsters, or spells).
+
+TABLE CATEGORIES (SRD-Aligned):
+  - character_creation: Chapters 1-2 (ability scores, proficiency)
+  - class_progression: Chapter 3 (all 12 class level tables)
+  - equipment: Chapter 5 (armor, weapons, gear, services, costs)
+  - combat: Chapter 9 (CR/XP, actions, conditions in combat)
+  - exploration: Chapter 8 (travel, environment, resting)
+  - magic: Chapter 10 (spell slots, cantrip scaling, components)
+  - conditions: Appendix A (status effects, mechanical impacts)
+  - reference: Cross-cutting (creature size, languages, etc.)
 """
 
 from typing import TypedDict
@@ -225,7 +235,7 @@ TARGET_TABLES: list[TableTarget] = [
         "name": "Services",
         "page": 159,
         "section": "Chapter 5: Equipment",
-        "category": "downtime",
+        "category": "equipment",
         "priority": "MEDIUM",
         "notes": "Hireling and service costs",
     },
@@ -256,9 +266,40 @@ TARGET_TABLES: list[TableTarget] = [
         "name": "Lifestyle Expenses",
         "page": 157,
         "section": "Chapter 5: Equipment",
-        "category": "downtime",
+        "category": "equipment",
         "priority": "LOW",
         "notes": "Daily living costs (wretched to aristocratic)",
+    },
+    # Equipment tables extracted via text parsing (v0.9.0 Phase 2)
+    {
+        "id": "table:exchange_rates",
+        "simple_name": "exchange_rates",
+        "name": "Standard Exchange Rates",
+        "page": [62],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "Currency conversion rates (CP/SP/EP/GP/PP)",
+    },
+    {
+        "id": "table:armor",
+        "simple_name": "armor",
+        "name": "Armor",
+        "page": [63, 64],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "Extracted via text_parser from PDF pages 63-64",
+    },
+    {
+        "id": "table:weapons",
+        "simple_name": "weapons",
+        "name": "Weapons",
+        "page": [65, 66],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "Extracted via text_parser from PDF pages 65-66",
     },
     {
         "id": "table:condition_effects",
@@ -266,9 +307,9 @@ TARGET_TABLES: list[TableTarget] = [
         "name": "Condition Effects",
         "page": [290, 292],
         "section": "Appendix A: Conditions",
-        "category": "reference",
+        "category": "conditions",
         "priority": "MEDIUM",
-        "notes": "May be better suited for conditions.json (v0.9.0)",
+        "notes": "Condition status effects and mechanical impacts",
     },
 ]
 

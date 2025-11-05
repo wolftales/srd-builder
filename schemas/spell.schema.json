@@ -13,6 +13,7 @@
     "level",
     "school",
     "casting",
+    "duration",
     "components",
     "text",
     "page"
@@ -83,8 +84,6 @@
       "required": [
         "time",
         "range",
-        "duration",
-        "concentration",
         "ritual"
       ],
       "additionalProperties": false,
@@ -186,21 +185,32 @@
             }
           }
         },
-        "duration": {
-          "type": "string",
-          "minLength": 1,
-          "description": "Duration (e.g., 'Instantaneous', '1 minute', 'Concentration, up to 1 hour')"
-        },
-        "concentration": {
-          "type": "boolean",
-          "description": "Whether the spell requires concentration"
-        },
         "ritual": {
           "type": "boolean",
           "description": "Whether the spell can be cast as a ritual"
         }
       },
       "description": "Casting mechanics"
+    },
+    "duration": {
+      "type": "object",
+      "required": [
+        "requires_concentration",
+        "length"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "requires_concentration": {
+          "type": "boolean",
+          "description": "Whether the spell requires concentration to maintain"
+        },
+        "length": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Duration of the spell (e.g., 'instantaneous', 'up to 1 minute', '1 hour', 'until dispelled')"
+        }
+      },
+      "description": "Duration information including concentration requirements"
     },
     "components": {
       "type": "object",

@@ -1,18 +1,17 @@
 # TODO - Known Gaps & Future Improvements
 
-> **📋 NOTE:** This document is being **deprecated**. Active items have been moved to:
+> **🗄️ ARCHIVED:** This document has been **deprecated** as of v0.8.5.
+>
+> **Active items moved to:**
+> - **ROADMAP.md § Dataset Coverage** - Current dataset status and counts
 > - **ROADMAP.md v0.13.0** - Quality & Polish milestone (final pass before v1.0.0)
 > - **PARKING_LOT.md** - Deferred features and technical debt
 >
-> This file is kept for historical reference. New quality issues should be added to ROADMAP.md milestone sections.
+> This file is preserved for historical reference only. All quality issues and improvements are now tracked in ROADMAP.md milestone sections.
 
 ---
 
-This document tracks known gaps, parsing improvements, and quality issues for established datasets. Unlike ROADMAP.md (new features) and PARKING_LOT.md (deferred features), this focuses on **incremental improvements** to existing data extraction.
-
----
-
-## Current Status (v0.8.2)
+## Historical Status (as of v0.8.2)
 
 **Datasets Complete:**
 - ✅ Monsters (296 entries, schema v1.3.0)
@@ -21,6 +20,12 @@ This document tracks known gaps, parsing improvements, and quality issues for es
 - ✅ Tables (23 entries, schema v1.3.0)
 - ✅ Lineages (13 entries, schema v1.3.0)
 - ✅ Classes (12 entries, schema v1.3.0)
+
+---
+
+# Historical Content Below
+
+This document tracked known gaps, parsing improvements, and quality issues for established datasets. Unlike ROADMAP.md (new features) and PARKING_LOT.md (deferred features), this focused on **incremental improvements** to existing data extraction.
 
 ---
 

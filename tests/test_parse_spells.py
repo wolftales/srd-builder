@@ -67,15 +67,13 @@ def test_parse_range_with_area() -> None:
 
 
 def test_parse_duration_instantaneous() -> None:
-    duration, concentration = _parse_duration("Instantaneous")
-    assert duration == "instantaneous"
-    assert concentration is False
+    result = _parse_duration("Instantaneous")
+    assert result == {"requires_concentration": False, "length": "instantaneous"}
 
 
 def test_parse_duration_with_concentration() -> None:
-    duration, concentration = _parse_duration("Concentration, up to 1 minute")
-    assert duration == "up to 1 minute"
-    assert concentration is True
+    result = _parse_duration("Concentration, up to 1 minute")
+    assert result == {"requires_concentration": True, "length": "up to 1 minute"}
 
 
 def test_parse_components_vsm() -> None:
