@@ -389,10 +389,10 @@ def _extract_text_region(
         sorted_words = sorted(row_words, key=lambda w: w[0])
 
         if num_columns == 2:
-            # Two-column table: split at midpoint
-            mid_x = (region["x_min"] + region["x_max"]) / 2
-            col1 = " ".join([text for x, text in sorted_words if x < mid_x])
-            col2 = " ".join([text for x, text in sorted_words if x >= mid_x])
+            # Two-column table: use column_split_x if provided, otherwise midpoint
+            split_x = config.get("column_split_x", (region["x_min"] + region["x_max"]) / 2)
+            col1 = " ".join([text for x, text in sorted_words if x < split_x])
+            col2 = " ".join([text for x, text in sorted_words if x >= split_x])
 
             if col1 and col2:
                 rows.append([col1, col2])

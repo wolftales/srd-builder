@@ -225,7 +225,8 @@ TABLES: dict[str, dict[str, Any]] = {
         "source": "srd",
         "pages": [92],
         "headers": ["Size", "Space"],
-        "region": {"x_min": 320, "x_max": 465, "y_min": 200, "y_max": 265},
+        "region": {"x_min": 320, "x_max": 465, "y_min": 200, "y_max": 275},
+        "column_split_x": 380,  # Split between size names (x~329) and space values (x~383)
         "chapter": "Combat",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
