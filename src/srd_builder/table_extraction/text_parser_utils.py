@@ -124,6 +124,38 @@ def split_at_currency(words: list[str], currency_idx: int) -> tuple[list[str], s
     return name_parts, cost, remaining_parts
 
 
+def extract_multipage_rows(
+    pdf_path: str,
+    regions: list[dict[str, Any]],
+    y_tolerance: float = 2.0,
+) -> dict[float, list[tuple[float, str]]]:
+    """Extract rows from multiple page regions and merge them.
+
+    Args:
+        pdf_path: Path to PDF file
+        regions: List of region dicts with keys: page, x_min, x_max, y_min, y_max
+        y_tolerance: Y-coordinate grouping tolerance
+
+    Returns:
+        Combined row dictionary with all rows
+    """
+    all_rows: dict[float, list[tuple[float, str]]] = {}
+
+    for region in regions:
+        page_rows = extract_region_rows(
+            pdf_path,
+            region["page"],
+            region.get("x_min"),
+            region.get("x_max"),
+            region.get("y_min"),
+            region.get("y_max"),
+            y_tolerance,
+        )
+        all_rows.update(page_rows)
+
+    return all_rows
+
+
 def merge_multipage_rows(
     rows_page1: dict[float, list[tuple[float, str]]],
     rows_page2: dict[float, list[tuple[float, str]]],

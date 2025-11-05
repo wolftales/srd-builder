@@ -1019,35 +1019,19 @@ def parse_waterborne_vehicles_table(pdf_path: str, pages: list[int]) -> dict[str
 
     Headers: Item | Cost | Speed
     """
-    import fitz
+    from .text_parser_utils import extract_region_rows, rows_to_sorted_text, should_skip_header
 
-    doc = fitz.open(pdf_path)
     headers = ["Item", "Cost", "Speed"]
     items: list[list[str]] = []
 
-    page = doc[pages[0] - 1]
-    words = page.get_text("words")
+    rows = extract_region_rows(pdf_path, pages[0], x_max=300, y_min=376, y_max=445)
 
-    rows: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
-
-    for word in words:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 < 300 and 376 < y0 < 445:  # Left column, skip table header at ~358
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows:
-                rows[y_key] = []
-            rows[y_key].append((x0, text))
-
-    for y_pos in sorted(rows.keys()):
-        row_words = sorted(rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
         # Skip headers
-        if "Item Cost Speed" in row_text:
+        if should_skip_header(row_text, ["Item Cost Speed"]):
             continue
-
-        words_list = [text for x, text in row_words]
 
         # Find "gp" for cost
         gp_idx = None
@@ -1069,8 +1053,6 @@ def parse_waterborne_vehicles_table(pdf_path: str, pages: list[int]) -> dict[str
             speed = " ".join(speed_parts)
 
             items.append([item_name, cost, speed])
-
-    doc.close()
 
     if len(items) != 6:
         import logging
@@ -1140,61 +1122,35 @@ def parse_lifestyle_expenses_table(pdf_path: str, pages: list[int]) -> dict[str,
 
     Headers: Lifestyle | Price/Day
     """
-    import fitz
+    from .text_parser_utils import (
+        extract_multipage_rows,
+        find_currency_index,
+        rows_to_sorted_text,
+        should_skip_header,
+    )
 
-    doc = fitz.open(pdf_path)
     headers = ["Lifestyle", "Price/Day"]
     items: list[list[str]] = []
 
-    # Page 72 - Bottom right column
-    page72 = doc[pages[0] - 1]
-    words72 = page72.get_text("words")
+    # Extract from page 72 bottom right + page 73 top left
+    rows = extract_multipage_rows(
+        pdf_path,
+        [
+            {"page": pages[0], "x_min": 300, "y_min": 260, "y_max": 750},
+            {"page": pages[1], "x_max": 300, "y_min": 70, "y_max": 200},
+        ],
+    )
 
-    rows_p72: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
-    for word in words72:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 260 < y0 < 750:  # Right column, lower section
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p72:
-                rows_p72[y_key] = []
-            rows_p72[y_key].append((x0, text))
-
-    # Page 73 - Top left column
-    page73 = doc[pages[1] - 1]
-    words73 = page73.get_text("words")
-
-    rows_p73: dict[float, list[tuple[float, str]]] = {}
-    for word in words73:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 < 300 and 70 < y0 < 200:  # Left column top
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p73:
-                rows_p73[y_key] = []
-            rows_p73[y_key].append((x0, text))
-
-    # Combine rows from both pages
-    all_rows = {**rows_p72, **rows_p73}
-
-    for y_pos in sorted(all_rows.keys()):
-        row_words = sorted(all_rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
-
-        # Skip headers and prose
-        if "Lifestyle Expenses" in row_text or "Lifestyle Price" in row_text:
+        # Skip headers and stop at prose
+        if should_skip_header(row_text, ["Lifestyle Expenses", "Lifestyle Price"]):
             continue
         if "Food" in row_text or "particular" in row_text:
             break
 
-        words_list = [text for x, text in row_words]
-
-        # Find currency (gp, sp, cp)
-        currency_idx = None
-        for i, word in enumerate(words_list):
-            if word in ["gp", "sp", "cp"]:
-                currency_idx = i
-                break
+        currency_idx = find_currency_index(words_list)
 
         if currency_idx:
             # Lifestyle name: everything before cost
@@ -1205,8 +1161,6 @@ def parse_lifestyle_expenses_table(pdf_path: str, pages: list[int]) -> dict[str,
             price = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
 
             items.append([lifestyle, price])
-
-    doc.close()
 
     if len(items) < 4 or len(items) > 8:
         import logging
@@ -1225,61 +1179,35 @@ def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str,
 
     Headers: Item | Cost
     """
-    import fitz
+    from .text_parser_utils import (
+        extract_multipage_rows,
+        find_currency_index,
+        rows_to_sorted_text,
+        should_skip_header,
+    )
 
-    doc = fitz.open(pdf_path)
     headers = ["Item", "Cost"]
     items: list[list[str]] = []
 
-    # Page 73 - Bottom right column
-    page73 = doc[pages[0] - 1]
-    words73 = page73.get_text("words")
+    # Extract from page 73 bottom right + page 74 top left
+    rows = extract_multipage_rows(
+        pdf_path,
+        [
+            {"page": pages[0], "x_min": 300, "y_min": 650, "y_max": 750},
+            {"page": pages[1], "x_max": 300, "y_min": 70, "y_max": 250},
+        ],
+    )
 
-    rows_p73: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
-    for word in words73:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 650 < y0 < 750:  # Right column, bottom section
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p73:
-                rows_p73[y_key] = []
-            rows_p73[y_key].append((x0, text))
-
-    # Page 74 - Top left column
-    page74 = doc[pages[1] - 1]
-    words74 = page74.get_text("words")
-
-    rows_p74: dict[float, list[tuple[float, str]]] = {}
-    for word in words74:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 < 300 and 70 < y0 < 250:  # Left column top
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows_p74:
-                rows_p74[y_key] = []
-            rows_p74[y_key].append((x0, text))
-
-    # Combine rows from both pages
-    all_rows = {**rows_p73, **rows_p74}
-
-    for y_pos in sorted(all_rows.keys()):
-        row_words = sorted(all_rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
-
-        # Skip headers and next table
-        if "Food, Drink" in row_text or "Item Cost" in row_text:
+        # Skip headers and stop at next table
+        if should_skip_header(row_text, ["Food, Drink", "Item Cost"]):
             continue
         if "Services" in row_text:
             break
 
-        words_list = [text for x, text in row_words]
-
-        # Find currency (gp, sp, cp)
-        currency_idx = None
-        for i, word in enumerate(words_list):
-            if word in ["gp", "sp", "cp"]:
-                currency_idx = i
-                break
+        currency_idx = find_currency_index(words_list)
 
         if currency_idx:
             # Item name: everything before cost
@@ -1290,8 +1218,6 @@ def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str,
             cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
 
             items.append([item_name, cost])
-
-    doc.close()
 
     if len(items) < 8 or len(items) > 15:
         import logging
@@ -1310,42 +1236,26 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
 
     Headers: Service | Cost
     """
-    import fitz
+    from .text_parser_utils import (
+        extract_region_rows,
+        find_currency_index,
+        rows_to_sorted_text,
+        should_skip_header,
+    )
 
-    doc = fitz.open(pdf_path)
     headers = ["Service", "Cost"]
     items: list[list[str]] = []
 
-    page = doc[pages[0] - 1]
-    words = page.get_text("words")
+    rows = extract_region_rows(pdf_path, pages[0], x_min=300, y_min=70, y_max=350)
 
-    rows: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
-
-    for word in words:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 70 < y0 < 350:  # Right column top section
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows:
-                rows[y_key] = []
-            rows[y_key].append((x0, text))
-
-    for y_pos in sorted(rows.keys()):
-        row_words = sorted(rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
         # Skip headers
-        if "Services" in row_text or "Service Cost" in row_text or "Service Pay" in row_text:
+        if should_skip_header(row_text, ["Services", "Service Cost", "Service Pay"]):
             continue
 
-        words_list = [text for x, text in row_words]
-
-        # Find currency (gp, sp, cp)
-        currency_idx = None
-        for i, word in enumerate(words_list):
-            if word in ["gp", "sp", "cp"]:
-                currency_idx = i
-                break
+        currency_idx = find_currency_index(words_list)
 
         if currency_idx:
             # Service name: everything before cost
@@ -1357,8 +1267,6 @@ def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
             cost = " ".join(cost_parts)
 
             items.append([service_name, cost])
-
-    doc.close()
 
     if len(items) < 6 or len(items) > 12:
         import logging
