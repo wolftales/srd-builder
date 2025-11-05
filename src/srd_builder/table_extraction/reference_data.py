@@ -81,34 +81,11 @@ REFERENCE_TABLES: dict[str, dict[str, Any]] = {
         ],
         "notes": "Full caster progression (Cleric, Druid, Wizard)",
     },
-    "cantrip_damage": {
-        "headers": ["Character Level", "Damage"],
-        "rows": [
-            ["1st-4th", "1 die"],
-            ["5th-10th", "2 dice"],
-            ["11th-16th", "3 dice"],
-            ["17th-20th", "4 dice"],
-        ],
-    },
-    "travel_pace": {
-        "headers": ["Pace", "Distance per Minute", "Distance per Hour", "Distance per Day"],
-        "rows": [
-            ["Fast", "400 feet", "4 miles", "30 miles"],
-            ["Normal", "300 feet", "3 miles", "24 miles"],
-            ["Slow", "200 feet", "2 miles", "18 miles"],
-        ],
-    },
-    "creature_size": {
-        "headers": ["Size", "Space"],
-        "rows": [
-            ["Tiny", "2½ by 2½ ft."],
-            ["Small", "5 by 5 ft."],
-            ["Medium", "5 by 5 ft."],
-            ["Large", "10 by 10 ft."],
-            ["Huge", "15 by 15 ft."],
-            ["Gargantuan", "20 by 20 ft. or larger"],
-        ],
-    },
+    # NOTE: The following tables have been migrated or decommissioned in v0.9.7:
+    # - cantrip_damage: REMOVED (not in SRD, convenience table, data in spell records)
+    # - spell_slots_by_level: REMOVED (superseded by CLASS_PROGRESSIONS tables)
+    # - travel_pace: MIGRATED to PDF extraction (page 84)
+    # - creature_size: MIGRATED to PDF extraction (page 92)
 }
 
 # ============================================================================

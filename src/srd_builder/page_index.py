@@ -233,13 +233,15 @@ TABLES_APPENDIX: list[dict[str, str | int | None]] = [
     {"name": "Typical Difficulty Classes", "page": 77, "category": "Character Creation"},
     # Combat (page 258)
     {"name": "Experience Points by Challenge Rating", "page": 258, "category": "Combat"},
-    # Calculated/Reference tables (no specific page - generated from rules)
-    {"name": "Proficiency Bonus by Level", "page": None, "category": "Character Creation"},
+    # Movement and Combat reference tables (v0.9.7 - migrated to PDF extraction)
+    {"name": "Travel Pace", "page": 84, "category": "Movement"},  # Migrated from reference
+    {"name": "Size Categories", "page": 92, "category": "Combat"},  # Migrated from reference
+    # Calculated tables (no specific page - generated from rules)
+    {"name": "Proficiency Bonus by Level", "page": None, "category": "Reference"},
     {"name": "Carrying Capacity", "page": None, "category": "Reference"},
-    {"name": "Travel Pace", "page": None, "category": "Exploration"},
-    {"name": "Spell Slots by Character Level", "page": None, "category": "Magic"},
-    {"name": "Cantrip Damage by Character Level", "page": None, "category": "Magic"},
-    {"name": "Size Categories", "page": None, "category": "Reference"},
+    # NOTE: Decommissioned tables (v0.9.7):
+    # - "Spell Slots by Character Level" - superseded by CLASS_PROGRESSIONS tables
+    # - "Cantrip Damage by Character Level" - not in SRD, data exists in spell records
 ]
 
 
