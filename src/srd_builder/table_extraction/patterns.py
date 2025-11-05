@@ -343,15 +343,17 @@ def _extract_text_region(
 ) -> RawTable:
     """Extract text-region table (single page region).
 
-    Extracts table from a defined rectangular region on a single page.
-    Handles cases where PyMuPDF splits tables into multiple 1-row tables.
+    Uses coordinate-based extraction with get_text("words") - same proven approach
+    as split_column pattern. Extracts words from region and groups by Y-coordinate.
 
     Config requirements:
         - pages: [int] - Single page number
         - headers: list[str] - Column headers
         - region: dict with x_min, x_max, y_min, y_max coordinates
     """
-    import pymupdf as fitz
+    import pymupdf
+
+    from .text_parser_utils import group_words_by_y
 
     pages = config["pages"]
     if not isinstance(pages, list) or len(pages) != 1:
@@ -360,26 +362,46 @@ def _extract_text_region(
     page_num = pages[0]
     headers = config["headers"]
     region = config["region"]
+    num_columns = len(headers)
 
-    doc = fitz.open(pdf_path)
+    doc = pymupdf.open(pdf_path)
     page_obj = doc[page_num - 1]  # Convert to 0-indexed
 
-    # Find all tables within the specified region
-    tables = page_obj.find_tables()
+    # Get all words from page
+    words = page_obj.get_text("words")
+    doc.close()
+
+    # Filter words to region and group by Y-coordinate
+    rows_dict = group_words_by_y(
+        words,
+        y_tolerance=2.0,
+        x_min=region["x_min"],
+        x_max=region["x_max"],
+        y_min=region["y_min"],
+        y_max=region["y_max"],
+    )
+
+    # Build table rows
     rows: list[list[str | int | float]] = []
 
-    # Collect all table rows within the region
-    for table in tables:
-        bbox = table.bbox
-        # Check if table is within our region
-        if (
-            region["x_min"] <= bbox[0] <= region["x_max"]
-            and region["y_min"] <= bbox[1] <= region["y_max"]
-        ):
-            extracted = table.extract()
-            rows.extend(extracted)
+    for _y_pos, row_words in sorted(rows_dict.items()):
+        # Sort words left-to-right by X-coordinate
+        sorted_words = sorted(row_words, key=lambda w: w[0])
 
-    doc.close()
+        if num_columns == 2:
+            # Two-column table: split at midpoint
+            mid_x = (region["x_min"] + region["x_max"]) / 2
+            col1 = " ".join([text for x, text in sorted_words if x < mid_x])
+            col2 = " ".join([text for x, text in sorted_words if x >= mid_x])
+
+            if col1 and col2:
+                rows.append([col1, col2])
+        else:
+            # Multi-column: concatenate all words as single row
+            # (specific tables can override with custom logic if needed)
+            row_text = " ".join([text for _, text in sorted_words])
+            if row_text:
+                rows.append([row_text])
 
     # Create RawTable
     return RawTable(
