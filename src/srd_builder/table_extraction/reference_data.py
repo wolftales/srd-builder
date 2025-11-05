@@ -220,17 +220,21 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_armor_table",
         "pages": [63, 64],
     },
-    "weapons": {
-        "parser": "parse_weapons_table",
-        "pages": [65, 66],
+    "container_capacity": {
+        "parser": "parse_container_capacity_table",
+        "pages": [69, 70],
+    },
+    "donning_doffing_armor": {
+        "parser": "parse_donning_doffing_armor_table",
+        "pages": [64],
     },
     "exchange_rates": {
         "parser": "parse_exchange_rates_table",
         "pages": [62],
     },
-    "donning_doffing_armor": {
-        "parser": "parse_donning_doffing_armor_table",
-        "pages": [64],
+    "weapons": {
+        "parser": "parse_weapons_table",
+        "pages": [65, 66],
     },
 }
 

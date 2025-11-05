@@ -231,6 +231,7 @@ class TableExtractor:
         from .text_table_parser import (
             parse_adventure_gear_table,
             parse_armor_table,
+            parse_container_capacity_table,
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
             parse_weapons_table,
@@ -240,9 +241,10 @@ class TableExtractor:
         parsers = {
             "parse_adventure_gear_table": parse_adventure_gear_table,
             "parse_armor_table": parse_armor_table,
-            "parse_weapons_table": parse_weapons_table,
-            "parse_exchange_rates_table": parse_exchange_rates_table,
+            "parse_container_capacity_table": parse_container_capacity_table,
             "parse_donning_doffing_armor_table": parse_donning_doffing_armor_table,
+            "parse_exchange_rates_table": parse_exchange_rates_table,
+            "parse_weapons_table": parse_weapons_table,
         }
 
         parser_name = parser_config["parser"]

@@ -601,3 +601,103 @@ def _parse_gear_item(words: list[str]) -> list[str] | None:
     weight = " ".join(weight_parts) if weight_parts else "—"
 
     return [name, cost, weight]
+
+
+def parse_container_capacity_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Container Capacity table from PDF.
+
+    Two-column table split across pages:
+    - Page 69 right column: First 6 containers
+    - Page 70 left column: Last 7 containers
+
+    Headers: Container | Capacity
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Container", "Capacity"]
+    items: list[list[str]] = []
+
+    # Page 69 - Right column (X > 300)
+    page69 = doc[pages[0] - 1]
+    words69 = page69.get_text("words")
+
+    rows_p69: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words69:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 615 < y0 < 750:  # Right column, container section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p69:
+                rows_p69[y_key] = []
+            rows_p69[y_key].append((x0, text))
+
+    for y_pos in sorted(rows_p69.keys()):
+        row_words = sorted(rows_p69[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip header and footer
+        if "Container" in row_text or "System" in row_text:
+            continue
+
+        # Parse: Container name | Capacity description
+        # Container name ends before first digit or measurement unit
+        words = [text for x, text in row_words]
+
+        # Find split point: first word that's a digit or starts with digit
+        split_idx = None
+        for i, word in enumerate(words):
+            if word[0].isdigit() or word in ["1½", "1/2", "1/5"]:
+                split_idx = i
+                break
+
+        if split_idx:
+            container_name = " ".join(words[:split_idx])
+            capacity = " ".join(words[split_idx:])
+            items.append([container_name, capacity])
+
+    # Page 70 - Left column (X < 300)
+    page70 = doc[pages[1] - 1]
+    words70 = page70.get_text("words")
+
+    rows_p70: dict[float, list[tuple[float, str]]] = {}
+    for word in words70:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 70 < y0 < 150:  # Left column, before footnote
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p70:
+                rows_p70[y_key] = []
+            rows_p70[y_key].append((x0, text))
+
+    for y_pos in sorted(rows_p70.keys()):
+        row_words = sorted(rows_p70[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Stop at footnote
+        if "*" in row_text or "You can" in row_text:
+            break
+
+        words = [text for x, text in row_words]
+
+        # Find split point
+        split_idx = None
+        for i, word in enumerate(words):
+            if word[0].isdigit() or word in ["1½", "1/2", "1/5"]:
+                split_idx = i
+                break
+
+        if split_idx:
+            container_name = " ".join(words[:split_idx])
+            capacity = " ".join(words[split_idx:])
+            items.append([container_name, capacity])
+
+    doc.close()
+
+    if len(items) != 13:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 13 container capacity entries, found {len(items)}")
+
+    return {"headers": headers, "rows": items}

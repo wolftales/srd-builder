@@ -292,6 +292,16 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "General adventuring equipment with costs and weights (99 items)",
     },
     {
+        "id": "table:container_capacity",
+        "simple_name": "container_capacity",
+        "name": "Container Capacity",
+        "page": [69, 70],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "Storage capacity for 13 container types",
+    },
+    {
         "id": "table:donning_doffing_armor",
         "simple_name": "donning_doffing_armor",
         "name": "Donning and Doffing Armor",
