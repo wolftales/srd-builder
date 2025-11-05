@@ -232,9 +232,21 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_exchange_rates_table",
         "pages": [62],
     },
+    "food_drink_lodging": {
+        "parser": "parse_food_drink_lodging_table",
+        "pages": [73, 74],
+    },
+    "lifestyle_expenses": {
+        "parser": "parse_lifestyle_expenses_table",
+        "pages": [72, 73],
+    },
     "mounts_and_other_animals": {
         "parser": "parse_mounts_and_other_animals_table",
         "pages": [71, 72],
+    },
+    "services": {
+        "parser": "parse_services_table",
+        "pages": [74],
     },
     "tack_harness_vehicles": {
         "parser": "parse_tack_harness_vehicles_table",

@@ -17,6 +17,7 @@ coverage.xml
 htmlcov/
 .vscode/
 dist/
+rulesets/*/*.pdf
 rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/

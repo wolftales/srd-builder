@@ -945,6 +945,8 @@ def parse_tack_harness_vehicles_table(pdf_path: str, pages: list[int]) -> dict[s
                 rows[y_key] = []
             rows[y_key].append((x0, text))
 
+    saddle_types_remaining = 0  # Track saddle type subcategories
+
     for y_pos in sorted(rows.keys()):
         row_words = sorted(rows[y_pos], key=lambda w: w[0])
         row_text = " ".join([text for x, text in row_words])
@@ -970,6 +972,19 @@ def parse_tack_harness_vehicles_table(pdf_path: str, pages: list[int]) -> dict[s
                 else words_list[:currency_idx]
             )
             item_name = " ".join(name_parts)
+
+            # Check if this is "Feed" - next 4 items are saddle types
+            if "Feed" in item_name:
+                saddle_types_remaining = 4
+            # Check if this is a saddle type (indented subcategory)
+            elif saddle_types_remaining > 0 and item_name in [
+                "Exotic",
+                "Military",
+                "Pack",
+                "Riding",
+            ]:
+                item_name = f"Saddle, {item_name.lower()}"
+                saddle_types_remaining -= 1
 
             # Cost: amount + currency OR special marker (×4, ×2)
             if words_list[currency_idx] in ["×2", "×4"]:
@@ -1129,5 +1144,242 @@ def parse_trade_goods_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
 
         logger = logging.getLogger(__name__)
         logger.warning(f"Expected 13 trade goods, found {len(items)}")
+
+    return {"headers": headers, "rows": items}
+
+
+def parse_lifestyle_expenses_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Lifestyle Expenses table from PDF.
+
+    Spans pages 72 (bottom right) to 73 (top left).
+    Contains lifestyle categories with costs.
+
+    Headers: Lifestyle | Price/Day
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Lifestyle", "Price/Day"]
+    items: list[list[str]] = []
+
+    # Page 72 - Bottom right column
+    page72 = doc[pages[0] - 1]
+    words72 = page72.get_text("words")
+
+    rows_p72: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words72:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 260 < y0 < 750:  # Right column, lower section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p72:
+                rows_p72[y_key] = []
+            rows_p72[y_key].append((x0, text))
+
+    # Page 73 - Top left column
+    page73 = doc[pages[1] - 1]
+    words73 = page73.get_text("words")
+
+    rows_p73: dict[float, list[tuple[float, str]]] = {}
+    for word in words73:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 70 < y0 < 200:  # Left column top
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p73:
+                rows_p73[y_key] = []
+            rows_p73[y_key].append((x0, text))
+
+    # Combine rows from both pages
+    all_rows = {**rows_p72, **rows_p73}
+
+    for y_pos in sorted(all_rows.keys()):
+        row_words = sorted(all_rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip headers and prose
+        if "Lifestyle Expenses" in row_text or "Lifestyle Price" in row_text:
+            continue
+        if "Food" in row_text or "particular" in row_text:
+            break
+
+        words_list = [text for x, text in row_words]
+
+        # Find currency (gp, sp, cp)
+        currency_idx = None
+        for i, word in enumerate(words_list):
+            if word in ["gp", "sp", "cp"]:
+                currency_idx = i
+                break
+
+        if currency_idx:
+            # Lifestyle name: everything before cost
+            name_parts = words_list[: currency_idx - 1]
+            lifestyle = " ".join(name_parts)
+
+            # Price: amount + currency
+            price = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
+
+            items.append([lifestyle, price])
+
+    doc.close()
+
+    if len(items) < 4 or len(items) > 8:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected ~5 lifestyle categories, found {len(items)}")
+
+    return {"headers": headers, "rows": items}
+
+
+def parse_food_drink_lodging_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Food, Drink, and Lodging table from PDF.
+
+    Spans pages 73 (bottom right) to 74 (top left).
+    Contains food/drink/lodging items with costs.
+
+    Headers: Item | Cost
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Item", "Cost"]
+    items: list[list[str]] = []
+
+    # Page 73 - Bottom right column
+    page73 = doc[pages[0] - 1]
+    words73 = page73.get_text("words")
+
+    rows_p73: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words73:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 650 < y0 < 750:  # Right column, bottom section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p73:
+                rows_p73[y_key] = []
+            rows_p73[y_key].append((x0, text))
+
+    # Page 74 - Top left column
+    page74 = doc[pages[1] - 1]
+    words74 = page74.get_text("words")
+
+    rows_p74: dict[float, list[tuple[float, str]]] = {}
+    for word in words74:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 70 < y0 < 250:  # Left column top
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p74:
+                rows_p74[y_key] = []
+            rows_p74[y_key].append((x0, text))
+
+    # Combine rows from both pages
+    all_rows = {**rows_p73, **rows_p74}
+
+    for y_pos in sorted(all_rows.keys()):
+        row_words = sorted(all_rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip headers and next table
+        if "Food, Drink" in row_text or "Item Cost" in row_text:
+            continue
+        if "Services" in row_text:
+            break
+
+        words_list = [text for x, text in row_words]
+
+        # Find currency (gp, sp, cp)
+        currency_idx = None
+        for i, word in enumerate(words_list):
+            if word in ["gp", "sp", "cp"]:
+                currency_idx = i
+                break
+
+        if currency_idx:
+            # Item name: everything before cost
+            name_parts = words_list[: currency_idx - 1]
+            item_name = " ".join(name_parts)
+
+            # Cost: amount + currency
+            cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
+
+            items.append([item_name, cost])
+
+    doc.close()
+
+    if len(items) < 8 or len(items) > 15:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected ~11 food/drink/lodging items, found {len(items)}")
+
+    return {"headers": headers, "rows": items}
+
+
+def parse_services_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Services table from PDF.
+
+    Single column on page 74 top right.
+    Contains service items with costs.
+
+    Headers: Service | Cost
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Service", "Cost"]
+    items: list[list[str]] = []
+
+    page = doc[pages[0] - 1]
+    words = page.get_text("words")
+
+    rows: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 70 < y0 < 350:  # Right column top section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows:
+                rows[y_key] = []
+            rows[y_key].append((x0, text))
+
+    for y_pos in sorted(rows.keys()):
+        row_words = sorted(rows[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip headers
+        if "Services" in row_text or "Service Cost" in row_text or "Service Pay" in row_text:
+            continue
+
+        words_list = [text for x, text in row_words]
+
+        # Find currency (gp, sp, cp)
+        currency_idx = None
+        for i, word in enumerate(words_list):
+            if word in ["gp", "sp", "cp"]:
+                currency_idx = i
+                break
+
+        if currency_idx:
+            # Service name: everything before cost
+            name_parts = words_list[: currency_idx - 1]
+            service_name = " ".join(name_parts)
+
+            # Cost: amount + currency (may include "per" qualifier)
+            cost_parts = words_list[currency_idx - 1 :]
+            cost = " ".join(cost_parts)
+
+            items.append([service_name, cost])
+
+    doc.close()
+
+    if len(items) < 6 or len(items) > 12:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected ~8 services, found {len(items)}")
 
     return {"headers": headers, "rows": items}
