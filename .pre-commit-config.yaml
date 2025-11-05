@@ -29,6 +29,8 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies: []
+        args: [--explicit-package-bases]
+        files: ^src/
   - repo: local
     hooks:
       - id: no-srd-files

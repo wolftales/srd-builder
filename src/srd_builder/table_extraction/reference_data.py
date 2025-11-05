@@ -797,6 +797,7 @@ def get_table_data(simple_name: str) -> dict[str, Any] | None:
 
     # Check calculated tables
     if simple_name in CALCULATED_TABLES:
-        return CALCULATED_TABLES[simple_name]
+        config = CALCULATED_TABLES[simple_name]
+        return dict(config) if isinstance(config, dict) else None
 
     return None

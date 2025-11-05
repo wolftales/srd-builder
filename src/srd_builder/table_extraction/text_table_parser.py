@@ -82,10 +82,10 @@ def parse_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     ]
 
     # Parse rows into structured format
-    parsed_rows = []
+    parsed_rows: list[list[str]] = []
     for words in armor_rows:
         row = _parse_armor_row(words)
-        if row:
+        if row is not None:
             parsed_rows.append(row)
 
     # Validate expected armor count (SRD 5.1 has 13: 3 light + 6 medium + 4 heavy)
@@ -180,11 +180,11 @@ def parse_weapons_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     ]
 
     # Parse rows
-    parsed_rows = []
+    parsed_rows: list[list[str]] = []
     for words in weapon_rows:
-        row = _parse_weapon_row(words)
-        if row:
-            parsed_rows.append(row)
+        parsed_row = _parse_weapon_row(words)
+        if parsed_row is not None:
+            parsed_rows.append(parsed_row)
 
     # Validate expected weapon count (SRD 5.1 has 37: 14 simple + 23 martial)
     if len(parsed_rows) != 37:

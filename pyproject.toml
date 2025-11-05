@@ -76,6 +76,9 @@ strict = false
 warn_unused_ignores = true
 disallow_untyped_defs = false
 ignore_missing_imports = true
+explicit_package_bases = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+exclude = ["^scripts/", "^tests/"]
 
 [tool.pytest.ini_options]
 minversion = "8.0"
