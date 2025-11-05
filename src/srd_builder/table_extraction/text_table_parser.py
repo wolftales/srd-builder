@@ -93,7 +93,7 @@ def parse_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         import logging
 
         logging.warning(
-            f"Expected 13 armor items, found {len(parsed_rows)}. " f"Extraction may be incomplete."
+            f"Expected 13 armor items, found {len(parsed_rows)}. Extraction may be incomplete."
         )
 
     return {
@@ -191,7 +191,7 @@ def parse_weapons_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         import logging
 
         logging.warning(
-            f"Expected 37 weapons, found {len(parsed_rows)}. " f"Extraction may be incomplete."
+            f"Expected 37 weapons, found {len(parsed_rows)}. Extraction may be incomplete."
         )
 
     return {
@@ -246,8 +246,7 @@ def parse_exchange_rates_table(pdf_path: str, pages: list[int]) -> dict[str, Any
         import logging
 
         logging.warning(
-            f"Expected 5 currency types, found {len(cleaned_rows)}. "
-            f"Extraction may be incomplete."
+            f"Expected 5 currency types, found {len(cleaned_rows)}. Extraction may be incomplete."
         )
 
     return {
@@ -322,8 +321,7 @@ def parse_donning_doffing_armor_table(pdf_path: str, pages: list[int]) -> dict[s
         import logging
 
         logging.warning(
-            f"Expected 4 armor categories, found {len(parsed_rows)}. "
-            f"Extraction may be incomplete."
+            f"Expected 4 armor categories, found {len(parsed_rows)}. Extraction may be incomplete."
         )
 
     return {
@@ -402,7 +400,7 @@ def _parse_weapon_row(words: list[str]) -> list[str] | None:
                 # Search for lb. after damage
                 for i in range(damage_end_idx, len(words)):
                     if words[i] == "lb.":
-                        weight = f"{words[i-1]} lb."
+                        weight = f"{words[i - 1]} lb."
                         weight_idx = i
                         break
 
@@ -797,3 +795,123 @@ def parse_tools_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         logger.warning(f"Expected 38 total entries (35 items + 3 categories), found {len(items)}")
 
     return {"headers": headers, "rows": items, "categories": categories}
+
+
+def parse_mounts_and_other_animals_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Mounts and Other Animals table from PDF.
+
+    Split across pages:
+    - Page 71 right column: First 3 animals (Camel, Donkey, Elephant)
+    - Page 72 left column: Last 5 animals (Horses, Mastiff, Pony, Warhorse)
+
+    Headers: Item | Cost | Speed | Carrying Capacity
+    """
+    import fitz
+
+    doc = fitz.open(pdf_path)
+    headers = ["Item", "Cost", "Speed", "Carrying Capacity"]
+    items: list[list[str]] = []
+
+    # Page 71 - Right column
+    page71 = doc[pages[0] - 1]
+    words71 = page71.get_text("words")
+
+    rows_p71: dict[float, list[tuple[float, str]]] = {}
+    y_grouping_tolerance = 2
+
+    for word in words71:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 > 300 and 655 < y0 < 750:  # Right column, mounts section
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p71:
+                rows_p71[y_key] = []
+            rows_p71[y_key].append((x0, text))
+
+    for y_pos in sorted(rows_p71.keys()):
+        row_words = sorted(rows_p71[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Skip header and footer
+        if "Item Cost Speed" in row_text or "System" in row_text or "Carrying" in row_text:
+            continue
+
+        # Parse: Item | Cost | Speed | Capacity
+        words_list = [text for x, text in row_words]
+
+        # Find "gp" for cost
+        gp_idx = None
+        for i, word in enumerate(words_list):
+            if word == "gp":
+                gp_idx = i
+                break
+
+        if gp_idx:
+            # Item name: everything before cost amount
+            name_parts = words_list[: gp_idx - 1]
+            item_name = " ".join(name_parts)
+
+            # Cost
+            cost = f"{words_list[gp_idx - 1]} gp"
+
+            # Speed: next value after gp (e.g., "50")
+            speed_val = words_list[gp_idx + 1]
+            speed_unit = words_list[gp_idx + 2] if gp_idx + 2 < len(words_list) else "ft."
+            speed = f"{speed_val} {speed_unit}"
+
+            # Capacity: remaining text
+            capacity_parts = words_list[gp_idx + 3 :]
+            capacity = " ".join(capacity_parts)
+
+            items.append([item_name, cost, speed, capacity])
+
+    # Page 72 - Left column
+    page72 = doc[pages[1] - 1]
+    words72 = page72.get_text("words")
+
+    rows_p72: dict[float, list[tuple[float, str]]] = {}
+    for word in words72:
+        x0, y0, x1, y1, text, *_ = word
+        if x0 < 300 and 70 < y0 < 120:  # Left column top, before Tack table
+            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
+            if y_key not in rows_p72:
+                rows_p72[y_key] = []
+            rows_p72[y_key].append((x0, text))
+
+    for y_pos in sorted(rows_p72.keys()):
+        row_words = sorted(rows_p72[y_pos], key=lambda w: w[0])
+        row_text = " ".join([text for x, text in row_words])
+
+        # Stop at next table header
+        if "Tack" in row_text:
+            break
+
+        words_list = [text for x, text in row_words]
+
+        # Find "gp"
+        gp_idx = None
+        for i, word in enumerate(words_list):
+            if word == "gp":
+                gp_idx = i
+                break
+
+        if gp_idx:
+            name_parts = words_list[: gp_idx - 1]
+            item_name = " ".join(name_parts)
+            cost = f"{words_list[gp_idx - 1]} gp"
+            speed_val = words_list[gp_idx + 1]
+            speed_unit = words_list[gp_idx + 2] if gp_idx + 2 < len(words_list) else "ft."
+            speed = f"{speed_val} {speed_unit}"
+            capacity_parts = words_list[gp_idx + 3 :]
+            capacity = " ".join(capacity_parts)
+
+            items.append([item_name, cost, speed, capacity])
+
+    doc.close()
+
+    if len(items) != 8:
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected 8 mounts/animals, found {len(items)}")
+
+    return {"headers": headers, "rows": items}

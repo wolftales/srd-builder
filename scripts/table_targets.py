@@ -312,6 +312,16 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "Time requirements for putting on/removing armor",
     },
     {
+        "id": "table:mounts_and_other_animals",
+        "simple_name": "mounts_and_other_animals",
+        "name": "Mounts and Other Animals",
+        "page": [71, 72],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "HIGH",
+        "notes": "8 animals with cost, speed, and carrying capacity",
+    },
+    {
         "id": "table:tools",
         "simple_name": "tools",
         "name": "Tools",

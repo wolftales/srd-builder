@@ -232,6 +232,10 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_exchange_rates_table",
         "pages": [62],
     },
+    "mounts_and_other_animals": {
+        "parser": "parse_mounts_and_other_animals_table",
+        "pages": [71, 72],
+    },
     "tools": {
         "parser": "parse_tools_table",
         "pages": [70],

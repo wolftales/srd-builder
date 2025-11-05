@@ -60,8 +60,7 @@ class TableExtractor:
                 raw_table = self._extract_single_table(target)
                 tables.append(raw_table)
                 logger.info(
-                    f"  ✓ Extracted {len(raw_table.rows)} rows "
-                    f"via {raw_table.extraction_method}"
+                    f"  ✓ Extracted {len(raw_table.rows)} rows via {raw_table.extraction_method}"
                 )
             except Exception as e:
                 logger.error(f"  ✗ Failed to extract: {e}")
@@ -234,6 +233,7 @@ class TableExtractor:
             parse_container_capacity_table,
             parse_donning_doffing_armor_table,
             parse_exchange_rates_table,
+            parse_mounts_and_other_animals_table,
             parse_tools_table,
             parse_weapons_table,
         )
@@ -245,6 +245,7 @@ class TableExtractor:
             "parse_container_capacity_table": parse_container_capacity_table,
             "parse_donning_doffing_armor_table": parse_donning_doffing_armor_table,
             "parse_exchange_rates_table": parse_exchange_rates_table,
+            "parse_mounts_and_other_animals_table": parse_mounts_and_other_animals_table,
             "parse_tools_table": parse_tools_table,
             "parse_weapons_table": parse_weapons_table,
         }
