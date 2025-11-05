@@ -28,6 +28,7 @@ class RawTable:
     extraction_method: str
     section: str | None = None
     notes: str | None = None
+    metadata: dict[str, Any] | None = None
 
 
 def extract_by_config(

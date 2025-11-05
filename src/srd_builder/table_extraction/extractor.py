@@ -265,6 +265,7 @@ class TableExtractor:
             extraction_method="text_parsed",
             section=target["section"],
             notes=f"Extracted via {parser_name} from PDF text",
+            metadata=result.get("categories"),
         )
 
     def close(self) -> None:
@@ -307,6 +308,7 @@ def extract_tables_to_json(
                 "extraction_method": t.extraction_method,
                 "section": t.section,
                 "notes": t.notes,
+                "metadata": t.metadata,
             }
             for t in tables
         ]

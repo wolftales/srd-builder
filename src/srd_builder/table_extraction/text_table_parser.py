@@ -432,8 +432,10 @@ def _parse_weapon_row(words: list[str]) -> list[str] | None:
 def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     """Parse Adventure Gear table from PDF.
 
-    This table has a two-column layout where items appear side-by-side.
-    Each row can contain one or two items (left and right columns).
+    This table has a two-column alphabetically-sorted layout.
+    Left column: A-G items, Right column: H-W items
+    Categories (Ammunition, Arcane focus, etc.) appear as headers without prices,
+    followed by indented items with prices.
     Each item has: Name | Cost (amount + currency) | Weight
 
     Args:
@@ -446,10 +448,13 @@ def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any
     import pymupdf
 
     doc = pymupdf.open(pdf_path)
-    all_items = []
 
     # Column split threshold (X coordinate)
     column_split = 300
+
+    # Collect rows for each column separately to preserve alphabetical order
+    left_items = []
+    right_items = []
 
     for page_num in pages:
         page = doc[page_num - 1]
@@ -462,7 +467,7 @@ def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any
             y_key = round(y0 / Y_GROUPING_TOLERANCE) * Y_GROUPING_TOLERANCE
             rows_dict[y_key].append((x0, text))
 
-        # Process each row
+        # Process each row in order (top to bottom)
         for y_pos in sorted(rows_dict.keys()):
             row_words = sorted(rows_dict[y_pos], key=lambda w: w[0])
 
@@ -470,35 +475,90 @@ def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any
             left_col = [text for x, text in row_words if x < column_split]
             right_col = [text for x, text in row_words if x >= column_split]
 
-            # Parse left column
-            if left_col and any(coin in left_col for coin in ["gp", "sp", "cp"]):
-                item = _parse_gear_item(left_col)
-                if item:
-                    all_items.append(item)
+            # Process left column
+            if left_col:
+                # Get X position of first word to check indentation
+                first_x = [x for x, text in row_words if x < column_split][0]
+                is_indented = first_x > 60  # Indented items start at X ≈ 66.6
 
-            # Parse right column
-            if right_col and any(coin in right_col for coin in ["gp", "sp", "cp"]):
-                item = _parse_gear_item(right_col)
-                if item:
-                    all_items.append(item)
+                has_price = any(coin in left_col for coin in ["gp", "sp", "cp"])
+
+                if has_price:
+                    item = _parse_gear_item(left_col)
+                    if item:
+                        # Mark indented items with special flag (temporary)
+                        if is_indented:
+                            item.append("__INDENTED__")
+                        left_items.append(item)
+                elif not is_indented:
+                    # Category header (flush left, no price)
+                    category_text = " ".join(left_col)
+                    # Skip headers, page numbers, system text
+                    if category_text not in [
+                        "Item Cost Weight",
+                        "",
+                    ] and not category_text.startswith("System"):
+                        # Check if it's a known category
+                        if any(
+                            cat in category_text for cat in ["Ammunition", "focus", "Holy symbol"]
+                        ):
+                            # Add category as a row with no cost/weight
+                            left_items.append([category_text, "—", "—"])
+
+            # Process right column
+            if right_col:
+                has_price = any(coin in right_col for coin in ["gp", "sp", "cp"])
+                if has_price:
+                    item = _parse_gear_item(right_col)
+                    if item:
+                        right_items.append(item)
 
     doc.close()
 
-    # Remove duplicates (same item appearing multiple times)
+    # Combine: left column first (A-G), then right column (H-W)
+    all_items = left_items + right_items
+
+    # Remove duplicates while preserving order
     seen = set()
     unique_items = []
     for item in all_items:
-        item_key = item[0].lower()  # Use name as key
+        item_key = item[0].lower()
         if item_key not in seen:
             seen.add(item_key)
             unique_items.append(item)
 
+    # Build category metadata for easy parsing
+    # Category items are indented (marked with __INDENTED__ flag)
+    # Non-indented items with prices end the current category
+    categories: dict[str, dict[str, Any]] = {}
+    current_category: str | None = None
+    final_items: list[list[str]] = []
+
+    for i, item in enumerate(unique_items):
+        is_category_header = item[1] == "—" and item[2] == "—"
+        is_indented = len(item) > 3 and item[3] == "__INDENTED__"
+
+        # Remove indentation marker and save clean item
+        clean_item = item[:3] if len(item) > 3 else item
+        final_items.append(clean_item)
+
+        if is_category_header:
+            # Start new category
+            current_category = clean_item[0]
+            categories[current_category] = {"row_index": i, "items": []}
+        elif current_category and is_indented:
+            # Indented item belongs to current category
+            categories[current_category]["items"].append({"name": clean_item[0], "row_index": i})
+        elif current_category and not is_category_header:
+            # Non-indented item with price ends the category
+            current_category = None
+
     # Validation
-    if len(unique_items) < 50:
-        print(f"Warning: Expected ~50+ adventure gear items, found {len(unique_items)}")
+    if len(final_items) < 50:
+        print(f"Warning: Expected ~50+ adventure gear items, found {len(final_items)}")
 
     headers = ["Item", "Cost", "Weight"]
-    return {"headers": headers, "rows": unique_items}
+    return {"headers": headers, "rows": final_items, "categories": categories}
 
 
 def _parse_gear_item(words: list[str]) -> list[str] | None:
