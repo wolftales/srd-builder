@@ -4,53 +4,11 @@ Extracts tables from PDF text by analyzing word positions and grouping into rows
 Used for tables that lack grid borders and aren't detected by PyMuPDF's table detection.
 """
 
-from collections import defaultdict
 from typing import Any
-
-import pymupdf
 
 # Coordinate grouping tolerance (pixels)
 # Words within this Y-distance are considered on the same horizontal line
 Y_GROUPING_TOLERANCE = 2
-
-
-def _extract_rows_by_coordinate(pdf_path: str, pages: list[int]) -> list[list[str]]:
-    """Extract all text rows from PDF pages using coordinate analysis.
-
-    Groups words by Y-coordinate (horizontal lines) and sorts by X-coordinate
-    (left to right) to reconstruct table structure.
-
-    Args:
-        pdf_path: Path to PDF file
-        pages: List of page numbers (1-indexed)
-
-    Returns:
-        List of rows, where each row is a list of words in left-to-right order
-    """
-    doc = pymupdf.open(pdf_path)
-    all_rows = []
-
-    for page_num in pages:
-        page = doc[page_num - 1]  # Convert to 0-indexed
-        words = page.get_text("words")
-
-        # Group words by y-coordinate (rows)
-        rows_dict = defaultdict(list)
-        for word in words:
-            x0, y0, x1, y1, text, *_ = word
-            # Round y to group words on same horizontal line
-            y_key = round(y0 / Y_GROUPING_TOLERANCE) * Y_GROUPING_TOLERANCE
-            rows_dict[y_key].append((x0, text))
-
-        # Sort rows by y-position (top to bottom)
-        for y_pos in sorted(rows_dict.keys()):
-            # Sort words by x-position (left to right)
-            row_words = sorted(rows_dict[y_pos], key=lambda w: w[0])
-            word_list = [w[1] for w in row_words]
-            all_rows.append(word_list)
-
-    doc.close()
-    return all_rows
 
 
 def parse_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
@@ -65,13 +23,17 @@ def parse_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     Returns:
         Dict with structured armor table data including headers and parsed rows
     """
-    # Extract all rows using coordinate analysis
-    all_rows = _extract_rows_by_coordinate(pdf_path, pages)
+    from .text_parser_utils import extract_multipage_rows, rows_to_sorted_text
 
-    # Filter for armor rows (have 'gp' cost marker and reasonable word count)
-    armor_rows = [row for row in all_rows if "gp" in row and 8 <= len(row) <= 15]
+    # Extract rows from pages 63-64 (armor table spans bottom of p63 and top of p64)
+    rows = extract_multipage_rows(
+        pdf_path,
+        [
+            {"page": pages[0], "y_min": 680, "y_max": 750},  # Bottom of page 63 (Padded at Y=689)
+            {"page": pages[1], "y_min": 70, "y_max": 430},  # Top of page 64 (armor rows Y=72-420)
+        ],
+    )
 
-    # Define headers
     headers = [
         "Armor",
         "Cost",
@@ -81,9 +43,13 @@ def parse_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         "Weight",
     ]
 
-    # Parse rows into structured format
     parsed_rows: list[list[str]] = []
-    for words in armor_rows:
+
+    for _y_pos, words in rows_to_sorted_text(rows):
+        # Filter for armor rows (have 'gp' cost marker and reasonable word count)
+        if "gp" not in words or not (8 <= len(words) <= 15):
+            continue
+
         row = _parse_armor_row(words)
         if row is not None:
             parsed_rows.append(row)
@@ -159,18 +125,17 @@ def parse_weapons_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     Returns:
         Dict with structured weapons table data including headers and parsed rows
     """
-    # Extract all rows using coordinate analysis
-    all_rows = _extract_rows_by_coordinate(pdf_path, pages)
+    from .text_parser_utils import extract_multipage_rows, rows_to_sorted_text
 
-    # Filter for weapon rows (have cost AND damage indicators)
-    weapon_rows = []
-    for row in all_rows:
-        has_cost = any(x in row for x in ["gp", "sp", "cp"])
-        has_damage = any("d" in x or x in ["bludgeoning", "piercing", "slashing"] for x in row)
-        if has_cost and (has_damage or "—" in row):
-            weapon_rows.append(row)
+    # Extract rows from pages 65-66 with proper Y-coordinate ranges
+    rows = extract_multipage_rows(
+        pdf_path,
+        [
+            {"page": pages[0], "y_min": 675, "y_max": 750},
+            {"page": pages[1], "y_min": 70, "y_max": 510},
+        ],
+    )
 
-    # Define headers
     headers = [
         "Name",
         "Cost",
@@ -179,9 +144,15 @@ def parse_weapons_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
         "Properties",
     ]
 
-    # Parse rows
     parsed_rows: list[list[str]] = []
-    for words in weapon_rows:
+
+    for _y_pos, words in rows_to_sorted_text(rows):
+        # Filter for weapon rows (have cost AND damage indicators)
+        has_cost = any(x in words for x in ["gp", "sp", "cp"])
+        has_damage = any("d" in x or x in ["bludgeoning", "piercing", "slashing"] for x in words)
+        if not (has_cost and (has_damage or "—" in words)):
+            continue
+
         parsed_row = _parse_weapon_row(words)
         if parsed_row is not None:
             parsed_rows.append(parsed_row)
@@ -383,93 +354,68 @@ def _parse_weapon_row(words: list[str]) -> list[str] | None:
 def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     """Parse Adventure Gear table from PDF.
 
-    This table has a two-column alphabetically-sorted layout.
+    Two-column alphabetically-sorted layout with categories.
     Left column: A-G items, Right column: H-W items
-    Categories (Ammunition, Arcane focus, etc.) appear as headers without prices,
-    followed by indented items with prices.
-    Each item has: Name | Cost (amount + currency) | Weight
+    Categories (Ammunition, Arcane focus, etc.) followed by indented items.
 
-    Args:
-        pdf_path: Path to PDF file
-        pages: List of page numbers to extract from
-
-    Returns:
-        Dictionary with headers and rows list
+    Headers: Item | Cost | Weight
     """
-    import pymupdf
+    import fitz
 
-    doc = pymupdf.open(pdf_path)
+    from .text_parser_utils import detect_indentation, find_currency_index, group_words_by_y
 
-    # Column split threshold (X coordinate)
+    doc = fitz.open(pdf_path)
     column_split = 300
-
-    # Collect rows for each column separately to preserve alphabetical order
     left_items = []
     right_items = []
 
     for page_num in pages:
         page = doc[page_num - 1]
         words = page.get_text("words")
+        rows_dict = group_words_by_y(words)
 
-        # Group by Y coordinate
-        rows_dict = defaultdict(list)
-        for word in words:
-            x0, y0, x1, y1, text, *_ = word
-            y_key = round(y0 / Y_GROUPING_TOLERANCE) * Y_GROUPING_TOLERANCE
-            rows_dict[y_key].append((x0, text))
-
-        # Process each row in order (top to bottom)
         for y_pos in sorted(rows_dict.keys()):
             row_words = sorted(rows_dict[y_pos], key=lambda w: w[0])
 
             # Split into left and right columns
-            left_col = [text for x, text in row_words if x < column_split]
-            right_col = [text for x, text in row_words if x >= column_split]
+            left_col_words = [(x, text) for x, text in row_words if x < column_split]
+            right_col_words = [(x, text) for x, text in row_words if x >= column_split]
 
             # Process left column
-            if left_col:
-                # Get X position of first word to check indentation
-                first_x = [x for x, text in row_words if x < column_split][0]
-                is_indented = first_x > 60  # Indented items start at X ≈ 66.6
-
-                has_price = any(coin in left_col for coin in ["gp", "sp", "cp"])
+            if left_col_words:
+                left_text = [text for x, text in left_col_words]
+                is_indented = detect_indentation(left_col_words, 60)
+                has_price = find_currency_index(left_text) is not None
 
                 if has_price:
-                    item = _parse_gear_item(left_col)
+                    item = _parse_gear_item(left_text)
+                    if item and is_indented:
+                        item.append("__INDENTED__")
                     if item:
-                        # Mark indented items with special flag (temporary)
-                        if is_indented:
-                            item.append("__INDENTED__")
                         left_items.append(item)
                 elif not is_indented:
-                    # Category header (flush left, no price)
-                    category_text = " ".join(left_col)
-                    # Skip headers, page numbers, system text
-                    if category_text not in [
-                        "Item Cost Weight",
-                        "",
-                    ] and not category_text.startswith("System"):
-                        # Check if it's a known category
-                        if any(
+                    category_text = " ".join(left_text)
+                    if (
+                        category_text not in ["Item Cost Weight", ""]
+                        and not category_text.startswith("System")
+                        and any(
                             cat in category_text for cat in ["Ammunition", "focus", "Holy symbol"]
-                        ):
-                            # Add category as a row with no cost/weight
-                            left_items.append([category_text, "—", "—"])
+                        )
+                    ):
+                        left_items.append([category_text, "—", "—"])
 
             # Process right column
-            if right_col:
-                has_price = any(coin in right_col for coin in ["gp", "sp", "cp"])
-                if has_price:
-                    item = _parse_gear_item(right_col)
+            if right_col_words:
+                right_text = [text for x, text in right_col_words]
+                if find_currency_index(right_text) is not None:
+                    item = _parse_gear_item(right_text)
                     if item:
                         right_items.append(item)
 
     doc.close()
 
-    # Combine: left column first (A-G), then right column (H-W)
+    # Combine and deduplicate
     all_items = left_items + right_items
-
-    # Remove duplicates while preserving order
     seen = set()
     unique_items = []
     for item in all_items:
@@ -478,9 +424,7 @@ def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any
             seen.add(item_key)
             unique_items.append(item)
 
-    # Build category metadata for easy parsing
-    # Category items are indented (marked with __INDENTED__ flag)
-    # Non-indented items with prices end the current category
+    # Build category metadata
     categories: dict[str, dict[str, Any]] = {}
     current_category: str | None = None
     final_items: list[list[str]] = []
@@ -489,27 +433,24 @@ def parse_adventure_gear_table(pdf_path: str, pages: list[int]) -> dict[str, Any
         is_category_header = item[1] == "—" and item[2] == "—"
         is_indented = len(item) > 3 and item[3] == "__INDENTED__"
 
-        # Remove indentation marker and save clean item
         clean_item = item[:3] if len(item) > 3 else item
         final_items.append(clean_item)
 
         if is_category_header:
-            # Start new category
             current_category = clean_item[0]
             categories[current_category] = {"row_index": i, "items": []}
         elif current_category and is_indented:
-            # Indented item belongs to current category
             categories[current_category]["items"].append({"name": clean_item[0], "row_index": i})
         elif current_category and not is_category_header:
-            # Non-indented item with price ends the category
             current_category = None
 
-    # Validation
     if len(final_items) < 50:
-        print(f"Warning: Expected ~50+ adventure gear items, found {len(final_items)}")
+        import logging
 
-    headers = ["Item", "Cost", "Weight"]
-    return {"headers": headers, "rows": final_items, "categories": categories}
+        logger = logging.getLogger(__name__)
+        logger.warning(f"Expected ~50+ adventure gear items, found {len(final_items)}")
+
+    return {"headers": ["Item", "Cost", "Weight"], "rows": final_items, "categories": categories}
 
 
 def _parse_gear_item(words: list[str]) -> list[str] | None:
@@ -793,58 +734,36 @@ def parse_tack_harness_vehicles_table(pdf_path: str, pages: list[int]) -> dict[s
 
     Headers: Item | Cost | Weight
     """
-    import fitz
+    from .text_parser_utils import extract_region_rows, rows_to_sorted_text, should_skip_header
 
-    doc = fitz.open(pdf_path)
     headers = ["Item", "Cost", "Weight"]
     items: list[list[str]] = []
+    saddle_types_remaining = 0
 
-    page = doc[pages[0] - 1]
-    words = page.get_text("words")
+    rows = extract_region_rows(pdf_path, pages[0], x_max=300, y_min=162, y_max=330)
 
-    rows: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
-    for word in words:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 < 300 and 162 < y0 < 330:  # Left column, skip table header at ~144
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows:
-                rows[y_key] = []
-            rows[y_key].append((x0, text))
-
-    saddle_types_remaining = 0  # Track saddle type subcategories
-
-    for y_pos in sorted(rows.keys()):
-        row_words = sorted(rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
-
-        # Skip headers and next table
-        if "Item Cost Weight" in row_text or "Waterborne" in row_text:
+        # Skip headers and stop at next table
+        if should_skip_header(row_text, ["Item Cost Weight", "Waterborne"]):
             continue
 
-        words_list = [text for x, text in row_words]
-
-        # Find currency (gp, sp, cp) or special markers (×4, ×2)
-        currency_idx = None
-        for i, word in enumerate(words_list):
-            if word in ["gp", "sp", "cp", "×2", "×4"]:
-                currency_idx = i
-                break
+        # Find currency or special markers (×2, ×4)
+        currency_idx = next(
+            (i for i, word in enumerate(words_list) if word in ["gp", "sp", "cp", "×2", "×4"]), None
+        )
 
         if currency_idx:
-            # Item name: everything before cost/marker
-            name_parts = (
-                words_list[: currency_idx - 1]
-                if words_list[currency_idx] in ["gp", "sp", "cp"]
-                else words_list[:currency_idx]
-            )
-            item_name = " ".join(name_parts)
+            # Item name
+            if words_list[currency_idx] in ["gp", "sp", "cp"]:
+                item_name = " ".join(words_list[: currency_idx - 1])
+            else:
+                item_name = " ".join(words_list[:currency_idx])
 
-            # Check if this is "Feed" - next 4 items are saddle types
+            # Saddle subcategory handling
             if "Feed" in item_name:
                 saddle_types_remaining = 4
-            # Check if this is a saddle type (indented subcategory)
             elif saddle_types_remaining > 0 and item_name in [
                 "Exotic",
                 "Military",
@@ -854,21 +773,23 @@ def parse_tack_harness_vehicles_table(pdf_path: str, pages: list[int]) -> dict[s
                 item_name = f"Saddle, {item_name.lower()}"
                 saddle_types_remaining -= 1
 
-            # Cost: amount + currency OR special marker (×4, ×2)
+            # Cost
             if words_list[currency_idx] in ["×2", "×4"]:
                 cost = words_list[currency_idx]
-                # Weight follows cost
-                weight_parts = words_list[currency_idx + 1 :]
-                weight = " ".join(weight_parts) if weight_parts else "—"
+                weight = (
+                    " ".join(words_list[currency_idx + 1 :])
+                    if currency_idx + 1 < len(words_list)
+                    else "—"
+                )
             else:
                 cost = f"{words_list[currency_idx - 1]} {words_list[currency_idx]}"
-                # Weight: after currency
-                weight_parts = words_list[currency_idx + 1 :]
-                weight = " ".join(weight_parts) if weight_parts else "—"
+                weight = (
+                    " ".join(words_list[currency_idx + 1 :])
+                    if currency_idx + 1 < len(words_list)
+                    else "—"
+                )
 
             items.append([item_name, cost, weight])
-
-    doc.close()
 
     if len(items) < 15 or len(items) > 20:
         import logging

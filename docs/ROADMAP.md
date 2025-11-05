@@ -46,6 +46,7 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 **In Progress:**
 - 🔄 v0.9.3 — Text Parser Refactor (Phase 2 of 3 complete, utilities + 5 parsers refactored)
 
+
 **Planned:**
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
@@ -1515,6 +1516,28 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 - User decision: Continue Phase 3 or pause refactor
 - Option A: Refactor remaining 8 parsers (~2-3 hours work)
 - Option B: Defer to future, focus on v0.10.0 Conditions
+
+---
+
+## v0.9.4 - Migrate 3 CALCULATED tables to PDF extraction
+- (2-3 hours)
+- Document any that can't be extracted
+- Commit and tag v0.9.4-calculated-tables
+
+## v0.9.5 - Migrate 5 REFERENCE tables to PDF extraction
+- (3-4 hours)
+- Commit and tag v0.9.5-reference-tables
+
+## v0.9.6 - Migrate 12 CLASS_PROGRESSIONS to PDF extraction
+- (8-12 hours)
+- Commit and tag v0.9.6-class-progressions
+
+## v0.9.7 - Replace equipment.json extractor with table-based assembly
+- Use coordinate-extracted tables as source
+- Assemble equipment.json from: armor + weapons + adventure_gear tables
+- Delete extract_equipment.py (old PyMuPDF approach)
+- Benefit: Single source of truth, better accuracy
+- Effort: 3-4 hours
 
 ---
 
