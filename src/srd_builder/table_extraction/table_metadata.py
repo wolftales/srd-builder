@@ -223,9 +223,9 @@ TABLES: dict[str, dict[str, Any]] = {
         "column_boundaries": [
             370,
             405,
-            441,
+            437,
             470,
-        ],  # Pace(~328) | Min(373-404) | Hour(406-440) | Day(444-469) | Effect(470+)
+        ],  # Pace(~328) | Min(373-404) | Hour(406-436) | Day(439-469) | Effect(470+)
         "chapter": "Movement",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
