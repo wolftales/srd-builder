@@ -6,7 +6,7 @@ Each table config specifies:
 - source: Data provenance (srd, derived, convenience, reference)
 - Extraction parameters (pages, regions, headers, transformations)
 - Validation rules (expected row counts)
-- migrated: Boolean indicating table has been migrated from hardcoded data to PDF extraction
+- data_driven: Boolean indicating table uses modern pattern-based extraction engine (NOT legacy function parsers)
 - confirmed: Boolean indicating extraction has been tested and validated
 
 The patterns.py engine uses this metadata to extract/generate tables without
@@ -215,7 +215,7 @@ TABLES: dict[str, dict[str, Any]] = {
         "headers": ["Pace", "Distance per Minute", "Distance per Hour", "Distance per Day"],
         "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
         "chapter": "Movement",
-        "migrated": True,  # v0.9.7: Migrated from hardcoded reference data to PDF extraction
+        "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 3},
         "notes": "Travel pace rates (Fast/Normal/Slow) - modern pattern-based extraction from page 84",
@@ -227,7 +227,7 @@ TABLES: dict[str, dict[str, Any]] = {
         "headers": ["Size", "Space"],
         "region": {"x_min": 320, "x_max": 465, "y_min": 200, "y_max": 265},
         "chapter": "Combat",
-        "migrated": True,  # v0.9.7: Migrated from hardcoded reference data to PDF extraction
+        "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 6},
         "notes": "Size Categories table (Tiny through Gargantuan) - modern pattern-based extraction from page 92",
