@@ -256,6 +256,82 @@ def parse_exchange_rates_table(pdf_path: str, pages: list[int]) -> dict[str, Any
     }
 
 
+def parse_donning_doffing_armor_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
+    """Parse Donning and Doffing Armor table from PDF.
+
+    Time requirements for putting on and taking off armor.
+
+    Args:
+        pdf_path: Path to PDF file
+        pages: List of page numbers containing the table (usually [64])
+
+    Returns:
+        Dict with structured donning/doffing armor table data
+    """
+    # Extract all rows using coordinate analysis
+    all_rows = _extract_rows_by_coordinate(pdf_path, pages)
+
+    # Filter for armor time rows
+    # Pattern: armor type + two time values (with "minute" or "action")
+    time_keywords = ["minute", "minutes", "action"]
+    armor_types = ["Light", "Medium", "Heavy", "Shield"]
+
+    armor_rows = [
+        row
+        for row in all_rows
+        if any(armor_type in row for armor_type in armor_types)
+        and any(keyword in row for keyword in time_keywords)
+        and 5 <= len(row) <= 8
+    ]
+
+    # Define headers
+    headers = [
+        "Category",
+        "Don",
+        "Doff",
+    ]
+
+    # Parse rows
+    parsed_rows: list[list[str]] = []
+    for words in armor_rows:
+        # Pattern: ["Light", "Armor", "1", "minute", "1", "minute"]
+        # or: ["Shield", "1", "action", "1", "action"]
+        if len(words) >= 5:
+            # Category is first word (or first two words if "Armor" follows)
+            if "Armor" in words and words.index("Armor") == 1:
+                category = f"{words[0]} {words[1]}"
+                time_start = 2
+            else:
+                category = words[0]
+                time_start = 1
+
+            # Extract don time (first time value)
+            don_value = words[time_start]
+            don_unit = words[time_start + 1]
+            don = f"{don_value} {don_unit}"
+
+            # Extract doff time (second time value)
+            doff_value = words[time_start + 2]
+            doff_unit = words[time_start + 3]
+            doff = f"{doff_value} {doff_unit}"
+
+            parsed_rows.append([category, don, doff])
+
+    # Validate expected count (4 entries: Light, Medium, Heavy, Shield)
+    if len(parsed_rows) != 4:
+        import logging
+
+        logging.warning(
+            f"Expected 4 armor categories, found {len(parsed_rows)}. "
+            f"Extraction may be incomplete."
+        )
+
+    return {
+        "headers": headers,
+        "rows": parsed_rows,
+    }
+
+
 def _parse_weapon_row(words: list[str]) -> list[str] | None:
     """Parse weapon row words into structured columns."""
     try:

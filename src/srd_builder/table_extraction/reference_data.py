@@ -224,6 +224,10 @@ TEXT_PARSED_TABLES = {
         "parser": "parse_exchange_rates_table",
         "pages": [62],
     },
+    "donning_doffing_armor": {
+        "parser": "parse_donning_doffing_armor_table",
+        "pages": [64],
+    },
 }
 
 # ============================================================================

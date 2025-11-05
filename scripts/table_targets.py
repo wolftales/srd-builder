@@ -282,6 +282,16 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "Currency conversion rates (CP/SP/EP/GP/PP)",
     },
     {
+        "id": "table:donning_doffing_armor",
+        "simple_name": "donning_doffing_armor",
+        "name": "Donning and Doffing Armor",
+        "page": [64],
+        "section": "Chapter 5: Equipment",
+        "category": "equipment",
+        "priority": "MEDIUM",
+        "notes": "Time requirements for putting on/removing armor",
+    },
+    {
         "id": "table:armor",
         "simple_name": "armor",
         "name": "Armor",
