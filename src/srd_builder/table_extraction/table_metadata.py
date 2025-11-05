@@ -213,12 +213,13 @@ TABLES: dict[str, dict[str, Any]] = {
         "source": "srd",
         "pages": [84],
         "headers": ["Pace", "Distance per Minute", "Distance per Hour", "Distance per Day"],
-        "region": {"x_min": 320, "x_max": 560, "y_min": 570, "y_max": 655},
+        "region": {"x_min": 320, "x_max": 470, "y_min": 570, "y_max": 655},
+        "column_boundaries": [370, 410, 444],  # Split at x=370, 410, 444 for 4 columns
         "chapter": "Movement",
         "data_driven": True,  # Uses modern pattern-based extraction engine (NOT legacy function parser)
         "confirmed": False,  # Will be confirmed after testing
         "validation": {"expected_rows": 3},
-        "notes": "Travel pace rates (Fast/Normal/Slow) - modern pattern-based extraction from page 84",
+        "notes": "Travel pace rates (Fast/Normal/Slow) with 4 columns - modern pattern-based extraction from page 84",
     },
     "size_categories": {
         "pattern_type": "text_region",  # Modern data-driven extraction

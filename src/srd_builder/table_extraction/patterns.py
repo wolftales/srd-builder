@@ -384,21 +384,47 @@ def _extract_text_region(
     # Build table rows
     rows: list[list[str | int | float]] = []
 
-    for _y_pos, row_words in sorted(rows_dict.items()):
-        # Sort words left-to-right by X-coordinate
-        sorted_words = sorted(row_words, key=lambda w: w[0])
+    # Check if column boundaries are specified
+    column_boundaries = config.get("column_boundaries")
 
-        if num_columns == 2:
-            # Two-column table: use column_split_x if provided, otherwise midpoint
-            split_x = config.get("column_split_x", (region["x_min"] + region["x_max"]) / 2)
+    if column_boundaries:
+        # Multi-column with explicit boundaries: group words into columns by x-coordinate
+        # column_boundaries = [x1, x2, x3] means: col1: [min, x1), col2: [x1, x2), col3: [x2, x3), col4: [x3, max)
+        for _y_pos, row_words in sorted(rows_dict.items()):
+            sorted_words = sorted(row_words, key=lambda w: w[0])
+
+            row = []
+            for col_idx in range(num_columns):
+                # Determine column x-range
+                x_start = column_boundaries[col_idx - 1] if col_idx > 0 else region["x_min"]
+                x_end = (
+                    column_boundaries[col_idx]
+                    if col_idx < len(column_boundaries)
+                    else region["x_max"]
+                )
+
+                # Collect words in this column
+                col_words = [text for x, text in sorted_words if x_start <= x < x_end]
+                row.append(" ".join(col_words))
+
+            # Only add row if first column (typically the key) is not empty
+            if row and row[0]:
+                rows.append(row)  # type: ignore[arg-type]
+
+    elif num_columns == 2:
+        # Two-column table: use column_split_x if provided, otherwise midpoint
+        split_x = config.get("column_split_x", (region["x_min"] + region["x_max"]) / 2)
+        for _y_pos, row_words in sorted(rows_dict.items()):
+            sorted_words = sorted(row_words, key=lambda w: w[0])
             col1 = " ".join([text for x, text in sorted_words if x < split_x])
             col2 = " ".join([text for x, text in sorted_words if x >= split_x])
 
             if col1 and col2:
                 rows.append([col1, col2])
-        else:
-            # Multi-column: concatenate all words as single row
-            # (specific tables can override with custom logic if needed)
+    else:
+        # Multi-column without boundaries: concatenate all words as single row
+        for _y_pos, row_words in sorted(rows_dict.items()):
+            sorted_words = sorted(row_words, key=lambda w: w[0])
             row_text = " ".join([text for _, text in sorted_words])
             if row_text:
                 rows.append([row_text])
