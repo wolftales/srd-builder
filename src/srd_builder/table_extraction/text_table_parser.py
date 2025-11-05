@@ -1090,42 +1090,28 @@ def parse_trade_goods_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
     Headers: Cost | Goods
     Format: "1 cp | 1 lb. of wheat"
     """
-    import fitz
+    from .text_parser_utils import (
+        extract_region_rows,
+        find_currency_index,
+        rows_to_sorted_text,
+        should_skip_header,
+    )
 
-    doc = fitz.open(pdf_path)
     headers = ["Cost", "Goods"]
     items: list[list[str]] = []
 
-    page = doc[pages[0] - 1]
-    words = page.get_text("words")
+    # Extract rows from page 72 right column
+    rows = extract_region_rows(pdf_path, pages[0], x_min=300, y_min=90, y_max=235)
 
-    rows: dict[float, list[tuple[float, str]]] = {}
-    y_grouping_tolerance = 2
-
-    for word in words:
-        x0, y0, x1, y1, text, *_ = word
-        if x0 > 300 and 90 < y0 < 235:  # Right column, skip header at ~72
-            y_key = round(y0 / y_grouping_tolerance) * y_grouping_tolerance
-            if y_key not in rows:
-                rows[y_key] = []
-            rows[y_key].append((x0, text))
-
-    for y_pos in sorted(rows.keys()):
-        row_words = sorted(rows[y_pos], key=lambda w: w[0])
-        row_text = " ".join([text for x, text in row_words])
+    for _y_pos, words_list in rows_to_sorted_text(rows):
+        row_text = " ".join(words_list)
 
         # Skip header
-        if "Cost Goods" in row_text:
+        if should_skip_header(row_text, ["Cost Goods"]):
             continue
 
-        words_list = [text for x, text in row_words]
-
         # Find currency (cp, sp, gp) - cost comes first
-        currency_idx = None
-        for i, word in enumerate(words_list):
-            if word in ["cp", "sp", "gp"]:
-                currency_idx = i
-                break
+        currency_idx = find_currency_index(words_list)
 
         if currency_idx:
             # Cost: amount + currency
@@ -1136,8 +1122,6 @@ def parse_trade_goods_table(pdf_path: str, pages: list[int]) -> dict[str, Any]:
             goods = " ".join(goods_parts)
 
             items.append([cost, goods])
-
-    doc.close()
 
     if len(items) != 13:
         import logging
