@@ -169,11 +169,19 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 18},
     },
     "trade_goods": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [72],
-        "parser": "parse_trade_goods_table",
-        "validation": {"expected_rows": 15},
+        "headers": ["Cost", "Goods"],
+        "regions": [
+            {"x_min": 323, "x_max": 501, "y_min": 84, "y_max": 248},
+        ],
+        "column_boundaries": [31],  # Before Goods column (~360abs)
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 13},  # Actually 13, not 15
+        "notes": "Trade Goods - commodity costs per unit (wheat, flour, iron, spices, livestock, metals)",
     },
     "waterborne_vehicles": {
         "pattern_type": "split_column",
