@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci output bundle bump-version
+.PHONY: init lint test format pre-commit ci output bundle tables monsters equipment spells bump-version
 
 init:
 	pip install -e ".[dev]"
@@ -36,6 +36,15 @@ bundle:
 
 tables:
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --tables-only --bundle
+
+monsters:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist --monsters-only --bundle
+
+equipment:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist --equipment-only --bundle
+
+spells:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist --spells-only --bundle
 
 bump-version:
 	@if [ -z "$(VERSION)" ]; then \

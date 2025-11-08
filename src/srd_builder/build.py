@@ -350,6 +350,21 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Extract only tables (skip monsters, equipment, spells) for faster iteration",
     )
     parser.add_argument(
+        "--monsters-only",
+        action="store_true",
+        help="Extract only monsters (skip equipment, spells, tables)",
+    )
+    parser.add_argument(
+        "--equipment-only",
+        action="store_true",
+        help="Extract only equipment (skip monsters, spells, tables)",
+    )
+    parser.add_argument(
+        "--spells-only",
+        action="store_true",
+        help="Extract only spells (skip monsters, equipment, tables)",
+    )
+    parser.add_argument(
         "--skip",
         type=str,
         help="Comma-separated list of datasets to skip (e.g. 'monsters,equipment,spells')",
@@ -804,10 +819,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     out_dir = Path(args.out)
 
-    # Parse skip list
+    # Parse skip list from various flags
     skip_datasets = set()
     if args.tables_only:
         skip_datasets = {"monsters", "equipment", "spells"}
+    elif args.monsters_only:
+        skip_datasets = {"equipment", "spells", "tables"}
+    elif args.equipment_only:
+        skip_datasets = {"monsters", "spells", "tables"}
+    elif args.spells_only:
+        skip_datasets = {"monsters", "equipment", "tables"}
     elif args.skip:
         skip_datasets = {s.strip() for s in args.skip.split(",")}
 
