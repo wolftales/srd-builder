@@ -343,11 +343,31 @@ TABLES: dict[str, dict[str, Any]] = {
         "notes": "Waterborne Vehicles - costs and speeds for ships and boats",
     },
     "weapons": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [65, 66],
-        "parser": "parse_weapons_table",
-        "validation": {"expected_rows": 37},
+        "headers": ["Name", "Cost", "Damage", "Weight"],
+        "regions": [
+            {
+                "page": 65,
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 678,
+                "y_max": 685,  # Simple Melee Weapons category header (page 65)
+                "column_boundaries": [103, 133, 208],
+            },
+            {
+                "page": 66,
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 60,
+                "y_max": 505,  # All weapons from Club through Net (page 66)
+                "column_boundaries": [103, 133, 208],
+            },
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 41},  # 4 categories + 37 weapons
+        "confirmed": True,
     },
     "experience_by_cr": {
         "pattern_type": "split_column",
