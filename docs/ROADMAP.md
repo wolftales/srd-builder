@@ -49,9 +49,12 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.7 — Migrate REFERENCE Tables (travel_pace, size_categories extracted; non-SRD tables removed)
 - ✅ v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 
+**In Progress:**
+- 🔄 v0.9.9 — Equipment Assembly & Table Migration (Part 1: Table migration ✅ complete; Part 2: Equipment assembly 📋 planned)
+
 **Planned:**
-- 📋 v0.9.9 — Equipment Assembly (replace extractor with table-based assembly)
 - 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
+- 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
 - 🎨 v0.13.0 — Quality & Polish (final cleanup before v1.0.0)
@@ -2014,49 +2017,62 @@ For tables NOT found as standalone:
 ---
 
 
-## **v0.9.9 — Complete Table Migration (Technical Debt Resolution)** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
+## **v0.9.9 — Equipment Assembly & Table Migration** **[INFRASTRUCTURE + DATA]** 🔄 **IN PROGRESS**
 
-**Status:** IN PROGRESS - 26/30 tables (86.7%) migrated to modern patterns
-**Priority:** HIGH - Complete pattern-based architecture
-**Effort:** Medium (3-5 sessions estimated)
-**Consumer Impact:** POSITIVE - Data quality improvements (found missing rows in legacy parser)
+**Status:** IN PROGRESS - Part 1 (Table Migration) ✅ COMPLETE; Part 2 (Equipment Assembly) 📋 PLANNED
+**Priority:** HIGH - Complete equipment coverage
+**Effort:** Medium-Large (Part 1: 3 sessions ✅ complete; Part 2: 2-3 sessions estimated)
+**Consumer Impact:** POSITIVE - Data quality improvements + comprehensive equipment dataset
 
-**Goal:** Complete the migration to pattern-based extraction by converting all remaining legacy_parser tables to modern patterns, then remove legacy code.
+**Part 1: Table Migration (Technical Debt Resolution)** ✅ **COMPLETE**
+**Goal:** ✅ ACHIEVED - All 30 tables migrated to pattern-based extraction, legacy code archived, comprehensive tests added.
 
 **Problem Statement:**
 
 During v0.9.5, we built modern pattern-based architecture (split_column, text_region) but only migrated 1 table (experience_by_cr). The remaining 15 equipment tables were left on legacy_parser as a "temporary bridge" to text_table_parser.py. v0.9.8 completed CLASS_PROGRESSIONS migration (12 tables), bringing us to 23/30 (76.7%). Now completing the final 7 tables.
 
-**Migration Progress:**
-- ✅ 26/30 tables (86.7%) using modern patterns
-- ❌ 4/30 tables (13.3%) still on legacy_parser - ALL have category/subcategory metadata
-- text_table_parser.py: 1313 lines of legacy code
-- patterns.py: Has legacy_parser pattern type as "temporary bridge"
+**Final Results:**
+- ✅ 30/30 tables (100%) using modern patterns
+- ✅ 0/30 tables using legacy_parser
+- ✅ text_table_parser.py archived (1313 lines moved to archive/v0.9.9_legacy_parsers/)
+- ✅ legacy_parser pattern removed from patterns.py
+- ✅ Comprehensive test coverage added (8 tests in test_migrated_tables.py)
+- ✅ test_no_legacy_parser_tables() enforces zero regression
 
 **Data Quality Improvements Discovered:**
 - **food_drink_lodging:** Legacy parser had 20 rows (missing "Meat, chunk" item) → Modern extraction captures all 21 rows
 - **Category detection accuracy:** Modern pattern correctly identifies categories by indentation and empty cost columns
 - **Multi-region extraction:** Proper handling of tables spanning multiple page regions (e.g., food_drink_lodging across pages 73-74)
 
-**Session Progress (November 8, 2025 - Morning):**
+**Session Progress:**
+
+**Session 1 (November 7, 2025 - Evening):**
 - ✅ waterborne_vehicles (6 rows) - commit d7e7c08
 - ✅ trade_goods (13 rows) - commit 5c4a468
 - ✅ Multi-page split_column pattern enhancement - commit 9c104eb
 - ✅ container_capacity (13 rows, multi-page) - commit 9c104eb
 - ✅ lifestyle_expenses (7 rows, multi-page, +data quality) - commit 147c115
 - ✅ mounts_and_other_animals (8 rows, multi-page) - commit 48d18ce
+- **Progress:** 17/30 → 23/30 (76.7%) = +20%
+
+**Session 2 (November 8, 2025 - Morning):**
 - ✅ Category pattern extension added to split_column - commit e973759
 - ✅ tools (38 rows, 3 categories) - commit bf6414c [FIRST CATEGORY TABLE SUCCESS]
-- ✅ services (9 rows, 2 categories + 3 standalone) - commit f7b4546
+- ✅ services (9 rows, 2 categories) - commit f7b4546
 - ✅ food_drink_lodging (21 rows, 4 categories, multi-region) - commit d639215 [+DATA QUALITY: found missing "Meat, chunk" row]
+- ✅ tack_harness_vehicles (14 rows) - commit 6cf3ae0
+- ✅ armor (17 rows, 4 categories, multi-region pages 63-64) - commit 5c52386 [+DATA QUALITY]
+- ✅ weapons (41 rows, 4 categories, multi-region pages 65-66) - commit b794665 [+DATA QUALITY]
+- ✅ adventure_gear (56→103 rows, 4 categories, TWO-COLUMN layout) - commits 598c495, 9448c3b [FIXED: two-column extraction]
+- **Progress:** 23/30 → 30/30 (100%) = +23.3%
 
-**Remaining Tables (4 total) - ALL have categories:**
-
-**Category Tables Still on Legacy Parser:**
-- tack_harness_vehicles (14 rows, page 72) - Saddle types
-- armor (13 rows, pages 63-64) - Light/Medium/Heavy/Shield
-- weapons (37 rows, pages 65-66) - Simple Melee/Simple Ranged/Martial Melee/Martial Ranged
-- adventure_gear (49 rows, pages 68-69) - various categories (LARGEST, most complex)
+**Session 3 (November 8, 2025 - Afternoon):**
+- ✅ Archived text_table_parser.py (1313 lines) to archive/v0.9.9_legacy_parsers/
+- ✅ Removed legacy_parser pattern from patterns.py and extractor.py
+- ✅ Created test_migrated_tables.py with 8 comprehensive tests
+- ✅ Updated test_no_legacy_code.py (removed @skip decorator)
+- ✅ All 10 tests passing - commit c20ed50
+- **Result:** 100% migration complete, legacy code archived, comprehensive test coverage
 
 **Completed Migrations (26 tables):**
 - ✅ 12 CLASS_PROGRESSIONS (v0.9.8)
@@ -2123,29 +2139,28 @@ During v0.9.5, we built modern pattern-based architecture (split_column, text_re
   - Category detection working perfectly (proper indentation-based classification)
   - Multi-region extraction proven (spans pages 73-74 correctly)
 
-**Next Steps:**
-- Migrate tack_harness_vehicles (14 rows, simplest remaining)
-- Migrate armor (13 rows)
-- Migrate weapons (37 rows)
-- Migrate adventure_gear (49 rows, largest/most complex)
-- Delete text_table_parser.py (1313 lines)
-- Remove legacy_parser pattern
-- Celebrate 100% modern pattern-based architecture! 🎉
+**Achievements:**
+- ✅ 30/30 tables (100%) migrated to modern patterns
+- ✅ text_table_parser.py archived (1313 lines)
+- ✅ legacy_parser pattern removed
+- ✅ Comprehensive test coverage (8 tests)
+- ✅ Data quality improvements discovered and documented
+- ✅ 100% modern pattern-based architecture achieved! 🎉
 
 ---
 
-## **v0.9.9 — Equipment Dataset Modernization** **[DATA]** 📋 **PLANNED**
+**Part 2: Equipment Dataset Assembly** 📋 **PLANNED**
 
-**Status:** PLANNED - Blocked by earlier technical debt
+**Status:** PLANNED - Prerequisites now complete
 **Priority:** HIGH - Complete equipment coverage
-**Effort:** Medium (2-3 sessions, 6-8 hours after v0.9.8 complete)
+**Effort:** Medium (2-3 sessions, 6-8 hours)
 **Consumer Impact:** MAJOR - Comprehensive equipment dataset (150+ items with descriptions)
 
 **Goal:** Rebuild equipment.json from modernized table data + add text descriptions from prose.
 
 **Prerequisites:**
-- ✅ v0.9.8 must be complete (all tables using modern patterns)
-- ✅ text_table_parser.py deleted
+- ✅ Part 1 complete (all tables using modern patterns)
+- ✅ text_table_parser.py archived
 - ✅ Zero legacy code remaining
 
 **Scope:**
