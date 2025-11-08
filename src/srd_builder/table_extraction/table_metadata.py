@@ -81,12 +81,19 @@ TABLES: dict[str, dict[str, Any]] = {
                 "x_min": 52,
                 "x_max": 300,
                 "y_min": 75,
-                "y_max": 695,  # Abacus through Holy water
+                "y_max": 695,  # Abacus through Holy water (LEFT column)
                 "column_boundaries": [123, 163],  # Item/Cost, Cost/Weight
-            }
+            },
+            {
+                "x_min": 320,
+                "x_max": 560,
+                "y_min": 70,
+                "y_max": 580,  # Hourglass(y=71.9) through Whetstone (RIGHT column)
+                "column_boundaries": [118, 168],  # Item/Cost(~438abs), Cost/Weight(~488abs)
+            },
         ],
         "detect_categories": True,
-        "validation": {"expected_rows": 56},  # 4 categories + 52 items
+        "validation": {"expected_rows": 103},  # Both columns: 4 categories + 99 items
         "confirmed": True,
     },
     "armor": {
