@@ -2,6 +2,9 @@
 
 Compares PDF-extracted class progressions against known-good validation data
 to ensure extraction quality and catch regressions.
+
+The validation data matches the actual PDF extraction format (ordinals, strings,
+em-dash characters) and serves as regression detection for the extraction pipeline.
 """
 
 import json
