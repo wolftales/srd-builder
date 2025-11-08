@@ -254,11 +254,22 @@ TABLES: dict[str, dict[str, Any]] = {
         "confirmed": True,
     },
     "tack_harness_vehicles": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [72],
-        "parser": "parse_tack_harness_vehicles_table",
-        "validation": {"expected_rows": 14},
+        "headers": ["Item", "Cost", "Weight"],
+        "regions": [
+            {
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 168,
+                "y_max": 325,  # Covers Barding through Stabling
+                "column_boundaries": [78, 113],  # Item/Cost at x=130, Cost/Weight at x=165
+            }
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 14},  # 1 category (Saddle) + 13 items
+        "confirmed": True,
     },
     "tools": {
         "pattern_type": "split_column",
