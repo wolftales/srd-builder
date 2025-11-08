@@ -51,11 +51,21 @@ TABLES: dict[str, dict[str, Any]] = {
     # PDF EXTRACTED TABLES - Text-based parsing
     # ═══════════════════════════════════════════════════════════
     "ability_scores_and_modifiers": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [76],  # Actual PDF page number
-        "parser": "parse_ability_scores_and_modifiers_table",
-        "chapter": "Chapter 1: Characters",
+        "headers": ["Score", "Modifier"],
+        "regions": [
+            # Left column: scores 1-11 (bottom of page)
+            {"x_min": 0, "x_max": 300, "y_min": 615, "y_max": 690},
+            # Right column: scores 12-30 (top of page)
+            {"x_min": 300, "x_max": 560, "y_min": 70, "y_max": 180},
+        ],
+        "transformations": {
+            "Score": {"strip": True},
+            "Modifier": {"strip": True},
+        },
+        "chapter": "Using Ability Scores",
         "confirmed": True,  # Extraction verified working
         "validation": {"expected_rows": 16},
     },

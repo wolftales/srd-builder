@@ -1357,170 +1357,6 @@ PDF Pages → _extract_rows_by_coordinate() → All text rows with coordinates
 
 ---
 
-## **v0.9.8 — Complete Table Migration (Technical Debt Resolution)** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
-
-**Status:** IN PROGRESS - Prerequisite for v0.9.9
-**Priority:** CRITICAL - Blocks equipment modernization
-**Effort:** Medium (2-3 sessions, 6-8 hours)
-**Consumer Impact:** NONE - Zero behavioral change (same table data, modern architecture)
-
-**Goal:** Finish the migration started in v0.9.5 by converting all remaining legacy_parser tables to modern patterns.
-
-**Problem Statement:**
-
-During v0.9.5, we built modern pattern-based architecture (split_column, text_region) but only migrated 1 table (experience_by_cr). The remaining 15 equipment tables were left on legacy_parser as a "temporary bridge" to text_table_parser.py (1255 lines). This became technical debt that blocks v0.9.9 equipment modernization.
-
-**Current State:**
-- 30 total tables in table_metadata.py
-- 15 modern pattern tables (50%): 13 class progressions + 2 reference tables
-- 15 legacy_parser tables (50%): All equipment tables + ability_scores_and_modifiers
-- text_table_parser.py: 1255 lines of legacy code
-- patterns.py: Has legacy_parser pattern type as "temporary bridge"
-
-**Tables to Migrate (15 total):**
-
-**Simple Single-Page (8 tables):**
-- ability_scores_and_modifiers (p76, 16 rows) - Two-column layout → split_column
-- exchange_rates (p62, 4 rows) → text_region
-- donning_doffing_armor (p64, 3 rows) → text_region
-- services (p74, 5 rows) → text_region
-- waterborne_vehicles (p72, 3 rows) → text_region
-- trade_goods (p72, 15 rows) → text_region
-- tack_harness_vehicles (p72, 14 rows) → text_region
-- tools (p70, 18 rows) → text_region
-
-**Multi-Page Tables (7 tables):**
-- adventure_gear (p68-69, 49 rows) → text_region with multi-page
-- armor (p63-64, 14 rows) → text_region with multi-page
-- weapons (p65-66, 37 rows) → text_region with multi-page
-- container_capacity (p69-70, 7 rows) → text_region with multi-page
-- mounts_and_other_animals (p71-72, 13 rows) → text_region with multi-page
-- lifestyle_expenses (p72-73, 6 rows) → text_region with multi-page
-- food_drink_lodging (p73-74, 20 rows) → text_region with multi-page
-
-**Implementation Plan:**
-
-1. **Add Hard Fence** ✅ COMPLETE
-   - Created `tests/test_no_legacy_code.py`
-   - Test fails if ANY table uses legacy_parser (currently @skip'd)
-   - Progress test always runs to show migration status
-   - Prevents this issue from recurring
-
-2. **Migrate Simple Single-Page Tables** (8 tables)
-   - Start with ability_scores_and_modifiers (proves split_column pattern)
-   - Then migrate 7 simple equipment tables to text_region
-   - Each table gets modern config in table_metadata.py
-   - Delete corresponding parse_*_table() functions from text_table_parser.py
-
-3. **Migrate Multi-Page Tables** (7 tables)
-   - More complex: spans multiple pages, categories, metadata
-   - Use text_region with multi-page support
-   - Handle category headers, page breaks
-   - Delete remaining parse_*_table() functions
-
-4. **Delete Legacy Code**
-   - Delete text_table_parser.py entirely (1255 lines)
-   - Remove legacy_parser pattern type from patterns.py
-   - Update imports in extractor.py
-   - Remove @skip decorator from test_no_legacy_parser_tables()
-
-5. **Validate Zero Behavioral Change**
-   - Run full build
-   - Validate all 30 tables extract with same row counts
-   - Run test suite
-   - Compare output to tagged v0.9.7 state
-
-**Success Criteria:**
-- ✅ All 15 tables migrated to modern patterns
-- ✅ Zero tables using legacy_parser
-- ✅ text_table_parser.py deleted
-- ✅ legacy_parser pattern removed from patterns.py
-- ✅ test_no_legacy_parser_tables() passes (without @skip)
-- ✅ All tables extract with same row counts (zero behavioral change)
-- ✅ All tests passing
-
-**Benefits:**
-- Clean architecture: 100% modern pattern-based extraction
-- Eliminates 1255 lines of legacy code
-- Consistent extraction patterns across all tables
-- Hard fence prevents regression
-- Unblocks v0.9.9 equipment modernization
-
-**Timeline:** 2-3 sessions (6-8 hours)
-
----
-
-## **v0.9.9 — Equipment Dataset Modernization** **[DATA]** 📋 **PLANNED**
-
-**Status:** PLANNED - Blocked by v0.9.8 technical debt
-**Priority:** HIGH - Complete equipment coverage
-**Effort:** Medium (2-3 sessions, 6-8 hours after v0.9.8 complete)
-**Consumer Impact:** MAJOR - Comprehensive equipment dataset (150+ items with descriptions)
-
-**Goal:** Rebuild equipment.json from modernized table data + add text descriptions from prose.
-
-**Prerequisites:**
-- ✅ v0.9.8 must be complete (all tables using modern patterns)
-- ✅ text_table_parser.py deleted
-- ✅ Zero legacy code remaining
-
-**Scope:**
-
-**Phase 1: Table-Based Assembly**
-- Replace extract_equipment.py (PyMuPDF direct extraction) with table assembly
-- Integrate 10 equipment tables (147+ items):
-  - armor (13 items) - AC, weight, stealth, strength req
-  - weapons (37 items) - Damage, properties, range, versatile
-  - adventure_gear (104 items) - Cost, weight, categories
-  - tools (38 items) - Artisan's, gaming, musical
-  - container_capacity (13 items) - Capacity data
-  - mounts_and_other_animals (8 items) - Speed, carrying capacity
-  - food_drink_lodging (19 items) - Inn stays, meals, ale
-  - services (7 items) - Coach hire, messengers
-  - tack_harness_vehicles (14 items) - Saddles, carts
-  - waterborne_vehicles (6 items) - Ships, boats
-- Map table columns to equipment schema fields
-- Handle categories and subcategories
-- Parse complex fields (AC, damage, properties, range)
-- Current: 106 items from PyMuPDF → Target: 150+ items from tables
-
-**Phase 2: Text Description Enhancement**
-- Extract equipment descriptions from prose (pages 62-74)
-- Match descriptions to items by name/aliases
-- Add "description" field to equipment schema (v1.6.0)
-- Handle multi-item descriptions and edge cases
-- Examples:
-  - Armor: "Made from tough but flexible leather, studded leather is reinforced..."
-  - Weapons: "A martial melee weapon consisting of..."
-  - Gear: "This backpack can hold up to 1 cubic foot or 30 pounds of gear..."
-
-**Implementation:**
-1. Create `equipment_tables_assembly.py` module
-2. Map modernized table data to equipment schema
-3. Build comprehensive equipment.json (150+ items)
-4. Create `equipment_text_parser.py` for descriptions
-5. Update schema to v1.6.0 (description field)
-6. Merge descriptions into equipment.json
-7. Validate against current 106-item output
-8. Update tests and documentation
-
-**Success Criteria:**
-- ✅ 150+ equipment items from modernized tables
-- ✅ Text descriptions added from prose
-- ✅ Schema v1.6.0 with description field
-- ✅ Zero data loss vs current equipment.json
-- ✅ All tests passing
-- ✅ Single source of truth: PDF → modernized tables → equipment
-
-**Deferred to v0.10.0+:**
-- Magic items (200+ items, pages 210-267)
-- Item properties/tags system
-- Cross-references to spells/monsters
-
-**Timeline:** 2-3 sessions (6-8 hours) after v0.9.8 complete
-
----
-
 ## **v0.9.1 — Equipment Tables Expansion** **[DATA]** ✅ **COMPLETE**
 
 **Released:** November 4, 2025
@@ -2174,6 +2010,171 @@ For tables NOT found as standalone:
 3. 📋 Compare to hardcoded CLASS_PROGRESSIONS
 4. 🗑️ Remove CLASS_PROGRESSIONS from reference_data.py
 5. 📦 Bump version to v0.9.8 and tag release
+
+---
+
+
+## **v0.9.9-tech-debt — Complete Table Migration (Technical Debt Resolution)** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
+
+**Status:** IN PROGRESS - Prerequisite for v0.9.9
+**Priority:** CRITICAL - Blocks equipment modernization
+**Effort:** Medium (2-3 sessions, 6-8 hours)
+**Consumer Impact:** NONE - Zero behavioral change (same table data, modern architecture)
+
+**Goal:** Finish the migration started in v0.9.5 by converting all remaining legacy_parser tables to modern patterns.
+
+**Problem Statement:**
+
+During v0.9.5, we built modern pattern-based architecture (split_column, text_region) but only migrated 1 table (experience_by_cr). The remaining 15 equipment tables were left on legacy_parser as a "temporary bridge" to text_table_parser.py (1255 lines). This became technical debt that blocks v0.9.9 equipment modernization.
+
+**Current State:**
+- 30 total tables in table_metadata.py
+- 15 modern pattern tables (50%): 13 class progressions + 2 reference tables
+- 15 legacy_parser tables (50%): All equipment tables + ability_scores_and_modifiers
+- text_table_parser.py: 1255 lines of legacy code
+- patterns.py: Has legacy_parser pattern type as "temporary bridge"
+
+**Tables to Migrate (15 total):**
+
+**Simple Single-Page (8 tables):**
+- ability_scores_and_modifiers (p76, 16 rows) - Two-column layout → split_column
+- exchange_rates (p62, 4 rows) → text_region
+- donning_doffing_armor (p64, 3 rows) → text_region
+- services (p74, 5 rows) → text_region
+- waterborne_vehicles (p72, 3 rows) → text_region
+- trade_goods (p72, 15 rows) → text_region
+- tack_harness_vehicles (p72, 14 rows) → text_region
+- tools (p70, 18 rows) → text_region
+
+**Multi-Page Tables (7 tables):**
+- adventure_gear (p68-69, 49 rows) → text_region with multi-page
+- armor (p63-64, 14 rows) → text_region with multi-page
+- weapons (p65-66, 37 rows) → text_region with multi-page
+- container_capacity (p69-70, 7 rows) → text_region with multi-page
+- mounts_and_other_animals (p71-72, 13 rows) → text_region with multi-page
+- lifestyle_expenses (p72-73, 6 rows) → text_region with multi-page
+- food_drink_lodging (p73-74, 20 rows) → text_region with multi-page
+
+**Implementation Plan:**
+
+1. **Add Hard Fence** ✅ COMPLETE
+   - Created `tests/test_no_legacy_code.py`
+   - Test fails if ANY table uses legacy_parser (currently @skip'd)
+   - Progress test always runs to show migration status
+   - Prevents this issue from recurring
+
+2. **Migrate Simple Single-Page Tables** (8 tables)
+   - Start with ability_scores_and_modifiers (proves split_column pattern)
+   - Then migrate 7 simple equipment tables to text_region
+   - Each table gets modern config in table_metadata.py
+   - Delete corresponding parse_*_table() functions from text_table_parser.py
+
+3. **Migrate Multi-Page Tables** (7 tables)
+   - More complex: spans multiple pages, categories, metadata
+   - Use text_region with multi-page support
+   - Handle category headers, page breaks
+   - Delete remaining parse_*_table() functions
+
+4. **Delete Legacy Code**
+   - Delete text_table_parser.py entirely (1255 lines)
+   - Remove legacy_parser pattern type from patterns.py
+   - Update imports in extractor.py
+   - Remove @skip decorator from test_no_legacy_parser_tables()
+
+5. **Validate Zero Behavioral Change**
+   - Run full build
+   - Validate all 30 tables extract with same row counts
+   - Run test suite
+   - Compare output to tagged v0.9.7 state
+
+**Success Criteria:**
+- ✅ All 15 tables migrated to modern patterns
+- ✅ Zero tables using legacy_parser
+- ✅ text_table_parser.py deleted
+- ✅ legacy_parser pattern removed from patterns.py
+- ✅ test_no_legacy_parser_tables() passes (without @skip)
+- ✅ All tables extract with same row counts (zero behavioral change)
+- ✅ All tests passing
+
+**Benefits:**
+- Clean architecture: 100% modern pattern-based extraction
+- Eliminates 1255 lines of legacy code
+- Consistent extraction patterns across all tables
+- Hard fence prevents regression
+- Unblocks v0.9.9 equipment modernization
+
+**Timeline:** 2-3 sessions (6-8 hours)
+
+---
+
+## **v0.9.9 — Equipment Dataset Modernization** **[DATA]** 📋 **PLANNED**
+
+**Status:** PLANNED - Blocked by earlier technical debt
+**Priority:** HIGH - Complete equipment coverage
+**Effort:** Medium (2-3 sessions, 6-8 hours after v0.9.8 complete)
+**Consumer Impact:** MAJOR - Comprehensive equipment dataset (150+ items with descriptions)
+
+**Goal:** Rebuild equipment.json from modernized table data + add text descriptions from prose.
+
+**Prerequisites:**
+- ✅ v0.9.8 must be complete (all tables using modern patterns)
+- ✅ text_table_parser.py deleted
+- ✅ Zero legacy code remaining
+
+**Scope:**
+
+**Phase 1: Table-Based Assembly**
+- Replace extract_equipment.py (PyMuPDF direct extraction) with table assembly
+- Integrate 10 equipment tables (147+ items):
+  - armor (13 items) - AC, weight, stealth, strength req
+  - weapons (37 items) - Damage, properties, range, versatile
+  - adventure_gear (104 items) - Cost, weight, categories
+  - tools (38 items) - Artisan's, gaming, musical
+  - container_capacity (13 items) - Capacity data
+  - mounts_and_other_animals (8 items) - Speed, carrying capacity
+  - food_drink_lodging (19 items) - Inn stays, meals, ale
+  - services (7 items) - Coach hire, messengers
+  - tack_harness_vehicles (14 items) - Saddles, carts
+  - waterborne_vehicles (6 items) - Ships, boats
+- Map table columns to equipment schema fields
+- Handle categories and subcategories
+- Parse complex fields (AC, damage, properties, range)
+- Current: 106 items from PyMuPDF → Target: 150+ items from tables
+
+**Phase 2: Text Description Enhancement**
+- Extract equipment descriptions from prose (pages 62-74)
+- Match descriptions to items by name/aliases
+- Add "description" field to equipment schema (v1.6.0)
+- Handle multi-item descriptions and edge cases
+- Examples:
+  - Armor: "Made from tough but flexible leather, studded leather is reinforced..."
+  - Weapons: "A martial melee weapon consisting of..."
+  - Gear: "This backpack can hold up to 1 cubic foot or 30 pounds of gear..."
+
+**Implementation:**
+1. Create `equipment_tables_assembly.py` module
+2. Map modernized table data to equipment schema
+3. Build comprehensive equipment.json (150+ items)
+4. Create `equipment_text_parser.py` for descriptions
+5. Update schema to v1.6.0 (description field)
+6. Merge descriptions into equipment.json
+7. Validate against current 106-item output
+8. Update tests and documentation
+
+**Success Criteria:**
+- ✅ 150+ equipment items from modernized tables
+- ✅ Text descriptions added from prose
+- ✅ Schema v1.6.0 with description field
+- ✅ Zero data loss vs current equipment.json
+- ✅ All tests passing
+- ✅ Single source of truth: PDF → modernized tables → equipment
+
+**Deferred to v0.10.0+:**
+- Magic items (200+ items, pages 210-267)
+- Item properties/tags system
+- Cross-references to spells/monsters
+
+**Timeline:** 2-3 sessions (6-8 hours)
 
 ---
 
