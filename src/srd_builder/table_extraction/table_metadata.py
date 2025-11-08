@@ -84,11 +84,33 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 14},
     },
     "container_capacity": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [69, 70],
-        "parser": "parse_container_capacity_table",
-        "validation": {"expected_rows": 7},
+        "headers": ["Container", "Capacity"],
+        "regions": [
+            {
+                "page": 69,
+                "x_min": 323,
+                "x_max": 518,
+                "y_min": 615,
+                "y_max": 690,
+                "column_boundaries": [69],
+            },  # Page 69 bottom right
+            {
+                "page": 70,
+                "x_min": 52,
+                "x_max": 279,
+                "y_min": 66,
+                "y_max": 143,
+                "column_boundaries": [69],
+            },  # Page 70 top left
+        ],
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 13},
+        "notes": "Container Capacity - multi-page extraction (page 69 bottom right + page 70 top left)",
     },
     "donning_doffing_armor": {
         "pattern_type": "split_column",

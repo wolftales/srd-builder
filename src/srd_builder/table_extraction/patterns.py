@@ -248,9 +248,6 @@ def _extract_split_column(
     special_cases = config.get("special_cases", [])
 
     doc = pymupdf.open(pdf_path)
-    page_obj = doc[pages[0] - 1]
-    words = page_obj.get_text("words")
-    doc.close()
 
     all_rows: list[list[str | int | float]] = []
     global_column_boundaries = config.get("column_boundaries")
@@ -259,6 +256,11 @@ def _extract_split_column(
 
     # Process each region (sub-table)
     for region in regions:
+        # Each region can optionally specify a page, otherwise use pages[0]
+        region_page = region.get("page", pages[0])
+        page_obj = doc[region_page - 1]
+        words = page_obj.get_text("words")
+
         x_min = region.get("x_min", 0)
         x_max = region.get("x_max", 999999)
         y_min = region.get("y_min", 0)
@@ -344,6 +346,8 @@ def _extract_split_column(
     filter_empty_first = config.get("filter_empty_first_column", False)
     if filter_empty_first and all_rows:
         all_rows = [row for row in all_rows if str(row[0]).strip()]
+
+    doc.close()
 
     source = config.get("source", "srd")
     chapter = config.get("chapter")
