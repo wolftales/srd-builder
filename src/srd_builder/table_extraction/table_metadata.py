@@ -185,11 +185,33 @@ TABLES: dict[str, dict[str, Any]] = {
         "notes": "Lifestyle Expenses - PDF source truth: includes Wretched (—) and preserves 'minimum' on Aristocratic (10 gp minimum)",
     },
     "mounts_and_other_animals": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [71, 72],
-        "parser": "parse_mounts_and_other_animals_table",
-        "validation": {"expected_rows": 13},
+        "headers": ["Item", "Cost", "Speed", "Carrying Capacity"],
+        "regions": [
+            {
+                "page": 71,
+                "x_min": 323,
+                "x_max": 500,
+                "y_min": 660,
+                "y_max": 695,
+                "column_boundaries": [73, 107, 143],
+            },  # Page 71 right: Camel, Donkey/mule, Elephant (boundary at x=396, before '200' at x=397.5)
+            {
+                "page": 72,
+                "x_min": 52,
+                "x_max": 225,
+                "y_min": 66,
+                "y_max": 120,
+                "column_boundaries": [74, 108, 143],
+            },  # Page 72 left: Horses, Mastiff, Pony, Warhorse
+        ],
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 8},  # 3 animals page 71 + 5 animals page 72
+        "notes": "Mounts and Other Animals - Multi-page 4-column table",
     },
     "services": {
         "pattern_type": "legacy_parser",
