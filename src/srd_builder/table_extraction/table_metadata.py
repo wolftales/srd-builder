@@ -91,11 +91,19 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 7},
     },
     "donning_doffing_armor": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [64],
-        "parser": "parse_donning_doffing_armor_table",
-        "validation": {"expected_rows": 3},
+        "headers": ["Category", "Don", "Doff"],
+        "regions": [
+            {"x_min": 52, "x_max": 220, "y_min": 385, "y_max": 425},
+        ],
+        "column_boundaries": [70, 122],  # Before Don(~122abs), Before Doff(~174abs)
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 4},
+        "notes": "Donning and Doffing Armor - time requirements for putting on and removing armor",
     },
     "exchange_rates": {
         "pattern_type": "split_column",
