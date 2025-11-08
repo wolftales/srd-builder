@@ -176,11 +176,19 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 15},
     },
     "waterborne_vehicles": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [72],
-        "parser": "parse_waterborne_vehicles_table",
-        "validation": {"expected_rows": 3},
+        "headers": ["Item", "Cost", "Speed"],
+        "regions": [
+            {"x_min": 52, "x_max": 190, "y_min": 383, "y_max": 445},
+        ],
+        "column_boundaries": [55, 102],  # Before Cost(~107abs), Before Speed(~154abs)
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 6},
+        "notes": "Waterborne Vehicles - costs and speeds for ships and boats",
     },
     "weapons": {
         "pattern_type": "legacy_parser",
