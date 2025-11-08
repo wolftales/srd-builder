@@ -191,42 +191,10 @@ def _extract_reference(
             "headers": [...],
             "rows": [[...], [...]],
             "notes": "...",
-            "use_legacy_data": "VALIDATION_CLASS_PROGRESSIONS"  # Optional: fallback to validation data
         }
     """
     source = config.get("source", "reference")
     notes = config.get("notes", f"Reference data from SRD 5.1 [source: {source}]")
-
-    # Check if we need to load from legacy reference_data.py (for validation/fallback)
-    if "use_legacy_data" in config:
-        from . import reference_data
-
-        legacy_source = config["use_legacy_data"]
-        if legacy_source == "VALIDATION_CLASS_PROGRESSIONS":
-            # Strip _progression suffix to get the class name
-            class_name = simple_name.replace("_progression", "")
-            legacy_data = reference_data.VALIDATION_CLASS_PROGRESSIONS.get(class_name)
-            if not legacy_data:
-                raise ValueError(f"Table {class_name} not found in VALIDATION_CLASS_PROGRESSIONS")
-
-            chapter = config.get("chapter")
-            confirmed = config.get("confirmed", False)
-
-            return RawTable(
-                table_id=table_id,
-                simple_name=simple_name,
-                page=page,
-                headers=legacy_data["headers"],
-                rows=legacy_data["rows"],
-                extraction_method="reference",
-                section=section,
-                notes=notes,
-                chapter=chapter,
-                confirmed=confirmed,
-                source=source,
-            )
-
-    # Standard reference with headers/rows in config
     chapter = config.get("chapter")
     confirmed = config.get("confirmed", False)
 

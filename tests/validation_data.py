@@ -1,163 +1,37 @@
-"""Reference table data for SRD 5.1.
+"""Validation data for testing PDF extraction accuracy.
 
-This module contains hardcoded table data that cannot be reliably extracted
-from the PDF due to formatting issues. Data is organized by extraction pattern.
+This module contains known-good reference data for class progression tables.
+Used to validate that PDF extraction produces correct results.
 
-All data is sourced from SRD 5.1 and matches the official rulebook.
-
-NOTE: Class progression validation data has been moved to tests/validation_data.py
-since it's only used for testing PDF extraction accuracy, not by production code.
+This data was moved from src/srd_builder/table_extraction/reference_data.py
+because it's only used for validation/testing, not by production extraction code.
 """
 
 from typing import Any
 
-# ============================================================================
-# CALCULATED REFERENCE TABLES (CONVENIENCE/DERIVED)
-# These are "rules expressed as tables" - not extractable from PDF source.
-# They are convenience tables derived from game rules for user reference.
-# Future: Move to rules dataset in v0.12.0 as rule-based reference tables.
-# ============================================================================
 
-CALCULATED_TABLES: dict[str, Any] = {}
+def get_validation_data(simple_name: str) -> dict[str, Any] | None:
+    """Get validation data for a table by simple_name.
 
-# ============================================================================
-# STATIC REFERENCE TABLES
-# Simple lookup tables with fixed data
-# ============================================================================
+    Args:
+        simple_name: Table simple_name (e.g., "barbarian_progression")
 
-REFERENCE_TABLES: dict[str, dict[str, Any]] = {
-    "spell_slots_by_level": {
-        "headers": [
-            "Level",
-            "1st",
-            "2nd",
-            "3rd",
-            "4th",
-            "5th",
-            "6th",
-            "7th",
-            "8th",
-            "9th",
-            "Cantrips Known",
-        ],
-        "rows": [
-            [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [2, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [3, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0],
-            [4, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0],
-            [5, 4, 3, 2, 0, 0, 0, 0, 0, 0, 0],
-            [6, 4, 3, 3, 0, 0, 0, 0, 0, 0, 0],
-            [7, 4, 3, 3, 1, 0, 0, 0, 0, 0, 0],
-            [8, 4, 3, 3, 2, 0, 0, 0, 0, 0, 0],
-            [9, 4, 3, 3, 3, 1, 0, 0, 0, 0, 0],
-            [10, 4, 3, 3, 3, 2, 0, 0, 0, 0, 0],
-            [11, 4, 3, 3, 3, 2, 1, 0, 0, 0, 0],
-            [12, 4, 3, 3, 3, 2, 1, 0, 0, 0, 0],
-            [13, 4, 3, 3, 3, 2, 1, 1, 0, 0, 0],
-            [14, 4, 3, 3, 3, 2, 1, 1, 0, 0, 0],
-            [15, 4, 3, 3, 3, 2, 1, 1, 1, 0, 0],
-            [16, 4, 3, 3, 3, 2, 1, 1, 1, 0, 0],
-            [17, 4, 3, 3, 3, 2, 1, 1, 1, 1, 0],
-            [18, 4, 3, 3, 3, 3, 1, 1, 1, 1, 0],
-            [19, 4, 3, 3, 3, 3, 2, 1, 1, 1, 0],
-            [20, 4, 3, 3, 3, 3, 2, 2, 1, 1, 0],
-        ],
-        "notes": "Full caster progression (Cleric, Druid, Wizard)",
-    },
-    # NOTE: The following tables have been migrated or decommissioned in v0.9.7:
-    # - cantrip_damage: REMOVED (not in SRD, convenience table, data in spell records)
-    # - spell_slots_by_level: REMOVED (superseded by class progression tables)
-    # - travel_pace: MIGRATED to PDF extraction (page 84)
-    # - creature_size: MIGRATED to PDF extraction (page 92)
-}
+    Returns:
+        Table configuration dict or None if not found
+    """
+    # Check class progressions (strip _progression suffix)
+    if simple_name.endswith("_progression"):
+        class_name = simple_name.replace("_progression", "")
+        if class_name in VALIDATION_CLASS_PROGRESSIONS:
+            return VALIDATION_CLASS_PROGRESSIONS[class_name]
+    elif simple_name in VALIDATION_CLASS_PROGRESSIONS:
+        return VALIDATION_CLASS_PROGRESSIONS[simple_name]
+    return None
 
-# ============================================================================
-# PRICING TABLES
-# Item/service tables with costs
-# NOTE: food_drink_lodging, services, and lifestyle_expenses moved to TEXT_PARSED_TABLES
-# to use coordinate-based PDF extraction instead of hardcoded data (v0.9.3)
-# ============================================================================
 
-PRICING_TABLES: dict[str, dict[str, Any]] = {
-    # All pricing tables now extracted via TEXT_PARSED_TABLES
-}
-
-# ============================================================================
-# TEXT-PARSED TABLES
-# Tables extracted via text parsing (no grid borders in PDF)
-# ============================================================================
-
-TEXT_PARSED_TABLES = {
-    "ability_scores_and_modifiers": {
-        "parser": "parse_ability_scores_and_modifiers_table",
-        "pages": [76],
-    },
-    "adventure_gear": {
-        "parser": "parse_adventure_gear_table",
-        "pages": [69],
-    },
-    "armor": {
-        "parser": "parse_armor_table",
-        "pages": [63, 64],
-    },
-    "container_capacity": {
-        "parser": "parse_container_capacity_table",
-        "pages": [69, 70],
-    },
-    "donning_doffing_armor": {
-        "parser": "parse_donning_doffing_armor_table",
-        "pages": [64],
-    },
-    "exchange_rates": {
-        "parser": "parse_exchange_rates_table",
-        "pages": [62],
-    },
-    "experience_by_cr": {
-        "parser": "parse_experience_by_cr_table",
-        "pages": [258],
-    },
-    "food_drink_lodging": {
-        "parser": "parse_food_drink_lodging_table",
-        "pages": [73, 74],
-    },
-    "lifestyle_expenses": {
-        "parser": "parse_lifestyle_expenses_table",
-        "pages": [72, 73],
-    },
-    "mounts_and_other_animals": {
-        "parser": "parse_mounts_and_other_animals_table",
-        "pages": [71, 72],
-    },
-    "services": {
-        "parser": "parse_services_table",
-        "pages": [74],
-    },
-    "tack_harness_vehicles": {
-        "parser": "parse_tack_harness_vehicles_table",
-        "pages": [72],
-    },
-    "tools": {
-        "parser": "parse_tools_table",
-        "pages": [70],
-    },
-    "trade_goods": {
-        "parser": "parse_trade_goods_table",
-        "pages": [72],
-    },
-    "waterborne_vehicles": {
-        "parser": "parse_waterborne_vehicles_table",
-        "pages": [72],
-    },
-    "weapons": {
-        "parser": "parse_weapons_table",
-        "pages": [65, 66],
-    },
-}
-
-# ============================================================================
 # ============================================================================
 # VALIDATION DATA - CLASS PROGRESSION TABLES
-# Level 1-20 progression for all 12 classes - KEPT FOR VALIDATION ONLY
+# Level 1-20 progression for all 12 classes
 # Used to validate PDF extraction accuracy against known-good reference data
 # ============================================================================
 
@@ -694,41 +568,3 @@ VALIDATION_CLASS_PROGRESSIONS: dict[str, dict[str, Any]] = {
         ],
     },
 }
-
-
-def get_table_data(simple_name: str) -> dict[str, Any] | None:
-    """Get reference data for a table by simple_name.
-
-    Args:
-        simple_name: Table simple_name (e.g., "barbarian_progression")
-
-    Returns:
-        Table configuration dict or None if not found
-    """
-    # Check class progressions (strip _progression suffix)
-    if simple_name.endswith("_progression"):
-        class_name = simple_name.replace("_progression", "")
-        if class_name in VALIDATION_CLASS_PROGRESSIONS:
-            return VALIDATION_CLASS_PROGRESSIONS[class_name]
-    elif simple_name in VALIDATION_CLASS_PROGRESSIONS:
-        return VALIDATION_CLASS_PROGRESSIONS[simple_name]
-
-    # Check reference tables
-    if simple_name in REFERENCE_TABLES:
-        return REFERENCE_TABLES[simple_name]
-
-    # Check text-parsed tables first (requires PDF path - handled by caller)
-    # These are extracted directly from PDF using coordinate-based parsing
-    if simple_name in TEXT_PARSED_TABLES:
-        return {"type": "text_parsed", "config": TEXT_PARSED_TABLES[simple_name]}
-
-    # Check pricing tables (currently empty - all migrated to TEXT_PARSED)
-    if simple_name in PRICING_TABLES:
-        return PRICING_TABLES[simple_name]
-
-    # Check calculated tables
-    if simple_name in CALCULATED_TABLES:
-        config = CALCULATED_TABLES[simple_name]
-        return dict(config) if isinstance(config, dict) else None
-
-    return None
