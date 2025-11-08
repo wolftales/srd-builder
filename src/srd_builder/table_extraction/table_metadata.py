@@ -72,11 +72,22 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 16},
     },
     "adventure_gear": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
-        "pages": [68, 69],  # Table spans pages 68-69
-        "parser": "parse_adventure_gear_table",
-        "validation": {"expected_rows": 49},
+        "pages": [69],
+        "headers": ["Item", "Cost", "Weight"],
+        "regions": [
+            {
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 75,
+                "y_max": 695,  # Abacus through Holy water
+                "column_boundaries": [123, 163],  # Item/Cost, Cost/Weight
+            }
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 56},  # 4 categories + 52 items
+        "confirmed": True,
     },
     "armor": {
         "pattern_type": "split_column",
