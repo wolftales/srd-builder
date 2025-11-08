@@ -12,8 +12,13 @@ import pytest
 from validation_data import VALIDATION_CLASS_PROGRESSIONS
 
 
-def load_extracted_tables() -> list[dict[str, Any]]:
-    """Load extracted tables from build output."""
+@pytest.fixture(scope="module")
+def extracted_tables() -> list[dict[str, Any]]:
+    """Fixture: Load extracted tables from build output.
+
+    Uses module scope so the JSON file is only loaded once for all tests
+    in this module, rather than once per test.
+    """
     tables_path = Path("rulesets/srd_5_1/raw/tables_raw.json")
     if not tables_path.exists():
         pytest.skip(f"Tables not found at {tables_path} - run build first")
@@ -24,6 +29,22 @@ def load_extracted_tables() -> list[dict[str, Any]]:
         if isinstance(data, dict) and "tables" in data:
             return data["tables"]
         return data if isinstance(data, list) else []
+
+
+@pytest.fixture(scope="module")
+def extracted_progressions(extracted_tables) -> dict[str, dict[str, Any]]:
+    """Fixture: Extract just the class progression tables by name.
+
+    Creates a dict mapping class_name -> table_data for easy lookup.
+    Depends on extracted_tables fixture.
+    """
+    progressions = {}
+    for table in extracted_tables:
+        simple_name = table.get("simple_name", "")
+        if simple_name.endswith("_progression"):
+            class_name = simple_name.replace("_progression", "")
+            progressions[class_name] = table
+    return progressions
 
 
 @pytest.mark.parametrize(
@@ -43,20 +64,13 @@ def load_extracted_tables() -> list[dict[str, Any]]:
         "wizard",
     ],
 )
-def test_class_progression_extraction(class_name: str):
+def test_class_progression_extraction(
+    class_name: str, extracted_progressions: dict[str, dict[str, Any]]
+):
     """Test that PDF extraction matches validation data for each class."""
-    # Load extracted data
-    tables = load_extracted_tables()
-    table_name = f"{class_name}_progression"
-
-    # Find extracted table
-    extracted = None
-    for table in tables:
-        if table.get("simple_name") == table_name:
-            extracted = table
-            break
-
-    assert extracted is not None, f"Table {table_name} not found in extracted data"
+    # Get extracted table from fixture
+    extracted = extracted_progressions.get(class_name)
+    assert extracted is not None, f"Table {class_name}_progression not found in extracted data"
 
     # Get validation data
     validation = VALIDATION_CLASS_PROGRESSIONS[class_name]
@@ -112,14 +126,9 @@ def test_class_progression_extraction(class_name: str):
         )
 
 
-def test_all_classes_present():
+def test_all_classes_present(extracted_progressions: dict[str, dict[str, Any]]):
     """Test that all 12 class progressions are extracted."""
-    tables = load_extracted_tables()
-    extracted_classes = {
-        table["simple_name"].replace("_progression", "")
-        for table in tables
-        if table.get("simple_name", "").endswith("_progression")
-    }
+    extracted_classes = set(extracted_progressions.keys())
 
     expected_classes = set(VALIDATION_CLASS_PROGRESSIONS.keys())
 
