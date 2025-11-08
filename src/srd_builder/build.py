@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
+from .assemble_equipment import assemble_equipment_from_tables
 from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
@@ -710,13 +711,7 @@ def build(  # noqa: C901
     raw_monsters = _load_raw_monsters(layout["raw"]) if "monsters" not in skip_datasets else []
     parsed_monsters = parse_monster_records(raw_monsters) if raw_monsters else []
 
-    raw_equipment = _load_raw_equipment(layout["raw"]) if "equipment" not in skip_datasets else []
-    parsed_equipment = parse_equipment_records(raw_equipment) if raw_equipment else []
-
-    raw_spells = _load_raw_spells(layout["raw"]) if "spells" not in skip_datasets else []
-    parsed_spells = parse_spell_records(raw_spells) if raw_spells else []
-
-    # Parse tables (v0.7.0)
+    # Parse tables (v0.7.0) - needed before equipment assembly
     raw_tables = _load_raw_tables(layout["raw"])
     parsed_tables = None
     if raw_tables:
@@ -724,6 +719,20 @@ def build(  # noqa: C901
 
         targets_by_id = {t["id"]: t for t in TARGET_TABLES}
         parsed_tables = [parse_single_table(raw, targets_by_id) for raw in raw_tables]
+
+    # Equipment assembly (v0.9.9) - now uses tables.json instead of PyMuPDF
+    parsed_equipment = []
+    if "equipment" not in skip_datasets:
+        if parsed_tables:
+            # New table-based assembly (v0.9.9 Part 2)
+            parsed_equipment = assemble_equipment_from_tables(parsed_tables)
+        else:
+            # Fallback to old PyMuPDF extraction if no tables available
+            raw_equipment = _load_raw_equipment(layout["raw"])
+            parsed_equipment = parse_equipment_records(raw_equipment) if raw_equipment else []
+
+    raw_spells = _load_raw_spells(layout["raw"]) if "spells" not in skip_datasets else []
+    parsed_spells = parse_spell_records(raw_spells) if raw_spells else []
 
     # Parse lineages (v0.8.0)
     # Lineages come from canonical targets, not PDF extraction
@@ -773,10 +782,10 @@ def build(  # noqa: C901
         if all_pages:
             monsters_page_range = (min(all_pages), max(all_pages))
 
-    # Compute page range from raw equipment
+    # Compute page range from equipment (now from parsed_equipment since we assemble from tables)
     equipment_page_range = None
-    if raw_equipment:
-        all_pages = [page for item in raw_equipment if (page := item.get("page"))]
+    if parsed_equipment:
+        all_pages = [page for item in parsed_equipment if (page := item.get("page"))]
         if all_pages:
             equipment_page_range = (min(all_pages), max(all_pages))
 
