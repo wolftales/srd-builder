@@ -151,11 +151,31 @@ TABLES: dict[str, dict[str, Any]] = {
         "notes": "Standard Exchange Rates - currency conversion table showing CP/SP/EP/GP/PP equivalencies",
     },
     "food_drink_lodging": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
-        "pages": [73, 74],
-        "parser": "parse_food_drink_lodging_table",
-        "validation": {"expected_rows": 20},
+        "pages": [74, 73],  # Multi-page extraction
+        "headers": ["Item", "Cost"],
+        "regions": [
+            {
+                "page": 74,
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 100,
+                "y_max": 295,  # Inn stay through Wine
+                "column_boundaries": [94],  # Split at x=146 (52+94); Cost starts at x=146.4
+            },
+            {
+                "page": 73,
+                "x_min": 323,
+                "x_max": 560,
+                "y_min": 655,
+                "y_max": 685,  # Ale section
+                "column_boundaries": [94],  # Split at x=417 (323+94); Cost starts at x=417.4
+            },
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 21},  # 4 categories + 17 items
+        "confirmed": True,
     },
     "lifestyle_expenses": {
         "pattern_type": "split_column",
