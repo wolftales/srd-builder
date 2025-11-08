@@ -230,11 +230,25 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 14},
     },
     "tools": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [70],
-        "parser": "parse_tools_table",
-        "validation": {"expected_rows": 18},
+        "headers": ["Item", "Cost", "Weight"],
+        "regions": [
+            {
+                "x_min": 323,
+                "x_max": 550,
+                "y_min": 150,
+                "y_max": 570,
+                "column_boundaries": [102, 132],
+            },  # Page 70 right: All tools with 3 categories (ends with Thieves' tools at y=560)
+        ],
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "detect_categories": True,
+        "validation": {"expected_rows": 38},  # 3 categories + 35 items
+        "notes": "Tools table with categories: Artisan's tools, Gaming set, Musical instrument",
     },
     "trade_goods": {
         "pattern_type": "split_column",
