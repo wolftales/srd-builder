@@ -79,11 +79,31 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 49},
     },
     "armor": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [63, 64],
-        "parser": "parse_armor_table",
-        "validation": {"expected_rows": 14},
+        "headers": ["Armor", "Cost", "Armor Class (AC)", "Stealth", "Weight"],
+        "regions": [
+            {
+                "page": 63,
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 678,
+                "y_max": 695,  # Light Armor category + Padded (page 63)
+                "column_boundaries": [78, 123, 193, 238],
+            },
+            {
+                "page": 64,
+                "x_min": 52,
+                "x_max": 300,
+                "y_min": 71,
+                "y_max": 235,  # Leather through Shield (page 64)
+                "column_boundaries": [78, 123, 193, 238],
+            },
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 17},  # 4 categories + 13 armor types
+        "confirmed": True,
     },
     "container_capacity": {
         "pattern_type": "split_column",
