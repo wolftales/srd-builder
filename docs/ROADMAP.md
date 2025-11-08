@@ -1958,6 +1958,73 @@ For tables NOT found as standalone:
 
 ---
 
+## **v0.9.8 — Migrate CLASS_PROGRESSIONS** **[DATA]** 🚧 IN PROGRESS
+
+**Status:** IN PROGRESS (4 of 12 complete)
+**Priority:** HIGH - Remove last legacy data dependencies
+**Effort:** High (~20-30 hours estimated)
+**Consumer Impact:** TRANSPARENT - No API changes, data quality improvements
+
+**Goal:** Extract all 12 class progression tables from PDF, removing `use_legacy_data` flag and CLASS_PROGRESSIONS hardcoded data.
+
+**Completed Classes (4/12):**
+1. ✅ **Barbarian** (page 8) - Two-column layout, 5 columns, 20 rows
+2. ✅ **Fighter** (page 24) - Two-column layout (1st-15th left, 16th-20th right), 3 columns, 20 rows
+3. ✅ **Monk** (page 26) - Single-column layout, 6 columns, 20 rows
+4. ✅ **Rogue** (page 39) - Two-column layout (1st-10th left, 11th-20th right), 4 columns, 20 rows
+
+**Remaining Classes (8/12):**
+- 📋 **Bard** (page 11) - Spellcaster (13+ columns with spell slots)
+- 📋 **Cleric** (page 16) - Full spellcaster
+- 📋 **Druid** (page 25) - Full spellcaster
+- 📋 **Paladin** (page 31) - Half-caster
+- 📋 **Ranger** (page 37) - Half-caster
+- 📋 **Sorcerer** (page 43) - Full spellcaster
+- 📋 **Warlock** (page 46) - Unique spell slot progression
+- 📋 **Wizard** (page 50) - Full spellcaster
+
+**Pattern Enhancements:**
+- Enhanced `split_column` pattern with:
+  - `column_boundaries` config (x-coordinates relative to region x_min)
+  - `merge_continuation_rows` config for multi-line Features column
+  - Per-region column boundaries (each region can specify its own)
+  - Coordinate-based column splitting (same logic as text_region)
+
+**Known Limitations:**
+1. **Monk row 6 (Ki-Empowered Strikes):**
+   - Contains soft hyphen characters (U+00AD and U+2010) in "Ki-­Empowered"
+   - Present in source PDF - technically accurate extraction
+   - Minor cosmetic issue, data is valid
+   - **Status:** Documented, deferred to future cleanup
+
+2. **Rogue row 10 (Ability Score Improvement):**
+   - Missing "Improvement" word - shows only "Ability Score"
+   - "Improvement" text is on page break (page 39 → 40) at y=71.9 as continuation row
+   - Complex cross-page continuation merging not implemented
+   - Context makes meaning clear (all other ASI rows say "Ability Score Improvement")
+   - **Status:** Documented, deferred to future enhancement
+
+**Technical Achievement:**
+- Proved split_column pattern with coordinate-based column extraction
+- Successfully handled two-column layouts with different split points (Barbarian 1-11/12-20, Fighter 1-15/16-20, Rogue 1-10/11-20)
+- Discovered Monk is actually single-column (not split like other simple classes)
+- Handled multi-line Features column with continuation row merging
+- Page break discovery and handling (Rogue spans pages 39-40)
+
+**Files Modified:**
+- `src/srd_builder/table_extraction/table_metadata.py` - Added Barbarian, Fighter, Monk, Rogue configs
+- `src/srd_builder/table_extraction/patterns.py` - Enhanced split_column pattern
+- `scripts/table_targets.py` - Removed carrying_capacity, corrected pages
+- `src/srd_builder/table_extraction/reference_data.py` - Removed carrying_capacity
+
+**Next Steps:**
+1. Configure 8 spellcaster classes (wider tables with spell slot columns)
+2. Test and validate all 12 extractions against CLASS_PROGRESSIONS data
+3. Remove CLASS_PROGRESSIONS from reference_data.py
+4. Update ROADMAP and bump version to v0.9.8
+
+---
+
 ## **v0.10.0 — Conditions Dataset** **[FEATURE]** 📋 PLANNED
 
 **Status:** PLANNED - Next priority feature

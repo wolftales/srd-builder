@@ -131,7 +131,6 @@ class TableExtractor:
         # Define expected header keywords for common table types
         header_hints: dict[str, list[str]] = {
             "experience_by_cr": ["challenge", "rating", "cr", "xp", "experience"],
-            "spell_slots_by_level": ["level", "slot", "spell", "1st", "2nd", "3rd"],
         }
 
         hints = header_hints.get(target["simple_name"], [])

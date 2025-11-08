@@ -199,3 +199,17 @@ jsonschema -i monsters.json schemas/monster.schema.json
 **Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.6.0
 
 Full license in `meta.json`.
+
+---
+
+## Known Limitations
+
+**Class Progression Tables (v0.9.8):**
+
+A few minor data quality issues exist in extracted class progression table data:
+
+1. **Monk 6th level:** The feature name "Ki-Empowered Strikes" contains soft hyphen characters (invisible formatting hints present in the source PDF). This does not affect data usability or search.
+
+2. **Rogue 10th level:** The feature cell shows "Ability Score" without "Improvement" - the word "Improvement" appears as continuation text on the next page and is not currently merged. Context makes the full meaning clear (matches other Ability Score Improvement entries at 4th, 8th, 12th, 16th, 19th levels).
+
+These minor issues do not affect the functional use of the data. All class tables contain the correct 20 levels with proper progression values.

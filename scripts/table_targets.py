@@ -45,16 +45,6 @@ TARGET_TABLES: list[TableTarget] = [
         "priority": "HIGH",
         "notes": "Core mechanic: ability score to modifier conversion",
     },
-    {
-        "id": "table:proficiency_bonus",
-        "simple_name": "proficiency_bonus",
-        "name": "Proficiency Bonus by Level",
-        "page": 15,
-        "section": "Chapter 1: Characters",
-        "category": "character_creation",
-        "priority": "HIGH",
-        "notes": "Needed for classes dataset (v0.8.0)",
-    },
     # Class Progression Tables (v0.8.2)
     {
         "id": "table:barbarian_progression",
@@ -187,27 +177,6 @@ TARGET_TABLES: list[TableTarget] = [
         "priority": "HIGH",
         "notes": "XP calculation for encounters",
     },
-    # Magic
-    {
-        "id": "table:spell_slots_by_level",
-        "simple_name": "spell_slots_by_level",
-        "name": "Spell Slots by Character Level",
-        "page": 201,
-        "section": "Chapter 10: Spellcasting",
-        "category": "magic",
-        "priority": "HIGH",
-        "notes": "Needed for classes dataset (v0.8.0). May be split by class.",
-    },
-    {
-        "id": "table:cantrip_damage",
-        "simple_name": "cantrip_damage",
-        "name": "Cantrip Damage by Character Level",
-        "page": 201,
-        "section": "Chapter 10: Spellcasting",
-        "category": "magic",
-        "priority": "MEDIUM",
-        "notes": "Scaling damage for cantrips",
-    },
     # Exploration
     {
         "id": "table:travel_pace",
@@ -249,16 +218,6 @@ TARGET_TABLES: list[TableTarget] = [
         "category": "reference",
         "priority": "MEDIUM",
         "notes": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)",
-    },
-    {
-        "id": "table:carrying_capacity",
-        "simple_name": "carrying_capacity",
-        "name": "Carrying Capacity",
-        "page": 176,
-        "section": "Chapter 7: Using Ability Scores",
-        "category": "reference",
-        "priority": "LOW",
-        "notes": "Encumbrance rules (Strength × 15)",
     },
     {
         "id": "table:lifestyle_expenses",
@@ -410,16 +369,6 @@ TARGET_TABLES: list[TableTarget] = [
         "category": "equipment",
         "priority": "HIGH",
         "notes": "Extracted via text_parser from PDF pages 65-66",
-    },
-    {
-        "id": "table:condition_effects",
-        "simple_name": "condition_effects",
-        "name": "Condition Effects",
-        "page": [290, 292],
-        "section": "Appendix A: Conditions",
-        "category": "conditions",
-        "priority": "LOW",
-        "notes": "Condition status effects and mechanical impacts (not yet implemented)",
     },
 ]
 

@@ -1,10 +1,10 @@
 {
   "_meta": {
     "ruleset": "srd_5_1",
-    "schema_version": "1.3.0",
+    "schema_version": "1.4.0",
     "source": "SRD_CC_v5.1",
     "build_report": "./build_report.json",
-    "generated_by": "srd-builder v0.8.3"
+    "generated_by": "srd-builder v0.9.7"
   },
   "items": [
     {
@@ -47,7 +47,7 @@
           3
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Dwarf from SRD 5.1"
       },
       "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
@@ -115,7 +115,7 @@
           3
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Hill Dwarf subrace of Dwarf"
       },
       "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
@@ -158,7 +158,7 @@
           4
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Elf from SRD 5.1"
       },
       "age": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
@@ -238,7 +238,7 @@
           4
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "High Elf subrace of Elf"
       },
       "age": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
@@ -277,7 +277,7 @@
           4
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Halfling from SRD 5.1"
       },
       "age": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
@@ -337,7 +337,7 @@
           4
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Lightfoot Halfling subrace of Halfling"
       },
       "age": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
@@ -368,7 +368,7 @@
           5
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Human from SRD 5.1"
       },
       "age": "Humans reach adulthood in their late teens and live less than a century.",
@@ -409,7 +409,7 @@
           5
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Dragonborn from SRD 5.1"
       },
       "age": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
@@ -447,7 +447,7 @@
           6
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Gnome from SRD 5.1"
       },
       "age": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
@@ -511,7 +511,7 @@
           6
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Rock Gnome subrace of Gnome"
       },
       "age": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
@@ -552,7 +552,7 @@
           6
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Half-Elf from SRD 5.1"
       },
       "ability_modifier_note": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
@@ -597,7 +597,7 @@
           7
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Half-Orc from SRD 5.1"
       },
       "age": "Half-orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
@@ -642,7 +642,7 @@
           7
         ],
         "section": "races",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Tiefling from SRD 5.1"
       },
       "age": "Tieflings mature at the same rate as humans but live a few years longer.",

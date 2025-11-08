@@ -1,10 +1,10 @@
 {
   "_meta": {
     "ruleset": "srd_5_1",
-    "schema_version": "1.3.0",
+    "schema_version": "1.4.0",
     "source": "SRD_CC_v5.1",
     "build_report": "./build_report.json",
-    "generated_by": "srd-builder v0.8.3"
+    "generated_by": "srd-builder v0.9.7"
   },
   "items": [
     {
@@ -14,7 +14,7 @@
       "columns": [
         {
           "name": "Score",
-          "type": "integer"
+          "type": "string"
         },
         {
           "name": "Modifier",
@@ -23,130 +23,74 @@
       ],
       "rows": [
         [
-          1,
-          "-5"
+          "1",
+          "−5"
         ],
         [
-          2,
-          "-4"
+          "2–3",
+          "−4"
         ],
         [
-          3,
-          "-4"
+          "4–5",
+          "−3"
         ],
         [
-          4,
-          "-3"
+          "6–7",
+          "−2"
         ],
         [
-          5,
-          "-3"
+          "8–9",
+          "−1"
         ],
         [
-          6,
-          "-2"
+          "10–11",
+          "+0"
         ],
         [
-          7,
-          "-2"
-        ],
-        [
-          8,
-          "-1"
-        ],
-        [
-          9,
-          "-1"
-        ],
-        [
-          10,
-          "0"
-        ],
-        [
-          11,
-          "0"
-        ],
-        [
-          12,
+          "12–13",
           "+1"
         ],
         [
-          13,
-          "+1"
-        ],
-        [
-          14,
+          "14–15",
           "+2"
         ],
         [
-          15,
-          "+2"
-        ],
-        [
-          16,
+          "16–17",
           "+3"
         ],
         [
-          17,
-          "+3"
-        ],
-        [
-          18,
+          "18–19",
           "+4"
         ],
         [
-          19,
-          "+4"
-        ],
-        [
-          20,
+          "20–21",
           "+5"
         ],
         [
-          21,
-          "+5"
-        ],
-        [
-          22,
+          "22–23",
           "+6"
         ],
         [
-          23,
-          "+6"
-        ],
-        [
-          24,
+          "24–25",
           "+7"
         ],
         [
-          25,
-          "+7"
-        ],
-        [
-          26,
+          "26–27",
           "+8"
         ],
         [
-          27,
-          "+8"
-        ],
-        [
-          28,
+          "28–29",
           "+9"
         ],
         [
-          29,
-          "+9"
-        ],
-        [
-          30,
+          "30",
           "+10"
         ]
       ],
       "page": 7,
       "category": "character_creation",
       "section": "Chapter 1: Characters",
-      "notes": "Calculated from formula: (score - 10) // 2",
+      "notes": "Extracted via legacy parser parse_ability_scores_and_modifiers_table [source: srd]",
       "summary": "Core mechanic: ability score to modifier conversion"
     },
     {
@@ -248,7 +192,7 @@
       "page": 15,
       "category": "character_creation",
       "section": "Chapter 1: Characters",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "Proficiency bonus by character level (appears in all class tables but not as standalone table)",
       "summary": "Needed for classes dataset (v0.8.0)"
     },
     {
@@ -258,7 +202,7 @@
       "columns": [
         {
           "name": "Level",
-          "type": "integer"
+          "type": "string"
         },
         {
           "name": "Proficiency Bonus",
@@ -270,7 +214,7 @@
         },
         {
           "name": "Rages",
-          "type": "mixed"
+          "type": "string"
         },
         {
           "name": "Rage Damage",
@@ -279,140 +223,140 @@
       ],
       "rows": [
         [
-          1,
+          "1st",
           "+2",
           "Rage, Unarmored Defense",
-          2,
+          "2",
           "+2"
         ],
         [
-          2,
+          "2nd",
           "+2",
           "Reckless Attack, Danger Sense",
-          2,
+          "2",
           "+2"
         ],
         [
-          3,
+          "3rd",
           "+2",
           "Primal Path",
-          3,
+          "3",
           "+2"
         ],
         [
-          4,
+          "4th",
           "+2",
           "Ability Score Improvement",
-          3,
+          "3",
           "+2"
         ],
         [
-          5,
+          "5th",
           "+3",
           "Extra Attack, Fast Movement",
-          3,
+          "3",
           "+2"
         ],
         [
-          6,
+          "6th",
           "+3",
           "Path feature",
-          4,
+          "4",
           "+2"
         ],
         [
-          7,
+          "7th",
           "+3",
           "Feral Instinct",
-          4,
+          "4",
           "+2"
         ],
         [
-          8,
+          "8th",
           "+3",
           "Ability Score Improvement",
-          4,
+          "4",
           "+2"
         ],
         [
-          9,
+          "9th",
           "+4",
           "Brutal Critical (1 die)",
-          4,
+          "4",
           "+3"
         ],
         [
-          10,
+          "10th",
           "+4",
           "Path feature",
-          4,
+          "4",
           "+3"
         ],
         [
-          11,
+          "11th",
           "+4",
-          "Relentless Rage",
-          4,
+          "Relentless",
+          "4",
           "+3"
         ],
         [
-          12,
+          "12th",
           "+4",
           "Ability Score Improvement",
-          5,
+          "5",
           "+3"
         ],
         [
-          13,
+          "13th",
           "+5",
           "Brutal Critical (2 dice)",
-          5,
+          "5",
           "+3"
         ],
         [
-          14,
+          "14th",
           "+5",
           "Path feature",
-          5,
+          "5",
           "+3"
         ],
         [
-          15,
+          "15th",
           "+5",
           "Persistent Rage",
-          5,
+          "5",
           "+3"
         ],
         [
-          16,
+          "16th",
           "+5",
           "Ability Score Improvement",
-          5,
+          "5",
           "+4"
         ],
         [
-          17,
+          "17th",
           "+6",
           "Brutal Critical (3 dice)",
-          6,
+          "6",
           "+4"
         ],
         [
-          18,
+          "18th",
           "+6",
           "Indomitable Might",
-          6,
+          "6",
           "+4"
         ],
         [
-          19,
+          "19th",
           "+6",
           "Ability Score Improvement",
-          6,
+          "6",
           "+4"
         ],
         [
-          20,
+          "20th",
           "+6",
           "Primal Champion",
           "Unlimited",
@@ -422,7 +366,7 @@
       "page": 8,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Barbarian",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
       "summary": "Level progression: rages, rage damage, features"
     },
     {
@@ -812,7 +756,7 @@
       "page": 11,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Bard",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spells known, spell slots, bardic inspiration"
     },
     {
@@ -821,55 +765,94 @@
       "name": "The Cleric",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Cantrips Known",
+          "name": {
+            "name": "Cantrips Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "6th",
+          "name": {
+            "name": "6th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "7th",
+          "name": {
+            "name": "7th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "8th",
+          "name": {
+            "name": "8th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "9th",
+          "name": {
+            "name": "9th",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -1178,7 +1161,7 @@
       "page": 16,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Cleric",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spell slots, features"
     },
     {
@@ -1187,55 +1170,94 @@
       "name": "The Druid",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Cantrips Known",
+          "name": {
+            "name": "Cantrips Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "6th",
+          "name": {
+            "name": "6th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "7th",
+          "name": {
+            "name": "7th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "8th",
+          "name": {
+            "name": "8th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "9th",
+          "name": {
+            "name": "9th",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -1544,7 +1566,7 @@
       "page": 25,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Druid",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spell slots, wild shape"
     },
     {
@@ -1553,15 +1575,24 @@
       "name": "The Fighter",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         }
       ],
@@ -1670,7 +1701,7 @@
       "page": 26,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Fighter",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: features by level"
     },
     {
@@ -1679,27 +1710,45 @@
       "name": "The Monk",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Martial Arts",
+          "name": {
+            "name": "Martial Arts",
+            "type": "dice"
+          },
           "type": "dice"
         },
         {
-          "name": "Ki Points",
+          "name": {
+            "name": "Ki Points",
+            "type": "mixed"
+          },
           "type": "mixed"
         },
         {
-          "name": "Unarmored Movement",
+          "name": {
+            "name": "Unarmored Movement",
+            "type": "string"
+          },
           "type": "string"
         }
       ],
@@ -1868,7 +1917,7 @@
       "page": 28,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Monk",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: martial arts, ki points, unarmored movement"
     },
     {
@@ -1877,35 +1926,59 @@
       "name": "The Paladin",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -2114,7 +2187,7 @@
       "page": 31,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Paladin",
-      "notes": "Half caster progression. Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: spell slots (half caster)"
     },
     {
@@ -2123,39 +2196,66 @@
       "name": "The Ranger",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Spells Known",
+          "name": {
+            "name": "Spells Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -2384,7 +2484,7 @@
       "page": 37,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Ranger",
-      "notes": "Half caster progression. Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: spell slots (half caster), favored enemies"
     },
     {
@@ -2393,19 +2493,31 @@
       "name": "The Rogue",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Sneak Attack",
+          "name": {
+            "name": "Sneak Attack",
+            "type": "dice"
+          },
           "type": "dice"
         }
       ],
@@ -2534,7 +2646,7 @@
       "page": 39,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Rogue",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: sneak attack damage"
     },
     {
@@ -2543,63 +2655,108 @@
       "name": "The Sorcerer",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Cantrips Known",
+          "name": {
+            "name": "Cantrips Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Spells Known",
+          "name": {
+            "name": "Spells Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "6th",
+          "name": {
+            "name": "6th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "7th",
+          "name": {
+            "name": "7th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "8th",
+          "name": {
+            "name": "8th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "9th",
+          "name": {
+            "name": "9th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Sorcery Points",
+          "name": {
+            "name": "Sorcery Points",
+            "type": "mixed"
+          },
           "type": "mixed"
         }
       ],
@@ -2948,7 +3105,7 @@
       "page": 42,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Sorcerer",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spells known, spell slots, sorcery points"
     },
     {
@@ -2957,35 +3114,59 @@
       "name": "The Warlock",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Cantrips Known",
+          "name": {
+            "name": "Cantrips Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Spells Known",
+          "name": {
+            "name": "Spells Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Spell Slots",
+          "name": {
+            "name": "Spell Slots",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Slot Level",
+          "name": {
+            "name": "Slot Level",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Invocations Known",
+          "name": {
+            "name": "Invocations Known",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -3194,7 +3375,7 @@
       "page": 44,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Warlock",
-      "notes": "Pact magic progression (different from full/half casters). Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spells known, spell slots (pact magic), invocations"
     },
     {
@@ -3203,55 +3384,94 @@
       "name": "The Wizard",
       "columns": [
         {
-          "name": "Level",
+          "name": {
+            "name": "Level",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "Proficiency Bonus",
+          "name": {
+            "name": "Proficiency Bonus",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Features",
+          "name": {
+            "name": "Features",
+            "type": "string"
+          },
           "type": "string"
         },
         {
-          "name": "Cantrips Known",
+          "name": {
+            "name": "Cantrips Known",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "1st",
+          "name": {
+            "name": "1st",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "2nd",
+          "name": {
+            "name": "2nd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "3rd",
+          "name": {
+            "name": "3rd",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "4th",
+          "name": {
+            "name": "4th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "5th",
+          "name": {
+            "name": "5th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "6th",
+          "name": {
+            "name": "6th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "7th",
+          "name": {
+            "name": "7th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "8th",
+          "name": {
+            "name": "8th",
+            "type": "integer"
+          },
           "type": "integer"
         },
         {
-          "name": "9th",
+          "name": {
+            "name": "9th",
+            "type": "integer"
+          },
           "type": "integer"
         }
       ],
@@ -3560,7 +3780,7 @@
       "page": 46,
       "category": "class_progression",
       "section": "Chapter 3: Classes - Wizard",
-      "notes": "Full caster progression. Reference data from SRD 5.1",
+      "notes": "TODO v0.9.6: Extract from PDF",
       "summary": "Level progression: cantrips, spell slots"
     },
     {
@@ -3718,364 +3938,8 @@
       "page": 57,
       "category": "combat",
       "section": "Chapter 9: Combat",
-      "notes": "Reference data from SRD 5.1",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
       "summary": "XP calculation for encounters"
-    },
-    {
-      "id": "table:spell_slots_by_level",
-      "simple_name": "spell_slots_by_level",
-      "name": "Spell Slots by Character Level",
-      "columns": [
-        {
-          "name": "Level",
-          "type": "integer"
-        },
-        {
-          "name": "1st",
-          "type": "integer"
-        },
-        {
-          "name": "2nd",
-          "type": "integer"
-        },
-        {
-          "name": "3rd",
-          "type": "integer"
-        },
-        {
-          "name": "4th",
-          "type": "integer"
-        },
-        {
-          "name": "5th",
-          "type": "integer"
-        },
-        {
-          "name": "6th",
-          "type": "integer"
-        },
-        {
-          "name": "7th",
-          "type": "integer"
-        },
-        {
-          "name": "8th",
-          "type": "integer"
-        },
-        {
-          "name": "9th",
-          "type": "integer"
-        },
-        {
-          "name": "Cantrips Known",
-          "type": "string"
-        }
-      ],
-      "rows": [
-        [
-          1,
-          2,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          2,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          3,
-          4,
-          2,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          4,
-          4,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          5,
-          4,
-          3,
-          2,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          6,
-          4,
-          3,
-          3,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          7,
-          4,
-          3,
-          3,
-          1,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          8,
-          4,
-          3,
-          3,
-          2,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          9,
-          4,
-          3,
-          3,
-          3,
-          1,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          10,
-          4,
-          3,
-          3,
-          3,
-          2,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          11,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          12,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          0,
-          0,
-          0,
-          0
-        ],
-        [
-          13,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          0,
-          0,
-          0
-        ],
-        [
-          14,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          0,
-          0,
-          0
-        ],
-        [
-          15,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          1,
-          0,
-          0
-        ],
-        [
-          16,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          1,
-          0,
-          0
-        ],
-        [
-          17,
-          4,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          1,
-          1,
-          0
-        ],
-        [
-          18,
-          4,
-          3,
-          3,
-          3,
-          3,
-          1,
-          1,
-          1,
-          1,
-          0
-        ],
-        [
-          19,
-          4,
-          3,
-          3,
-          3,
-          3,
-          2,
-          1,
-          1,
-          1,
-          0
-        ],
-        [
-          20,
-          4,
-          3,
-          3,
-          3,
-          3,
-          2,
-          2,
-          1,
-          1,
-          0
-        ]
-      ],
-      "page": 201,
-      "category": "magic",
-      "section": "Chapter 10: Spellcasting",
-      "notes": "Full caster progression (Cleric, Druid, Wizard). Reference data from SRD 5.1",
-      "summary": "Needed for classes dataset (v0.8.0). May be split by class."
-    },
-    {
-      "id": "table:cantrip_damage",
-      "simple_name": "cantrip_damage",
-      "name": "Cantrip Damage by Character Level",
-      "columns": [
-        {
-          "name": "Character Level",
-          "type": "range"
-        },
-        {
-          "name": "Damage",
-          "type": "string"
-        }
-      ],
-      "rows": [
-        [
-          "1st-4th",
-          "1 die"
-        ],
-        [
-          "5th-10th",
-          "2 dice"
-        ],
-        [
-          "11th-16th",
-          "3 dice"
-        ],
-        [
-          "17th-20th",
-          "4 dice"
-        ]
-      ],
-      "page": 201,
-      "category": "magic",
-      "section": "Chapter 10: Spellcasting",
-      "notes": "Reference data from SRD 5.1",
-      "summary": "Scaling damage for cantrips"
     },
     {
       "id": "table:travel_pace",
@@ -4097,6 +3961,10 @@
         {
           "name": "Distance per Day",
           "type": "string"
+        },
+        {
+          "name": "Effect",
+          "type": "string"
         }
       ],
       "rows": [
@@ -4104,25 +3972,27 @@
           "Fast",
           "400 feet",
           "4 miles",
-          "30 miles"
+          "30 miles",
+          "−5 penalty to passive Wisdom (Perception) scores"
         ],
         [
           "Normal",
           "300 feet",
           "3 miles",
-          "24 miles"
+          "24 miles",
+          "—"
         ],
         [
           "Slow",
           "200 feet",
           "2 miles",
-          "18 miles"
+          "18 miles",
+          "Able to use stealth"
         ]
       ],
-      "page": 242,
+      "page": 84,
       "category": "exploration",
       "section": "Chapter 8: Adventuring",
-      "notes": "Reference data from SRD 5.1",
       "summary": "Distance per hour/day at different paces"
     },
     {
@@ -4141,87 +4011,152 @@
       ],
       "rows": [
         [
-          "Ale (gallon)",
-          "2 sp"
-        ],
-        [
-          "Ale (mug)",
-          "4 cp"
-        ],
-        [
           "Banquet (per person)",
           "10 gp"
         ],
         [
-          "Bread (loaf)",
+          "Bread, loaf",
           "2 cp"
         ],
         [
-          "Cheese (hunk)",
+          "Cheese, hunk",
           "1 sp"
         ],
         [
-          "Inn stay per day (Squalid)",
+          "Squalid",
           "7 cp"
         ],
         [
-          "Inn stay per day (Poor)",
+          "Poor",
           "1 sp"
         ],
         [
-          "Inn stay per day (Modest)",
+          "Modest",
           "5 sp"
         ],
         [
-          "Inn stay per day (Comfortable)",
+          "Comfortable",
           "8 sp"
         ],
         [
-          "Inn stay per day (Wealthy)",
+          "Wealthy",
           "2 gp"
         ],
         [
-          "Inn stay per day (Aristocratic)",
+          "Aristocratic",
           "4 gp"
         ],
         [
-          "Meals per day (Squalid)",
+          "Squalid",
           "3 cp"
         ],
         [
-          "Meals per day (Poor)",
+          "Poor",
           "6 cp"
         ],
         [
-          "Meals per day (Modest)",
+          "Modest",
           "3 sp"
         ],
         [
-          "Meals per day (Comfortable)",
+          "Comfortable",
           "5 sp"
         ],
         [
-          "Meals per day (Wealthy)",
+          "Wealthy",
           "8 sp"
         ],
         [
-          "Meals per day (Aristocratic)",
+          "Aristocratic",
           "2 gp"
         ],
         [
-          "Wine (common, pitcher)",
+          "Gallon",
           "2 sp"
         ],
         [
-          "Wine (fine, bottle)",
-          "10 gp"
+          "Mug",
+          "4 cp"
         ]
       ],
       "page": 158,
       "category": "equipment",
       "section": "Chapter 5: Equipment",
-      "notes": "Reference data from SRD 5.1",
-      "summary": "Service costs for inns/taverns"
+      "notes": "Extracted via legacy parser parse_food_drink_lodging_table [source: srd]",
+      "metadata": {
+        "Inn stay per day": {
+          "row_index": 3,
+          "items": [
+            {
+              "name": "Squalid",
+              "row_index": 3
+            },
+            {
+              "name": "Poor",
+              "row_index": 4
+            },
+            {
+              "name": "Modest",
+              "row_index": 5
+            },
+            {
+              "name": "Comfortable",
+              "row_index": 6
+            },
+            {
+              "name": "Wealthy",
+              "row_index": 7
+            },
+            {
+              "name": "Aristocratic",
+              "row_index": 8
+            }
+          ]
+        },
+        "Meals per day": {
+          "row_index": 9,
+          "items": [
+            {
+              "name": "Squalid",
+              "row_index": 9
+            },
+            {
+              "name": "Poor",
+              "row_index": 10
+            },
+            {
+              "name": "Modest",
+              "row_index": 11
+            },
+            {
+              "name": "Comfortable",
+              "row_index": 12
+            },
+            {
+              "name": "Wealthy",
+              "row_index": 13
+            },
+            {
+              "name": "Aristocratic",
+              "row_index": 14
+            }
+          ]
+        },
+        "Ale": {
+          "row_index": 15,
+          "items": [
+            {
+              "name": "Gallon",
+              "row_index": 15
+            },
+            {
+              "name": "Mug",
+              "row_index": 16
+            }
+          ]
+        }
+      },
+      "summary": "~11 food/drink/lodging items with costs"
     },
     {
       "id": "table:services",
@@ -4239,19 +4174,19 @@
       ],
       "rows": [
         [
-          "Coach cab (between towns)",
+          "Between towns",
           "3 cp per mile"
         ],
         [
-          "Coach cab (within city)",
+          "Within a city",
           "1 cp"
         ],
         [
-          "Hireling (skilled)",
+          "Skilled",
           "2 gp per day"
         ],
         [
-          "Hireling (untrained)",
+          "Untrained",
           "2 sp per day"
         ],
         [
@@ -4263,19 +4198,47 @@
           "1 cp"
         ],
         [
-          "Ship's passage",
+          "Ship’s passage",
           "1 sp per mile"
         ]
       ],
       "page": 159,
-      "category": "downtime",
+      "category": "equipment",
       "section": "Chapter 5: Equipment",
-      "notes": "Reference data from SRD 5.1",
-      "summary": "Hireling and service costs"
+      "notes": "Extracted via legacy parser parse_services_table [source: srd]",
+      "metadata": {
+        "Coach cab": {
+          "row_index": 0,
+          "items": [
+            {
+              "name": "Between towns",
+              "row_index": 0
+            },
+            {
+              "name": "Within a city",
+              "row_index": 1
+            }
+          ]
+        },
+        "Hireling": {
+          "row_index": 2,
+          "items": [
+            {
+              "name": "Skilled",
+              "row_index": 2
+            },
+            {
+              "name": "Untrained",
+              "row_index": 3
+            }
+          ]
+        }
+      },
+      "summary": "~8 services with costs"
     },
     {
-      "id": "table:creature_size",
-      "simple_name": "creature_size",
+      "id": "table:size_categories",
+      "simple_name": "size_categories",
       "name": "Size Categories",
       "columns": [
         {
@@ -4313,10 +4276,9 @@
           "20 by 20 ft. or larger"
         ]
       ],
-      "page": 191,
+      "page": 92,
       "category": "reference",
       "section": "Chapter 9: Combat",
-      "notes": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)",
       "summary": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)"
     },
     {
@@ -4458,7 +4420,7 @@
       "page": 176,
       "category": "reference",
       "section": "Chapter 7: Using Ability Scores",
-      "notes": "Calculated from formula: Strength × 15",
+      "notes": "Carrying capacity formula (Strength × 15) expressed as reference table",
       "summary": "Encumbrance rules (Strength × 15)"
     },
     {
@@ -4471,19 +4433,11 @@
           "type": "string"
         },
         {
-          "name": "Cost per Day",
+          "name": "Price/Day",
           "type": "string"
         }
       ],
       "rows": [
-        [
-          "Wretched",
-          "—"
-        ],
-        [
-          "Squalid",
-          "1 sp"
-        ],
         [
           "Poor",
           "2 sp"
@@ -4502,14 +4456,1686 @@
         ],
         [
           "Aristocratic",
-          "10 gp minimum"
+          "10 gp"
+        ],
+        [
+          "Squalid",
+          "1 sp"
         ]
       ],
       "page": 157,
-      "category": "downtime",
+      "category": "equipment",
       "section": "Chapter 5: Equipment",
-      "notes": "Reference data from SRD 5.1",
-      "summary": "Daily living costs (wretched to aristocratic)"
+      "notes": "Extracted via legacy parser parse_lifestyle_expenses_table [source: srd]",
+      "summary": "~5 lifestyle categories with daily costs"
+    },
+    {
+      "id": "table:exchange_rates",
+      "simple_name": "exchange_rates",
+      "name": "Standard Exchange Rates",
+      "columns": [
+        {
+          "name": "Coin",
+          "type": "string"
+        },
+        {
+          "name": "CP",
+          "type": "string"
+        },
+        {
+          "name": "SP",
+          "type": "string"
+        },
+        {
+          "name": "EP",
+          "type": "string"
+        },
+        {
+          "name": "GP",
+          "type": "string"
+        },
+        {
+          "name": "PP",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Copper (cp)",
+          "1",
+          "1/10",
+          "1/50",
+          "1/100",
+          "1/1,000"
+        ],
+        [
+          "Silver (sp)",
+          "10",
+          "1",
+          "1/5",
+          "1/10",
+          "1/100"
+        ],
+        [
+          "Electrum (ep)",
+          "50",
+          "5",
+          "1",
+          "1/2",
+          "1/20"
+        ],
+        [
+          "Gold (gp)",
+          "100",
+          "10",
+          "2",
+          "1",
+          "1/10"
+        ],
+        [
+          "Platinum (pp)",
+          "1,000",
+          "100",
+          "20",
+          "10",
+          "1"
+        ]
+      ],
+      "page": [
+        62
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_exchange_rates_table [source: srd]",
+      "summary": "Currency conversion rates (CP/SP/EP/GP/PP)"
+    },
+    {
+      "id": "table:adventure_gear",
+      "simple_name": "adventure_gear",
+      "name": "Adventure Gear",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "to focus, tinder to ignite, and about 5 minutes for the",
+          "—",
+          "—"
+        ]
+      ],
+      "page": [
+        69
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_adventure_gear_table [source: srd]",
+      "metadata": {
+        "to focus, tinder to ignite, and about 5 minutes for the": {
+          "row_index": 0,
+          "items": []
+        }
+      },
+      "summary": "General adventuring equipment with costs and weights (99 items)"
+    },
+    {
+      "id": "table:container_capacity",
+      "simple_name": "container_capacity",
+      "name": "Container Capacity",
+      "columns": [
+        {
+          "name": "Container",
+          "type": "string"
+        },
+        {
+          "name": "Capacity",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Backpack*",
+          "1 cubic foot/30 pounds of gear"
+        ],
+        [
+          "Barrel",
+          "40 gallons liquid, 4 cubic feet solid"
+        ],
+        [
+          "Basket",
+          "2 cubic feet/40 pounds of gear"
+        ],
+        [
+          "Bottle",
+          "1½ pints liquid"
+        ],
+        [
+          "Bucket",
+          "3 gallons liquid, 1/2 cubic foot solid"
+        ],
+        [
+          "Chest",
+          "12 cubic feet/300 pounds of gear"
+        ],
+        [
+          "Flask or tankard",
+          "1 pint liquid"
+        ],
+        [
+          "Jug or pitcher",
+          "1 gallon liquid"
+        ],
+        [
+          "Pot, iron",
+          "1 gallon liquid"
+        ],
+        [
+          "Pouch",
+          "1/5 cubic foot/6 pounds of gear"
+        ],
+        [
+          "Sack",
+          "1 cubic foot/30 pounds of gear"
+        ],
+        [
+          "Vial",
+          "4 ounces liquid"
+        ],
+        [
+          "Waterskin",
+          "4 pints liquid"
+        ]
+      ],
+      "page": [
+        69,
+        70
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_container_capacity_table [source: srd]",
+      "summary": "Storage capacity for 13 container types"
+    },
+    {
+      "id": "table:donning_doffing_armor",
+      "simple_name": "donning_doffing_armor",
+      "name": "Donning and Doffing Armor",
+      "columns": [
+        {
+          "name": "Category",
+          "type": "string"
+        },
+        {
+          "name": "Don",
+          "type": "string"
+        },
+        {
+          "name": "Doff",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Light Armor",
+          "1 minute",
+          "1 minute"
+        ],
+        [
+          "Medium Armor",
+          "5 minutes",
+          "1 minute"
+        ],
+        [
+          "Heavy Armor",
+          "10 minutes",
+          "5 minutes"
+        ],
+        [
+          "Shield",
+          "1 action",
+          "1 action"
+        ]
+      ],
+      "page": [
+        64
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_donning_doffing_armor_table [source: srd]",
+      "summary": "Time requirements for putting on/removing armor"
+    },
+    {
+      "id": "table:mounts_and_other_animals",
+      "simple_name": "mounts_and_other_animals",
+      "name": "Mounts and Other Animals",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Speed",
+          "type": "string"
+        },
+        {
+          "name": "Carrying Capacity",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Horse, draft",
+          "50 gp",
+          "40 ft.",
+          "540 lb."
+        ],
+        [
+          "Horse, riding",
+          "75 gp",
+          "60 ft.",
+          "480 lb."
+        ],
+        [
+          "Mastiff",
+          "25 gp",
+          "40 ft.",
+          "195 lb."
+        ],
+        [
+          "Pony",
+          "30 gp",
+          "40 ft.",
+          "225 lb."
+        ],
+        [
+          "Warhorse",
+          "400 gp",
+          "60 ft.",
+          "540 lb."
+        ],
+        [
+          "Camel",
+          "50 gp",
+          "50 ft.",
+          "480 lb."
+        ],
+        [
+          "Donkey or mule",
+          "8 gp",
+          "40 ft.",
+          "420 lb."
+        ],
+        [
+          "Elephant",
+          "200 gp",
+          "40 ft.",
+          "1,320 lb."
+        ]
+      ],
+      "page": [
+        71,
+        72
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_mounts_and_other_animals_table [source: srd]",
+      "summary": "8 animals with cost, speed, and carrying capacity"
+    },
+    {
+      "id": "table:tack_harness_vehicles",
+      "simple_name": "tack_harness_vehicles",
+      "name": "Tack, Harness, and Drawn Vehicles",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Barding",
+          "×4",
+          "×2"
+        ],
+        [
+          "Bit and bridle",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Carriage",
+          "100 gp",
+          "600 lb."
+        ],
+        [
+          "Cart",
+          "15 gp",
+          "200 lb."
+        ],
+        [
+          "Chariot",
+          "250 gp",
+          "100 lb."
+        ],
+        [
+          "Feed (per day)",
+          "5 cp",
+          "10 lb."
+        ],
+        [
+          "Saddle, exotic",
+          "60 gp",
+          "40 lb."
+        ],
+        [
+          "Saddle, military",
+          "20 gp",
+          "30 lb."
+        ],
+        [
+          "Saddle, pack",
+          "5 gp",
+          "15 lb."
+        ],
+        [
+          "Saddle, riding",
+          "10 gp",
+          "25 lb."
+        ],
+        [
+          "Saddlebags",
+          "4 gp",
+          "8 lb."
+        ],
+        [
+          "Sled",
+          "20 gp",
+          "300 lb."
+        ],
+        [
+          "Stabling (per day)",
+          "5 sp",
+          "—"
+        ],
+        [
+          "Wagon",
+          "35 gp",
+          "400 lb."
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_tack_harness_vehicles_table [source: srd]",
+      "summary": "~17 items including Saddle subcategories"
+    },
+    {
+      "id": "table:waterborne_vehicles",
+      "simple_name": "waterborne_vehicles",
+      "name": "Waterborne Vehicles",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Speed",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Galley",
+          "30,000 gp",
+          "4 mph"
+        ],
+        [
+          "Keelboat",
+          "3,000 gp",
+          "1 mph"
+        ],
+        [
+          "Longship",
+          "10,000 gp",
+          "3 mph"
+        ],
+        [
+          "Rowboat",
+          "50 gp",
+          "1½ mph"
+        ],
+        [
+          "Sailing ship",
+          "10,000 gp",
+          "2 mph"
+        ],
+        [
+          "Warship",
+          "25,000 gp",
+          "2½ mph"
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_waterborne_vehicles_table [source: srd]",
+      "summary": "6 waterborne vehicles with cost and speed"
+    },
+    {
+      "id": "table:trade_goods",
+      "simple_name": "trade_goods",
+      "name": "Trade Goods",
+      "columns": [
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Goods",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1 cp",
+          "1 lb. of wheat"
+        ],
+        [
+          "2 cp",
+          "1 lb. of flour or one chicken"
+        ],
+        [
+          "5 cp",
+          "1 lb. of salt"
+        ],
+        [
+          "1 sp",
+          "1 lb. of iron or 1 sq. yd. of canvas"
+        ],
+        [
+          "5 sp",
+          "1 lb. of copper or 1 sq. yd. of cotton cloth"
+        ],
+        [
+          "1 gp",
+          "1 lb. of ginger or one goat"
+        ],
+        [
+          "2 gp",
+          "1 lb. of cinnamon or pepper, or one sheep"
+        ],
+        [
+          "3 gp",
+          "1 lb. of cloves or one pig"
+        ],
+        [
+          "5 gp",
+          "1 lb. of silver or 1 sq. yd. of linen"
+        ],
+        [
+          "10 gp",
+          "1 sq. yd. of silk or one cow"
+        ],
+        [
+          "15 gp",
+          "1 lb. of saffron or one ox"
+        ],
+        [
+          "50 gp",
+          "1 lb. of gold"
+        ],
+        [
+          "500 gp",
+          "1 lb. of platinum"
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_trade_goods_table [source: srd]",
+      "summary": "13 trade goods with cost per unit"
+    },
+    {
+      "id": "table:lifestyle_expenses",
+      "simple_name": "lifestyle_expenses",
+      "name": "Lifestyle Expenses",
+      "columns": [
+        {
+          "name": "Lifestyle",
+          "type": "string"
+        },
+        {
+          "name": "Price/Day",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Poor",
+          "2 sp"
+        ],
+        [
+          "Modest",
+          "1 gp"
+        ],
+        [
+          "Comfortable",
+          "2 gp"
+        ],
+        [
+          "Wealthy",
+          "4 gp"
+        ],
+        [
+          "Aristocratic",
+          "10 gp"
+        ],
+        [
+          "Squalid",
+          "1 sp"
+        ]
+      ],
+      "page": [
+        72,
+        73
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_lifestyle_expenses_table [source: srd]",
+      "summary": "~5 lifestyle categories with daily costs"
+    },
+    {
+      "id": "table:food_drink_lodging",
+      "simple_name": "food_drink_lodging",
+      "name": "Food, Drink, and Lodging",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Banquet (per person)",
+          "10 gp"
+        ],
+        [
+          "Bread, loaf",
+          "2 cp"
+        ],
+        [
+          "Cheese, hunk",
+          "1 sp"
+        ],
+        [
+          "Squalid",
+          "7 cp"
+        ],
+        [
+          "Poor",
+          "1 sp"
+        ],
+        [
+          "Modest",
+          "5 sp"
+        ],
+        [
+          "Comfortable",
+          "8 sp"
+        ],
+        [
+          "Wealthy",
+          "2 gp"
+        ],
+        [
+          "Aristocratic",
+          "4 gp"
+        ],
+        [
+          "Squalid",
+          "3 cp"
+        ],
+        [
+          "Poor",
+          "6 cp"
+        ],
+        [
+          "Modest",
+          "3 sp"
+        ],
+        [
+          "Comfortable",
+          "5 sp"
+        ],
+        [
+          "Wealthy",
+          "8 sp"
+        ],
+        [
+          "Aristocratic",
+          "2 gp"
+        ],
+        [
+          "Gallon",
+          "2 sp"
+        ],
+        [
+          "Mug",
+          "4 cp"
+        ]
+      ],
+      "page": [
+        73,
+        74
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_food_drink_lodging_table [source: srd]",
+      "metadata": {
+        "Inn stay per day": {
+          "row_index": 3,
+          "items": [
+            {
+              "name": "Squalid",
+              "row_index": 3
+            },
+            {
+              "name": "Poor",
+              "row_index": 4
+            },
+            {
+              "name": "Modest",
+              "row_index": 5
+            },
+            {
+              "name": "Comfortable",
+              "row_index": 6
+            },
+            {
+              "name": "Wealthy",
+              "row_index": 7
+            },
+            {
+              "name": "Aristocratic",
+              "row_index": 8
+            }
+          ]
+        },
+        "Meals per day": {
+          "row_index": 9,
+          "items": [
+            {
+              "name": "Squalid",
+              "row_index": 9
+            },
+            {
+              "name": "Poor",
+              "row_index": 10
+            },
+            {
+              "name": "Modest",
+              "row_index": 11
+            },
+            {
+              "name": "Comfortable",
+              "row_index": 12
+            },
+            {
+              "name": "Wealthy",
+              "row_index": 13
+            },
+            {
+              "name": "Aristocratic",
+              "row_index": 14
+            }
+          ]
+        },
+        "Ale": {
+          "row_index": 15,
+          "items": [
+            {
+              "name": "Gallon",
+              "row_index": 15
+            },
+            {
+              "name": "Mug",
+              "row_index": 16
+            }
+          ]
+        }
+      },
+      "summary": "~11 food/drink/lodging items with costs"
+    },
+    {
+      "id": "table:services",
+      "simple_name": "services",
+      "name": "Services",
+      "columns": [
+        {
+          "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Between towns",
+          "3 cp per mile"
+        ],
+        [
+          "Within a city",
+          "1 cp"
+        ],
+        [
+          "Skilled",
+          "2 gp per day"
+        ],
+        [
+          "Untrained",
+          "2 sp per day"
+        ],
+        [
+          "Messenger",
+          "2 cp per mile"
+        ],
+        [
+          "Road or gate toll",
+          "1 cp"
+        ],
+        [
+          "Ship’s passage",
+          "1 sp per mile"
+        ]
+      ],
+      "page": [
+        74
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_services_table [source: srd]",
+      "metadata": {
+        "Coach cab": {
+          "row_index": 0,
+          "items": [
+            {
+              "name": "Between towns",
+              "row_index": 0
+            },
+            {
+              "name": "Within a city",
+              "row_index": 1
+            }
+          ]
+        },
+        "Hireling": {
+          "row_index": 2,
+          "items": [
+            {
+              "name": "Skilled",
+              "row_index": 2
+            },
+            {
+              "name": "Untrained",
+              "row_index": 3
+            }
+          ]
+        }
+      },
+      "summary": "~8 services with costs"
+    },
+    {
+      "id": "table:tools",
+      "simple_name": "tools",
+      "name": "Tools",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Artisan’s tools",
+          "—",
+          "—"
+        ],
+        [
+          "Alchemist’s supplies",
+          "50 gp",
+          "8 lb."
+        ],
+        [
+          "Brewer’s supplies",
+          "20 gp",
+          "9 lb."
+        ],
+        [
+          "Calligrapher's supplies",
+          "10 gp",
+          "5 lb."
+        ],
+        [
+          "Carpenter’s tools",
+          "8 gp",
+          "6 lb."
+        ],
+        [
+          "Cartographer’s tools",
+          "15 gp",
+          "6 lb."
+        ],
+        [
+          "Cobbler’s tools",
+          "5 gp",
+          "5 lb."
+        ],
+        [
+          "Cook’s utensils",
+          "1 gp",
+          "8 lb."
+        ],
+        [
+          "Glassblower’s tools",
+          "30 gp",
+          "5 lb."
+        ],
+        [
+          "Jeweler’s tools",
+          "25 gp",
+          "2 lb."
+        ],
+        [
+          "Leatherworker’s tools",
+          "5 gp",
+          "5 lb."
+        ],
+        [
+          "Mason’s tools",
+          "10 gp",
+          "8 lb."
+        ],
+        [
+          "Painter’s supplies",
+          "10 gp",
+          "5 lb."
+        ],
+        [
+          "Potter’s tools",
+          "10 gp",
+          "3 lb."
+        ],
+        [
+          "Smith’s tools",
+          "20 gp",
+          "8 lb."
+        ],
+        [
+          "Tinker’s tools",
+          "50 gp",
+          "10 lb."
+        ],
+        [
+          "Weaver’s tools",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Woodcarver’s tools",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Disguise kit",
+          "25 gp",
+          "3 lb."
+        ],
+        [
+          "Forgery kit",
+          "15 gp",
+          "5 lb."
+        ],
+        [
+          "Gaming set",
+          "—",
+          "—"
+        ],
+        [
+          "Dice set",
+          "1 sp",
+          "—"
+        ],
+        [
+          "Playing card set",
+          "5 sp",
+          "—"
+        ],
+        [
+          "Herbalism kit",
+          "5 gp",
+          "3 lb."
+        ],
+        [
+          "Musical instrument",
+          "—",
+          "—"
+        ],
+        [
+          "Bagpipes",
+          "30 gp",
+          "6 lb."
+        ],
+        [
+          "Drum",
+          "6 gp",
+          "3 lb."
+        ],
+        [
+          "Dulcimer",
+          "25 gp",
+          "10 lb."
+        ],
+        [
+          "Flute",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Lute",
+          "35 gp",
+          "2 lb."
+        ],
+        [
+          "Lyre",
+          "30 gp",
+          "2 lb."
+        ],
+        [
+          "Horn",
+          "3 gp",
+          "2 lb."
+        ],
+        [
+          "Pan flute",
+          "12 gp",
+          "2 lb."
+        ],
+        [
+          "Shawm",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Viol",
+          "30 gp",
+          "1 lb."
+        ],
+        [
+          "Navigator’s tools",
+          "25 gp",
+          "2 lb."
+        ],
+        [
+          "Poisoner’s kit",
+          "50 gp",
+          "2 lb."
+        ],
+        [
+          "Thieves’ tools",
+          "25 gp",
+          "1 lb."
+        ]
+      ],
+      "page": [
+        70
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_tools_table [source: srd]",
+      "metadata": {
+        "Artisan’s tools": {
+          "row_index": 0,
+          "items": [
+            {
+              "name": "Alchemist’s supplies",
+              "row_index": 1
+            },
+            {
+              "name": "Brewer’s supplies",
+              "row_index": 2
+            },
+            {
+              "name": "Calligrapher's supplies",
+              "row_index": 3
+            },
+            {
+              "name": "Carpenter’s tools",
+              "row_index": 4
+            },
+            {
+              "name": "Cartographer’s tools",
+              "row_index": 5
+            },
+            {
+              "name": "Cobbler’s tools",
+              "row_index": 6
+            },
+            {
+              "name": "Cook’s utensils",
+              "row_index": 7
+            },
+            {
+              "name": "Glassblower’s tools",
+              "row_index": 8
+            },
+            {
+              "name": "Jeweler’s tools",
+              "row_index": 9
+            },
+            {
+              "name": "Leatherworker’s tools",
+              "row_index": 10
+            },
+            {
+              "name": "Mason’s tools",
+              "row_index": 11
+            },
+            {
+              "name": "Painter’s supplies",
+              "row_index": 12
+            },
+            {
+              "name": "Potter’s tools",
+              "row_index": 13
+            },
+            {
+              "name": "Smith’s tools",
+              "row_index": 14
+            },
+            {
+              "name": "Tinker’s tools",
+              "row_index": 15
+            },
+            {
+              "name": "Weaver’s tools",
+              "row_index": 16
+            },
+            {
+              "name": "Woodcarver’s tools",
+              "row_index": 17
+            },
+            {
+              "name": "Disguise kit",
+              "row_index": 18
+            },
+            {
+              "name": "Forgery kit",
+              "row_index": 19
+            }
+          ]
+        },
+        "Gaming set": {
+          "row_index": 20,
+          "items": [
+            {
+              "name": "Dice set",
+              "row_index": 21
+            },
+            {
+              "name": "Playing card set",
+              "row_index": 22
+            },
+            {
+              "name": "Herbalism kit",
+              "row_index": 23
+            }
+          ]
+        },
+        "Musical instrument": {
+          "row_index": 24,
+          "items": [
+            {
+              "name": "Bagpipes",
+              "row_index": 25
+            },
+            {
+              "name": "Drum",
+              "row_index": 26
+            },
+            {
+              "name": "Dulcimer",
+              "row_index": 27
+            },
+            {
+              "name": "Flute",
+              "row_index": 28
+            },
+            {
+              "name": "Lute",
+              "row_index": 29
+            },
+            {
+              "name": "Lyre",
+              "row_index": 30
+            },
+            {
+              "name": "Horn",
+              "row_index": 31
+            },
+            {
+              "name": "Pan flute",
+              "row_index": 32
+            },
+            {
+              "name": "Shawm",
+              "row_index": 33
+            },
+            {
+              "name": "Viol",
+              "row_index": 34
+            },
+            {
+              "name": "Navigator’s tools",
+              "row_index": 35
+            },
+            {
+              "name": "Poisoner’s kit",
+              "row_index": 36
+            },
+            {
+              "name": "Thieves’ tools",
+              "row_index": 37
+            }
+          ]
+        }
+      },
+      "summary": "35 tools with 3 categories (Artisan's tools, Gaming set, Musical instrument)"
+    },
+    {
+      "id": "table:armor",
+      "simple_name": "armor",
+      "name": "Armor",
+      "columns": [
+        {
+          "name": "Armor",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Armor Class (AC)",
+          "type": "string"
+        },
+        {
+          "name": "Strength",
+          "type": "string"
+        },
+        {
+          "name": "Stealth",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Leather",
+          "10 gp",
+          "11 + Dex modifier",
+          "—",
+          "—",
+          "10 lb."
+        ],
+        [
+          "Studded leather",
+          "45 gp",
+          "12 + Dex modifier",
+          "—",
+          "—",
+          "13 lb."
+        ],
+        [
+          "Hide",
+          "10 gp",
+          "12 + Dex modifier (max 2)",
+          "—",
+          "—",
+          "12 lb."
+        ],
+        [
+          "Chain shirt",
+          "50 gp",
+          "13 + Dex modifier (max 2)",
+          "—",
+          "—",
+          "20 lb."
+        ],
+        [
+          "Scale mail",
+          "50 gp",
+          "14 + Dex modifier (max 2)",
+          "—",
+          "Disadvantage",
+          "45 lb."
+        ],
+        [
+          "Breastplate",
+          "400 gp",
+          "14 + Dex modifier (max 2)",
+          "—",
+          "—",
+          "20 lb."
+        ],
+        [
+          "Half plate",
+          "750 gp",
+          "15 + Dex modifier (max 2)",
+          "—",
+          "Disadvantage",
+          "40 lb."
+        ],
+        [
+          "Ring mail",
+          "30 gp",
+          "14",
+          "—",
+          "Disadvantage",
+          "40 lb."
+        ],
+        [
+          "Chain mail",
+          "75 gp",
+          "16",
+          "Str 13",
+          "Disadvantage",
+          "55 lb."
+        ],
+        [
+          "Splint",
+          "200 gp",
+          "17",
+          "Str 15",
+          "Disadvantage",
+          "60 lb."
+        ],
+        [
+          "Plate",
+          "1,500 gp",
+          "18",
+          "Str 15",
+          "Disadvantage",
+          "65 lb."
+        ],
+        [
+          "Shield",
+          "10 gp",
+          "+2",
+          "—",
+          "—",
+          "6 lb."
+        ],
+        [
+          "Padded",
+          "5 gp",
+          "11 + Dex modifier",
+          "—",
+          "Disadvantage",
+          "8 lb."
+        ]
+      ],
+      "page": [
+        63,
+        64
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_armor_table [source: srd]",
+      "summary": "Extracted via text_parser from PDF pages 63-64"
+    },
+    {
+      "id": "table:weapons",
+      "simple_name": "weapons",
+      "name": "Weapons",
+      "columns": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Damage",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        },
+        {
+          "name": "Properties",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Club",
+          "1 sp",
+          "1d4 bludgeoning",
+          "2 lb.",
+          "Light"
+        ],
+        [
+          "Dagger",
+          "2 gp",
+          "1d4 piercing",
+          "1 lb.",
+          "Finesse, light, thrown (range 20/60)"
+        ],
+        [
+          "Greatclub",
+          "2 sp",
+          "1d8 bludgeoning",
+          "10 lb.",
+          "Two-­‐handed"
+        ],
+        [
+          "Handaxe",
+          "5 gp",
+          "1d6 slashing",
+          "2 lb.",
+          "Light, thrown (range 20/60)"
+        ],
+        [
+          "Javelin",
+          "5 sp",
+          "1d6 piercing",
+          "2 lb.",
+          "Thrown (range 30/120)"
+        ],
+        [
+          "Light hammer",
+          "2 gp",
+          "1d4 bludgeoning",
+          "2 lb.",
+          "Light, thrown (range 20/60)"
+        ],
+        [
+          "Mace",
+          "5 gp",
+          "1d6 bludgeoning",
+          "4 lb.",
+          "—"
+        ],
+        [
+          "Quarterstaff",
+          "2 sp",
+          "1d6 bludgeoning",
+          "4 lb.",
+          "Versatile (1d8)"
+        ],
+        [
+          "Sickle",
+          "1 gp",
+          "1d4 slashing",
+          "2 lb.",
+          "Light"
+        ],
+        [
+          "Spear",
+          "1 gp",
+          "1d6 piercing",
+          "3 lb.",
+          "Thrown (range 20/60), versatile (1d8)"
+        ],
+        [
+          "Crossbow, light",
+          "25 gp",
+          "1d8 piercing",
+          "5 lb.",
+          "Ammunition (range 80/320), loading, two-­‐handed"
+        ],
+        [
+          "Dart",
+          "5 cp",
+          "1d4 piercing",
+          "1/4 lb.",
+          "Finesse, thrown (range 20/60)"
+        ],
+        [
+          "Shortbow",
+          "25 gp",
+          "1d6 piercing",
+          "2 lb.",
+          "Ammunition (range 80/320), two-­‐handed"
+        ],
+        [
+          "Sling",
+          "1 sp",
+          "1d4 bludgeoning",
+          "—",
+          "Ammunition (range 30/120)"
+        ],
+        [
+          "Battleaxe",
+          "10 gp",
+          "1d8 slashing",
+          "4 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Flail",
+          "10 gp",
+          "1d8 bludgeoning",
+          "2 lb.",
+          "—"
+        ],
+        [
+          "Glaive",
+          "20 gp",
+          "1d10 slashing",
+          "6 lb.",
+          "Heavy, reach, two-­‐handed"
+        ],
+        [
+          "Greataxe",
+          "30 gp",
+          "1d12 slashing",
+          "7 lb.",
+          "Heavy, two-­‐handed"
+        ],
+        [
+          "Greatsword",
+          "50 gp",
+          "2d6 slashing",
+          "6 lb.",
+          "Heavy, two-­‐handed"
+        ],
+        [
+          "Halberd",
+          "20 gp",
+          "1d10 slashing",
+          "6 lb.",
+          "Heavy, reach, two-­‐handed"
+        ],
+        [
+          "Lance",
+          "10 gp",
+          "1d12 piercing",
+          "6 lb.",
+          "Reach, special"
+        ],
+        [
+          "Longsword",
+          "15 gp",
+          "1d8 slashing",
+          "3 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Maul",
+          "10 gp",
+          "2d6 bludgeoning",
+          "10 lb.",
+          "Heavy, two-­‐handed"
+        ],
+        [
+          "Morningstar",
+          "15 gp",
+          "1d8 piercing",
+          "4 lb.",
+          "—"
+        ],
+        [
+          "Pike",
+          "5 gp",
+          "1d10 piercing",
+          "18 lb.",
+          "Heavy, reach, two-­‐handed"
+        ],
+        [
+          "Rapier",
+          "25 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "Finesse"
+        ],
+        [
+          "Scimitar",
+          "25 gp",
+          "1d6 slashing",
+          "3 lb.",
+          "Finesse, light"
+        ],
+        [
+          "Shortsword",
+          "10 gp",
+          "1d6 piercing",
+          "2 lb.",
+          "Finesse, light"
+        ],
+        [
+          "Trident",
+          "5 gp",
+          "1d6 piercing",
+          "4 lb.",
+          "Thrown (range 20/60), versatile (1d8)"
+        ],
+        [
+          "War pick",
+          "5 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "—"
+        ],
+        [
+          "Warhammer",
+          "15 gp",
+          "1d8 bludgeoning",
+          "2 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Whip",
+          "2 gp",
+          "1d4 slashing",
+          "3 lb.",
+          "Finesse, reach"
+        ],
+        [
+          "Blowgun",
+          "10 gp",
+          "1 piercing",
+          "1 lb.",
+          "Ammunition (range 25/100), loading"
+        ],
+        [
+          "Crossbow, hand",
+          "75 gp",
+          "1d6 piercing",
+          "3 lb.",
+          "Ammunition (range 30/120), light, loading"
+        ],
+        [
+          "Crossbow, heavy",
+          "50 gp",
+          "1d10 piercing",
+          "18 lb.",
+          "Ammunition (range 100/400), heavy, loading, two-­‐handed"
+        ],
+        [
+          "Longbow",
+          "50 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "Ammunition (range 150/600), heavy, two-­‐handed"
+        ],
+        [
+          "Net",
+          "1 gp",
+          "—",
+          "3 lb.",
+          "Special, thrown (range 5/15)"
+        ]
+      ],
+      "page": [
+        65,
+        66
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted via legacy parser parse_weapons_table [source: srd]",
+      "summary": "Extracted via text_parser from PDF pages 65-66"
     }
   ]
 }

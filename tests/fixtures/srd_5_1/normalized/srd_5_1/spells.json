@@ -1,10 +1,10 @@
 {
   "_meta": {
     "ruleset": "srd_5_1",
-    "schema_version": "1.3.0",
+    "schema_version": "1.4.0",
     "source": "SRD_CC_v5.1",
     "build_report": "./build_report.json",
-    "generated_by": "srd-builder v0.8.3"
+    "generated_by": "srd-builder v0.9.7"
   },
   "items": [
     {
@@ -20,9 +20,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -65,9 +67,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -111,9 +115,11 @@
             "unit": "feet"
           }
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -148,9 +154,11 @@
             "unit": "feet"
           }
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -183,9 +191,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -214,9 +224,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -258,9 +270,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -296,9 +310,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 24 hours",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 24 hours"
       },
       "components": {
         "verbal": true,
@@ -326,9 +342,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -358,9 +376,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -398,9 +418,11 @@
             }
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -409,6 +431,13 @@
       },
       "text": "If you move so that an affected creature is forced to pass through the barrier, the spell ends. A shimmering barrier extends out from you in a 10- foot radius and moves with you, remaining centered on you and hedging out creatures other than undead and constructs. The barrier lasts for the duration. The barrier prevents an affected creature from passing or reaching through. An affected creature can cast spells or make attacks with ranged or reach weapons through the barrier.",
       "page": 116,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
+        }
+      },
       "simple_name": "antilife_shell",
       "id": "spell:antilife_shell",
       "classes": [
@@ -424,9 +453,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -436,6 +467,13 @@
       },
       "text": "A 10- foot- radius invisible sphere of antimagic surrounds you. This area is divorced from the magical energy that suffuses the multiverse. Within the sphere, spells can’t be cast, summoned creatures disappear, and even magic items become mundane. Until the spell ends, the sphere moves with you, centered on you. Spells and other magical effects, except those created by an artifact or a deity, are suppressed in the sphere and can’t protrude into it. A slot expended to cast a suppressed spell is consumed. While an effect is suppressed, it doesn’t function, but the time it spends suppressed counts against its duration. Targeted Effects. Spells and other magical effects, such as magic missile and charm person , that target a creature or an object in the sphere have no effect on that target. Areas of Magic. The area of another spell or magical effect, such as fireball , can’t extend into the sphere. If the sphere overlaps an area of magic, the part of the area that is covered by the sphere is suppressed. For example, the flames created by a wall of fire are suppressed within the sphere, creating a gap in the wall if the overlap is large enough. Spells. Any active spell or other magical effect on a creature or an object in the sphere is suppressed while the creature or object is in it. Magic Items. The properties and powers of magic items are suppressed in the sphere. For example, a +1 longsword in the sphere functions as a nonmagical longsword. A magic weapon’s properties and powers are suppressed if it is used against a target in the sphere or wielded by an attacker in the sphere. If a magic weapon or a piece of magic ammunition fully leaves the sphere (for example, if you fire a magic arrow or throw a magic spear at a target outside the sphere), the magic of the item ceases to be suppressed as soon as it exits. Magical Travel. Teleportation and planar travel fail to work in the sphere, whether the sphere is the destination or the departure point for such magical travel. A portal to another location, world, or plane of existence, as well as an opening to an extradimensional space such as that created by the rope trick spell, temporarily closes while in the sphere. Creatures and Objects. A creature or object summoned or created by magic temporarily winks out of existence in the sphere. Such a creature instantly reappears once the space the creature occupied is no longer within the sphere. Dispel Magic. Spells and magical effects such as dispel magic have no effect on the sphere. Likewise, the spheres created by different antimagic field spells don’t nullify each other.",
       "page": 117,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
+        }
+      },
       "simple_name": "antimagic_field",
       "id": "spell:antimagic_field",
       "classes": [
@@ -456,9 +494,11 @@
             "unit": "feet"
           }
         },
-        "duration": "10 days",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 days"
       },
       "components": {
         "verbal": true,
@@ -499,9 +539,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -530,9 +572,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -571,9 +615,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -601,9 +647,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -638,9 +686,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -669,9 +719,11 @@
             "unit": "feet"
           }
         },
-        "duration": "special",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "special"
       },
       "components": {
         "verbal": true,
@@ -698,9 +750,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -725,9 +779,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -757,9 +813,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -795,9 +853,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -832,9 +892,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -864,9 +926,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -896,9 +960,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -943,9 +1009,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -984,9 +1052,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -1029,9 +1099,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -1066,9 +1138,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1114,9 +1188,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -1154,9 +1230,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -1181,9 +1259,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -1208,9 +1288,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -1223,6 +1305,11 @@
         "damage": {
           "dice": "2d6",
           "type": "radiant"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 5,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -1252,9 +1339,11 @@
             }
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1303,9 +1392,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -1322,6 +1413,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "cylinder",
+          "size": 60,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -1348,9 +1444,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -1390,9 +1488,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1437,9 +1537,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -1482,9 +1584,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -1528,9 +1632,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1581,9 +1687,11 @@
             "unit": "miles"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -1611,9 +1719,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1642,9 +1752,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -1696,9 +1808,11 @@
             }
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -1740,9 +1854,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -1773,9 +1889,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -1800,9 +1918,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1827,9 +1947,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -1861,9 +1983,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -1900,9 +2024,11 @@
             }
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -1952,9 +2078,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -2002,9 +2130,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2038,9 +2168,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2068,9 +2200,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2112,9 +2246,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2148,9 +2284,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2179,9 +2317,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -2212,9 +2352,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -2249,9 +2391,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "7 days",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "7 days"
       },
       "components": {
         "verbal": false,
@@ -2285,9 +2429,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "10 days",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 days"
       },
       "components": {
         "verbal": true,
@@ -2312,9 +2458,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -2344,9 +2492,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -2390,9 +2540,11 @@
             }
           }
         },
-        "duration": "up to 8 hours",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 8 hours"
       },
       "components": {
         "verbal": true,
@@ -2423,9 +2575,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -2460,9 +2614,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -2491,9 +2647,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -2535,9 +2693,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -2573,9 +2733,11 @@
             "unit": "feet"
           }
         },
-        "duration": "special",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "special"
       },
       "components": {
         "verbal": true,
@@ -2613,9 +2775,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -2652,9 +2816,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -2664,6 +2830,13 @@
       },
       "text": "You create up to four torch- sized lights within range, making them appear as torches, lanterns, or glowing orbs that hover in the air for the duration. You can also combine the four lights into one glowing vaguely humanoid form of Medium size. Whichever form you choose, each light sheds dim light in a 10- foot radius. As a bonus action on your turn, you can move the lights up to 60 feet to a new spot within range. A light must be within 20 feet of another light created by this spell, and a light winks out if it exceeds the spell’s range.",
       "page": 133,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
+        }
+      },
       "simple_name": "dancing_lights",
       "id": "spell:dancing_lights",
       "classes": [
@@ -2685,9 +2858,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -2721,9 +2896,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -2755,9 +2932,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -2792,9 +2971,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -2819,9 +3000,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -2866,9 +3049,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": false,
@@ -2893,9 +3078,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -2920,9 +3107,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -2952,9 +3141,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -2982,9 +3173,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3021,9 +3214,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3056,9 +3251,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -3088,9 +3285,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -3131,9 +3330,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3172,9 +3373,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3209,9 +3412,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3236,9 +3441,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3272,9 +3479,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3308,9 +3517,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3350,9 +3561,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -3389,9 +3602,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3428,9 +3643,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -3471,9 +3688,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3508,9 +3727,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3528,6 +3749,11 @@
         "save": {
           "ability": "constitution",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 100,
+          "unit": "feet"
         }
       },
       "simple_name": "earthquake",
@@ -3551,9 +3777,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3586,9 +3814,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour.",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour."
       },
       "components": {
         "verbal": true,
@@ -3620,9 +3850,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3658,9 +3890,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3694,9 +3928,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -3727,9 +3963,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "up to 8 hours"
       },
       "components": {
         "verbal": true,
@@ -3757,9 +3995,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -3785,9 +4025,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3824,9 +4066,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -3861,9 +4105,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -3903,9 +4149,11 @@
             "unit": "feet"
           }
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -3936,9 +4184,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -3976,9 +4226,11 @@
             }
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -4021,9 +4273,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -4054,9 +4308,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4098,9 +4354,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4129,9 +4387,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4155,9 +4415,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 day",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 day"
       },
       "components": {
         "verbal": true,
@@ -4188,9 +4450,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4220,9 +4484,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4258,9 +4524,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4310,9 +4578,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4351,9 +4621,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -4367,6 +4639,11 @@
         "damage": {
           "dice": "2d8",
           "type": "fire"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
         }
       },
       "simple_name": "fire_shield",
@@ -4388,9 +4665,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4431,9 +4710,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -4450,6 +4731,11 @@
         },
         "attack": {
           "type": "melee_spell"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -4476,9 +4762,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4496,6 +4784,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "cylinder",
+          "size": 10,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -4522,9 +4815,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -4542,6 +4837,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 5,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -4569,9 +4869,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -4607,9 +4909,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -4634,9 +4938,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -4672,9 +4978,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -4713,9 +5021,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 day",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 day"
       },
       "components": {
         "verbal": true,
@@ -4744,9 +5054,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -4779,9 +5091,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -4809,9 +5123,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -4843,9 +5159,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -4885,9 +5203,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -4924,9 +5244,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -4957,9 +5279,11 @@
             "unit": "feet"
           }
         },
-        "duration": "30 days",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "30 days"
       },
       "components": {
         "verbal": true,
@@ -5002,9 +5326,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5034,9 +5360,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -5060,9 +5388,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -5094,9 +5424,11 @@
             }
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5106,6 +5438,13 @@
       },
       "text": "An immobile, faintly shimmering barrier springs into existence in a 10- foot radius around you and remains for the duration. Any spell of 5th level or lower cast from outside the barrier can’t affect creatures or objects within it, even if the spell is cast using a higher level spell slot. Such a spell can target creatures and objects within the barrier, but the spell has no effect on them. Similarly, the area within the barrier is excluded from the areas affected by such spells. At Higher Levels. When you cast this spell using a spell slot of 7th level or higher, the barrier blocks spells of one level higher for each slot level above 6th.",
       "page": 149,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
+        }
+      },
       "scaling": {
         "type": "slot",
         "base_level": 6,
@@ -5127,9 +5466,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled or triggered",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled or triggered"
       },
       "components": {
         "verbal": true,
@@ -5167,9 +5508,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5199,9 +5542,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -5232,9 +5577,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5260,9 +5607,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5293,9 +5642,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5325,9 +5676,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -5353,9 +5706,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5384,9 +5739,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -5426,9 +5783,11 @@
             }
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5466,9 +5825,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -5503,9 +5864,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -5544,9 +5907,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5584,9 +5949,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5622,9 +5989,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5633,6 +6002,11 @@
       },
       "text": "Choose a creature that you can see within range. A surge of positive energy washes through the creature, causing it to regain 70 hit points. This spell also ends blindness, deafness, and any diseases affecting the target. This spell has no effect on constructs or undead. At Higher Levels. When you cast this spell using a spell slot of 7th level or higher, the amount of healing increases by 10 for each slot level above 6th.",
       "page": 153,
+      "effects": {
+        "healing": {
+          "amount": 70
+        }
+      },
       "scaling": {
         "type": "slot",
         "base_level": 6,
@@ -5658,9 +6032,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5700,9 +6076,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5742,9 +6120,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5787,9 +6167,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -5821,9 +6203,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5852,9 +6236,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5890,9 +6276,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5935,9 +6323,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5973,9 +6363,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -5989,6 +6381,11 @@
         "save": {
           "ability": "constitution",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 30,
+          "unit": "feet"
         }
       },
       "simple_name": "holy_aura",
@@ -6010,9 +6407,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -6045,9 +6444,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -6090,9 +6491,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6110,6 +6513,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "cylinder",
+          "size": 20,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -6134,9 +6542,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6162,9 +6572,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "10 days",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 days"
       },
       "components": {
         "verbal": false,
@@ -6195,9 +6607,11 @@
             "unit": "feet"
           }
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -6233,9 +6647,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -6275,9 +6691,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6319,9 +6737,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -6368,9 +6788,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -6395,9 +6817,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -6429,9 +6853,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -6462,9 +6888,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -6496,9 +6924,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6524,9 +6954,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6553,9 +6985,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6587,9 +7021,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -6620,9 +7056,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -6636,6 +7074,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 20,
+          "unit": "feet"
         }
       },
       "simple_name": "light",
@@ -6663,9 +7106,11 @@
             }
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6711,9 +7156,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -6740,9 +7187,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -6772,9 +7221,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -6804,9 +7255,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -6839,9 +7292,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -6871,9 +7326,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -6904,9 +7361,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -6920,6 +7379,11 @@
         "save": {
           "ability": "charisma",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -6945,9 +7409,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -6982,9 +7448,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7018,9 +7486,11 @@
             "unit": "feet"
           }
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -7046,9 +7516,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -7077,9 +7549,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -7109,9 +7583,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -7155,9 +7631,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7202,9 +7680,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7213,6 +7693,11 @@
       },
       "text": "A flood of healing energy flows from you into injured creatures around you. You restore up to 700 hit points, divided as you choose among any number of creatures that you can see within range. Creatures healed by this spell are also cured of all diseases and any effect making them blinded or deafened. This spell has no effect on undead or constructs.",
       "page": 163,
+      "effects": {
+        "healing": {
+          "amount": 700
+        }
+      },
       "simple_name": "mass_heal",
       "id": "spell:mass_heal",
       "classes": [
@@ -7232,9 +7717,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7272,9 +7759,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -7312,9 +7801,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -7338,9 +7829,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -7371,9 +7864,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7406,9 +7901,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -7439,9 +7936,11 @@
             "unit": "miles"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7481,9 +7980,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -7512,9 +8013,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": false,
@@ -7549,9 +8052,11 @@
         "range": {
           "type": "sight"
         },
-        "duration": "10 days",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 days"
       },
       "components": {
         "verbal": true,
@@ -7577,9 +8082,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -7605,9 +8112,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": false,
@@ -7632,9 +8141,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7664,9 +8175,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -7701,9 +8214,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -7721,6 +8236,11 @@
         "save": {
           "ability": "constitution",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "cylinder",
+          "size": 5,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -7747,9 +8267,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 2 hours",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 2 hours"
       },
       "components": {
         "verbal": true,
@@ -7776,9 +8298,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -7805,9 +8329,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -7837,9 +8363,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -7868,9 +8396,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -7913,9 +8443,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -7943,9 +8475,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -7973,9 +8507,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -8014,9 +8550,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8058,9 +8596,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8069,6 +8609,13 @@
       },
       "text": "This spell channels vitality into plants within a specific area. There are two possible uses for the spell, granting either immediate or long- term benefits. If you cast this spell using 1 action, choose a point within range. All normal plants in a 100- foot radius centered on that point become thick and overgrown. A creature moving through the area must spend 4 feet of movement for every 1 foot it moves. You can exclude one or more areas of any size within the spell’s area from being affected. If you cast this spell over 8 hours, you enrich the land. All plants in a half- mile radius centered on a point within range become enriched for 1 year. The plants yield twice the normal amount of food when harvested.",
       "page": 169,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 100,
+          "unit": "feet"
+        }
+      },
       "simple_name": "plant_growth",
       "id": "spell:plant_growth",
       "classes": [
@@ -8090,9 +8637,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8138,9 +8687,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -8178,9 +8729,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8211,9 +8764,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8250,9 +8805,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8290,9 +8847,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -8326,9 +8885,11 @@
             }
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8372,9 +8933,11 @@
             "unit": "feet"
           }
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -8417,9 +8980,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -8444,9 +9009,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -8462,6 +9029,11 @@
         },
         "attack": {
           "type": "ranged_spell"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
         }
       },
       "scaling": {
@@ -8488,9 +9060,11 @@
             "unit": "feet"
           }
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -8527,9 +9101,11 @@
             "unit": "miles"
           }
         },
-        "duration": "up to 1 day",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 day"
       },
       "components": {
         "verbal": true,
@@ -8555,9 +9131,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -8585,9 +9163,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "concentration up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "concentration up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -8615,9 +9195,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -8648,9 +9230,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8683,9 +9267,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8716,9 +9302,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -8756,9 +9344,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8797,9 +9387,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -8809,6 +9401,11 @@
       },
       "text": "You touch a creature and stimulate its natural healing ability. The target regains 4d8 + 15 hit points. For the duration of the spell, the target regains 1 hit point at the start of each of its turns (10 hit points each minute). The target’s severed body members (fingers, legs, tails, and so on), if any, are restored after 2 minutes. If you have the severed part and hold it to the stump, the spell instantaneously causes the limb to knit to the stump.",
       "page": 174,
+      "effects": {
+        "healing": {
+          "dice": "4d8+15"
+        }
+      },
       "simple_name": "regenerate",
       "id": "spell:regenerate",
       "classes": [
@@ -8826,9 +9423,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8853,9 +9452,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8886,9 +9487,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -8919,9 +9522,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -8947,9 +9552,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -8979,9 +9586,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -8995,6 +9604,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "cylinder",
+          "size": 50,
+          "unit": "feet"
         }
       },
       "simple_name": "reverse_gravity",
@@ -9014,9 +9628,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9042,9 +9658,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -9080,9 +9698,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9125,9 +9745,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -9162,9 +9784,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9203,9 +9827,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9240,9 +9866,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9267,9 +9895,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -9300,9 +9930,11 @@
             "unit": "feet"
           }
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -9334,9 +9966,11 @@
         "range": {
           "type": "unlimited"
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -9363,9 +9997,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -9390,9 +10026,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -9422,9 +10060,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9467,9 +10107,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -9498,9 +10140,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9526,9 +10170,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -9553,9 +10199,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9598,9 +10246,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9637,9 +10287,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9673,9 +10325,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled"
       },
       "components": {
         "verbal": true,
@@ -9704,9 +10358,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -9742,9 +10398,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -9758,6 +10416,11 @@
         "save": {
           "ability": "dexterity",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 40,
+          "unit": "feet"
         }
       },
       "simple_name": "sleet_storm",
@@ -9781,9 +10444,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -9820,9 +10485,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -9846,9 +10513,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9878,9 +10547,11 @@
             "unit": "feet"
           }
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9913,9 +10584,11 @@
             }
           }
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9941,9 +10614,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -9974,9 +10649,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -9990,6 +10667,11 @@
         "damage": {
           "dice": "2d4",
           "type": "piercing"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 20,
+          "unit": "feet"
         }
       },
       "simple_name": "spike_growth",
@@ -10015,9 +10697,11 @@
             }
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -10061,9 +10745,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 minute"
       },
       "components": {
         "verbal": true,
@@ -10101,9 +10787,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10141,9 +10829,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10170,9 +10860,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -10200,9 +10892,11 @@
         "range": {
           "type": "sight"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10240,9 +10934,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 8 hours",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 8 hours"
       },
       "components": {
         "verbal": true,
@@ -10283,9 +10979,11 @@
             }
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10303,6 +11001,11 @@
         "save": {
           "ability": "constitution",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 30,
+          "unit": "feet"
         }
       },
       "simple_name": "sunbeam",
@@ -10326,9 +11029,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10346,6 +11051,11 @@
         "save": {
           "ability": "constitution",
           "on_success": "half"
+        },
+        "area": {
+          "shape": "sphere",
+          "size": 60,
+          "unit": "feet"
         }
       },
       "simple_name": "sunburst",
@@ -10365,9 +11075,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "until dispelled or triggered",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "until dispelled or triggered"
       },
       "components": {
         "verbal": true,
@@ -10413,9 +11125,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -10444,9 +11158,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -10475,9 +11191,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10518,9 +11236,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -10551,9 +11271,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10584,9 +11306,11 @@
             }
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10633,9 +11357,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10660,9 +11386,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -10672,6 +11400,13 @@
       },
       "text": "A 10- foot- radius immobile dome of force springs into existence around and above you and remains stationary for the duration. The spell ends if you leave its area. Nine creatures of Medium size or smaller can fit inside the dome with you. The spell fails if its area includes a larger creature or more than nine creatures. Creatures and objects within the dome when you cast this spell can move through it freely. All other creatures and objects are barred from passing through it. Spells and other magical effects can’t extend through the dome or be cast through it. The atmosphere inside the space is comfortable and dry, regardless of the weather outside. Until the spell ends, you can command the interior to become dimly lit or dark. The dome is opaque from the outside, of any color you choose, but it is transparent from the inside.",
       "page": 187,
+      "effects": {
+        "area": {
+          "shape": "sphere",
+          "size": 10,
+          "unit": "feet"
+        }
+      },
       "simple_name": "tiny_hut",
       "id": "spell:tiny_hut",
       "classes": [
@@ -10688,9 +11423,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -10723,9 +11460,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 round",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 round"
       },
       "components": {
         "verbal": true,
@@ -10749,9 +11488,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10780,9 +11521,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -10815,9 +11558,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -10843,9 +11588,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -10878,9 +11625,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 round",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 round"
       },
       "components": {
         "verbal": false,
@@ -10911,9 +11660,11 @@
             "unit": "feet"
           }
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -10940,9 +11691,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -10955,6 +11708,9 @@
         "damage": {
           "dice": "3d6",
           "type": "necrotic"
+        },
+        "healing": {
+          "condition": "half the amount of necrotic damage dealt"
         },
         "attack": {
           "type": "melee_spell"
@@ -10985,9 +11741,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -11030,9 +11788,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -11083,9 +11843,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -11114,9 +11876,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -11156,9 +11920,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -11194,9 +11960,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 10 minutes",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 10 minutes"
       },
       "components": {
         "verbal": true,
@@ -11241,9 +12009,11 @@
         "range": {
           "type": "touch"
         },
-        "duration": "1 hour",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "1 hour"
       },
       "components": {
         "verbal": true,
@@ -11272,9 +12042,11 @@
             "unit": "feet"
           }
         },
-        "duration": "24 hours",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "24 hours"
       },
       "components": {
         "verbal": true,
@@ -11302,9 +12074,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": true
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": false,
@@ -11335,9 +12109,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 hour",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 hour"
       },
       "components": {
         "verbal": true,
@@ -11382,9 +12158,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to one minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to one minute"
       },
       "components": {
         "verbal": true,
@@ -11427,9 +12205,11 @@
             "unit": "feet"
           }
         },
-        "duration": "8 hours",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "8 hours"
       },
       "components": {
         "verbal": true,
@@ -11458,9 +12238,11 @@
             "unit": "feet"
           }
         },
-        "duration": "up to 1 minute",
-        "concentration": true,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": true,
+        "length": "up to 1 minute"
       },
       "components": {
         "verbal": true,
@@ -11501,9 +12283,11 @@
         "range": {
           "type": "self"
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -11516,6 +12300,9 @@
         "damage": {
           "dice": "1d10",
           "type": "necrotic"
+        },
+        "healing": {
+          "condition": "all hit points"
         }
       },
       "simple_name": "wish",
@@ -11538,9 +12325,11 @@
             "unit": "feet"
           }
         },
-        "duration": "instantaneous",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "instantaneous"
       },
       "components": {
         "verbal": true,
@@ -11568,9 +12357,11 @@
             "unit": "feet"
           }
         },
-        "duration": "10 minutes",
-        "concentration": false,
         "ritual": false
+      },
+      "duration": {
+        "requires_concentration": false,
+        "length": "10 minutes"
       },
       "components": {
         "verbal": true,

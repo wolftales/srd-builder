@@ -15,27 +15,7 @@ from typing import Any
 # Future: Move to rules dataset in v0.12.0 as rule-based reference tables.
 # ============================================================================
 
-CALCULATED_TABLES = {
-    "proficiency_bonus": {
-        "data": {
-            range(1, 5): "+2",
-            range(5, 9): "+3",
-            range(9, 13): "+4",
-            range(13, 17): "+5",
-            range(17, 21): "+6",
-        },
-        "headers": ["Level", "Proficiency Bonus"],
-        "source_type": "derived",  # Not extracted from PDF
-        "description": "Proficiency bonus by character level (appears in all class tables but not as standalone table)",
-    },
-    "carrying_capacity": {
-        "formula": lambda strength: strength * 15,
-        "range": range(1, 31),
-        "headers": ["Strength Score", "Carrying Capacity (lbs)"],
-        "source_type": "derived",  # Not extracted from PDF
-        "description": "Carrying capacity formula (Strength × 15) expressed as reference table",
-    },
-}
+CALCULATED_TABLES: dict[str, Any] = {}
 
 # ============================================================================
 # STATIC REFERENCE TABLES

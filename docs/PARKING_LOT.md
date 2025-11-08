@@ -1044,4 +1044,122 @@ const wizardRituals = ritualSpells.filter(id => wizardSpells.includes(id));
 
 ---
 
+## Class Progression Table Extraction - Known Limitations (v0.9.8)
+
+**Date Raised:** 2025-11-06
+**Status:** Documented - minor cosmetic issues, functionally complete
+**Priority:** LOW - deferred cleanup
+**Version:** v0.9.8 (4 of 12 classes complete)
+
+### Context
+
+During extraction of simple class progression tables (Barbarian, Fighter, Monk, Rogue), discovered two minor data quality issues:
+
+### 1. Monk Row 6: Soft Hyphen in "Ki-Empowered Strikes" (PDF Artifact)
+
+**Current Output:**
+```json
+"Ki-­‐Empowered Strikes, Monastic Tradition feature"
+```
+
+**Issue:** Contains soft hyphen characters (U+00AD and U+2010) in "Ki-­Empowered"
+
+**Root Cause:**
+- These characters exist in the source PDF (page 26)
+- PDF uses soft hyphens for line-break formatting hints
+- **This is accurate extraction** - we're faithfully capturing what's in the PDF
+
+**Impact:**
+- Minor cosmetic issue
+- May cause display issues in some renderers
+- Text search for "Ki-Empowered" works with proper Unicode handling
+- Data structure is valid
+
+**Possible Solutions:**
+1. Strip all soft hyphens in postprocessing (simple)
+2. Normalize Unicode to NFKD form (removes formatting hints)
+3. Manual text cleanup in postprocess for known cases
+
+**Decision:** Deferred to future cleanup pass
+- Not blocking any functionality
+- Affects 1 cell in 1 table
+- Other tables may have similar PDF formatting artifacts
+- Could be addressed in a text normalization pass
+
+### 2. Rogue Row 10: Missing "Improvement" in "Ability Score Improvement" (Extraction Limitation)
+
+**Current Output:**
+```json
+["10th", "+4", "5d6", "Ability Score"]
+```
+
+**Expected:**
+```json
+["10th", "+4", "5d6", "Ability Score Improvement"]
+```
+
+**Issue:** The word "Improvement" is missing from row 10, Features column - **this is incomplete extraction**
+
+**Root Cause:**
+- Rogue table spans pages 39-40 with complex layout
+- Row 10 ends at bottom of page 39 with "Ability Score"
+- Word "Improvement" appears on page 40 at y=71.9 as continuation text
+- Right column (11th-20th) starts at y=72, just below the continuation text
+- Continuation text is being picked up as part of row 11 structure instead of merging with row 10
+- **This is an extraction limitation** - we're not successfully merging cross-page continuation text
+
+**Impact:**
+- Minor data quality issue
+- Meaning is clear from context (all other ASI rows say "Ability Score Improvement")
+- Does not affect table structure (still 20 rows)
+- Consumers can infer full text from level 4, 8, 12, 16, 19 ASI entries
+
+**Technical Challenge:**
+- Continuation text crosses page boundary (39 → 40)
+- Continuation is in different region (left column page 39 → right column page 40)
+- Current merge_continuation_rows logic works within regions, not across pages
+- Would require complex cross-page, cross-region continuation merging logic
+
+**Possible Solutions:**
+1. Enhanced continuation merging across page boundaries (complex)
+2. Special case handling for known page breaks (brittle)
+3. Manual text fixup in postprocessing (hardcoding)
+4. Accept as limitation and document (current approach)
+
+**Decision:** Documented limitation, deferred to future enhancement
+- Affects 1 cell in 1 table
+- Context makes meaning clear
+- Cross-page merging is complex and risky
+- Not worth the effort for single word
+
+### Related Patterns
+
+These issues have different natures:
+- **Soft hyphens:** PDF formatting artifacts that we accurately extract (cosmetic cleanup opportunity)
+- **Cross-page continuation:** Extraction limitation where we fail to merge text across page boundaries
+
+Both may recur in spellcaster class tables (wider, more complex layouts). Will track similar issues and address in batch if pattern emerges.
+
+### Documentation
+
+**Locations:**
+1. ✅ `src/srd_builder/table_extraction/table_metadata.py` - In-code notes field for Monk and Rogue configs
+2. ✅ `docs/ROADMAP.md` - v0.9.8 section under "Known Limitations"
+3. ✅ `docs/PARKING_LOT.md` - This section (comprehensive technical details)
+4. ⏳ Bundle README.md - User-facing documentation (to be added)
+
+### Future Work
+
+**When to Address:**
+1. **Soft hyphens:** During text normalization/cleanup pass (v0.12.0 polish?)
+2. **Cross-page continuation:** If pattern emerges in spellcaster tables, prioritize fix
+3. **Both:** If consumer feedback indicates issues with data quality
+
+**Don't address until:**
+- Spellcaster tables complete (see if pattern recurs)
+- Other PDF formatting artifacts identified (batch fix)
+- Consumer reports actual impact on usage
+
+---
+
 ## [Add more parked features here as needed]

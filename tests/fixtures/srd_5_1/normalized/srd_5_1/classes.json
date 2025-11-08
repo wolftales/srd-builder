@@ -1,10 +1,10 @@
 {
   "_meta": {
     "ruleset": "srd_5_1",
-    "schema_version": "1.3.0",
+    "schema_version": "1.4.0",
     "source": "SRD_CC_v5.1",
     "build_report": "./build_report.json",
-    "generated_by": "srd-builder v0.8.3"
+    "generated_by": "srd-builder v0.9.7"
   },
   "items": [
     {
@@ -192,7 +192,7 @@
           8
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Barbarian class from SRD 5.1"
       },
       "tables_referenced": [
@@ -381,7 +381,7 @@
           11
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Bard class from SRD 5.1"
       },
       "spellcasting": {
@@ -563,7 +563,7 @@
           16
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Cleric class from SRD 5.1"
       },
       "spellcasting": {
@@ -753,7 +753,7 @@
           25
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Druid class from SRD 5.1"
       },
       "spellcasting": {
@@ -945,7 +945,7 @@
           26
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Fighter class from SRD 5.1"
       },
       "tables_referenced": [
@@ -1146,7 +1146,7 @@
           28
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Monk class from SRD 5.1"
       },
       "tables_referenced": [
@@ -1333,7 +1333,7 @@
           31
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Paladin class from SRD 5.1"
       },
       "spellcasting": {
@@ -1530,7 +1530,7 @@
           37
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Ranger class from SRD 5.1"
       },
       "spellcasting": {
@@ -1734,7 +1734,7 @@
           39
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Rogue class from SRD 5.1"
       },
       "tables_referenced": [
@@ -1904,7 +1904,7 @@
           42
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Sorcerer class from SRD 5.1"
       },
       "spellcasting": {
@@ -2083,7 +2083,7 @@
           44
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Warlock class from SRD 5.1"
       },
       "spellcasting": {
@@ -2254,7 +2254,7 @@
           46
         ],
         "section": "classes",
-        "extraction_date": "2025-11-03",
+        "extraction_date": "2025-11-05",
         "extraction_notes": "Wizard class from SRD 5.1"
       },
       "spellcasting": {

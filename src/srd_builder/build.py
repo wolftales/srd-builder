@@ -219,7 +219,41 @@ def _write_datasets(
     # Tables are already fully normalized by parse_single_table, no additional cleaning needed
     processed_tables = tables if tables else None
     if processed_tables:
-        tables_doc = _wrap_with_meta({"items": processed_tables}, ruleset=ruleset)
+        # Sort tables by page number (document/TOC order)
+        def get_sort_page(table):
+            page = table.get("page")
+            if page is None:
+                return 99999  # Put tables without pages at end
+            if isinstance(page, list):
+                return page[0] if page else 99999
+            return page
+
+        sorted_tables = sorted(processed_tables, key=lambda t: (get_sort_page(t), t.get("id", "")))
+
+        # Reorder table properties: metadata first, columns and rows at end
+        reordered_tables = []
+        for table in sorted_tables:
+            ordered = {}
+            # Core identification first
+            for key in ["id", "simple_name", "name"]:
+                if key in table:
+                    ordered[key] = table[key]
+            # Metadata fields
+            for key in ["page", "category", "section", "notes", "summary"]:
+                if key in table:
+                    ordered[key] = table[key]
+            # Any other fields (except columns/rows)
+            for key, value in table.items():
+                if key not in ordered and key not in ["columns", "rows"]:
+                    ordered[key] = value
+            # Columns and rows at the very end
+            if "columns" in table:
+                ordered["columns"] = table["columns"]
+            if "rows" in table:
+                ordered["rows"] = table["rows"]
+            reordered_tables.append(ordered)
+
+        tables_doc = _wrap_with_meta({"items": reordered_tables}, ruleset=ruleset)
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
             encoding="utf-8",

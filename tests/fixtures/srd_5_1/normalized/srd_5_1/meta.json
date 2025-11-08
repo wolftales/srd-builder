@@ -5,33 +5,133 @@
     "type": "CC-BY-4.0",
     "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
     "attribution": "This work includes material taken from the System Reference Document 5.1 (“SRD 5.1”) by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
-    "conversion_note": "Converted from the original PDF by srd-builder (https://github.com/wolftales/srd-builder) version 0.8.3"
+    "conversion_note": "Converted from the original PDF by srd-builder (https://github.com/wolftales/srd-builder) version 0.9.7"
   },
   "build": {
-    "extracted_at": "2025-11-04T01:49:41.890074+00:00",
-    "builder_version": "0.8.3",
+    "extracted_at": "2025-11-06T01:38:39.396653+00:00",
+    "builder_version": "0.9.7",
     "pdf_hash": "sha256:2504d2a0abb0a4d491a939be4f17910a2dde0312570ab8d208080225ccf0a1f0"
   },
   "page_index": {
-    "monsters": {
-      "start": 261,
-      "end": 394,
-      "description": "Monster stat blocks (A-Z)"
+    "legal": {
+      "start": 1,
+      "end": 1,
+      "description": "Legal information, license (CC-BY-4.0), attribution"
+    },
+    "lineages": {
+      "start": 3,
+      "end": 7,
+      "description": "Character lineages (races): Dwarf, Elf, Halfling, Human, etc.",
+      "dataset": "lineages"
+    },
+    "classes": {
+      "start": 8,
+      "end": 55,
+      "description": "Character classes: Barbarian through Wizard (12 classes)",
+      "dataset": "classes"
+    },
+    "beyond_1st_level": {
+      "start": 56,
+      "end": 61,
+      "description": "Advancement: XP, leveling, multiclassing"
     },
     "equipment": {
       "start": 62,
-      "end": 73,
-      "description": "Equipment tables (armor, weapons, gear, mounts)"
+      "end": 74,
+      "description": "Equipment tables: armor, weapons, gear, services, costs",
+      "dataset": "equipment"
     },
-    "spells_list": {
+    "feats": {
+      "start": 75,
+      "end": 75,
+      "description": "Optional feat: Grappler"
+    },
+    "using_ability_scores": {
+      "start": 76,
+      "end": 83,
+      "description": "Ability checks, saving throws, skills, modifiers"
+    },
+    "time": {
+      "start": 84,
+      "end": 84,
+      "description": "Time in D&D: rounds, minutes, hours, days"
+    },
+    "movement": {
+      "start": 84,
+      "end": 85,
+      "description": "Movement rules: speed, difficult terrain, climbing, swimming"
+    },
+    "environment": {
+      "start": 86,
+      "end": 87,
+      "description": "Environmental hazards: falling, suffocating, vision"
+    },
+    "between_adventures": {
+      "start": 88,
+      "end": 89,
+      "description": "Downtime activities: resting, lifestyle expenses"
+    },
+    "combat": {
+      "start": 90,
+      "end": 99,
+      "description": "Combat rules: initiative, actions, attacks, damage, conditions"
+    },
+    "spellcasting": {
+      "start": 100,
+      "end": 104,
+      "description": "Spellcasting rules: components, concentration, spell slots"
+    },
+    "spell_lists": {
       "start": 105,
       "end": 113,
-      "description": "Spell lists by class"
+      "description": "Spell lists by class (Bard, Cleric, Druid, etc.)"
     },
-    "spells_descriptions": {
+    "spell_descriptions": {
       "start": 114,
       "end": 194,
-      "description": "Spell descriptions (A-Z)"
+      "description": "Spell descriptions: 319 spells from Acid Splash to Wish",
+      "dataset": "spells"
+    },
+    "traps": {
+      "start": 195,
+      "end": 198,
+      "description": "Traps: sample traps, detection, effects"
+    },
+    "diseases": {
+      "start": 199,
+      "end": 200,
+      "description": "Diseases: Cackle Fever, Sewer Plague, Sight Rot"
+    },
+    "madness": {
+      "start": 201,
+      "end": 202,
+      "description": "Madness: short-term, long-term, indefinite"
+    },
+    "objects": {
+      "start": 203,
+      "end": 203,
+      "description": "Objects: AC, hit points, breaking objects"
+    },
+    "poisons": {
+      "start": 204,
+      "end": 205,
+      "description": "Poisons: types, application, effects, costs"
+    },
+    "magic_items": {
+      "start": 206,
+      "end": 253,
+      "description": "Magic items: rarity, tables, A-Z descriptions, sentient items, artifacts"
+    },
+    "monsters": {
+      "start": 254,
+      "end": 394,
+      "description": "Monster stat blocks: 296 creatures from Aboleth to Zombie",
+      "dataset": "monsters"
+    },
+    "appendix_mm_b_npcs": {
+      "start": 395,
+      "end": 403,
+      "description": "Appendix MM-B: Nonplayer Characters (NPCs)"
     },
     "reference_tables": [
       {
@@ -125,18 +225,6 @@
         "category": "combat"
       },
       {
-        "id": "table:spell_slots_by_level",
-        "name": "Spell Slots by Character Level",
-        "page": "201",
-        "category": "magic"
-      },
-      {
-        "id": "table:cantrip_damage",
-        "name": "Cantrip Damage by Character Level",
-        "page": "201",
-        "category": "magic"
-      },
-      {
         "id": "table:travel_pace",
         "name": "Travel Pace",
         "page": "242",
@@ -152,12 +240,12 @@
         "id": "table:services",
         "name": "Services",
         "page": "159",
-        "category": "downtime"
+        "category": "equipment"
       },
       {
-        "id": "table:creature_size",
+        "id": "table:size_categories",
         "name": "Size Categories",
-        "page": "191",
+        "page": "92",
         "category": "reference"
       },
       {
@@ -170,19 +258,93 @@
         "id": "table:lifestyle_expenses",
         "name": "Lifestyle Expenses",
         "page": "157",
-        "category": "downtime"
+        "category": "equipment"
+      },
+      {
+        "id": "table:exchange_rates",
+        "name": "Standard Exchange Rates",
+        "page": "62-62",
+        "category": "equipment"
+      },
+      {
+        "id": "table:adventure_gear",
+        "name": "Adventure Gear",
+        "page": "69-69",
+        "category": "equipment"
+      },
+      {
+        "id": "table:container_capacity",
+        "name": "Container Capacity",
+        "page": "69-70",
+        "category": "equipment"
+      },
+      {
+        "id": "table:donning_doffing_armor",
+        "name": "Donning and Doffing Armor",
+        "page": "64-64",
+        "category": "equipment"
+      },
+      {
+        "id": "table:mounts_and_other_animals",
+        "name": "Mounts and Other Animals",
+        "page": "71-72",
+        "category": "equipment"
+      },
+      {
+        "id": "table:tack_harness_vehicles",
+        "name": "Tack, Harness, and Drawn Vehicles",
+        "page": "72-72",
+        "category": "equipment"
+      },
+      {
+        "id": "table:waterborne_vehicles",
+        "name": "Waterborne Vehicles",
+        "page": "72-72",
+        "category": "equipment"
+      },
+      {
+        "id": "table:trade_goods",
+        "name": "Trade Goods",
+        "page": "72-72",
+        "category": "equipment"
+      },
+      {
+        "id": "table:lifestyle_expenses",
+        "name": "Lifestyle Expenses",
+        "page": "72-73",
+        "category": "equipment"
+      },
+      {
+        "id": "table:food_drink_lodging",
+        "name": "Food, Drink, and Lodging",
+        "page": "73-74",
+        "category": "equipment"
+      },
+      {
+        "id": "table:services",
+        "name": "Services",
+        "page": "74-74",
+        "category": "equipment"
+      },
+      {
+        "id": "table:tools",
+        "name": "Tools",
+        "page": "70-70",
+        "category": "equipment"
+      },
+      {
+        "id": "table:armor",
+        "name": "Armor",
+        "page": "63-64",
+        "category": "equipment"
+      },
+      {
+        "id": "table:weapons",
+        "name": "Weapons",
+        "page": "65-66",
+        "category": "equipment"
       }
-    ],
-    "lineages": {
-      "start": 3,
-      "end": 7,
-      "description": "Character lineages (races)"
-    },
-    "classes": {
-      "start": 8,
-      "end": 55,
-      "description": "Character classes"
-    }
+    ]
   },
   "files": {
     "meta": "meta.json",
@@ -209,5 +371,5 @@
     "lineages": "complete",
     "classes": "complete"
   },
-  "$schema_version": "1.3.0"
+  "$schema_version": "1.4.0"
 }
