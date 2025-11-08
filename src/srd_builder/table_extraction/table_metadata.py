@@ -156,11 +156,33 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 20},
     },
     "lifestyle_expenses": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [72, 73],
-        "parser": "parse_lifestyle_expenses_table",
-        "validation": {"expected_rows": 6},
+        "headers": ["Lifestyle", "Price/Day"],
+        "regions": [
+            {
+                "page": 72,
+                "x_min": 323,
+                "x_max": 546,
+                "y_min": 675,
+                "y_max": 695,
+                "column_boundaries": [77],
+            },  # Page 72 right: Wretched (y=680), Squalid (y=691)
+            {
+                "page": 73,
+                "x_min": 52,
+                "x_max": 200,
+                "y_min": 70,
+                "y_max": 127,
+                "column_boundaries": [58],
+            },  # Page 73 left: Poor through Aristocratic (boundary before "10" at x~110)
+        ],
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,
+        "validation": {"expected_rows": 7},  # PDF has 7 lifestyle levels including Wretched
+        "notes": "Lifestyle Expenses - PDF source truth: includes Wretched (—) and preserves 'minimum' on Aristocratic (10 gp minimum)",
     },
     "mounts_and_other_animals": {
         "pattern_type": "legacy_parser",
