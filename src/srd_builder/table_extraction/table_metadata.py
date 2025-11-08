@@ -98,11 +98,25 @@ TABLES: dict[str, dict[str, Any]] = {
         "validation": {"expected_rows": 3},
     },
     "exchange_rates": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [62],
-        "parser": "parse_exchange_rates_table",
-        "validation": {"expected_rows": 4},
+        "headers": ["Coin", "CP", "SP", "EP", "GP", "PP"],
+        "regions": [
+            {"x_min": 52, "x_max": 271, "y_min": 531, "y_max": 595},
+        ],
+        "column_boundaries": [
+            63,
+            96,
+            124,
+            152,
+            185,
+        ],  # Boundaries placed BEFORE each column start: CP(~115), SP(~148), EP(~176), GP(~204), PP(~237)
+        "chapter": "Chapter 5: Equipment",
+        "data_driven": True,
+        "confirmed": True,  # Validated: exact match to legacy output
+        "validation": {"expected_rows": 5},
+        "notes": "Standard Exchange Rates - currency conversion table showing CP/SP/EP/GP/PP equivalencies",
     },
     "food_drink_lodging": {
         "pattern_type": "legacy_parser",

@@ -321,12 +321,12 @@ def extract_tables_to_json(
                 "table_id": t.table_id,
                 "simple_name": t.simple_name,
                 "page": t.page,
-                "headers": t.headers,
-                "rows": t.rows,
                 "extraction_method": t.extraction_method,
                 "section": t.section,
                 "notes": t.notes,
                 "metadata": t.metadata,
+                "headers": t.headers,
+                "rows": t.rows,
             }
             for t in tables
         ]
