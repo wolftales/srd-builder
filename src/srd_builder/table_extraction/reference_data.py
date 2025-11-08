@@ -63,7 +63,7 @@ REFERENCE_TABLES: dict[str, dict[str, Any]] = {
     },
     # NOTE: The following tables have been migrated or decommissioned in v0.9.7:
     # - cantrip_damage: REMOVED (not in SRD, convenience table, data in spell records)
-    # - spell_slots_by_level: REMOVED (superseded by CLASS_PROGRESSIONS tables)
+    # - spell_slots_by_level: REMOVED (superseded by class progression tables)
     # - travel_pace: MIGRATED to PDF extraction (page 84)
     # - creature_size: MIGRATED to PDF extraction (page 92)
 }
@@ -152,11 +152,13 @@ TEXT_PARSED_TABLES = {
 }
 
 # ============================================================================
-# CLASS PROGRESSION TABLES
-# Level 1-20 progression for all 12 classes
+# ============================================================================
+# VALIDATION DATA - CLASS PROGRESSION TABLES
+# Level 1-20 progression for all 12 classes - KEPT FOR VALIDATION ONLY
+# Used to validate PDF extraction accuracy against known-good reference data
 # ============================================================================
 
-CLASS_PROGRESSIONS: dict[str, dict[str, Any]] = {
+VALIDATION_CLASS_PROGRESSIONS: dict[str, dict[str, Any]] = {
     "barbarian": {
         "headers": ["Level", "Proficiency Bonus", "Features", "Rages", "Rage Damage"],
         "rows": [
@@ -703,10 +705,10 @@ def get_table_data(simple_name: str) -> dict[str, Any] | None:
     # Check class progressions (strip _progression suffix)
     if simple_name.endswith("_progression"):
         class_name = simple_name.replace("_progression", "")
-        if class_name in CLASS_PROGRESSIONS:
-            return CLASS_PROGRESSIONS[class_name]
-    elif simple_name in CLASS_PROGRESSIONS:
-        return CLASS_PROGRESSIONS[simple_name]
+        if class_name in VALIDATION_CLASS_PROGRESSIONS:
+            return VALIDATION_CLASS_PROGRESSIONS[class_name]
+    elif simple_name in VALIDATION_CLASS_PROGRESSIONS:
+        return VALIDATION_CLASS_PROGRESSIONS[simple_name]
 
     # Check reference tables
     if simple_name in REFERENCE_TABLES:
