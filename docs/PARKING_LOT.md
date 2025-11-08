@@ -1162,4 +1162,42 @@ Both may recur in spellcaster class tables (wider, more complex layouts). Will t
 
 ---
 
+## Equipment Table Cross-References
+
+**Context:**
+Some equipment tables (e.g., tools on page 70) have footnotes referencing other tables like "Vehicles (land or water) - see Mounts and Vehicles section". These cross-references are currently captured only as plain text in table footers, not as structured metadata linking tables together.
+
+**Use Case:**
+- Allow clients to programmatically discover related equipment tables
+- Build navigation between interconnected equipment categories
+- Support queries like "show me all tables referenced by tools"
+- Enable rich cross-linking in generated documentation
+
+**Example:**
+```json
+{
+  "table_id": "table:tools",
+  "cross_references": [
+    {
+      "target_table": "waterborne_vehicles",
+      "note": "Vehicles (land or water)",
+      "page": 70
+    }
+  ]
+}
+```
+
+**Implementation Notes:**
+- Add optional `cross_references` field to table metadata
+- Parse footnote text to extract table identifiers
+- Validate target tables exist in dataset
+- Could extend to cross-references in item descriptions too
+
+**Don't address until:**
+- All 30 tables migrated (v0.9.9 complete)
+- Table metadata schema stabilized
+- Consumer use case demonstrates need for programmatic cross-reference navigation
+
+---
+
 ## [Add more parked features here as needed]

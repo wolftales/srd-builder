@@ -216,11 +216,22 @@ TABLES: dict[str, dict[str, Any]] = {
         "notes": "Mounts and Other Animals - Multi-page 4-column table",
     },
     "services": {
-        "pattern_type": "legacy_parser",
+        "pattern_type": "split_column",
         "source": "srd",
         "pages": [74],
-        "parser": "parse_services_table",
-        "validation": {"expected_rows": 5},
+        "headers": ["Service", "Cost"],
+        "regions": [
+            {
+                "x_min": 323,
+                "x_max": 560,
+                "y_min": 95,
+                "y_max": 195,  # Covers Coach cab through Ship's passage
+                "column_boundaries": [77],  # Split at x=400 (323+77); Cost column starts at x=405
+            }
+        ],
+        "detect_categories": True,
+        "validation": {"expected_rows": 9},  # 2 categories + 4 sub-items + 3 standalone services
+        "confirmed": True,
     },
     "tack_harness_vehicles": {
         "pattern_type": "legacy_parser",
