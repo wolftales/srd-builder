@@ -40,7 +40,6 @@ PATTERN_TYPES = {
     "text_region": "Text-based extraction from single page region",
     "calculated": "Generated from formula or lookup table",
     "reference": "Static hardcoded data (fallback when extraction not possible)",
-    "legacy_parser": "Uses existing parser function from text_table_parser.py (temporary during migration)",
 }
 
 # ============================================================================

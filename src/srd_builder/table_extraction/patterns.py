@@ -108,11 +108,6 @@ def extract_by_config(
             raise ValueError(f"PDF extraction for {simple_name} requires pdf_path parameter")
         return _extract_standard_grid(table_id, simple_name, page, config, section, pdf_path)
 
-    elif pattern_type == "legacy_parser":
-        if not pdf_path:
-            raise ValueError(f"PDF extraction for {simple_name} requires pdf_path parameter")
-        return _extract_legacy_parser(table_id, simple_name, page, config, section, pdf_path)
-
     else:
         raise ValueError(f"Unknown pattern_type '{pattern_type}' for {simple_name}")
 
@@ -581,59 +576,6 @@ def _extract_standard_grid(
     """
     # TODO: Implement PyMuPDF auto-detection with header hints
     raise NotImplementedError(f"standard_grid pattern not yet implemented for {simple_name}")
-
-
-def _extract_legacy_parser(
-    table_id: str,
-    simple_name: str,
-    page: int | list[int],
-    config: dict[str, Any],
-    section: str | None,
-    pdf_path: str,
-) -> RawTable:
-    """Extract table using legacy parser function from text_table_parser.py.
-
-    This is a temporary pattern during migration. Gradually replace with generic engines.
-
-    Config structure:
-        {
-            "pattern_type": "legacy_parser",
-            "source": "srd",
-            "pages": [73, 74],
-            "parser": "parse_food_drink_lodging_table"
-        }
-    """
-    from . import text_table_parser
-
-    parser_name = config["parser"]
-    pages = config["pages"]
-
-    # Get parser function by name
-    if not hasattr(text_table_parser, parser_name):
-        raise ValueError(f"Parser function '{parser_name}' not found in text_table_parser.py")
-
-    parser_func = getattr(text_table_parser, parser_name)
-    result = parser_func(pdf_path, pages)
-
-    source = config.get("source", "srd")
-    chapter = config.get("chapter")
-    confirmed = config.get("confirmed", False)
-    notes = f"Extracted via legacy parser {parser_name} [source: {source}]"
-
-    return RawTable(
-        table_id=table_id,
-        simple_name=simple_name,
-        page=page,
-        headers=result["headers"],
-        rows=result["rows"],
-        extraction_method="text_parsed",
-        section=section,
-        notes=notes,
-        metadata=result.get("categories"),
-        chapter=chapter,
-        confirmed=confirmed,
-        source=source,
-    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
