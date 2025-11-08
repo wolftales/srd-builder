@@ -34,6 +34,9 @@ output:
 bundle:
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
 
+tables:
+	python -m srd_builder.build --ruleset srd_5_1 --out dist --tables-only --bundle
+
 bump-version:
 	@if [ -z "$(VERSION)" ]; then \
 		echo "Usage: make bump-version VERSION=0.6.5"; \

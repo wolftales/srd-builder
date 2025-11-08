@@ -344,6 +344,16 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Create complete bundle with schemas and documentation (for production)",
     )
+    parser.add_argument(
+        "--tables-only",
+        action="store_true",
+        help="Extract only tables (skip monsters, equipment, spells) for faster iteration",
+    )
+    parser.add_argument(
+        "--skip",
+        type=str,
+        help="Comma-separated list of datasets to skip (e.g. 'monsters,equipment,spells')",
+    )
     return parser.parse_args(argv)
 
 
@@ -652,35 +662,44 @@ def _generate_table_page_index(
 
 
 def build(  # noqa: C901
-    ruleset: str, output_format: str, out_dir: Path, bundle: bool = False
+    ruleset: str,
+    output_format: str,
+    out_dir: Path,
+    bundle: bool = False,
+    skip_datasets: set[str] | None = None,
 ) -> Path:
     layout = ensure_ruleset_layout(ruleset=ruleset, out_dir=out_dir)
     target_dir = layout["dist_ruleset"]
+    skip_datasets = skip_datasets or set()
 
     report = BuildReport.create(ruleset=ruleset, output_format=output_format)
     report_path = target_dir / "build_report.json"
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
 
     # Extract monsters from PDF (v0.3.0)
-    _extract_raw_monsters(raw_dir=layout["raw"])
+    if "monsters" not in skip_datasets:
+        _extract_raw_monsters(raw_dir=layout["raw"])
 
     # Extract equipment from PDF (v0.5.0)
-    _extract_raw_equipment(raw_dir=layout["raw"])
+    if "equipment" not in skip_datasets:
+        _extract_raw_equipment(raw_dir=layout["raw"])
 
     # Extract spells from PDF (v0.6.0)
-    _extract_raw_spells(raw_dir=layout["raw"])
+    if "spells" not in skip_datasets:
+        _extract_raw_spells(raw_dir=layout["raw"])
 
     # Extract tables from PDF (v0.7.0)
-    _extract_raw_tables(raw_dir=layout["raw"])
+    if "tables" not in skip_datasets:
+        _extract_raw_tables(raw_dir=layout["raw"])
 
-    raw_monsters = _load_raw_monsters(layout["raw"])
-    parsed_monsters = parse_monster_records(raw_monsters)
+    raw_monsters = _load_raw_monsters(layout["raw"]) if "monsters" not in skip_datasets else []
+    parsed_monsters = parse_monster_records(raw_monsters) if raw_monsters else []
 
-    raw_equipment = _load_raw_equipment(layout["raw"])
-    parsed_equipment = parse_equipment_records(raw_equipment)
+    raw_equipment = _load_raw_equipment(layout["raw"]) if "equipment" not in skip_datasets else []
+    parsed_equipment = parse_equipment_records(raw_equipment) if raw_equipment else []
 
-    raw_spells = _load_raw_spells(layout["raw"])
-    parsed_spells = parse_spell_records(raw_spells)
+    raw_spells = _load_raw_spells(layout["raw"]) if "spells" not in skip_datasets else []
+    parsed_spells = parse_spell_records(raw_spells) if raw_spells else []
 
     # Parse tables (v0.7.0)
     raw_tables = _load_raw_tables(layout["raw"])
@@ -784,7 +803,21 @@ def build(  # noqa: C901
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     out_dir = Path(args.out)
-    build(ruleset=args.ruleset, output_format=args.format, out_dir=out_dir, bundle=args.bundle)
+
+    # Parse skip list
+    skip_datasets = set()
+    if args.tables_only:
+        skip_datasets = {"monsters", "equipment", "spells"}
+    elif args.skip:
+        skip_datasets = {s.strip() for s in args.skip.split(",")}
+
+    build(
+        ruleset=args.ruleset,
+        output_format=args.format,
+        out_dir=out_dir,
+        bundle=args.bundle,
+        skip_datasets=skip_datasets,
+    )
     return 0
 
 
