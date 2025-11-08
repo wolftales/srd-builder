@@ -99,23 +99,23 @@ TABLES: dict[str, dict[str, Any]] = {
         "pattern_type": "split_column",
         "source": "srd",
         "pages": [63, 64],
-        "headers": ["Armor", "Cost", "Armor Class (AC)", "Stealth", "Weight"],
+        "headers": ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"],
         "regions": [
             {
                 "page": 63,
                 "x_min": 52,
-                "x_max": 300,
+                "x_max": 560,  # Extended to include Weight column
                 "y_min": 678,
                 "y_max": 695,  # Light Armor category + Padded (page 63)
-                "column_boundaries": [78, 123, 193, 238],
+                "column_boundaries": [82, 133, 238, 283, 348],  # Name ends before x=136 (offset 82)
             },
             {
                 "page": 64,
                 "x_min": 52,
-                "x_max": 300,
+                "x_max": 560,  # Extended to include Weight column
                 "y_min": 71,
                 "y_max": 235,  # Leather through Shield (page 64)
-                "column_boundaries": [78, 123, 193, 238],
+                "column_boundaries": [82, 133, 238, 283, 348],  # Name ends before x=136 (offset 82)
             },
         ],
         "detect_categories": True,
@@ -363,23 +363,23 @@ TABLES: dict[str, dict[str, Any]] = {
         "pattern_type": "split_column",
         "source": "srd",
         "pages": [65, 66],
-        "headers": ["Name", "Cost", "Damage", "Weight"],
+        "headers": ["Name", "Cost", "Damage", "Weight", "Properties"],
         "regions": [
             {
                 "page": 65,
                 "x_min": 52,
-                "x_max": 300,
+                "x_max": 560,  # Extended to include Properties column
                 "y_min": 678,
                 "y_max": 685,  # Simple Melee Weapons category header (page 65)
-                "column_boundaries": [103, 133, 208],
+                "column_boundaries": [103, 133, 208, 243],  # Offsets from x_min=52
             },
             {
                 "page": 66,
                 "x_min": 52,
-                "x_max": 300,
+                "x_max": 560,  # Extended to include Properties column
                 "y_min": 60,
                 "y_max": 505,  # All weapons from Club through Net (page 66)
-                "column_boundaries": [103, 133, 208],
+                "column_boundaries": [103, 133, 208, 243],  # Offsets from x_min=52
             },
         ],
         "detect_categories": True,

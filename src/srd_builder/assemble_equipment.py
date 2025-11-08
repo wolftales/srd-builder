@@ -183,9 +183,9 @@ def _assemble_armor(table: dict[str, Any]) -> list[dict[str, Any]]:
     name_idx = col_map.get("name", 0)
     cost_idx = col_map.get("cost", 1)
     ac_idx = col_map.get("armor_class", col_map.get("ac", 2))
+    strength_idx = col_map.get("strength", None)  # May not exist in all armor tables
     stealth_idx = col_map.get("stealth", 3)
     weight_idx = col_map.get("weight", 4)
-    # Note: Strength column may not exist in all armor tables
 
     # Track current subcategory from category headers
     current_sub_category = None
@@ -243,14 +243,23 @@ def _assemble_armor(table: dict[str, Any]) -> list[dict[str, Any]]:
             if ac_value:
                 item["armor_class"] = ac_value
 
+        # Parse strength requirement (if column exists)
+        if strength_idx is not None and len(row) > strength_idx:
+            strength_text = str(row[strength_idx]).strip()
+            if strength_text and strength_text != "—":
+                strength_req = _parse_strength_requirement(strength_text)
+                if strength_req is not None:
+                    item["strength_req"] = strength_req
+
         # Parse stealth disadvantage (skip if it was actually AC max bonus)
         if len(row) > stealth_idx:
             stealth_text = str(row[stealth_idx]).strip()
             # Skip if this was actually the max dex bonus for AC
             if not stealth_text.startswith("(max"):
-                # Check if contains strength req (table may be misaligned)
-                if "str" in stealth_text.lower() or (
-                    stealth_text.isdigit() and len(stealth_text) <= 2
+                # Fallback: Check if stealth column contains strength req (table may be misaligned)
+                if "strength_req" not in item and (
+                    "str" in stealth_text.lower()
+                    or (stealth_text.isdigit() and len(stealth_text) <= 2)
                 ):
                     strength_req = _parse_strength_requirement(stealth_text)
                     if strength_req is not None:
