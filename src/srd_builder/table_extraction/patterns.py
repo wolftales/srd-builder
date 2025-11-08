@@ -213,6 +213,45 @@ def _extract_reference(
     )
 
 
+def _build_category_metadata(
+    rows: list[list[str | int | float]], headers: list[str]
+) -> dict[str, Any]:
+    """Build category metadata from extracted rows.
+
+    Categories are detected when all numeric columns contain only "—" (em-dash).
+    The first column contains the category name.
+
+    Returns:
+        Dict with "categories" key mapping category names to item lists:
+        {
+            "categories": {
+                "Category Name": {
+                    "row_index": 0,
+                    "items": [{"name": "Item1", "row_index": 1}, ...]
+                }
+            }
+        }
+    """
+    categories: dict[str, dict[str, Any]] = {}
+    current_category: str | None = None
+
+    for i, row in enumerate(rows):
+        # Category detection: all columns except first are "—" or empty
+        is_category = all(str(cell).strip() in ("—", "") for cell in row[1:])
+
+        if is_category and row[0]:
+            # This is a category header
+            category_name = str(row[0]).strip()
+            current_category = category_name
+            categories[current_category] = {"row_index": i, "items": []}
+        elif current_category and row[0]:
+            # This is an item under the current category
+            item_name = str(row[0]).strip()
+            categories[current_category]["items"].append({"name": item_name, "row_index": i})
+
+    return {"categories": categories} if categories else {}
+
+
 def _extract_split_column(
     table_id: str,
     simple_name: str,
@@ -234,7 +273,8 @@ def _extract_split_column(
                 {"x_min": 130, "x_max": 250, "y_min": 445, "y_max": 665},
             ],
             "transformations": {...},
-            "special_cases": [...]
+            "special_cases": [...],
+            "detect_categories": True  # Optional: build category metadata
         }
     """
     import pymupdf
@@ -349,6 +389,12 @@ def _extract_split_column(
 
     doc.close()
 
+    # Build category metadata if requested
+    metadata = None
+    detect_categories = config.get("detect_categories", False)
+    if detect_categories and all_rows:
+        metadata = _build_category_metadata(all_rows, headers)
+
     source = config.get("source", "srd")
     chapter = config.get("chapter")
     confirmed = config.get("confirmed", False)
@@ -363,6 +409,7 @@ def _extract_split_column(
         extraction_method="text_parsed",
         section=section,
         notes=notes,
+        metadata=metadata,
         chapter=chapter,
         confirmed=confirmed,
         source=source,

@@ -2014,96 +2014,110 @@ For tables NOT found as standalone:
 ---
 
 
-## **v0.9.9-tech-debt — Complete Table Migration (Technical Debt Resolution)** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
+## **v0.9.9 — Complete Table Migration (Technical Debt Resolution)** **[INFRASTRUCTURE]** 🔄 **IN PROGRESS**
 
-**Status:** IN PROGRESS - Prerequisite for v0.9.9
-**Priority:** CRITICAL - Blocks equipment modernization
-**Effort:** Medium (2-3 sessions, 6-8 hours)
+**Status:** IN PROGRESS - 23/30 tables (76.7%) migrated to modern patterns
+**Priority:** HIGH - Complete pattern-based architecture
+**Effort:** Medium (3-5 sessions estimated)
 **Consumer Impact:** NONE - Zero behavioral change (same table data, modern architecture)
 
-**Goal:** Finish the migration started in v0.9.5 by converting all remaining legacy_parser tables to modern patterns.
+**Goal:** Complete the migration to pattern-based extraction by converting all remaining legacy_parser tables to modern patterns, then remove legacy code.
 
 **Problem Statement:**
 
-During v0.9.5, we built modern pattern-based architecture (split_column, text_region) but only migrated 1 table (experience_by_cr). The remaining 15 equipment tables were left on legacy_parser as a "temporary bridge" to text_table_parser.py (1255 lines). This became technical debt that blocks v0.9.9 equipment modernization.
+During v0.9.5, we built modern pattern-based architecture (split_column, text_region) but only migrated 1 table (experience_by_cr). The remaining 15 equipment tables were left on legacy_parser as a "temporary bridge" to text_table_parser.py. v0.9.8 completed CLASS_PROGRESSIONS migration (12 tables), bringing us to 23/30 (76.7%). Now completing the final 7 tables.
 
-**Current State:**
-- 30 total tables in table_metadata.py
-- 15 modern pattern tables (50%): 13 class progressions + 2 reference tables
-- 15 legacy_parser tables (50%): All equipment tables + ability_scores_and_modifiers
-- text_table_parser.py: 1255 lines of legacy code
+**Migration Progress:**
+- ✅ 23/30 tables (76.7%) using modern patterns
+- ❌ 7/30 tables (23.3%) still on legacy_parser - ALL have category/subcategory metadata
+- text_table_parser.py: 1313 lines of legacy code
 - patterns.py: Has legacy_parser pattern type as "temporary bridge"
 
-**Tables to Migrate (15 total):**
+**Session Progress (November 8, 2025):**
+- ✅ waterborne_vehicles (6 rows) - commit d7e7c08
+- ✅ trade_goods (13 rows) - commit 5c4a468
+- ✅ Multi-page split_column pattern enhancement - commit 9c104eb
+- ✅ container_capacity (13 rows, multi-page) - commit 9c104eb
+- ✅ lifestyle_expenses (7 rows, multi-page, +data quality) - commit 147c115
+- ✅ mounts_and_other_animals (8 rows, multi-page) - commit 48d18ce
+- ✅ Category pattern extension added to split_column - commit in progress
 
-**Simple Single-Page (8 tables):**
-- ability_scores_and_modifiers (p76, 16 rows) - Two-column layout → split_column
-- exchange_rates (p62, 4 rows) → text_region
-- donning_doffing_armor (p64, 3 rows) → text_region
-- services (p74, 5 rows) → text_region
-- waterborne_vehicles (p72, 3 rows) → text_region
-- trade_goods (p72, 15 rows) → text_region
-- tack_harness_vehicles (p72, 14 rows) → text_region
-- tools (p70, 18 rows) → text_region
+**Remaining Tables (7 total) - ALL have categories:**
 
-**Multi-Page Tables (7 tables):**
-- adventure_gear (p68-69, 49 rows) → text_region with multi-page
-- armor (p63-64, 14 rows) → text_region with multi-page
-- weapons (p65-66, 37 rows) → text_region with multi-page
-- container_capacity (p69-70, 7 rows) → text_region with multi-page
-- mounts_and_other_animals (p71-72, 13 rows) → text_region with multi-page
-- lifestyle_expenses (p72-73, 6 rows) → text_region with multi-page
-- food_drink_lodging (p73-74, 20 rows) → text_region with multi-page
+**Category Tables Requiring Pattern Extension:**
+- armor (13 rows, pages 63-64) - Light/Medium/Heavy/Shield
+- weapons (37 rows, pages 65-66) - Simple Melee/Simple Ranged/Martial Melee/Martial Ranged
+- adventure_gear (49 rows, pages 68-69) - various categories
+- food_drink_lodging (20 rows, pages 73-74) - Inn stays/Meals/Ale
+- services (5 rows, page 74) - Coach cab/Hireling
+- tack_harness_vehicles (14 rows, page 72) - Saddle types
+- tools (18 rows, page 70) - Artisan's tools/Gaming sets/Musical instruments
+
+**Completed Migrations (23 tables):**
+- ✅ 12 CLASS_PROGRESSIONS (v0.9.8)
+- ✅ 2 REFERENCE tables: travel_pace, size_categories (v0.9.7)
+- ✅ 1 CALCULATED table: ability_scores_and_modifiers (v0.9.4)
+- ✅ 1 split_column: experience_by_cr (v0.9.5)
+- ✅ 5 simple equipment tables: waterborne_vehicles, trade_goods, container_capacity, lifestyle_expenses, mounts_and_other_animals (v0.9.9 session)
+- ✅ 2 other: donning_doffing_armor, exchange_rates (earlier)
 
 **Implementation Plan:**
 
-1. **Add Hard Fence** ✅ COMPLETE
-   - Created `tests/test_no_legacy_code.py`
-   - Test fails if ANY table uses legacy_parser (currently @skip'd)
-   - Progress test always runs to show migration status
-   - Prevents this issue from recurring
+1. **Extend split_column Pattern for Categories** ✅ IN PROGRESS
+   - Added `detect_categories` config flag to split_column pattern
+   - Added `_build_category_metadata()` helper function
+   - Categories detected when all numeric columns are "—" (em-dash)
+   - Metadata structure: `{"categories": {"Category Name": {"row_index": N, "items": [...]}}}`
+   - Ready to test with tools table (18 rows, 3 categories)
 
-2. **Migrate Simple Single-Page Tables** (8 tables)
-   - Start with ability_scores_and_modifiers (proves split_column pattern)
-   - Then migrate 7 simple equipment tables to text_region
-   - Each table gets modern config in table_metadata.py
+2. **Migrate Category Tables** (7 tables remaining)
+   - Test category detection with tools table first
+   - Then migrate remaining 6 tables with category support
+   - Each table gets modern config + detect_categories: True
    - Delete corresponding parse_*_table() functions from text_table_parser.py
 
-3. **Migrate Multi-Page Tables** (7 tables)
-   - More complex: spans multiple pages, categories, metadata
-   - Use text_region with multi-page support
-   - Handle category headers, page breaks
-   - Delete remaining parse_*_table() functions
-
-4. **Delete Legacy Code**
-   - Delete text_table_parser.py entirely (1255 lines)
+3. **Delete Legacy Code**
+   - Delete text_table_parser.py entirely (1313 lines)
    - Remove legacy_parser pattern type from patterns.py
    - Update imports in extractor.py
    - Remove @skip decorator from test_no_legacy_parser_tables()
 
-5. **Validate Zero Behavioral Change**
+4. **Validate Zero Behavioral Change**
    - Run full build
    - Validate all 30 tables extract with same row counts
    - Run test suite
-   - Compare output to tagged v0.9.7 state
+   - Category metadata preserved in output
 
 **Success Criteria:**
-- ✅ All 15 tables migrated to modern patterns
-- ✅ Zero tables using legacy_parser
-- ✅ text_table_parser.py deleted
-- ✅ legacy_parser pattern removed from patterns.py
-- ✅ test_no_legacy_parser_tables() passes (without @skip)
-- ✅ All tables extract with same row counts (zero behavioral change)
-- ✅ All tests passing
+- ✅ Category metadata pattern implemented (detect_categories flag + _build_category_metadata)
+- ⏳ All 7 remaining tables migrated (23/30 → 30/30)
+- ⏳ Zero tables using legacy_parser
+- ⏳ text_table_parser.py deleted (1313 lines)
+- ⏳ legacy_parser pattern removed from patterns.py
+- ⏳ test_no_legacy_parser_tables() passes (without @skip)
+- ⏳ All tables extract with same row counts (zero behavioral change)
+- ⏳ Category metadata preserved in output
 
 **Benefits:**
 - Clean architecture: 100% modern pattern-based extraction
-- Eliminates 1255 lines of legacy code
+- Eliminates 1313 lines of legacy code
+- Category/subcategory metadata preserved (armor types, weapon proficiencies, etc.)
 - Consistent extraction patterns across all tables
 - Hard fence prevents regression
-- Unblocks v0.9.9 equipment modernization
+- Equipment dataset will have proper category metadata
 
-**Timeline:** 2-3 sessions (6-8 hours)
+**Progress This Session:**
+- Migrated 5 simple tables (waterborne_vehicles, trade_goods, container_capacity, lifestyle_expenses, mounts_and_other_animals)
+- Extended split_column pattern to support multi-page tables
+- Added category detection infrastructure
+- Improved data quality (found missing rows in legacy parser)
+- Progress: 17/30 (56.7%) → 23/30 (76.7%) = +20% completion
+
+**Next Session:**
+- Test category detection with tools table
+- Migrate remaining 6 category tables
+- Delete legacy code
+- Celebrate 100% modern pattern-based architecture! 🎉
 
 ---
 

@@ -12,17 +12,7 @@ Each table config specifies:
 The patterns.py engine uses this metadata to extract/generate tables without
 hardcoded logic. All table-specific configuration lives here.
 
-MIGRATION STATUS (v0.9.9):
-- 23/30 tables (76.7%) migrated to modern patterns
-- 7 remaining tables use legacy_parser (all have category/subcategory headers)
-- Category tables awaiting pattern extension to capture subcategory metadata:
-  * armor (Light/Medium/Heavy/Shield)
-  * weapons (Simple Melee/Simple Ranged/Martial Melee/Martial Ranged)
-  * adventure_gear (various categories)
-  * food_drink_lodging (Inn stays/Meals/Ale)
-  * services (Coach cab/Hireling)
-  * tack_harness_vehicles (Saddle types, etc.)
-  * tools (Artisan's tools/Gaming sets/Musical instruments)
+For migration status and remaining work, see docs/ROADMAP.md v0.9.9 section.
 """
 
 from typing import Any
