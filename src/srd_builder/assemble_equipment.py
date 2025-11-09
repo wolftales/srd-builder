@@ -124,7 +124,22 @@ def assemble_equipment_from_tables(tables: list[dict[str, Any]]) -> list[dict[st
                 items_by_id[item_id] = item
 
     equipment_items = list(items_by_id.values())
-    logger.info(f"Assembled {len(equipment_items)} equipment items")
+
+    # Add extended items (items referenced but not in SRD tables)
+    extended_items = _add_extended_equipment(items_by_id)
+    equipment_items.extend(extended_items)
+
+    # Add equipment packs (from prose extraction, not tables)
+    pack_items = _assemble_equipment_packs(items_by_id)
+    equipment_items.extend(pack_items)
+
+    # Add descriptions to items (from prose sections)
+    _add_item_descriptions(equipment_items)
+
+    logger.info(
+        f"Assembled {len(equipment_items)} equipment items "
+        f"({len(extended_items)} extended, {len(pack_items)} packs)"
+    )
 
     return equipment_items
 
@@ -986,3 +1001,113 @@ def _infer_gear_subcategories(name: str, categories: dict[str, Any], row_index: 
                 sub_categories.append("holy_symbol")
 
     return sub_categories
+
+
+def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    """Assemble equipment pack items from prose data.
+
+    Equipment packs are described in prose on page 70, not in tables.
+    This function creates structured pack items with validated contents.
+
+    Args:
+        items_by_id: Dict of existing equipment items (for validation)
+
+    Returns:
+        List of equipment pack items
+    """
+    from src.srd_builder.equipment_packs import (
+        EQUIPMENT_PACKS,
+        calculate_pack_weight,
+        validate_pack_contents,
+    )
+
+    pack_items = []
+
+    for pack_data in EQUIPMENT_PACKS:
+        # Calculate total weight from contents
+        total_weight = calculate_pack_weight(pack_data, items_by_id)
+
+        # Validate contents
+        validation = validate_pack_contents(pack_data, items_by_id)
+        if validation["missing_count"] > 0:
+            logger.warning(
+                f"{pack_data['name']}: {validation['missing_count']} items not in equipment.json"
+            )
+            for missing in validation["missing_items"][:3]:
+                logger.debug(f"  Missing: {missing}")
+
+        # Create pack item
+        simple_name = pack_data["name"].lower().replace("'", "").replace(" ", "_")
+        item_id = f"item:{simple_name}"
+
+        pack_item = {
+            "id": item_id,
+            "name": pack_data["name"],
+            "simple_name": simple_name,
+            "category": "gear",
+            "sub_category": "equipment_pack",
+            "description": pack_data["description"],
+            "cost": {"amount": pack_data["cost_gp"], "currency": "gp"},
+            "weight_lb": total_weight,
+            "pack_contents": pack_data["contents"],
+            "page": 70,
+            "source": "SRD 5.1",
+            "is_magic": False,
+        }
+
+        pack_items.append(pack_item)
+
+    logger.info(f"Created {len(pack_items)} equipment packs")
+    return pack_items
+
+
+def _add_extended_equipment(items_by_id: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    """Add extended equipment items (referenced but not in SRD tables).
+
+    These are items like "String" or "Alms box" that are referenced in equipment
+    packs but don't appear in the SRD tables. Costs and weights are estimated
+    based on similar items.
+
+    Args:
+        items_by_id: Dict of existing equipment items
+
+    Returns:
+        List of extended items that were added
+    """
+    from src.srd_builder.equipment_extended import get_extended_equipment
+
+    extended = get_extended_equipment()
+    added_items = []
+
+    for item in extended:
+        item_id = item["id"]
+        # Only add if not already present
+        if item_id not in items_by_id:
+            items_by_id[item_id] = item
+            added_items.append(item)
+            logger.debug(f"Added extended item: {item['name']}")
+
+    logger.info(f"Added {len(added_items)} extended equipment items")
+    return added_items
+
+
+def _add_item_descriptions(items: list[dict[str, Any]]) -> None:
+    """Add prose descriptions to equipment items.
+
+    Mutates items in place by adding 'description' field where available.
+
+    Args:
+        items: List of equipment items
+    """
+    from src.srd_builder.equipment_descriptions import get_description_lookup
+
+    descriptions = get_description_lookup()
+    added_count = 0
+
+    for item in items:
+        item_id = item.get("id")
+        if item_id in descriptions:
+            item["description"] = descriptions[item_id]
+            added_count += 1
+
+    logger.info(f"Added descriptions to {added_count} items")

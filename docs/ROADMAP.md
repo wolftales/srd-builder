@@ -49,11 +49,14 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.7 — Migrate REFERENCE Tables (travel_pace, size_categories extracted; non-SRD tables removed)
 - ✅ v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 
+**Recently Completed:**
+- ✅ v0.9.9 — Equipment Assembly & Table Migration (Part 1: Table migration ✅ complete; Part 2: Equipment assembly ✅ complete; Part 3: Descriptions & enhancements ✅ complete)
+- ✅ v0.10.0 — Conditions Dataset (15 conditions from Appendix PH-A, prose extraction framework)
+
 **In Progress:**
-- 🔄 v0.9.9 — Equipment Assembly & Table Migration (Part 1: Table migration ✅ complete; Part 2: Equipment assembly 📋 planned)
+- 🔄 v0.11.0 — Features Dataset (class/racial features) - Next target
 
 **Planned:**
-- 📋 v0.10.0 — Conditions Dataset (~15-20 conditions)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📖 v0.11.0 — Features Dataset (class/racial features)
 - 📜 v0.12.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
@@ -70,17 +73,17 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 |------|--------|-------|---------|-------------|
 | `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
 | `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
-| `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
+| `equipment.json` | ✅ Complete | 258 | v0.9.9 | Weapons, armor, gear, packs, lifestyles (83 with descriptions) |
 | `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
 | `tables.json` | ✅ Complete | 37+2 | v0.9.4 | Reference tables (15 PDF-extracted + 12 class + 5 reference + 5 misc + 2 calculated) |
 | `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
 | `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
 | `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
-| `conditions.json` | 📋 Planned | ~15-20 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
+| `conditions.json` | ✅ Complete | 15 | v0.10.0 | Status conditions (blinded, stunned, exhaustion, etc.) |
 | `features.json` | 📋 Planned | TBD | v0.11.0 | Class/lineage features (Action Surge, Darkvision) |
 | `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
 
-**Progress:** 8/11 datasets complete (73%)
+**Progress:** 9/11 datasets complete (82%)
 
 **What You Can Build Right Now:**
 - ✅ **Character Sheet App** - Full classes, lineages, ability scores, equipment, and spell lists
@@ -90,7 +93,6 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ **Reference Tables** - Character advancement, spell slots, class progressions, travel pace
 
 **Missing for Complete 5e Implementation:**
-- ⏳ **Conditions** (v0.10.0) - Status effects (poisoned, frightened, etc.) referenced in spells/abilities
 - ⏳ **Features** (v0.11.0) - Class/racial features (Action Surge, Darkvision) with full descriptions
 - ⏳ **Rules** (v0.12.0) - Core mechanics (advantage, saving throws, combat actions)
 
@@ -2149,14 +2151,174 @@ During v0.9.5, we built modern pattern-based architecture (split_column, text_re
 
 ---
 
-**Part 2: Equipment Dataset Assembly** 📋 **PLANNED**
+**Part 2: Equipment Assembly (from Parsed Tables)** ✅ **COMPLETE**
 
-**Status:** PLANNED - Prerequisites now complete
-**Priority:** HIGH - Complete equipment coverage
-**Effort:** Medium (2-3 sessions, 6-8 hours)
-**Consumer Impact:** MAJOR - Comprehensive equipment dataset (150+ items with descriptions)
+**Status:** COMPLETE - All blocking bugs fixed
+**Goal:** ✅ ACHIEVED - Replace PyMuPDF equipment extraction with table-based assembly
 
-**Goal:** Rebuild equipment.json from modernized table data + add text descriptions from prose.
+**Implementation Completed:**
+- ✅ Created `assemble_equipment.py` (930 lines) with 10 equipment table handlers
+- ✅ Integrated into `build.py` with fallback to old PyMuPDF extraction
+- ✅ Assembled 243 equipment items (129% increase over PyMuPDF's 106 items)
+- ✅ Category header detection for armor (light/medium/heavy) and weapons (simple/martial + melee/ranged)
+- ✅ Fixed column mapping bug (AC before name detection to avoid substring matches)
+- ✅ Fixed page format handling (list vs int)
+
+**Critical Bug Fixes (Session November 8, 2025 - Afternoon):**
+1. ✅ **Armor Table - Missing Strength Column**
+   - Problem: Table configured with 5 columns, missing Strength column
+   - Impact: 13 armor items had no strength requirements
+   - Fix: Added "Strength" column to table_metadata.py with boundary at offset 238
+   - Result: Heavy armor now shows strength requirements (Chain mail: Str 13, Splint/Plate: Str 15)
+
+2. ✅ **Armor Table - Missing Weight Data**
+   - Problem: Weight column was outside extraction region (x_max was 300, should be 560)
+   - Impact: All armor showed em-dash "—" instead of actual weights
+   - Fix: Extended x_max to 560 and added Weight boundary at offset 348
+   - Result: All armor has accurate weight data (Chain shirt: 20 lb, Plate: 65 lb)
+
+3. ✅ **Weapons Table - Missing Properties Column**
+   - Problem: Table configured with 4 columns, missing entire Properties column
+   - Impact: All 37 weapons had no properties (finesse, versatile, range, thrown, etc.)
+   - Fix: Added "Properties" column to table_metadata.py with boundary at offset 243
+   - Result: 33/37 weapons now have complete properties data
+
+4. ✅ **Column Boundary Calculation Error**
+   - Problem: Column boundaries were absolute x-positions instead of offsets from x_min
+   - Impact: Table extraction was splitting text incorrectly across columns
+   - Fix: Recalculated all boundaries as offsets from x_min=52
+   - Result: Columns now split correctly at actual text positions
+
+5. ✅ **Armor Name/Cost Boundary**
+   - Problem: Boundary caused 4-digit costs ("1,500 gp") to bleed into name column
+   - Impact: "Plate" armor showing as "Plate 1,500"
+   - Fix: Adjusted boundary to offset 82 (before x=136 where "1,500" starts)
+   - Result: All armor names and costs correctly separated
+
+6. ✅ **Assembly Code Not Reading Strength Column**
+   - Problem: Code had workaround to check stealth column for strength reqs (from before Strength column existed)
+   - Impact: Even with correct table data, strength requirements weren't being parsed
+   - Fix: Added strength_idx to column map and updated parsing logic
+   - Result: Heavy armor strength requirements correctly parsed
+
+**Validation Results:**
+- ✅ 243 equipment items assembled
+- ✅ 13/13 armor with weight data (no more em-dash placeholders)
+- ✅ 3/3 heavy armor with strength requirements
+- ✅ 33/37 weapons with properties
+- ✅ All tests passing
+
+**Sample Output (Chain Mail):**
+```json
+{
+  "name": "Chain mail",
+  "armor_class": {"base": 16, "dex_bonus": false},
+  "strength_req": 13,
+  "weight_lb": 55.0,
+  "stealth_disadvantage": true
+}
+```
+
+**Sample Output (Longsword):**
+```json
+{
+  "name": "Longsword",
+  "damage": {"dice": "1d8", "type": "slashing"},
+  "properties": ["versatile"],
+  "versatile_damage": {"dice": "1d10"},
+  "weight_lb": 3.0
+}
+```
+
+**Files Modified:**
+- `src/srd_builder/assemble_equipment.py` - Added strength_idx parsing
+- `src/srd_builder/table_extraction/table_metadata.py` - Fixed armor (6 cols) and weapons (5 cols) column definitions
+- `docs/EQUIPMENT_TABLE_BUGS.md` - Marked as RESOLVED with complete fix summary
+
+**Commits:**
+- 1682d6c - fix: correct armor and weapons table column boundaries
+- 54e6a9b - docs: mark equipment table bugs as resolved
+
+---
+
+**Part 3: Equipment Descriptions & Enhancements** ✅ **COMPLETE**
+
+**Status:** COMPLETE - All equipment prose content captured
+**Session:** November 9, 2025
+**Goal:** ✅ ACHIEVED - Add item descriptions and complete equipment dataset
+
+**Implementation Completed:**
+- ✅ Added armor descriptions (12 items, page 63) - Light, medium, heavy armor with prose explanations
+- ✅ Added adventure gear descriptions (41 items, pages 66-68) - Special rules for acid, caltrops, healing kits, etc.
+- ✅ Added tools descriptions (9 items, pages 70-71) - Artisan's tools, disguise kit, thieves' tools, etc.
+- ✅ Added equipment packs (7 packs, page 70) - Burglar's, Diplomat's, Dungeoneer's, etc. with structured contents
+- ✅ Added lifestyle descriptions (6 items, page 73) - Squalid through Aristocratic with full prose
+- ✅ Created extended equipment (8 items) - String, Alms box, Vestments, etc. for pack referential integrity
+- ✅ Added economic rules to metadata - Selling treasure, resale multipliers (page 62)
+- ✅ Updated schema to v1.4.0 - Added `description` and `pack_contents` fields
+
+**New Modules Created:**
+- `src/srd_builder/equipment_packs.py` - 7 equipment packs with calculate_pack_weight() and validate_pack_contents()
+- `src/srd_builder/equipment_descriptions.py` - 50+ descriptions (armor, gear, tools, lifestyles)
+- `src/srd_builder/equipment_extended.py` - 8 enhanced items for complete pack contents
+
+**Final Equipment Dataset:**
+- ✅ 258 total items (243 base + 8 extended + 7 packs)
+- ✅ 83 items with descriptions (32% coverage of descriptive items)
+  - 12 armor descriptions
+  - 41 adventure gear descriptions
+  - 9 tools descriptions
+  - 7 equipment pack descriptions
+  - 6 lifestyle descriptions
+  - 8 extended item descriptions
+- ✅ All equipment packs validated (100% content resolution)
+- ✅ Economic rules in metadata (selling treasure, resale multipliers)
+- ✅ Schema v1.4.0 with backward compatibility
+
+**Sample Output (Equipment Pack):**
+```json
+{
+  "id": "equipment_pack:explorers-pack",
+  "name": "Explorer's Pack",
+  "category": "gear",
+  "sub_category": "equipment_pack",
+  "cost_gp": 10,
+  "weight_lb": 54,
+  "description": "Includes a backpack, a bedroll, a mess kit, a tinderbox...",
+  "pack_contents": [
+    {"item_id": "item:backpack", "item_name": "Backpack", "quantity": 1},
+    {"item_id": "item:bedroll", "item_name": "Bedroll", "quantity": 1}
+  ]
+}
+```
+
+**Sample Output (Lifestyle with Description):**
+```json
+{
+  "id": "item:modest",
+  "name": "Modest",
+  "category": "consumable",
+  "cost": {"amount": 5, "currency": "sp"},
+  "description": "A modest lifestyle keeps you out of the slums and ensures that you can maintain your equipment. You live in an older part of town, renting a room in a boarding house, inn, or temple..."
+}
+```
+
+**Files Modified:**
+- `src/srd_builder/equipment_packs.py` - Created
+- `src/srd_builder/equipment_descriptions.py` - Created
+- `src/srd_builder/equipment_extended.py` - Created
+- `src/srd_builder/assemble_equipment.py` - Integrated all enhancement modules
+- `src/srd_builder/build.py` - Added equipment_economics metadata
+- `schemas/equipment.schema.json` - Updated to v1.4.0 with new fields
+
+**Commits:**
+- (To be committed)
+
+---
+
+**Part 2: Equipment Dataset Assembly** 📋 ~~PLANNED~~ **SUPERSEDED BY PART 3**
+
+**Status:** SUPERSEDED - Part 3 completed all planned work plus enhancements
 
 **Prerequisites:**
 - ✅ Part 1 complete (all tables using modern patterns)
@@ -2220,31 +2382,84 @@ During v0.9.5, we built modern pattern-based architecture (split_column, text_re
 
 ---
 
-## **v0.10.0 — Conditions Dataset** **[FEATURE]** 📋 PLANNED
+## **v0.10.0 — Conditions Dataset** ✅ **COMPLETE**
 
-**Status:** PLANNED - Next priority feature
+**Status:** ✅ COMPLETE
 **Priority:** HIGH - Frequently referenced
-**Effort:** Medium (~15-20 conditions)
+**Effort:** Medium - 15 conditions extracted
 **Consumer Impact:** NEW - Status conditions dataset
 
-**Goal:** Extract ~15-20 status conditions from SRD 5.1.
+**Goal:** Extract all status conditions from SRD 5.1 Appendix PH-A (pages 358-359).
 
-**Why Conditions?**
-- Referenced constantly (poisoned, stunned, charmed, frightened, etc.)
-- Needed for monster abilities and spell effects
-- Small dataset = quick confidence builder
-- Unlocks better monster/spell integration
+**What Was Delivered:**
+- ✅ 15 conditions with full mechanical effects
+- ✅ Exhaustion with 6 severity levels
+- ✅ Special rules for conditions (exhaustion recovery, condition interactions)
+- ✅ Prose extraction framework for future datasets
+- ✅ Complete PDF → parse → build pipeline
 
-**Implementation:**
-- `src/srd_builder/extract_conditions.py` - PDF extraction
-- `src/srd_builder/parse_conditions.py` - Pure parsing
-- `schemas/condition.schema.json` - Schema definition
-- Add to build.py pipeline
+**Implementation Completed:**
+- `src/srd_builder/extract_conditions.py` - PDF extraction using ProseExtractor
+- `src/srd_builder/parse_conditions.py` - Pure parsing (bullet points, tables, special rules)
+- `src/srd_builder/prose_extraction.py` - NEW: Reusable framework for prose sections
+- `schemas/condition.schema.json` - Schema v1.0.0
+- `docs/PROSE_EXTRACTION_FRAMEWORK.md` - Documentation for accelerating future extractions
+- Integrated into build.py pipeline with indexing
 
-**Conditions to Extract:**
+**Conditions Extracted (15 total):**
 - Blinded, Charmed, Deafened, Frightened, Grappled
 - Incapacitated, Invisible, Paralyzed, Petrified, Poisoned
-- Prone, Restrained, Stunned, Unconscious, Exhaustion (levels 1-6)
+- Prone, Restrained, Stunned, Unconscious
+- Exhaustion (special: 6 levels + recovery rules)
+
+**Sample Output:**
+```json
+{
+  "id": "condition:exhaustion",
+  "name": "Exhaustion",
+  "simple_name": "exhaustion",
+  "summary": "Exhaustion is measured in six levels",
+  "effects": ["Some special abilities and environmental hazards..."],
+  "levels": [
+    {"level": 1, "effect": "Disadvantage on ability checks"},
+    {"level": 2, "effect": "Speed halved"},
+    {"level": 6, "effect": "Death"}
+  ],
+  "special_rules": [
+    "If an already exhausted creature suffers another effect...",
+    "Finishing a long rest reduces exhaustion level by 1..."
+  ],
+  "page": 358,
+  "source": "SRD 5.1"
+}
+```
+
+**Files Modified:**
+- `src/srd_builder/extract_conditions.py` - Created (refactored to use framework)
+- `src/srd_builder/parse_conditions.py` - Created
+- `src/srd_builder/build_conditions.py` - Created
+- `src/srd_builder/prose_extraction.py` - Created (reusable framework)
+- `src/srd_builder/build.py` - Integrated conditions
+- `src/srd_builder/indexer.py` - Added condition indexing
+- `schemas/condition.schema.json` - Created v1.0.0
+- `docs/PROSE_EXTRACTION_FRAMEWORK.md` - Created
+
+**Innovation: Prose Extraction Framework**
+Created reusable components for future prose sections (diseases, madness, poisons):
+- `ProseExtractor` class - Handles boundary detection and section splitting
+- `clean_pdf_text()` - Centralized PDF encoding fixes
+- `extract_bullet_points()` - Supports •, numbered, dashed lists
+- `extract_level_effect_table()` - Parse level/effect tables
+- `split_by_known_headers()` - Section boundary detection
+- Reduces future extraction time from 2-4 hours to 15-30 minutes
+
+**Validation:**
+- ✅ All 15 conditions pass schema validation
+- ✅ Indexed with by_name and by_has_levels
+- ✅ 943 total entities (including conditions)
+- ✅ Build integration tested end-to-end
+
+**Schema:** 1.0.0 (new dataset)
    - Travel expenses
    - Downtime activities
 

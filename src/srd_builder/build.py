@@ -19,6 +19,7 @@ from typing import Any
 
 from . import __version__
 from .assemble_equipment import assemble_equipment_from_tables
+from .build_conditions import build_conditions
 from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_monsters import extract_monsters
@@ -160,6 +161,7 @@ def _generate_meta_json(
             "tables": "tables.json",
             "lineages": "lineages.json",
             "classes": "classes.json",
+            "conditions": "conditions.json",
         },
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": {
@@ -169,6 +171,7 @@ def _generate_meta_json(
             "tables": "complete",
             "lineages": "complete",
             "classes": "complete" if classes_complete else "in_progress",
+            "conditions": "complete",
         },
         "$schema_version": SCHEMA_VERSION,
     }
@@ -184,6 +187,7 @@ def _write_datasets(
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
+    conditions: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -198,6 +202,19 @@ def _write_datasets(
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
         equipment_doc = _wrap_with_meta({"items": processed_equipment}, ruleset=ruleset)
+
+        # Add equipment-specific metadata (SRD economic rules)
+        equipment_doc["_meta"]["equipment_economics"] = {
+            "resale_rules": {
+                "arms_armor_equipment": "Undamaged weapons, armor, and other equipment fetch half their cost when sold in a market. Weapons and armor used by monsters are rarely in good enough condition to sell.",
+                "magic_items": "Selling magic items is problematic. Finding someone to buy a potion or a scroll isn't too hard, but other items are out of the realm of most but the wealthiest nobles. The value of magic is far beyond simple gold.",
+                "gems_jewelry_art": "These items retain their full value in the marketplace, and you can either trade them in for coin or use them as currency for other transactions.",
+                "trade_goods": "Like gems and art objects, trade goods—bars of iron, bags of salt, livestock, and so on—retain their full value in the marketplace and barter economy.",
+            },
+            "default_resale_multiplier": 0.5,
+            "source_page": 62,
+        }
+
         (dist_data_dir / "equipment.json").write_text(
             _render_json(equipment_doc),
             encoding="utf-8",
@@ -280,6 +297,18 @@ def _write_datasets(
             encoding="utf-8",
         )
 
+    # Write conditions (v0.10.0)
+    # Conditions are already fully normalized by build_conditions, no additional cleaning needed
+    processed_conditions = None
+    if conditions:
+        # Conditions come as a complete document with _meta already included
+        (dist_data_dir / "conditions.json").write_text(
+            _render_json(conditions),
+            encoding="utf-8",
+        )
+        # Extract just the conditions list for indexing
+        processed_conditions = conditions.get("conditions", [])
+
     index_payload = build_indexes(
         processed_monsters,
         processed_spells,
@@ -287,6 +316,7 @@ def _write_datasets(
         processed_tables,
         processed_lineages,
         processed_classes,
+        processed_conditions,
     )
     index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
     (dist_data_dir / "index.json").write_text(
@@ -419,6 +449,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
         "table.schema.json",
         "lineage.schema.json",
         "class.schema.json",
+        "condition.schema.json",
     ]:
         src = schemas_src / schema_file
         if src.exists():
@@ -742,6 +773,16 @@ def build(  # noqa: C901
     # Classes come from canonical targets, not PDF extraction
     parsed_classes = parse_classes()
 
+    # Build conditions (v0.10.0)
+    # Conditions extracted from PDF Appendix PH-A (pages 358-359)
+    pdf_files = sorted(layout["raw"].glob("*.pdf"))
+    conditions_doc = None
+    if pdf_files:
+        try:
+            conditions_doc = build_conditions(pdf_files[0])
+        except Exception as exc:
+            print(f"⚠️ Conditions extraction failed: {exc}")
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
@@ -751,6 +792,7 @@ def build(  # noqa: C901
         tables=parsed_tables if parsed_tables else None,
         lineages=parsed_lineages if parsed_lineages else None,
         classes=parsed_classes if parsed_classes else None,
+        conditions=conditions_doc if conditions_doc else None,
     )
 
     # Extract metadata from PDF if present (v0.8.1)

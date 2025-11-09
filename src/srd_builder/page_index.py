@@ -140,11 +140,31 @@ PAGE_INDEX: dict[str, Section] = {
     },
     # Monsters
     "monsters": {
-        "pages": {"start": 254, "end": 394},
-        "description": "Monster stat blocks: 296 creatures from Aboleth to Zombie",
+        "pages": {"start": 254, "end": 357},
+        "description": "Monster stat blocks: creatures before appendices",
         "dataset": "monsters",
     },
     # Appendices
+    "appendix_ph_a_conditions": {
+        "pages": {"start": 358, "end": 359},
+        "description": "Appendix PH-A: Conditions (Blinded, Charmed, Deafened, etc.)",
+        "dataset": "conditions",  # Raw extraction exists, needs normalization
+    },
+    "appendix_ph_b_pantheons": {
+        "pages": {"start": 360, "end": 362},
+        "description": "Appendix PH-B: Fantasy-Historical Pantheons",
+        "dataset": None,  # Future extraction
+    },
+    "appendix_ph_c_planes": {
+        "pages": {"start": 363, "end": 365},
+        "description": "Appendix PH-C: The Planes of Existence",
+        "dataset": None,  # Future extraction
+    },
+    "appendix_mm_a_creatures": {
+        "pages": {"start": 366, "end": 394},
+        "description": "Appendix MM-A: Miscellaneous Creatures",
+        "dataset": "monsters",  # Part of monsters dataset
+    },
     "appendix_mm_b_npcs": {
         "pages": {"start": 395, "end": 403},
         "description": "Appendix MM-B: Nonplayer Characters (NPCs)",

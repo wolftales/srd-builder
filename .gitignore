@@ -23,5 +23,6 @@ rulesets/*/raw/**
 docs/external/
 
 # Archive folder - local reference only
+archive/
 docs/archive
 docs/archive/

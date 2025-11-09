@@ -14,6 +14,7 @@ __all__ = [
     "build_equipment_index",
     "build_lineage_index",
     "build_class_index",
+    "build_condition_index",
     "build_indexes",
 ]
 
@@ -397,6 +398,45 @@ def _build_class_entity_index(classes: list[dict[str, Any]]) -> dict[str, dict[s
     return index
 
 
+def build_condition_index(conditions: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical condition lookup tables."""
+
+    by_name, _ = _build_by_name_map(conditions)
+    by_has_levels: defaultdict[str, list[str]] = defaultdict(list)
+
+    for condition in conditions:
+        condition_id = fallback_id(condition)
+        has_levels = "levels" in condition
+
+        if has_levels:
+            by_has_levels["true"].append(condition_id)
+        else:
+            by_has_levels["false"].append(condition_id)
+
+    sorted_by_has_levels = _stable_dict(sorted(by_has_levels.items()))
+
+    for key, ids in sorted_by_has_levels.items():
+        sorted_by_has_levels[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_has_levels": sorted_by_has_levels,
+    }
+
+
+def _build_condition_entity_index(conditions: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for conditions."""
+    index: dict[str, dict[str, str]] = {}
+    for condition in conditions:
+        condition_id = fallback_id(condition)
+        index[condition_id] = {
+            "type": "condition",
+            "file": "conditions.json",
+            "name": condition.get("name", ""),
+        }
+    return index
+
+
 def build_indexes(  # noqa: C901
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
@@ -404,10 +444,11 @@ def build_indexes(  # noqa: C901
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
+    conditions: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, table, lineage, class, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, table, lineage, class, condition, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -522,6 +563,32 @@ def build_indexes(  # noqa: C901
         payload["stats"]["total_entities"] = total
         payload["stats"]["unique_hit_dice"] = len(class_indexes["by_hit_die"])
         payload["stats"]["unique_primary_abilities"] = len(class_indexes["by_primary_ability"])
+
+    # Add condition indexes if conditions provided (including empty list)
+    if conditions is not None:
+        condition_indexes = build_condition_index(conditions)
+        condition_entity_index = _build_condition_entity_index(conditions)
+
+        payload["conditions"] = condition_indexes
+        entities["conditions"] = condition_entity_index
+        payload["stats"]["total_conditions"] = len(conditions)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        if tables is not None:
+            total += len(table_entity_index)
+        if lineages is not None:
+            total += len(lineage_entity_index)
+        if classes is not None:
+            total += len(class_entity_index)
+        total += len(condition_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["conditions_with_levels"] = len(
+            condition_indexes["by_has_levels"].get("true", [])
+        )
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}

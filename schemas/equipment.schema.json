@@ -42,6 +42,39 @@
       "type": "string",
       "description": "One-sentence description for tooltips and previews (optional)"
     },
+    "description": {
+      "type": "string",
+      "description": "Full prose description from SRD (equipment packs, magic items, etc.)"
+    },
+    "pack_contents": {
+      "type": "array",
+      "description": "Contents of an equipment pack (for packs only)",
+      "items": {
+        "type": "object",
+        "required": [
+          "item_id",
+          "item_name",
+          "quantity"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "type": "string",
+            "pattern": "^item:[a-z0-9_-]+$",
+            "description": "Reference to item in equipment dataset"
+          },
+          "item_name": {
+            "type": "string",
+            "description": "Human-readable item name"
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of this item in the pack"
+          }
+        }
+      }
+    },
     "category": {
       "type": "string",
       "enum": [
