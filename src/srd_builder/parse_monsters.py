@@ -373,8 +373,20 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         if isinstance(first_trait, dict):
             summary = first_trait.get("text", "")
 
+    # Determine ID prefix based on page number
+    # - Monsters: pages 261-365 (main monster section)
+    # - Creatures: pages 366-394 (Appendix MM-A: Miscellaneous Creatures)
+    # - NPCs: pages 395-403 (Appendix MM-B: Nonplayer Characters)
+    page = _coerce_int(monster.get("page")) or 0
+    if 395 <= page <= 403:
+        id_prefix = "npc"
+    elif 366 <= page <= 394:
+        id_prefix = "creature"
+    else:
+        id_prefix = "monster"
+
     normalized = {
-        "id": str(monster_id) if monster_id else f"monster:{simple_name}",
+        "id": str(monster_id) if monster_id else f"{id_prefix}:{simple_name}",
         "simple_name": simple_name,
         "name": str(monster.get("name", "")),
         "summary": summary,

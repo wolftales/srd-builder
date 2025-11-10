@@ -28,7 +28,7 @@ def monsters_raw():
 
 def test_extraction_completeness(monsters_raw):
     """Verify we extract the expected number of monsters."""
-    assert len(monsters_raw) == 296, f"Expected 296 monsters, got {len(monsters_raw)}"
+    assert len(monsters_raw) == 317, f"Expected 317 monsters, got {len(monsters_raw)}"
 
 
 def test_monster_has_required_structure(monsters_raw):
@@ -101,13 +101,13 @@ def test_stat_label_detection(monsters_raw):
 
 
 def test_page_numbers_are_valid(monsters_raw):
-    """All monsters should have valid page numbers (261-394)."""
+    """All monsters should have valid page numbers (261-403)."""
     for name, monster in monsters_raw.items():
         pages = monster.get("pages", [])
         assert len(pages) > 0, f"{name}: should have at least one page"
 
         for page in pages:
-            assert 261 <= page <= 394, f"{name}: page {page} outside SRD monster section (261-394)"
+            assert 261 <= page <= 403, f"{name}: page {page} outside SRD creature section (261-403)"
 
 
 def test_no_extraction_warnings(monsters_raw):

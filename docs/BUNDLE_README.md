@@ -1,8 +1,8 @@
 # SRD 5.1 Dataset Bundle
 
-**Version:** srd-builder v0.8.2
+**Version:** srd-builder v0.13.0
 **Schema Version:** 1.3.0
-**Generated:** November 2, 2025
+**Generated:** November 9, 2025
 **Source:** System Reference Document 5.1 (SRD_CC_v5.1)
 
 ---
@@ -11,7 +11,7 @@
 
 Machine-readable D&D 5e SRD data extracted from official PDF:
 
-- **296 Monsters** - Full stat blocks (schema v1.3.0)
+- **317 Creatures** - 201 monsters + 95 misc creatures (MM-A) + 21 NPCs (MM-B) - Full stat blocks (schema v1.3.0)
 - **106 Equipment Items** - Weapons, armor, gear (schema v1.3.0)
 - **319 Spells** - Spell data with structured casting/effects (schema v1.3.0)
 - **23 Tables** - Reference tables including 12 class progression tables (schema v1.3.0)
@@ -58,7 +58,7 @@ print(fireball['effects']['damage'])  # {'dice': '8d6', 'type': 'fire'}
 
 ```
 srd_5_1/
-├── monsters.json          # 296 creature stat blocks
+├── monsters.json          # 317 creature stat blocks (201 monsters + 95 creatures + 21 NPCs)
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
 ├── tables.json            # 23 reference tables (12 class progression + 11 reference)
@@ -98,6 +98,18 @@ The `index.json` file provides pre-built search indexes for all datasets:
     "by_type": {"dragon": [...], "undead": [...], ...},
     "by_size": {"Medium": [...], "Large": [...], ...}
   },
+  "creatures": {
+    "by_name": {"awakened_shrub": "creature:awakened_shrub", ...},
+    "by_cr": {"0": [...], "1": [...], ...},
+    "by_type": {"plant": [...], "construct": [...], ...},
+    "by_size": {"Tiny": [...], "Small": [...], ...}
+  },
+  "npcs": {
+    "by_name": {"acolyte": "npc:acolyte", ...},
+    "by_cr": {"0.125": [...], "0.25": [...], ...},
+    "by_type": {"humanoid": [...]},
+    "by_size": {"Medium": [...]}
+  },
   "equipment": {
     "by_name": {"longsword": "item:longsword", ...},
     "by_category": {"weapon": [...], "armor": [...], ...},
@@ -117,16 +129,20 @@ The `index.json` file provides pre-built search indexes for all datasets:
   },
   "entities": {
     "monsters": {"monster:aboleth": {"type": "monster", "file": "monsters.json", "name": "Aboleth"}, ...},
+    "creatures": {"creature:awakened_shrub": {"type": "creature", "file": "monsters.json", "name": "Awakened Shrub"}, ...},
+    "npcs": {"npc:acolyte": {"type": "npc", "file": "monsters.json", "name": "Acolyte"}, ...},
     "equipment": {"item:longsword": {"type": "equipment", "file": "equipment.json", "name": "Longsword"}, ...},
     "spells": {"spell:fireball": {"type": "spell", "file": "spells.json", "name": "Fireball"}, ...},
     "lineages": {"lineage:dwarf": {"type": "lineage", "file": "lineages.json", "name": "Dwarf"}, ...}
   },
   "stats": {
-    "total_monsters": 296,
+    "total_monsters": 201,
+    "total_creatures": 95,
+    "total_npcs": 21,
     "total_equipment": 114,
     "total_spells": 0,
     "total_lineages": 13,
-    "total_entities": 423,
+    "total_entities": 444,
     ...
   }
 }
@@ -196,7 +212,7 @@ jsonschema -i monsters.json schemas/monster.schema.json
 **Required Attribution:**
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License.
 
-**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.6.0
+**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.13.0
 
 Full license in `meta.json`.
 

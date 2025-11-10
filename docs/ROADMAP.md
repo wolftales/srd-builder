@@ -51,13 +51,13 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.9 — Equipment Assembly & Table Migration (Part 1: Table migration ✅ complete; Part 2: Equipment assembly ✅ complete; Part 3: Descriptions & enhancements ✅ complete)
 - ✅ v0.10.0 — Conditions Dataset (15 conditions from Appendix PH-A, prose extraction framework)
 - ✅ v0.11.0 — Features Dataset (246 class features + lineage traits extracted from PDF)
+- ✅ v0.12.0 — Appendix MM-B: NPCs (21 nonplayer characters, indexed separately)
+- ✅ v0.13.0 — Appendix MM-A: Misc Creatures (95 creatures, indexed separately)
 
 **In Progress:**
-- 🔄 v0.12.0 — Appendix MM-B: NPCs (Nonplayer Characters) - Next target
+- 🔄 v0.14.0 — Magic Items - Next target
 
 **Planned:**
-- 📖 v0.12.0 — Appendix MM-B: NPCs (Nonplayer Characters)
-- 📖 v0.13.0 — Appendix MM-A: Miscellaneous Creatures
 - 📖 v0.14.0 — Magic Items
 - 📜 v0.15.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
 - 🎨 v0.16.0 — Quality & Polish (final cleanup before v1.0.0)
@@ -72,7 +72,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | File | Status | Count | Version | Description |
 |------|--------|-------|---------|-------------|
 | `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
-| `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
+| `monsters.json` | ✅ Complete | 317 | v0.13.0 | All creatures: 201 monsters + 95 creatures (MM-A) + 21 NPCs (MM-B) |
 | `equipment.json` | ✅ Complete | 258 | v0.9.9 | Weapons, armor, gear, packs, lifestyles (83 with descriptions) |
 | `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
 | `tables.json` | ✅ Complete | 37+2 | v0.9.4 | Reference tables (15 PDF-extracted + 12 class + 5 reference + 5 misc + 2 calculated) |
@@ -91,13 +91,12 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 
 **What You Can Build Right Now:**
 - ✅ **Character Sheet App** - Full classes, lineages, ability scores, equipment, and spell lists
-- ✅ **Monster Manual** - Complete statblocks with structured combat actions (296 creatures)
+- ✅ **Monster Manual** - Complete statblocks with structured combat actions (317 creatures: monsters, NPCs, misc creatures)
 - ✅ **Spell Database** - Searchable spell effects with components, range, duration, healing/damage
 - ✅ **Equipment Shop** - Weapons, armor, adventuring gear with costs and properties
 - ✅ **Reference Tables** - Character advancement, spell slots, class progressions, travel pace
 
 **Missing for Complete 5e Implementation:**
-- ⏳ **NPCs** (v0.12.0) - Nonplayer character statblocks from Appendix MM-B
 - ⏳ **Magic Items** (v0.14.0) - Magic weapons, armor, and wondrous items
 - ⏳ **Rules** (v0.15.0) - Core mechanics (advantage, saving throws, combat actions)
 

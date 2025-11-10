@@ -65,7 +65,13 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
     simple_name = normalize_id(str(base_simple))
     if simple_name:
         patched["simple_name"] = simple_name
-        patched["id"] = f"monster:{simple_name}"
+        # Preserve existing ID prefix (monster:, creature:, npc:) if already set
+        existing_id = patched.get("id", "")
+        if existing_id and ":" in existing_id:
+            prefix = existing_id.split(":")[0]
+            patched["id"] = f"{prefix}:{simple_name}"
+        else:
+            patched["id"] = f"monster:{simple_name}"
 
     for key in ("abilities", "traits", "actions", "legendary_actions", "reactions"):
         if key not in monster:

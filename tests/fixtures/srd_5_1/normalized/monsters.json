@@ -3,7 +3,7 @@
     "source": "SRD_CC_v5.1",
     "ruleset_version": "5.1",
     "schema_version": "1.4.0",
-    "generated_by": "srd-builder v0.10.0",
+    "generated_by": "srd-builder v0.13.0",
     "build_report": "./build_report.json"
   },
   "items": [
@@ -22955,7 +22955,7 @@
       "page": 357
     },
     {
-      "id": "monster:ape",
+      "id": "creature:ape",
       "simple_name": "ape",
       "name": "Ape",
       "size": "Medium",
@@ -23035,7 +23035,7 @@
       "page": 366
     },
     {
-      "id": "monster:awakened_shrub",
+      "id": "creature:awakened_shrub",
       "simple_name": "awakened_shrub",
       "name": "Awakened Shrub",
       "summary": "While the shrub remains motionless, it is indistinguishable from a normal shrub.",
@@ -23103,7 +23103,7 @@
       "page": 366
     },
     {
-      "id": "monster:awakened_tree",
+      "id": "creature:awakened_tree",
       "simple_name": "awakened_tree",
       "name": "Awakened Tree",
       "summary": "While the tree remains motionless, it is indistinguishable from a normal tree.",
@@ -23179,7 +23179,7 @@
       "page": 366
     },
     {
-      "id": "monster:axe_beak",
+      "id": "creature:axe_beak",
       "simple_name": "axe_beak",
       "name": "Axe Beak",
       "size": "Large",
@@ -23234,7 +23234,7 @@
       "page": 366
     },
     {
-      "id": "monster:baboon",
+      "id": "creature:baboon",
       "simple_name": "baboon",
       "name": "Baboon",
       "summary": "The baboon has advantage on an attack roll against a creature if at least one of the baboon’s allies is within 5 feet of the creature and the ally isn’t incapacitated.",
@@ -23293,7 +23293,7 @@
       "page": 367
     },
     {
-      "id": "monster:badger",
+      "id": "creature:badger",
       "simple_name": "badger",
       "name": "Badger",
       "summary": "The badger has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -23353,7 +23353,7 @@
       "page": 367
     },
     {
-      "id": "monster:bat",
+      "id": "creature:bat",
       "simple_name": "bat",
       "name": "Bat",
       "summary": "The bat can’t use its blindsight while deafened.",
@@ -23418,7 +23418,7 @@
       "page": 367
     },
     {
-      "id": "monster:black_bear",
+      "id": "creature:black_bear",
       "simple_name": "black_bear",
       "name": "Black Bear",
       "summary": "The bear has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -23505,7 +23505,7 @@
       "page": 367
     },
     {
-      "id": "monster:blink_dog",
+      "id": "creature:blink_dog",
       "simple_name": "blink_dog",
       "name": "Blink Dog",
       "summary": "The dog has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -23576,7 +23576,7 @@
       "page": 368
     },
     {
-      "id": "monster:blood_hawk",
+      "id": "creature:blood_hawk",
       "simple_name": "blood_hawk",
       "name": "Blood Hawk",
       "summary": "The hawk has advantage on Wisdom (Perception) checks that rely on sight.",
@@ -23647,7 +23647,7 @@
       "page": 368
     },
     {
-      "id": "monster:boar",
+      "id": "creature:boar",
       "simple_name": "boar",
       "name": "Boar",
       "summary": "If the boar moves at least 20 feet straight toward a target and then hits it with a tusk attack on System Reference Document 5.1",
@@ -23718,7 +23718,7 @@
       "page": 368
     },
     {
-      "id": "monster:brown_bear",
+      "id": "creature:brown_bear",
       "simple_name": "brown_bear",
       "name": "Brown Bear",
       "summary": "The bear has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -23805,7 +23805,7 @@
       "page": 369
     },
     {
-      "id": "monster:camel",
+      "id": "creature:camel",
       "simple_name": "camel",
       "name": "Camel",
       "size": "Large",
@@ -23860,7 +23860,7 @@
       "page": 369
     },
     {
-      "id": "monster:cat",
+      "id": "creature:cat",
       "simple_name": "cat",
       "name": "Cat",
       "summary": "The cat has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -23922,7 +23922,7 @@
       "page": 369
     },
     {
-      "id": "monster:constrictor_snake",
+      "id": "creature:constrictor_snake",
       "simple_name": "constrictor_snake",
       "name": "Constrictor Snake",
       "size": "Large",
@@ -23992,7 +23992,7 @@
       "page": 369
     },
     {
-      "id": "monster:crab",
+      "id": "creature:crab",
       "simple_name": "crab",
       "name": "Crab",
       "summary": "The crab can breathe air and water.",
@@ -24057,7 +24057,7 @@
       "page": 370
     },
     {
-      "id": "monster:crocodile",
+      "id": "creature:crocodile",
       "simple_name": "crocodile",
       "name": "Crocodile",
       "summary": "The crocodile can hold its breath for 15 minutes.",
@@ -24126,7 +24126,7 @@
       "page": 370
     },
     {
-      "id": "monster:death_dog",
+      "id": "creature:death_dog",
       "simple_name": "death_dog",
       "name": "Death Dog",
       "summary": "The dog has advantage on Wisdom (Perception) checks and on saving throws against being blinded, charmed, deafened, frightened, stunned, or knocked unconscious.",
@@ -24202,7 +24202,7 @@
       "page": 370
     },
     {
-      "id": "monster:deer",
+      "id": "creature:deer",
       "simple_name": "deer",
       "name": "Deer",
       "size": "Medium",
@@ -24257,7 +24257,7 @@
       "page": 370
     },
     {
-      "id": "monster:dire_wolf",
+      "id": "creature:dire_wolf",
       "simple_name": "dire_wolf",
       "name": "Dire Wolf",
       "summary": "The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -24335,7 +24335,7 @@
       "page": 371
     },
     {
-      "id": "monster:draft_horse",
+      "id": "creature:draft_horse",
       "simple_name": "draft_horse",
       "name": "Draft Horse",
       "size": "Large",
@@ -24390,7 +24390,7 @@
       "page": 371
     },
     {
-      "id": "monster:eagle",
+      "id": "creature:eagle",
       "simple_name": "eagle",
       "name": "Eagle",
       "summary": "The eagle has advantage on Wisdom (Perception) checks that rely on sight.",
@@ -24456,7 +24456,7 @@
       "page": 371
     },
     {
-      "id": "monster:elephant",
+      "id": "creature:elephant",
       "simple_name": "elephant",
       "name": "Elephant",
       "summary": "If the elephant moves at least 20 feet straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC 12 Strength saving throw or be knocked prone. If the target is prone, the elephant can make one stomp attack against it as a bonus action.",
@@ -24535,7 +24535,7 @@
       "page": 371
     },
     {
-      "id": "monster:elk",
+      "id": "creature:elk",
       "simple_name": "elk",
       "name": "Elk",
       "summary": "If the elk moves at least 20 feet straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 7 (2d6) damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone.",
@@ -24611,7 +24611,7 @@
       "page": 372
     },
     {
-      "id": "monster:flying_snake",
+      "id": "creature:flying_snake",
       "simple_name": "flying_snake",
       "name": "Flying Snake",
       "summary": "The snake doesn’t provoke opportunity attacks when it flies out of an enemy’s reach.",
@@ -24677,7 +24677,7 @@
       "page": 372
     },
     {
-      "id": "monster:frog",
+      "id": "creature:frog",
       "simple_name": "frog",
       "name": "Frog",
       "summary": "The frog can breathe air and water.",
@@ -24736,7 +24736,7 @@
       "page": 372
     },
     {
-      "id": "monster:giant_ape",
+      "id": "creature:giant_ape",
       "simple_name": "giant_ape",
       "name": "Giant Ape",
       "size": "Huge",
@@ -24816,7 +24816,7 @@
       "page": 373
     },
     {
-      "id": "monster:giant_badger",
+      "id": "creature:giant_badger",
       "simple_name": "giant_badger",
       "name": "Giant Badger",
       "summary": "The badger has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -24899,7 +24899,7 @@
       "page": 373
     },
     {
-      "id": "monster:giant_bat",
+      "id": "creature:giant_bat",
       "simple_name": "giant_bat",
       "name": "Giant Bat",
       "summary": "The bat can’t use its blindsight while deafened.",
@@ -24969,7 +24969,7 @@
       "page": 373
     },
     {
-      "id": "monster:giant_boar",
+      "id": "creature:giant_boar",
       "simple_name": "giant_boar",
       "name": "Giant Boar",
       "summary": "If the boar moves at least 20 feet straight toward a target and then hits it with a tusk attack on the same turn, the target takes an extra 7 (2d6) slashing damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone.",
@@ -25040,7 +25040,7 @@
       "page": 373
     },
     {
-      "id": "monster:giant_centipede",
+      "id": "creature:giant_centipede",
       "simple_name": "giant_centipede",
       "name": "Giant Centipede",
       "size": "Small",
@@ -25116,7 +25116,7 @@
       "page": 374
     },
     {
-      "id": "monster:giant_constrictor_snake",
+      "id": "creature:giant_constrictor_snake",
       "simple_name": "giant_constrictor_snake",
       "name": "Giant Constrictor Snake",
       "size": "Huge",
@@ -25188,7 +25188,7 @@
       "page": 374
     },
     {
-      "id": "monster:giant_crab",
+      "id": "creature:giant_crab",
       "simple_name": "giant_crab",
       "name": "Giant Crab",
       "summary": "The crab can breathe air and water.",
@@ -25258,7 +25258,7 @@
       "page": 374
     },
     {
-      "id": "monster:giant_crocodile",
+      "id": "creature:giant_crocodile",
       "simple_name": "giant_crocodile",
       "name": "Giant Crocodile",
       "summary": "The crocodile can hold its breath for 30 minutes.",
@@ -25349,7 +25349,7 @@
       "page": 374
     },
     {
-      "id": "monster:giant_eagle",
+      "id": "creature:giant_eagle",
       "simple_name": "giant_eagle",
       "name": "Giant Eagle",
       "summary": "The eagle has advantage on Wisdom (Perception) checks that rely on sight.",
@@ -25433,7 +25433,7 @@
       "page": 375
     },
     {
-      "id": "monster:giant_elk",
+      "id": "creature:giant_elk",
       "simple_name": "giant_elk",
       "name": "Giant Elk",
       "summary": "If the elk moves at least 20 feet straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 7 (2d6) damage. If the target is a creature, it must succeed on a DC 14 Strength saving throw or be knocked prone.",
@@ -25514,7 +25514,7 @@
       "page": 375
     },
     {
-      "id": "monster:giant_fire_beetle",
+      "id": "creature:giant_fire_beetle",
       "simple_name": "giant_fire_beetle",
       "name": "Giant Fire Beetle",
       "summary": "The beetle sheds bright light in a 10-­‐foot radius and dim light for an additional 10 feet. System Reference Document 5.1",
@@ -25576,7 +25576,7 @@
       "page": 375
     },
     {
-      "id": "monster:giant_frog",
+      "id": "creature:giant_frog",
       "simple_name": "giant_frog",
       "name": "Giant Frog",
       "summary": "The frog can breathe air and water.",
@@ -25659,7 +25659,7 @@
       "page": 376
     },
     {
-      "id": "monster:giant_goat",
+      "id": "creature:giant_goat",
       "simple_name": "giant_goat",
       "name": "Giant Goat",
       "summary": "If the goat moves at least 20 feet straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 5 (2d4) bludgeoning damage. If the target is a creature, it must succeed on a DC 13 Strength saving throw or be knocked prone.",
@@ -25730,7 +25730,7 @@
       "page": 376
     },
     {
-      "id": "monster:giant_hyena",
+      "id": "creature:giant_hyena",
       "simple_name": "giant_hyena",
       "name": "Giant Hyena",
       "summary": "When the hyena reduces a creature to 0 hit points with a melee attack on its turn, the hyena can System Reference Document 5.1",
@@ -25795,7 +25795,7 @@
       "page": 376
     },
     {
-      "id": "monster:giant_lizard",
+      "id": "creature:giant_lizard",
       "simple_name": "giant_lizard",
       "name": "Giant Lizard",
       "size": "Large",
@@ -25855,7 +25855,7 @@
       "page": 377
     },
     {
-      "id": "monster:giant_octopus",
+      "id": "creature:giant_octopus",
       "simple_name": "giant_octopus",
       "name": "Giant Octopus",
       "summary": "While out of water, the octopus can hold its breath for 1 hour.",
@@ -25938,7 +25938,7 @@
       "page": 377
     },
     {
-      "id": "monster:giant_owl",
+      "id": "creature:giant_owl",
       "simple_name": "giant_owl",
       "name": "Giant Owl",
       "summary": "The owl doesn’t provoke opportunity attacks when it flies out of an enemy’s reach.",
@@ -26011,7 +26011,7 @@
       "page": 377
     },
     {
-      "id": "monster:giant_poisonous_snake",
+      "id": "creature:giant_poisonous_snake",
       "simple_name": "giant_poisonous_snake",
       "name": "Giant Poisonous Snake",
       "size": "Medium",
@@ -26086,7 +26086,7 @@
       "page": 378
     },
     {
-      "id": "monster:giant_rat",
+      "id": "creature:giant_rat",
       "simple_name": "giant_rat",
       "name": "Giant Rat",
       "summary": "The rat has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -26155,7 +26155,7 @@
       "page": 378
     },
     {
-      "id": "monster:giant_scorpion",
+      "id": "creature:giant_scorpion",
       "simple_name": "giant_scorpion",
       "name": "Giant Scorpion",
       "size": "Large",
@@ -26248,7 +26248,7 @@
       "page": 378
     },
     {
-      "id": "monster:giant_sea_horse",
+      "id": "creature:giant_sea_horse",
       "simple_name": "giant_sea_horse",
       "name": "Giant Sea Horse",
       "summary": "If the sea horse moves at least 20 feet straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 7 (2d6) bludgeoning damage. It the target is a creature, it must succeed on a DC 11 Strength saving throw or be knocked prone.",
@@ -26320,7 +26320,7 @@
       "page": 378
     },
     {
-      "id": "monster:giant_shark",
+      "id": "creature:giant_shark",
       "simple_name": "giant_shark",
       "name": "Giant Shark",
       "summary": "The shark has advantage on melee attack rolls against any creature that doesn’t have all its hit points.",
@@ -26395,7 +26395,7 @@
       "page": 379
     },
     {
-      "id": "monster:giant_spider",
+      "id": "creature:giant_spider",
       "simple_name": "giant_spider",
       "name": "Giant Spider",
       "summary": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.",
@@ -26506,7 +26506,7 @@
       "page": 379
     },
     {
-      "id": "monster:giant_toad",
+      "id": "creature:giant_toad",
       "simple_name": "giant_toad",
       "name": "Giant Toad",
       "summary": "The toad can breathe air and water.",
@@ -26598,7 +26598,7 @@
       "page": 380
     },
     {
-      "id": "monster:giant_vulture",
+      "id": "creature:giant_vulture",
       "simple_name": "giant_vulture",
       "name": "Giant Vulture",
       "summary": "The vulture has advantage on Wisdom (Perception) checks that rely on sight or smell.",
@@ -26687,7 +26687,7 @@
       "page": 380
     },
     {
-      "id": "monster:giant_wasp",
+      "id": "creature:giant_wasp",
       "simple_name": "giant_wasp",
       "name": "Giant Wasp",
       "size": "Medium",
@@ -26743,7 +26743,7 @@
       "page": 380
     },
     {
-      "id": "monster:giant_weasel",
+      "id": "creature:giant_weasel",
       "simple_name": "giant_weasel",
       "name": "Giant Weasel",
       "summary": "The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -26810,7 +26810,7 @@
       "page": 381
     },
     {
-      "id": "monster:giant_wolf_spider",
+      "id": "creature:giant_wolf_spider",
       "simple_name": "giant_wolf_spider",
       "name": "Giant Wolf Spider",
       "summary": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.",
@@ -26904,7 +26904,7 @@
       "page": 381
     },
     {
-      "id": "monster:goat",
+      "id": "creature:goat",
       "simple_name": "goat",
       "name": "Goat",
       "summary": "If the goat moves at least 20 feet straight toward a target and then hits it with a ram attack on the same turn, the target takes an extra 2 (1d4) bludgeoning damage. If the target is a creature, it must succeed on a DC 10 Strength saving throw or be knocked prone.",
@@ -26972,7 +26972,7 @@
       "page": 381
     },
     {
-      "id": "monster:hawk",
+      "id": "creature:hawk",
       "simple_name": "hawk",
       "name": "Hawk",
       "summary": "The hawk has advantage on Wisdom (Perception) checks that rely on sight.",
@@ -27033,7 +27033,7 @@
       "page": 382
     },
     {
-      "id": "monster:hunter_shark",
+      "id": "creature:hunter_shark",
       "simple_name": "hunter_shark",
       "name": "Hunter Shark",
       "summary": "The shark has advantage on melee attack rolls against any creature that doesn’t have all its hit points.",
@@ -27108,7 +27108,7 @@
       "page": 382
     },
     {
-      "id": "monster:hyena",
+      "id": "creature:hyena",
       "simple_name": "hyena",
       "name": "Hyena",
       "summary": "The hyena has advantage on an attack roll against a creature if at least one of the hyena’s allies is within 5 feet of the creature and the ally isn’t incapacitated.",
@@ -27173,7 +27173,7 @@
       "page": 382
     },
     {
-      "id": "monster:jackal",
+      "id": "creature:jackal",
       "simple_name": "jackal",
       "name": "Jackal",
       "summary": "The jackal has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -27238,7 +27238,7 @@
       "page": 382
     },
     {
-      "id": "monster:killer_whale",
+      "id": "creature:killer_whale",
       "simple_name": "killer_whale",
       "name": "Killer Whale",
       "summary": "The whale can’t use its blindsight while deafened.",
@@ -27318,7 +27318,7 @@
       "page": 383
     },
     {
-      "id": "monster:lion",
+      "id": "creature:lion",
       "simple_name": "lion",
       "name": "Lion",
       "summary": "The lion has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -27412,7 +27412,7 @@
       "page": 383
     },
     {
-      "id": "monster:lizard",
+      "id": "creature:lizard",
       "simple_name": "lizard",
       "name": "Lizard",
       "size": "Tiny",
@@ -27464,7 +27464,7 @@
       "page": 383
     },
     {
-      "id": "monster:mammoth",
+      "id": "creature:mammoth",
       "simple_name": "mammoth",
       "name": "Mammoth",
       "summary": "If the mammoth moves at least 20 feet straight toward a creature and then hits it with a gore attack on the same turn, that target must succeed on a DC 18 Strength saving throw or be knocked prone. If the target is prone, the mammoth can make one stomp attack against it as a bonus action.",
@@ -27543,7 +27543,7 @@
       "page": 384
     },
     {
-      "id": "monster:mastiff",
+      "id": "creature:mastiff",
       "simple_name": "mastiff",
       "name": "Mastiff",
       "summary": "The mastiff has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -27612,7 +27612,7 @@
       "page": 384
     },
     {
-      "id": "monster:mule",
+      "id": "creature:mule",
       "simple_name": "mule",
       "name": "Mule",
       "summary": "The mule is considered to be a Large animal for the purpose of determining its carrying capacity.",
@@ -27680,7 +27680,7 @@
       "page": 384
     },
     {
-      "id": "monster:octopus",
+      "id": "creature:octopus",
       "simple_name": "octopus",
       "name": "Octopus",
       "summary": "While out of water, the octopus can hold its breath for 30 minutes.",
@@ -27758,7 +27758,7 @@
       "page": 384
     },
     {
-      "id": "monster:owl",
+      "id": "creature:owl",
       "simple_name": "owl",
       "name": "Owl",
       "summary": "The owl doesn’t provoke opportunity attacks when it flies out of an enemy’s reach.",
@@ -27826,7 +27826,7 @@
       "page": 385
     },
     {
-      "id": "monster:panther",
+      "id": "creature:panther",
       "simple_name": "panther",
       "name": "Panther",
       "summary": "The panther has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -27911,7 +27911,7 @@
       "page": 385
     },
     {
-      "id": "monster:phase_spider",
+      "id": "creature:phase_spider",
       "simple_name": "phase_spider",
       "name": "Phase Spider",
       "summary": "As a bonus action, the spider can magically shift from the Material Plane to the Ethereal Plane, or vice versa.",
@@ -28007,7 +28007,7 @@
       "page": 385
     },
     {
-      "id": "monster:poisonous_snake",
+      "id": "creature:poisonous_snake",
       "simple_name": "poisonous_snake",
       "name": "Poisonous Snake",
       "size": "Tiny",
@@ -28068,7 +28068,7 @@
       "page": 386
     },
     {
-      "id": "monster:polar_bear",
+      "id": "creature:polar_bear",
       "simple_name": "polar_bear",
       "name": "Polar Bear",
       "summary": "The bear has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -28155,7 +28155,7 @@
       "page": 386
     },
     {
-      "id": "monster:pony",
+      "id": "creature:pony",
       "simple_name": "pony",
       "name": "Pony",
       "size": "Medium",
@@ -28210,7 +28210,7 @@
       "page": 386
     },
     {
-      "id": "monster:quipper",
+      "id": "creature:quipper",
       "simple_name": "quipper",
       "name": "Quipper",
       "summary": "The quipper has advantage on melee attack rolls against any creature that doesn’t have all its hit points.",
@@ -28275,7 +28275,7 @@
       "page": 387
     },
     {
-      "id": "monster:rat",
+      "id": "creature:rat",
       "simple_name": "rat",
       "name": "Rat",
       "summary": "The rat has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -28334,7 +28334,7 @@
       "page": 387
     },
     {
-      "id": "monster:raven",
+      "id": "creature:raven",
       "simple_name": "raven",
       "name": "Raven",
       "summary": "The raven can mimic simple sounds it has heard, such as a person whispering, a baby crying, or an animal chittering. A creature that hears the sounds can tell they are imitations with a successful DC 10 Wisdom (Insight) check.",
@@ -28395,7 +28395,7 @@
       "page": 387
     },
     {
-      "id": "monster:reef_shark",
+      "id": "creature:reef_shark",
       "simple_name": "reef_shark",
       "name": "Reef Shark",
       "summary": "The shark has advantage on an attack roll against a creature if at least one of the shark’s allies is System Reference Document 5.1",
@@ -28470,7 +28470,7 @@
       "page": 387
     },
     {
-      "id": "monster:rhinoceros",
+      "id": "creature:rhinoceros",
       "simple_name": "rhinoceros",
       "name": "Rhinoceros",
       "summary": "If the rhinoceros moves at least 20 feet straight toward a target and then hits it with a gore attack on the same turn, the target takes an extra 9 (2d8) bludgeoning damage. If the target is a creature, it must succeed on a DC 15 Strength saving throw or be knocked prone.",
@@ -28536,7 +28536,7 @@
       "page": 388
     },
     {
-      "id": "monster:riding_horse",
+      "id": "creature:riding_horse",
       "simple_name": "riding_horse",
       "name": "Riding Horse",
       "size": "Large",
@@ -28591,7 +28591,7 @@
       "page": 388
     },
     {
-      "id": "monster:saber_toothed_tiger",
+      "id": "creature:saber_toothed_tiger",
       "simple_name": "saber_toothed_tiger",
       "name": "Saber-­‐Toothed Tiger",
       "summary": "The tiger has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -28675,7 +28675,7 @@
       "page": 388
     },
     {
-      "id": "monster:scorpion",
+      "id": "creature:scorpion",
       "simple_name": "scorpion",
       "name": "Scorpion",
       "size": "Tiny",
@@ -28738,7 +28738,7 @@
       "page": 388
     },
     {
-      "id": "monster:sea_horse",
+      "id": "creature:sea_horse",
       "simple_name": "sea_horse",
       "name": "Sea Horse",
       "summary": "The sea horse can breathe only underwater.",
@@ -28788,7 +28788,7 @@
       "page": 389
     },
     {
-      "id": "monster:spider",
+      "id": "creature:spider",
       "simple_name": "spider",
       "name": "Spider",
       "summary": "The spider can climb difficult surfaces, including upside down on ceilings, without needing to make an ability check.",
@@ -28869,7 +28869,7 @@
       "page": 389
     },
     {
-      "id": "monster:swarm_of_bats",
+      "id": "creature:swarm_of_bats",
       "simple_name": "swarm_of_bats",
       "name": "Swarm of Bats",
       "summary": "The swarm can’t use its blindsight while deafened.",
@@ -28961,7 +28961,7 @@
       "page": 389
     },
     {
-      "id": "monster:swarm_of_insects",
+      "id": "creature:swarm_of_insects",
       "simple_name": "swarm_of_insects",
       "name": "Swarm of Insects",
       "summary": "The swarm can occupy another creature’s space and vice versa, and the swarm can move through any opening large enough for a Tiny insect. The swarm can’t regain hit points or gain temporary hit points.",
@@ -29046,7 +29046,7 @@
       "page": 389
     },
     {
-      "id": "monster:swarm_of_poisonous_snakes",
+      "id": "creature:swarm_of_poisonous_snakes",
       "simple_name": "swarm_of_poisonous_snakes",
       "name": "Swarm of Poisonous Snakes",
       "summary": "The swarm can occupy another creature’s space and vice versa, and the swarm can move through any opening large enough for a Tiny snake. The swarm can’t regain hit points or gain temporary hit points.",
@@ -29142,7 +29142,7 @@
       "page": 390
     },
     {
-      "id": "monster:swarm_of_quippers",
+      "id": "creature:swarm_of_quippers",
       "simple_name": "swarm_of_quippers",
       "name": "Swarm of Quippers",
       "summary": "The swarm has advantage on melee attack rolls against any creature that doesn’t have all its hit points.",
@@ -29239,7 +29239,7 @@
       "page": 390
     },
     {
-      "id": "monster:swarm_of_rats",
+      "id": "creature:swarm_of_rats",
       "simple_name": "swarm_of_rats",
       "name": "Swarm of Rats",
       "summary": "The swarm has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -29330,7 +29330,7 @@
       "page": 390
     },
     {
-      "id": "monster:swarm_of_ravens",
+      "id": "creature:swarm_of_ravens",
       "simple_name": "swarm_of_ravens",
       "name": "Swarm of Ravens",
       "summary": "The swarm can occupy another creature’s space and vice versa, and the swarm can move through any opening large enough for a Tiny raven. The swarm can’t regain hit points or gain temporary hit points.",
@@ -29418,7 +29418,7 @@
       "page": 391
     },
     {
-      "id": "monster:tiger",
+      "id": "creature:tiger",
       "simple_name": "tiger",
       "name": "Tiger",
       "summary": "The tiger has advantage on Wisdom (Perception) checks that rely on smell.",
@@ -29503,7 +29503,7 @@
       "page": 391
     },
     {
-      "id": "monster:vulture",
+      "id": "creature:vulture",
       "simple_name": "vulture",
       "name": "Vulture",
       "summary": "The vulture has advantage on Wisdom (Perception) checks that rely on sight or smell.",
@@ -29574,7 +29574,7 @@
       "page": 392
     },
     {
-      "id": "monster:warhorse",
+      "id": "creature:warhorse",
       "simple_name": "warhorse",
       "name": "Warhorse",
       "summary": "If the horse moves at least 20 feet straight toward a creature and then hits it with a hooves attack on the same turn, that target must succeed on a DC 14 Strength saving throw or be knocked prone. If the target is prone, the horse can make another attack with its hooves against it as a bonus action.",
@@ -29637,7 +29637,7 @@
       "page": 392
     },
     {
-      "id": "monster:weasel",
+      "id": "creature:weasel",
       "simple_name": "weasel",
       "name": "Weasel",
       "summary": "The weasel has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -29698,7 +29698,7 @@
       "page": 392
     },
     {
-      "id": "monster:winter_wolf",
+      "id": "creature:winter_wolf",
       "simple_name": "winter_wolf",
       "name": "Winter Wolf",
       "summary": "The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -29800,7 +29800,7 @@
       "page": 392
     },
     {
-      "id": "monster:wolf",
+      "id": "creature:wolf",
       "simple_name": "wolf",
       "name": "Wolf",
       "summary": "The wolf has advantage on Wisdom (Perception) checks that rely on hearing or smell.",
@@ -29878,7 +29878,7 @@
       "page": 393
     },
     {
-      "id": "monster:worg",
+      "id": "creature:worg",
       "simple_name": "worg",
       "name": "Worg",
       "summary": "The worg has advantage on Wisdom (Perception) checks that rely on hearing or smell.",

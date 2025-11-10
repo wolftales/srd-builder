@@ -3,7 +3,7 @@
 This document maps SRD 5.1 source terminology and formats to our normalized schema field names, explaining how we transform raw data into structured JSON.
 
 **Version:** Schema v1.3.0
-**Updated:** 2025-11-02
+**Updated:** 2025-11-09
 
 ---
 
@@ -25,10 +25,10 @@ These fields appear consistently across all entity types (monsters, equipment, s
 ### `id`
 - **Type:** `string`
 - **Pattern:** `<entity_type>:<normalized_name>`
-- **Examples:** `monster:adult_red_dragon`, `item:longsword`, `spell:fireball`
-- **SRD Source:** Derived from entity name
-- **Transformation:** Lowercase, replace spaces/punctuation with underscores, namespace with entity type
-- **Purpose:** Stable, globally unique identifier for cross-referencing
+- **Examples:** `monster:adult_red_dragon`, `creature:awakened_shrub`, `npc:acolyte`, `item:longsword`, `spell:fireball`
+- **SRD Source:** Derived from entity name and page location
+- **Transformation:** Lowercase, replace spaces/punctuation with underscores, namespace with entity type (monster: for pages 261-365, creature: for pages 366-394 Appendix MM-A, npc: for pages 395-403 Appendix MM-B)
+- **Purpose:** Stable, globally unique identifier for cross-referencing with semantic separation by creature category
 
 ### `name`
 - **Type:** `string`
@@ -512,11 +512,13 @@ Status: Schema exists (`spell.schema.json`) but dataset not yet built. Fields TB
 **Pattern:** `<entity_type>:<simple_name>`
 
 **Entity Types:**
-- `monster:` - All creatures/NPCs
+- `monster:` - Main bestiary creatures (SRD pages 261-365)
+- `creature:` - Miscellaneous creatures from Appendix MM-A (SRD pages 366-394)
+- `npc:` - Nonplayer characters from Appendix MM-B (SRD pages 395-403)
 - `item:` - All equipment (weapons, armor, gear, mounts, trade goods)
-- `spell:` - All spells (future)
-- `class:` - All character classes (future)
-- `lineage:` - All ancestries/races (future)
+- `spell:` - All spells
+- `class:` - All character classes
+- `lineage:` - All ancestries/races
 - `condition:` - All conditions (future)
 
 **Purpose:**
@@ -932,7 +934,7 @@ Character classes with progression, features, and proficiencies.
 This dictionary reflects **Schema v1.3.0**. Changes to field meanings, transformations, or additions will be documented here with version annotations.
 
 **Version History:**
-- **v1.3.0** (2025-11-02): Added tables dataset (23 tables including 12 class progression), lineages dataset (13 lineages), classes dataset (12 classes), `aliases` field for all entities
+- **v1.3.0** (2025-11-09): Extended creature extraction to pages 395-403, capturing 95 misc creatures (MM-A) and 21 NPCs (MM-B) for total of 317 creatures; implemented three-tier ID system (monster:/creature:/npc:) with separate indexing; added tables dataset (23 tables including 12 class progression), lineages dataset (13 lineages), classes dataset (12 classes), `aliases` field for all entities
 - **v1.2.0** (2025-10-30): Added reference tables extraction
 - **v1.1.0**: Structured objects (AC, HP, cost), namespaced IDs, `simple_name` everywhere
 - **v1.0.0** (MVP): Basic extraction with string-heavy formats
@@ -943,8 +945,11 @@ See `SCHEMAS.md` for architectural evolution and versioning strategy.
 
 ## Datasets Summary
 
-**v0.8.2 includes:**
-- **296 Monsters** - Full stat blocks with actions, traits, legendary actions
+**v0.13.0 includes:**
+- **317 Creatures** (in monsters.json, semantically separated):
+  - **201 Monsters** - Main bestiary creatures (monster: prefix, pages 261-365)
+  - **95 Misc Creatures** - Appendix MM-A awakened/summoned creatures (creature: prefix, pages 366-394)
+  - **21 NPCs** - Appendix MM-B nonplayer characters (npc: prefix, pages 395-403)
 - **106 Equipment** - Weapons, armor, adventuring gear
 - **319 Spells** - Complete spell descriptions with structured effects
 - **23 Tables** - Reference tables (12 class progression + 11 general reference)

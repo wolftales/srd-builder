@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.10.0)
+### Build pipeline (v0.13.0)
 
 The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking. v0.9.7 migrates travel_pace and size_categories tables from hardcoded to PDF extraction, removes non-SRD tables (cantrip_damage, spell_slots_by_level).
 

@@ -23,10 +23,10 @@ def test_build_indexes_records_conflicting_names() -> None:
 
 def test_build_indexes_uses_fallback_identifier() -> None:
     monsters = [
-        {"name": "Arcane Wisp", **REQUIRED_FIELDS},
+        {"id": "monster:arcane_wisp", "name": "Arcane Wisp", **REQUIRED_FIELDS},
     ]
 
     result = build_indexes(monsters)
 
-    assert result["monsters"]["by_name"]["arcane wisp"] == "arcane_wisp"
+    assert result["monsters"]["by_name"]["arcane wisp"] == "monster:arcane_wisp"
     assert "conflicts" not in result

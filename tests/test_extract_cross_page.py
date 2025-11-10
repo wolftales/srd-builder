@@ -140,8 +140,8 @@ def test_no_monsters_with_zero_blocks(monsters_raw):
 
 
 def test_extraction_coverage(monsters_raw):
-    """Verify we extracted all 296 expected monsters."""
-    assert len(monsters_raw) == 296, f"Expected 296 monsters, got {len(monsters_raw)}"
+    """Verify we extracted all 317 expected creatures."""
+    assert len(monsters_raw) == 317, f"Expected 317 creatures, got {len(monsters_raw)}"
 
 
 @pytest.mark.parametrize(

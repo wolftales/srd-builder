@@ -131,6 +131,30 @@ def _build_entity_index(monsters: list[dict[str, Any]]) -> dict[str, dict[str, s
     return index
 
 
+def _build_creature_entity_index(creatures: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    index: dict[str, dict[str, str]] = {}
+    for creature in creatures:
+        creature_id = fallback_id(creature)
+        index[creature_id] = {
+            "type": "creature",
+            "file": "monsters.json",
+            "name": creature.get("name", ""),
+        }
+    return index
+
+
+def _build_npc_entity_index(npcs: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    index: dict[str, dict[str, str]] = {}
+    for npc in npcs:
+        npc_id = fallback_id(npc)
+        index[npc_id] = {
+            "type": "npc",
+            "file": "monsters.json",
+            "name": npc.get("name", ""),
+        }
+    return index
+
+
 def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical spell lookup tables."""
 
@@ -491,23 +515,54 @@ def build_indexes(  # noqa: C901, PLR0913
 ) -> dict[str, Any]:
     """Aggregate monster, spell, equipment, table, lineage, class, condition, disease, poison, feature, and entity indexes for dataset output."""
 
-    monster_indexes = build_monster_index(monsters)
-    by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
+    # Split into monsters, creatures (MM-A), and NPCs (MM-B) based on ID prefix
+    actual_monsters = [m for m in monsters if fallback_id(m).startswith("monster:")]
+    misc_creatures = [m for m in monsters if fallback_id(m).startswith("creature:")]
+    npcs = [m for m in monsters if fallback_id(m).startswith("npc:")]
+
+    # Build indexes for monsters (main section, pages 261-365)
+    monster_indexes = build_monster_index(actual_monsters)
+    by_name, name_conflicts = _build_by_name_map(
+        actual_monsters, display_normalizer=display_normalizer
+    )
     if by_name:
         monster_indexes["by_name"] = by_name
-    monster_entity_index = _build_entity_index(monsters)
+    monster_entity_index = _build_entity_index(actual_monsters)
+
+    # Build indexes for misc creatures (Appendix MM-A, pages 366-394)
+    creature_indexes = build_monster_index(misc_creatures)
+    creature_by_name, _ = _build_by_name_map(misc_creatures, display_normalizer=display_normalizer)
+    if creature_by_name:
+        creature_indexes["by_name"] = creature_by_name
+    creature_entity_index = _build_creature_entity_index(misc_creatures)
+
+    # Build indexes for NPCs (Appendix MM-B, pages 395-403)
+    npc_indexes = build_monster_index(npcs)
+    npc_by_name, _ = _build_by_name_map(npcs, display_normalizer=display_normalizer)
+    if npc_by_name:
+        npc_indexes["by_name"] = npc_by_name
+    npc_entity_index = _build_npc_entity_index(npcs)
 
     # Build entity structure with nested type-specific keys
     entities: dict[str, dict[str, dict[str, str]]] = {
         "monsters": monster_entity_index,
+        "creatures": creature_entity_index,
+        "npcs": npc_entity_index,
     }
 
     payload: dict[str, Any] = {
         "monsters": monster_indexes,
+        "creatures": creature_indexes,
+        "npcs": npc_indexes,
         "entities": entities,
         "stats": {
-            "total_monsters": len(monsters),
-            "total_entities": len(monster_entity_index),
+            "total_monsters": len(actual_monsters),
+            "total_creatures": len(misc_creatures),
+            "total_npcs": len(npcs),
+            "total_all_creatures": len(monsters),  # Combined count
+            "total_entities": len(monster_entity_index)
+            + len(creature_entity_index)
+            + len(npc_entity_index),
             "unique_crs": len(monster_indexes["by_cr"]),
             "unique_types": len(monster_indexes["by_type"]),
             "unique_sizes": len(monster_indexes["by_size"]),

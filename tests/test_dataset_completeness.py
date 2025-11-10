@@ -16,7 +16,7 @@ DIST_DIR = Path("dist/srd_5_1")
 # Expected minimum counts for each dataset
 # These represent the known SRD 5.1 content
 EXPECTED_COUNTS = {
-    "monsters": 296,  # Full monster list from MM Appendix
+    "monsters": 317,  # 201 monsters + 95 creatures (MM-A) + 21 NPCs (MM-B)
     "spells": 319,  # All SRD spells
     "equipment": 200,  # ~200+ equipment items (weapons, armor, gear, packs, etc.)
     "tables": 38,  # Reference tables throughout the document
