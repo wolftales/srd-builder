@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "ruleset": "srd_5_1",
-    "schema_version": "1.4.0",
     "source": "SRD_CC_v5.1",
-    "build_report": "./build_report.json",
-    "generated_by": "srd-builder v0.9.7"
+    "ruleset_version": "5.1",
+    "schema_version": "1.4.0",
+    "generated_by": "srd-builder v0.10.0",
+    "build_report": "./build_report.json"
   },
   "items": [
     {

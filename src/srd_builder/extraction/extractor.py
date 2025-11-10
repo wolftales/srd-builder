@@ -12,8 +12,8 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
+from .extraction_metadata import get_table_metadata
 from .patterns import RawTable, extract_by_config
-from .table_metadata import get_table_metadata
 
 try:
     from scripts.table_targets import TARGET_TABLES, TableTarget

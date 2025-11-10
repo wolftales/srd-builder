@@ -1,7 +1,7 @@
 """Unified table extraction engine.
 
 This module contains pattern-based extraction engines that interpret table configs
-from table_metadata.py. The config's pattern_type field routes to the appropriate
+from extraction_metadata.py. The config's pattern_type field routes to the appropriate
 extraction engine, eliminating the need for table-specific parsing functions.
 
 Design Philosophy:
@@ -14,6 +14,7 @@ Supported Pattern Types:
 - split_column: Side-by-side sub-tables within same page region
 - multipage_text_region: Text extraction across multiple page regions
 - text_region: Text extraction from single page region
+- prose_section: Named prose sections (conditions, diseases, equipment descriptions)
 - calculated: Generated from formula/lookup
 - reference: Static hardcoded data (fallback)
 """
@@ -61,13 +62,14 @@ def extract_by_config(
     - split_column → _extract_split_column()
     - text_region → _extract_text_region()
     - multipage_text_region → _extract_multipage_text_region()
+    - prose_section → _extract_prose_section()
     - standard_grid → _extract_standard_grid()
 
     Args:
         table_id: Unique table identifier (e.g., "table:experience_by_cr")
         simple_name: Simple name (e.g., "experience_by_cr")
         page: Source page number(s)
-        config: Table configuration dict from table_metadata.py
+        config: Table configuration dict from extraction_metadata.py
         section: Optional section name
         pdf_path: Path to PDF file (required for PDF extraction patterns)
 
@@ -102,6 +104,11 @@ def extract_by_config(
         return _extract_multipage_text_region(
             table_id, simple_name, page, config, section, pdf_path
         )
+
+    elif pattern_type == "prose_section":
+        if not pdf_path:
+            raise ValueError(f"PDF extraction for {simple_name} requires pdf_path parameter")
+        return _extract_prose_section(table_id, simple_name, page, config, section, pdf_path)
 
     elif pattern_type == "standard_grid":
         if not pdf_path:
@@ -485,8 +492,18 @@ def _extract_text_region(
                 col_words = [text for x, text in sorted_words if x_start <= x < x_end]
                 row.append(" ".join(col_words))
 
-            # Add all rows, including continuation rows (empty first column)
+            # Skip header rows (check for actual header row, not just matching values)
             if row:
+                matching_headers = sum(
+                    1
+                    for cell in row
+                    if any(h.lower() == str(cell).lower().strip() for h in headers)
+                )
+                non_empty = sum(1 for cell in row if str(cell).strip())
+                # Skip if more than half the cells are exact header matches
+                if non_empty > 0 and matching_headers > non_empty / 2:
+                    continue
+
                 rows.append(row)  # type: ignore[arg-type]
 
         # Post-process: merge continuation rows (rows where first column is empty)
@@ -547,11 +564,105 @@ def _extract_multipage_text_region(
 ) -> RawTable:
     """Extract multipage text-region table (across page boundaries).
 
-    Used for tables like food_drink_lodging that span multiple pages.
+    Used for tables that span multiple pages with different regions per page.
+
+    Config requirements:
+        - pages: list[int] - Page numbers
+        - headers: list[str] - Column headers
+        - regions: list[dict] - One region per page, each with:
+            - page: int - Page number
+            - x_min, x_max, y_min, y_max: coordinates
     """
-    # TODO: Implement once we have more examples
-    raise NotImplementedError(
-        f"multipage_text_region pattern not yet implemented for {simple_name}"
+    import pymupdf
+
+    from .text_parser_utils import group_words_by_y
+
+    pages = config["pages"]
+    headers = config["headers"]
+    regions = config["regions"]
+    num_columns = len(headers)
+
+    # Validate regions
+    if len(regions) != len(pages):
+        raise ValueError(
+            f"{simple_name}: multipage_text_region requires one region per page, "
+            f"got {len(regions)} regions for {len(pages)} pages"
+        )
+
+    doc = pymupdf.open(pdf_path)
+
+    # Collect all rows from all pages
+    all_rows_dict = {}
+
+    for region in regions:
+        page_num = region["page"]
+        page_obj = doc[page_num - 1]  # Convert to 0-indexed
+
+        # Get all words from page
+        words = page_obj.get_text("words")
+
+        # Filter words to region and group by Y-coordinate
+        rows_dict = group_words_by_y(
+            words,
+            y_tolerance=2.0,
+            x_min=region["x_min"],
+            x_max=region["x_max"],
+            y_min=region["y_min"],
+            y_max=region["y_max"],
+        )
+
+        # Merge with global offset to maintain sort order across pages
+        # Use page_num * 1000 + y_pos to ensure proper ordering
+        for y_pos, row_words in rows_dict.items():
+            global_y = page_num * 1000 + y_pos
+            all_rows_dict[global_y] = row_words
+
+    doc.close()
+
+    # Build table rows
+    rows: list[list[str | int | float]] = []
+    column_boundaries = config.get("column_boundaries")
+
+    if column_boundaries:
+        # Multi-column with explicit boundaries
+        for _y_pos, row_words in sorted(all_rows_dict.items()):
+            sorted_words = sorted(row_words, key=lambda w: w[0])
+
+            row = []
+            for col_idx in range(num_columns):
+                # Use first region for column boundary reference
+                x_start = column_boundaries[col_idx - 1] if col_idx > 0 else regions[0]["x_min"]
+                x_end = (
+                    column_boundaries[col_idx]
+                    if col_idx < len(column_boundaries)
+                    else regions[0]["x_max"]
+                )
+
+                col_words = [text for x, text in sorted_words if x_start <= x < x_end]
+                row.append(" ".join(col_words))
+
+            if row:
+                rows.append(row)  # type: ignore[arg-type]
+    else:
+        # Single-column or simple layout
+        for _y_pos, row_words in sorted(all_rows_dict.items()):
+            sorted_words = sorted(row_words, key=lambda w: w[0])
+            row_text = " ".join([text for _, text in sorted_words])
+            if row_text.strip():
+                rows.append([row_text])  # type: ignore[list-item]
+
+    return RawTable(
+        table_id=table_id,
+        simple_name=simple_name,
+        page=page,
+        headers=headers,
+        rows=rows,
+        extraction_method="multipage_text_region",
+        section=section,
+        notes=config.get("notes", ""),
+        chapter=config.get("chapter"),
+        confirmed=config.get("confirmed", False),
+        source=config.get("source", "srd"),
     )
 
 
@@ -675,3 +786,68 @@ def _generate_lookup_rows(config: dict[str, Any]) -> list[list[str | int | float
             rows.append([key, value])
 
     return rows
+
+
+def _extract_prose_section(
+    table_id: str,
+    simple_name: str,
+    page: int | list[int],
+    config: dict[str, Any],
+    section: str | None,
+    pdf_path: str,
+) -> RawTable:
+    """Extract prose sections (conditions, diseases, equipment descriptions, etc.).
+
+    Config fields:
+        - known_headers: list[str] - Known section names (empty = dynamic discovery)
+        - pages: tuple[int, int] - (start_page, end_page)
+
+    Returns prose sections as a "table" with:
+        headers: ["name", "text", "page"]
+        rows: [[section_name, prose_text, page_num], ...]
+    """
+    from pathlib import Path
+
+    from ..prose_extraction import ProseExtractor
+
+    # Get page range
+    if isinstance(page, list):
+        start_page, end_page = page[0], page[-1]
+    else:
+        start_page = end_page = page
+
+    # Override with config pages if provided
+    if "pages" in config:
+        start_page, end_page = config["pages"]
+
+    # Extract using ProseExtractor
+    extractor = ProseExtractor(
+        section_name=config.get("entity_type", simple_name),
+        known_headers=config.get("known_headers", []),
+        start_page=start_page,
+        end_page=end_page,
+    )
+
+    sections, warnings = extractor.extract_from_pdf(Path(pdf_path))
+
+    # Convert to table format
+    rows = []
+    for sect in sections:
+        rows.append([sect.name, sect.raw_text, sect.page])
+
+    if warnings:
+        logger.warning(f"Prose extraction warnings for {simple_name}: {warnings}")
+
+    return RawTable(
+        table_id=table_id,
+        simple_name=simple_name,
+        page=page,
+        headers=["name", "text", "page"],
+        rows=rows,
+        extraction_method="prose_section",
+        section=section,
+        notes=config.get("notes"),
+        chapter=config.get("chapter"),
+        confirmed=config.get("confirmed", False),
+        source="srd",
+    )

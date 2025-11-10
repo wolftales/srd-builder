@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/madness.schema.json",
+  "version": "1.4.0",
+  "last_modified": "2025-11-09",
+  "title": "SRD 5.1 Madness",
+  "description": "Madness effects from SRD 5.1 pages 201-202. Madness categories with random effect tables.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "duration",
+    "effects",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^madness:[a-z0-9_]+$",
+      "description": "Unique identifier using the madness: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Short-Term Madness')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description"
+    },
+    "duration": {
+      "type": "string",
+      "description": "How long madness lasts (e.g., '1d10 minutes', 'until cured')"
+    },
+    "effects": {
+      "type": "array",
+      "description": "List of possible madness effects (random table entries)",
+      "items": {
+        "type": "object",
+        "required": [
+          "roll",
+          "effect"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "roll": {
+            "type": "string",
+            "description": "Dice roll or range (e.g., '1-10', '11-20')"
+          },
+          "effect": {
+            "type": "string",
+            "description": "Madness effect description"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "recovery": {
+      "type": "string",
+      "description": "How madness can be cured"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata"
+    }
+  }
+}

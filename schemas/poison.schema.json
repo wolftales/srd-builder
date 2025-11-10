@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/poison.schema.json",
+  "version": "1.4.0",
+  "last_modified": "2025-11-09",
+  "title": "SRD 5.1 Poison",
+  "description": "Poisons from SRD 5.1 pages 204-205. Poisons with application methods, effects, and costs.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "type",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^poison:[a-z0-9_]+$",
+      "description": "Unique identifier using the poison: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Assassin's Blood', 'Truth Serum')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "contact",
+        "ingested",
+        "inhaled",
+        "injury"
+      ],
+      "description": "Application method"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full poison mechanics and effects"
+    },
+    "save": {
+      "type": "object",
+      "description": "Saving throw to resist effects",
+      "properties": {
+        "ability": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "dc": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "damage": {
+      "type": "object",
+      "description": "Poison damage",
+      "properties": {
+        "dice": {
+          "type": "string",
+          "description": "Damage dice (e.g., '1d12')"
+        },
+        "type": {
+          "type": "string",
+          "description": "Damage type (usually 'poison')"
+        },
+        "on_save": {
+          "type": "string",
+          "description": "Damage on successful save (e.g., 'half', 'none')"
+        }
+      }
+    },
+    "condition": {
+      "type": "string",
+      "description": "Condition imposed by poison (e.g., 'poisoned')"
+    },
+    "duration": {
+      "type": "string",
+      "description": "How long poison effects last"
+    },
+    "cost": {
+      "type": "object",
+      "description": "Purchase cost",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "cp",
+            "sp",
+            "gp",
+            "pp"
+          ]
+        }
+      }
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata"
+    }
+  }
+}

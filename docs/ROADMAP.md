@@ -48,19 +48,19 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.9.6 — TOC & Page Index (PAGE_INDEX module with 23 sections, 24 reference tables)
 - ✅ v0.9.7 — Migrate REFERENCE Tables (travel_pace, size_categories extracted; non-SRD tables removed)
 - ✅ v0.9.8 — Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
-
-**Recently Completed:**
 - ✅ v0.9.9 — Equipment Assembly & Table Migration (Part 1: Table migration ✅ complete; Part 2: Equipment assembly ✅ complete; Part 3: Descriptions & enhancements ✅ complete)
 - ✅ v0.10.0 — Conditions Dataset (15 conditions from Appendix PH-A, prose extraction framework)
+- ✅ v0.11.0 — Features Dataset (246 class features + lineage traits extracted from PDF)
 
 **In Progress:**
-- 🔄 v0.11.0 — Features Dataset (class/racial features) - Next target
+- 🔄 v0.12.0 — Appendix MM-B: NPCs (Nonplayer Characters) - Next target
 
 **Planned:**
-- 📖 v0.11.0 — Features Dataset (class/racial features)
-- 📖 v0.11.0 — Features Dataset (class/racial features)
-- 📜 v0.12.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
-- 🎨 v0.13.0 — Quality & Polish (final cleanup before v1.0.0)
+- 📖 v0.12.0 — Appendix MM-B: NPCs (Nonplayer Characters)
+- 📖 v0.13.0 — Appendix MM-A: Miscellaneous Creatures
+- 📖 v0.14.0 — Magic Items
+- 📜 v0.15.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
+- 🎨 v0.16.0 — Quality & Polish (final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
 ---
@@ -80,10 +80,14 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
 | `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
 | `conditions.json` | ✅ Complete | 15 | v0.10.0 | Status conditions (blinded, stunned, exhaustion, etc.) |
-| `features.json` | 📋 Planned | TBD | v0.11.0 | Class/lineage features (Action Surge, Darkvision) |
-| `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
+| `diseases.json` | ✅ Complete | 3 | v0.10.0 | Diseases (Cackle Fever, Sewer Plague, Sight Rot) |
+| `madness.json` | ✅ Complete | 3 | v0.10.0 | Madness tables (short-term, long-term, indefinite) |
+| `poisons.json` | ✅ Complete | 14 | v0.10.0 | Poisons with effects, costs, and save DCs |
+| `features.json` | ✅ Complete | 246 | v0.11.0 | Class/lineage features (Rage, Darkvision, Action Surge) |
+| `magic_items.json` | 📋 Planned | TBD | v0.14.0 | Magic weapons, armor, wondrous items |
+| `rules.json` | 📋 Planned | TBD | v0.15.0 | Core mechanics, variant rules |
 
-**Progress:** 9/11 datasets complete (82%)
+**Progress:** 13/15 datasets complete (87%)
 
 **What You Can Build Right Now:**
 - ✅ **Character Sheet App** - Full classes, lineages, ability scores, equipment, and spell lists
@@ -93,8 +97,9 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ **Reference Tables** - Character advancement, spell slots, class progressions, travel pace
 
 **Missing for Complete 5e Implementation:**
-- ⏳ **Features** (v0.11.0) - Class/racial features (Action Surge, Darkvision) with full descriptions
-- ⏳ **Rules** (v0.12.0) - Core mechanics (advantage, saving throws, combat actions)
+- ⏳ **NPCs** (v0.12.0) - Nonplayer character statblocks from Appendix MM-B
+- ⏳ **Magic Items** (v0.14.0) - Magic weapons, armor, and wondrous items
+- ⏳ **Rules** (v0.15.0) - Core mechanics (advantage, saving throws, combat actions)
 
 **Note on CALCULATED Tables:**
 - `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**
@@ -1777,17 +1782,11 @@ def _extract_split_column(config):  # Reads ALL parameters from config
 - `src/srd_builder/table_extraction/extractor.py` - Use table_metadata
 - `src/srd_builder/table_extraction/reference_data.py` - Removed experience_by_cr
 
-**Future Work:**
-- **v0.9.6 - TOC & Page Index:** Build ascending-order table of contents with accurate PDF page numbers
-- **v0.9.7 - Migrate REFERENCE tables:** Convert remaining 4 hardcoded tables to PDF extraction (spell_slots, cantrip_damage, travel_pace, creature_size)
-- **v0.9.8 - Migrate CLASS_PROGRESSIONS:** Extract 12 class tables from PDF (remove use_legacy_data flag)
-- **Future - Convert legacy_parser tables:** Gradually migrate 16 tables to generic patterns (text_region, multipage_text_region)
-- **v0.9.6 - Page number accuracy:** Fix table_targets.py (has wrong page numbers from TOC references)
-
-**Known Issues:**
-- table_targets.py has incorrect page numbers (TOC page references vs actual PDF pages)
-- No centralized page index in ascending order
-- Appendix sections not tracked (e.g., Appendix MM-B: NPCs pages 395-403)
+**Completed Follow-ups:**
+- ✅ v0.9.6 - TOC & Page Index: Built PAGE_INDEX module with 23 sections and accurate page numbers
+- ✅ v0.9.7 - Migrate REFERENCE tables: Migrated travel_pace and size_categories to PDF extraction
+- ✅ v0.9.8 - Migrate CLASS_PROGRESSIONS: All 12 class tables extracted from PDF
+- ✅ Page number accuracy: Fixed via PAGE_INDEX module with verified page ranges
 
 ---
 
@@ -2460,8 +2459,32 @@ Created reusable components for future prose sections (diseases, madness, poison
 - ✅ Build integration tested end-to-end
 
 **Schema:** 1.0.0 (new dataset)
-   - Travel expenses
-   - Downtime activities
+
+**Known Limitations:**
+
+**Poison Descriptions - PDF Corruption (pages 204-205)**
+
+**Issue:** SRD PDF pages 204-205 have corrupted text extraction. The poison description paragraphs cannot be extracted programmatically - text extraction returns garbled characters.
+
+**Current Solution:** Manual descriptions maintained in `src/srd_builder/data/poison_descriptions_manual.py`
+- All 14 poisons have complete descriptions (manually typed)
+- Includes save DC, damage formulas, and effect text
+- Fallback logic prioritizes manual descriptions over corrupted extracted text
+
+**Impact:**
+- ✅ All 14 poisons in poisons.json have complete, accurate descriptions
+- ✅ Manual transcription ensures data quality
+- ⚠️ Automated extraction blocked by PDF source issue
+
+**Future Work:**
+- Monitor for better PDF source from Wizards of the Coast
+- Consider OCR if new PDF not available
+- Automated extraction will be preferred if PDF text is fixed
+
+**Related Files:**
+- `src/srd_builder/data/poison_descriptions_manual.py` - Manual description data
+- `src/srd_builder/parse_poisons_table.py` - Falls back to manual descriptions
+- `src/srd_builder/extraction/extraction_metadata.py` - Notes about corrupted pages
 
 **Why Separate Tables?**
 - Equipment items in equipment.json: Detailed integration data
@@ -2535,8 +2558,8 @@ Created reusable components for future prose sections (diseases, madness, poison
 
 ## **v0.11.0 — Features Dataset** **[DATA]**
 
-**Status:** PLANNED - New dataset
-**Priority:** MEDIUM
+**Status:** IN PROGRESS - Next target
+**Priority:** HIGH - Needed for Blackmoor
 **Effort:** Medium (derived from classes/lineages)
 **Consumer Impact:** NEW - Standalone searchable features
 
@@ -2573,9 +2596,108 @@ Created reusable components for future prose sections (diseases, madness, poison
 
 ---
 
-## **v0.12.0 — Rules Dataset** **[DATA]**
+## **v0.12.0 — Appendix MM-B: NPCs** **[DATA]**
 
-**Priority:** MEDIUM
+**Status:** PLANNED - Next after Features
+**Priority:** HIGH - Essential game content
+**Effort:** Low (reuses monster extraction)
+**Consumer Impact:** NEW - ~20-30 NPC stat blocks
+
+**Goal:** Extract NPC stat blocks from Appendix MM-B (pages 395-403).
+
+**Why NPCs?**
+- Essential for running games (guards, mages, nobles, bandits)
+- DMs use these constantly, not just boss monsters
+- Complete the creature roster for gameplay
+
+**Implementation:**
+- Same extraction as monsters (reuse existing pipeline)
+- Same schema as monsters.json (stat blocks)
+- Add to monsters.json with category: "npc" or similar
+- Pages 395-403 in SRD 5.1
+
+**Estimated NPCs:**
+- Guards, soldiers, scouts
+- Mages, priests, acolytes
+- Nobles, commoners, bandits
+- ~20-30 stat blocks total
+
+**Success Criteria:**
+- All NPCs from Appendix MM-B extracted
+- Added to monsters.json dataset
+- Indexed by name and type
+- Ready for DM use
+
+---
+
+## **v0.13.0 — Appendix MM-A: Miscellaneous Creatures** **[DATA]**
+
+**Status:** PLANNED
+**Priority:** HIGH - Complete creature content
+**Effort:** Low-Medium (reuses monster extraction)
+**Consumer Impact:** NEW - Additional creature stat blocks
+
+**Goal:** Extract any remaining creatures from Appendix MM-A.
+
+**Why Misc Creatures?**
+- Complete the creature roster
+- Ensures no monsters are missing from SRD 5.1
+- Final creature extraction before magic items
+
+**Implementation:**
+- Same extraction as monsters (reuse existing pipeline)
+- Same schema as monsters.json (stat blocks)
+- Add to monsters.json dataset
+- Identify page range for Appendix MM-A
+
+**Success Criteria:**
+- All creatures from Appendix MM-A extracted
+- Added to monsters.json dataset
+- Complete creature coverage from SRD 5.1
+- No missing monster stat blocks
+
+---
+
+## **v0.14.0 — Magic Items** **[DATA]**
+
+**Status:** PLANNED
+**Priority:** HIGH - Critical gameplay content
+**Effort:** Medium (new extraction pattern)
+**Consumer Impact:** NEW - Magic item dataset
+
+**Goal:** Extract magic items from SRD 5.1.
+
+**Why Magic Items?**
+- Essential for D&D gameplay (loot, rewards, character progression)
+- Completes equipment dataset (mundane + magic)
+- Frequently referenced during play
+
+**Challenges:**
+- Items span multiple pages
+- Varying formats (weapons, armor, wondrous items, potions, scrolls)
+- Some items have tables (charges, effects)
+- Need to link magic items to base equipment
+
+**Scope:**
+- Magic weapons (+1 sword, flame tongue, etc.)
+- Magic armor (+1 plate, armor of invulnerability)
+- Wondrous items (bag of holding, cloak of elvenkind)
+- Potions and scrolls
+- Artifacts (if in SRD)
+
+**Schema Considerations:**
+- Separate magic_items.json or extend equipment.json?
+- Reference base equipment (item:longsword)
+- Rarity (common, uncommon, rare, very rare, legendary)
+- Attunement requirements
+- Charges and uses
+
+---
+
+## **v0.15.0 — Rules Dataset** **[DATA]**
+
+**Status:** PLANNED
+**Priority:** MEDIUM - Nice to have
 **Effort:** High (complex text parsing)
 **Consumer Impact:** NEW - Core mechanics and variant rules
 
@@ -2584,26 +2706,27 @@ Created reusable components for future prose sections (diseases, madness, poison
 **Why Rules?**
 - Combat rules (attack, damage, cover)
 - Spellcasting rules (concentration, components)
-- Conditions mechanics (detailed effects)
 - Variant rules (feats, multiclassing)
-- Originally scoped in Week 6 of initial plan
+- Complete rule reference for consumers
 
 **Challenges:**
 - Most complex text parsing (not tables or stat blocks)
 - Least structured data in SRD
 - Requires careful rule text segmentation
+- May not be needed for v1.0.0 (consumers can reference PDF)
 
 **Scope:**
 - Core mechanics (ability checks, saving throws, combat)
 - Spellcasting rules
 - Movement and exploration
 - Variant rules (feats, multiclassing prerequisites)
-- Optional rules
+- CALCULATED tables moved here (proficiency_bonus, carrying_capacity)
 
 ---
 
-## **v0.13.0 — Quality & Polish** **[QUALITY]**
+## **v0.16.0 — Quality & Polish** **[QUALITY]**
 
+**Status:** PLANNED
 **Priority:** HIGH - Required before v1.0.0
 **Effort:** Medium
 **Consumer Impact:** IMPROVED - Better data quality across all datasets
@@ -2613,7 +2736,7 @@ Created reusable components for future prose sections (diseases, madness, poison
 **Why Before v1.0.0?**
 - Clean up known technical debt
 - Improve data quality metrics
-- Polish rough edges identified during v0.8.x-v0.9.x development
+- Polish rough edges identified during development
 - Ensure production-ready state for all datasets
 
 **Scope:**
@@ -2678,28 +2801,34 @@ Created reusable components for future prose sections (diseases, madness, poison
 **Goal:** First stable release with complete SRD 5.1 coverage and production-ready quality.
 
 **Prerequisites:**
-- All datasets complete (v0.10.0 Conditions, v0.11.0 Features, v0.12.0 Rules)
-- v0.13.0 Quality & Polish complete
+- All core datasets complete (v0.11.0 Features, v0.12.0 NPCs, v0.13.0 Misc Creatures, v0.14.0 Magic Items)
+- v0.15.0 Rules (optional - may defer to v1.1.0)
+- v0.16.0 Quality & Polish complete
 
-**Complete SRD 5.1 Coverage (11 datasets):
-- ✅ Monsters (296)
-- ✅ Equipment (106)
+**Complete SRD 5.1 Coverage (12+ datasets):**
+- ✅ Monsters (296 + NPCs + Misc Creatures)
+- ✅ Equipment (258 items)
 - ✅ Spells (319)
-- ✅ Reference Tables (~15)
-- ✅ Classes (~13)
-- ✅ Lineages (~9)
-- ✅ Conditions (~15)
-- ✅ Features (~150-200)
-- ✅ Rules (core mechanics)
+- ✅ Tables (37+2 reference tables)
+- ✅ Classes (12)
+- ✅ Lineages (13)
+- ✅ Conditions (15)
+- ✅ Diseases (3)
+- ✅ Madness (3 tables)
+- ✅ Poisons (14)
+- ✅ Features (~150-200 class/lineage features)
+- ✅ Magic Items (TBD count)
+- ⏳ Rules (optional - defer to v1.1.0 if needed)
 
 **Why This is v1.0.0:**
-- Complete extraction of SRD 5.1 content
+- Complete extraction of essential SRD 5.1 content
+- All gameplay content available (monsters, spells, equipment, items, features)
 - Cannot move to SRD 5.2.1 until 5.1 is complete
 - First stable release with full dataset
-- Ready for consumer integration
+- Ready for consumer integration (Blackmoor)
 
 **First GitHub Release:**
-- Complete dataset bundle (all 9 JSON files)
+- Complete dataset bundle (all JSON files)
 - Full changelog (v0.1.0 → v1.0.0)
 - Consumer documentation
 - Example code

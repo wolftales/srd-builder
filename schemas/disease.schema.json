@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/disease.schema.json",
+  "version": "1.4.0",
+  "last_modified": "2025-11-09",
+  "title": "SRD 5.1 Disease",
+  "description": "Diseases from SRD 5.1 pages 199-200. Diseases affect creatures with ongoing effects and save mechanics.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "description",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^disease:[a-z0-9_]+$",
+      "description": "Unique identifier using the disease: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Cackle Fever', 'Sewer Plague')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing and search"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description for tooltips"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full disease mechanics and effects"
+    },
+    "contagion": {
+      "type": "object",
+      "description": "How the disease spreads",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "Transmission method (e.g., 'contact', 'injury', 'inhaled')"
+        },
+        "description": {
+          "type": "string",
+          "description": "Details about transmission"
+        }
+      }
+    },
+    "save": {
+      "type": "object",
+      "description": "Saving throw to resist or recover",
+      "properties": {
+        "ability": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ],
+          "description": "Ability used for save"
+        },
+        "dc": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Save DC"
+        },
+        "frequency": {
+          "type": "string",
+          "description": "How often saves are made (e.g., 'at the end of each long rest')"
+        }
+      }
+    },
+    "effects": {
+      "type": "array",
+      "description": "List of mechanical effects while diseased",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "incubation": {
+      "type": "string",
+      "description": "Time before effects manifest (e.g., '1d4 days')"
+    },
+    "duration": {
+      "type": "string",
+      "description": "How long the disease lasts"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata"
+    }
+  }
+}

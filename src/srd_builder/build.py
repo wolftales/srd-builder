@@ -19,37 +19,55 @@ from typing import Any
 
 from . import __version__
 from .assemble_equipment import assemble_equipment_from_tables
-from .build_conditions import build_conditions
+from .build_prose_dataset import build_prose_dataset
 from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
+from .extract_features import extract_class_features, extract_lineage_traits
 from .extract_monsters import extract_monsters
 from .extract_pdf_metadata import extract_pdf_metadata
 from .extract_spells import extract_spells
+from .extraction import extract_tables_to_json
+from .extraction.extraction_metadata import TABLES
 from .indexer import build_indexes
 from .parse_classes import parse_classes
+from .parse_conditions import parse_condition_records
+from .parse_diseases import parse_disease_records
 from .parse_equipment import parse_equipment_records
+from .parse_features import parse_features
 from .parse_lineages import parse_lineages
 from .parse_monsters import parse_monster_records
+from .parse_poison_descriptions import parse_poison_description_records
+from .parse_poisons_table import parse_poisons_table
 from .parse_spells import parse_spell_records
 from .parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
-from .table_extraction import extract_tables_to_json
 from .table_indexer import TableIndexer
 
 
-def _meta_block(ruleset: str) -> dict[str, str]:
+def _meta_block(ruleset: str, ruleset_version: str = "5.1") -> dict[str, str]:
+    """Generate standardized _meta block with consistent field order.
+
+    Standard order:
+    1. source
+    2. ruleset_version
+    3. schema_version
+    4. generated_by
+    5. build_report
+    """
     return {
-        "ruleset": ruleset,
-        "schema_version": SCHEMA_VERSION,
         "source": DATA_SOURCE,
-        "build_report": "./build_report.json",
+        "ruleset_version": ruleset_version,
+        "schema_version": SCHEMA_VERSION,
         "generated_by": f"srd-builder v{__version__}",
+        "build_report": "./build_report.json",
     }
 
 
-def _wrap_with_meta(payload: dict[str, Any], *, ruleset: str) -> dict[str, Any]:
+def _wrap_with_meta(
+    payload: dict[str, Any], *, ruleset: str, ruleset_version: str = "5.1"
+) -> dict[str, Any]:
     document: OrderedDict[str, Any] = OrderedDict()
-    document["_meta"] = _meta_block(ruleset)
+    document["_meta"] = _meta_block(ruleset, ruleset_version)
     for key, value in payload.items():
         document[key] = value
     return document
@@ -162,6 +180,10 @@ def _generate_meta_json(
             "lineages": "lineages.json",
             "classes": "classes.json",
             "conditions": "conditions.json",
+            "diseases": "diseases.json",
+            "madness": "madness.json",
+            "poisons": "poisons.json",
+            "features": "features.json",
         },
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": {
@@ -172,14 +194,19 @@ def _generate_meta_json(
             "lineages": "complete",
             "classes": "complete" if classes_complete else "in_progress",
             "conditions": "complete",
+            "diseases": "complete",
+            "madness": "complete",
+            "poisons": "complete",
+            "features": "complete",
         },
         "$schema_version": SCHEMA_VERSION,
     }
 
 
-def _write_datasets(
+def _write_datasets(  # noqa: PLR0913
     *,
     ruleset: str,
+    ruleset_version: str,
     dist_data_dir: Path,
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
@@ -188,10 +215,15 @@ def _write_datasets(
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
     conditions: list[dict[str, Any]] | None = None,
+    diseases: list[dict[str, Any]] | None = None,
+    poisons: list[dict[str, Any]] | None = None,
+    features: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
-    monsters_doc = _wrap_with_meta({"items": processed_monsters}, ruleset=ruleset)
+    monsters_doc = _wrap_with_meta(
+        {"items": processed_monsters}, ruleset=ruleset, ruleset_version=ruleset_version
+    )
     (dist_data_dir / "monsters.json").write_text(
         _render_json(monsters_doc),
         encoding="utf-8",
@@ -201,7 +233,9 @@ def _write_datasets(
     processed_equipment = None
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
-        equipment_doc = _wrap_with_meta({"items": processed_equipment}, ruleset=ruleset)
+        equipment_doc = _wrap_with_meta(
+            {"items": processed_equipment}, ruleset=ruleset, ruleset_version=ruleset_version
+        )
 
         # Add equipment-specific metadata (SRD economic rules)
         equipment_doc["_meta"]["equipment_economics"] = {
@@ -227,7 +261,9 @@ def _write_datasets(
     else:
         processed_spells = []
 
-    spells_doc = _wrap_with_meta({"items": processed_spells}, ruleset=ruleset)
+    spells_doc = _wrap_with_meta(
+        {"items": processed_spells}, ruleset=ruleset, ruleset_version=ruleset_version
+    )
     (dist_data_dir / "spells.json").write_text(
         _render_json(spells_doc),
         encoding="utf-8",
@@ -271,7 +307,9 @@ def _write_datasets(
                 ordered["rows"] = table["rows"]
             reordered_tables.append(ordered)
 
-        tables_doc = _wrap_with_meta({"items": reordered_tables}, ruleset=ruleset)
+        tables_doc = _wrap_with_meta(
+            {"items": reordered_tables}, ruleset=ruleset, ruleset_version=ruleset_version
+        )
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
             encoding="utf-8",
@@ -281,7 +319,9 @@ def _write_datasets(
     # Lineages are already fully normalized by parse_lineages, no additional cleaning needed
     processed_lineages = lineages if lineages else None
     if processed_lineages:
-        lineages_doc = _wrap_with_meta({"items": processed_lineages}, ruleset=ruleset)
+        lineages_doc = _wrap_with_meta(
+            {"items": processed_lineages}, ruleset=ruleset, ruleset_version=ruleset_version
+        )
         (dist_data_dir / "lineages.json").write_text(
             _render_json(lineages_doc),
             encoding="utf-8",
@@ -291,7 +331,9 @@ def _write_datasets(
     # Classes are already fully normalized by parse_classes, no additional cleaning needed
     processed_classes = classes if classes else None
     if processed_classes:
-        classes_doc = _wrap_with_meta({"items": processed_classes}, ruleset=ruleset)
+        classes_doc = _wrap_with_meta(
+            {"items": processed_classes}, ruleset=ruleset, ruleset_version=ruleset_version
+        )
         (dist_data_dir / "classes.json").write_text(
             _render_json(classes_doc),
             encoding="utf-8",
@@ -309,6 +351,36 @@ def _write_datasets(
         # Extract just the conditions list for indexing
         processed_conditions = conditions.get("conditions", [])
 
+    # Write diseases (v0.11.0)
+    processed_diseases = None
+    if diseases:
+        (dist_data_dir / "diseases.json").write_text(
+            _render_json(diseases),
+            encoding="utf-8",
+        )
+        processed_diseases = diseases.get("diseases", [])
+
+    # Write poisons (v0.11.0)
+    # Poisons is a single table record (like madness tables)
+    processed_poisons = None
+    if poisons:
+        (dist_data_dir / "poisons.json").write_text(
+            _render_json(poisons),
+            encoding="utf-8",
+        )
+        # Extract just the items list for indexing
+        processed_poisons = poisons.get("items", [])
+
+    # Write features (v0.11.0)
+    processed_features = None
+    if features:
+        (dist_data_dir / "features.json").write_text(
+            _render_json(features),
+            encoding="utf-8",
+        )
+        # Extract just the features list for indexing
+        processed_features = features.get("features", [])
+
     index_payload = build_indexes(
         processed_monsters,
         processed_spells,
@@ -317,8 +389,11 @@ def _write_datasets(
         processed_lineages,
         processed_classes,
         processed_conditions,
+        processed_diseases,
+        processed_poisons,
+        processed_features,
     )
-    index_doc = _wrap_with_meta(index_payload, ruleset=ruleset)
+    index_doc = _wrap_with_meta(index_payload, ruleset=ruleset, ruleset_version=ruleset_version)
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
         encoding="utf-8",
@@ -333,6 +408,7 @@ class BuildReport:
     output_format: str
     timestamp_utc: str
     builder_version: str
+    schema_version: str
     python_version: str
 
     @classmethod
@@ -345,6 +421,7 @@ class BuildReport:
             output_format=output_format,
             timestamp_utc=timestamp,
             builder_version=__version__,
+            schema_version=SCHEMA_VERSION,
             python_version=platform.python_version(),
         )
 
@@ -450,6 +527,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
         "lineage.schema.json",
         "class.schema.json",
         "condition.schema.json",
+        "features.schema.json",
     ]:
         src = schemas_src / schema_file
         if src.exists():
@@ -773,18 +851,112 @@ def build(  # noqa: C901
     # Classes come from canonical targets, not PDF extraction
     parsed_classes = parse_classes()
 
-    # Build conditions (v0.10.0)
-    # Conditions extracted from PDF Appendix PH-A (pages 358-359)
+    # Build prose datasets (v0.10.0+)
+    # Generic config-driven approach for conditions, diseases, madness, poisons
     pdf_files = sorted(layout["raw"].glob("*.pdf"))
-    conditions_doc = None
-    if pdf_files:
+
+    # Extract features (v0.11.0)
+    # Features come from PDF extraction: class features + lineage traits
+    features_doc = None
+    if pdf_files and "features" not in skip_datasets:
         try:
-            conditions_doc = build_conditions(pdf_files[0])
+            print(f"Extracting features from {pdf_files[0].name}...")
+            raw_class_features = extract_class_features(pdf_files[0])
+            class_features = parse_features(raw_class_features, "class")
+
+            raw_lineage_traits = extract_lineage_traits(pdf_files[0])
+            lineage_traits = parse_features(raw_lineage_traits, "lineage")
+
+            all_features = class_features + lineage_traits
+            print(
+                f"✓ Extracted {len(all_features)} features ({len(class_features)} class + {len(lineage_traits)} lineage)"
+            )
         except Exception as exc:
-            print(f"⚠️ Conditions extraction failed: {exc}")
+            print(f"⚠️ Feature extraction failed: {exc}")
+            all_features = []
+    else:
+        all_features = []
+
+    # Map dataset names to their parser functions
+    # NOTE: Diseases are prose. Madness and poisons use tables + prose descriptions.
+    prose_parsers = {
+        "conditions": parse_condition_records,
+        "diseases": parse_disease_records,
+        "poison_descriptions": parse_poison_description_records,
+    }
+
+    # Build prose datasets
+    conditions_doc = None
+    diseases_doc = None
+    poison_descriptions_by_name = {}
+
+    # Poisons items come from table + descriptions (table itself goes to tables.json)
+    poisons_doc = None
+
+    if pdf_files:
+        for dataset_name, parser_func in prose_parsers.items():
+            try:
+                doc = build_prose_dataset(dataset_name, pdf_files[0], parser_func)
+                # Assign to appropriate variable
+                if dataset_name == "conditions":
+                    conditions_doc = doc
+                elif dataset_name == "diseases":
+                    diseases_doc = doc
+                elif dataset_name == "poison_descriptions":
+                    # Build lookup map for merging with poison table data
+                    output_key = TABLES[dataset_name].get("output_key", "items")
+                    for desc in doc.get(output_key, []):
+                        simple_name = desc.get("simple_name")
+                        if simple_name:
+                            poison_descriptions_by_name[simple_name] = desc
+            except Exception as exc:
+                print(f"⚠️ {dataset_name.capitalize()} extraction failed: {exc}")
+
+    # Extract metadata from PDF if present - do this BEFORE building final docs
+    pdf_metadata = None
+    pdf_files_for_meta = sorted(layout["raw"].glob("*.pdf"))
+    if pdf_files_for_meta:
+        try:
+            pdf_metadata = extract_pdf_metadata(pdf_files_for_meta[0])
+            print(f"✓ Extracted metadata from {pdf_files[0].name}")
+        except Exception as exc:
+            print(f"⚠️ PDF metadata extraction failed: {exc}")
+
+    ruleset_version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
+
+    # Build poison items from table + descriptions (tables themselves go to tables.json)
+    if parsed_tables:
+        # Build poison items from table + descriptions
+        poisons_table = None
+        for table in parsed_tables:
+            if table.get("simple_name") == "poisons":
+                poisons_table = table
+                break
+
+        if poisons_table:
+            try:
+                # Parse poison table into individual item records (equipment-style)
+                parsed_poisons = parse_poisons_table(
+                    poisons_table, descriptions=poison_descriptions_by_name
+                )
+
+                # Wrap as items array with proper _meta
+                poisons_doc = _wrap_with_meta(
+                    {"items": parsed_poisons}, ruleset=ruleset, ruleset_version=ruleset_version
+                )
+                print(f"✓ Parsed {len(parsed_poisons)} poison items")
+            except Exception as exc:
+                print(f"⚠️ Poison item parsing failed: {exc}")
+
+    # Build features document (v0.11.0)
+    if all_features:
+        features_doc = _wrap_with_meta(
+            {"features": all_features}, ruleset=ruleset, ruleset_version=ruleset_version
+        )
 
     _write_datasets(
         ruleset=ruleset,
+        ruleset_version=ruleset_version,
         dist_data_dir=target_dir,
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
@@ -793,17 +965,10 @@ def build(  # noqa: C901
         lineages=parsed_lineages if parsed_lineages else None,
         classes=parsed_classes if parsed_classes else None,
         conditions=conditions_doc if conditions_doc else None,
+        diseases=diseases_doc if diseases_doc else None,
+        poisons=poisons_doc if poisons_doc else None,
+        features=features_doc if features_doc else None,
     )
-
-    # Extract metadata from PDF if present (v0.8.1)
-    pdf_metadata = None
-    pdf_files = sorted(layout["raw"].glob("*.pdf"))
-    if pdf_files:
-        try:
-            pdf_metadata = extract_pdf_metadata(pdf_files[0])
-            print(f"✓ Extracted metadata from {pdf_files[0].name}")
-        except Exception as exc:
-            print(f"⚠️ PDF metadata extraction failed: {exc}")
 
     # Read PDF hash from pdf_meta.json (if present)
     pdf_meta_path = layout["raw"] / "pdf_meta.json"

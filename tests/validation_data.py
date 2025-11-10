@@ -9,7 +9,7 @@ ALL DATA MATCHES ACTUAL PDF EXTRACTION FORMAT:
 - Empty spell slots use " ̶" (space U+0020 + combining overline U+0336)
 - Some classes use "—" (em-dash U+2014) or "̶" (overline alone)
 
-This data was moved from src/srd_builder/table_extraction/reference_data.py
+This data was moved from src/srd_builder/extraction/reference_data.py
 because it's only used for validation/testing, not by production extraction code.
 """
 

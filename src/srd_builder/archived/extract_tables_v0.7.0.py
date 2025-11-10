@@ -113,8 +113,7 @@ class TableExtractor:
                 raw_table = self._extract_single_table(target)
                 tables.append(raw_table)
                 logger.info(
-                    f"  ✓ Extracted {len(raw_table.rows)} rows "
-                    f"via {raw_table.extraction_method}"
+                    f"  ✓ Extracted {len(raw_table.rows)} rows via {raw_table.extraction_method}"
                 )
             except Exception as e:
                 logger.error(f"  ✗ Failed to extract: {e}")

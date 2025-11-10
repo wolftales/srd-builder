@@ -4,7 +4,7 @@ This test ensures that all tables have been migrated to modern pattern-based ext
 Skip with: pytest -k "not legacy" while working on migration.
 """
 
-from srd_builder.table_extraction.table_metadata import TABLES
+from srd_builder.extraction.extraction_metadata import TABLES
 
 
 def test_no_legacy_parser_tables():

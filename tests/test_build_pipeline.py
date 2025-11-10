@@ -94,17 +94,17 @@ def test_build_pipeline(tmp_path, monkeypatch):
 
     monsters_doc = json.loads(monsters_path.read_text(encoding="utf-8"))
     assert monsters_doc["_meta"] == {
-        "ruleset": ruleset,
-        "schema_version": SCHEMA_VERSION,
         "source": "SRD_CC_v5.1",
-        "build_report": "./build_report.json",
+        "ruleset_version": "5.1",
+        "schema_version": SCHEMA_VERSION,
         "generated_by": monsters_doc["_meta"]["generated_by"],
+        "build_report": "./build_report.json",
     }
     assert monsters_doc["_meta"]["generated_by"].startswith("srd-builder v")
     assert len(monsters_doc["items"]) > 0
 
     index_doc = json.loads(index_path.read_text(encoding="utf-8"))
-    assert index_doc["_meta"]["ruleset"] == ruleset
+    assert index_doc["_meta"]["ruleset_version"] == "5.1"
     assert "conflicts" not in index_doc or index_doc["conflicts"]
 
     # Check determinism: rebuilding should produce identical output (except timestamp in dist/meta.json)

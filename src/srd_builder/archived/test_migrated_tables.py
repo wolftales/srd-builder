@@ -130,7 +130,14 @@ def test_armor_table_extraction(tables_data):
     assert table is not None, "armor table not found"
 
     assert len(table["rows"]) == 17, f"Expected 17 rows, got {len(table['rows'])}"
-    assert table["headers"] == ["Armor", "Cost", "Armor Class (AC)", "Stealth", "Weight"]
+    assert table["headers"] == [
+        "Armor",
+        "Cost",
+        "Armor Class (AC)",
+        "Strength",
+        "Stealth",
+        "Weight",
+    ]
 
     # Check categories (Light Armor, Medium Armor, Heavy Armor, Shield)
     categories = [row for row in table["rows"] if row[1] == "" and row[0] != ""]
@@ -154,8 +161,7 @@ def test_weapons_table_extraction(tables_data):
     assert table is not None, "weapons table not found"
 
     assert len(table["rows"]) == 41, f"Expected 41 rows, got {len(table['rows'])}"
-    # Note: Properties column was merged/dropped in extraction
-    assert table["headers"] == ["Name", "Cost", "Damage", "Weight"]
+    assert table["headers"] == ["Name", "Cost", "Damage", "Weight", "Properties"]
 
     # Check categories (Simple Melee, Simple Ranged, Martial Melee, Martial Ranged)
     categories = [row for row in table["rows"] if row[1] == "" and row[0] != ""]

@@ -1200,4 +1200,35 @@ Some equipment tables (e.g., tools on page 70) have footnotes referencing other 
 
 ---
 
+## Poison Descriptions - PDF Corruption (v0.10.0)
+
+**Date Raised:** November 9, 2025
+**Status:** Known limitation - documented in ROADMAP.md v0.10.0 section
+**Priority:** LOW - workaround implemented
+
+### Context
+
+SRD PDF pages 204-205 have corrupted text extraction. Poison descriptions cannot be extracted programmatically - text extraction returns garbled characters like "5.1umente 4 Poisons aresonsus amongites creatures".
+
+**Current Solution:**
+- Manual descriptions in `src/srd_builder/data/poison_descriptions_manual.py`
+- All 14 poisons manually transcribed with save DCs and damage formulas
+- Parse logic prioritizes manual descriptions over corrupted extracted text
+
+**Impact:**
+- ✅ All 14 poisons have complete, accurate descriptions
+- ✅ Consumers get correct data
+- ⚠️ Manual maintenance required if SRD updates poison descriptions
+
+**Future Work:**
+- Monitor for better PDF source from Wizards of the Coast
+- Consider OCR solution if new PDF not available
+- Switch to automated extraction if PDF is fixed
+
+**See Also:**
+- Full technical details in `docs/ROADMAP.md` under v0.10.0 Conditions Dataset
+- Related files documented there
+
+---
+
 ## [Add more parked features here as needed]

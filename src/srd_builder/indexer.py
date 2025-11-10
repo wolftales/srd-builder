@@ -437,7 +437,45 @@ def _build_condition_entity_index(conditions: list[dict[str, Any]]) -> dict[str,
     return index
 
 
-def build_indexes(  # noqa: C901
+def _build_simple_entity_index(
+    records: list[dict[str, Any]], entity_type: str, filename: str
+) -> dict[str, dict[str, str]]:
+    """Build entity index for simple name-based datasets (diseases, madness, poisons, features)."""
+    index: dict[str, dict[str, str]] = {}
+    for record in records:
+        record_id = fallback_id(record)
+        index[record_id] = {
+            "type": entity_type,
+            "file": filename,
+            "name": record.get("name", ""),
+        }
+    return index
+
+
+def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical feature lookup tables."""
+
+    by_name, _ = _build_by_name_map(features)
+    by_source: defaultdict[str, list[str]] = defaultdict(list)
+
+    for feature in features:
+        feature_id = fallback_id(feature)
+        source = str(feature.get("source", "unknown"))
+
+        by_source[source].append(feature_id)
+
+    sorted_by_source = _stable_dict(sorted(by_source.items()))
+
+    for key, ids in sorted_by_source.items():
+        sorted_by_source[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_source": sorted_by_source,
+    }
+
+
+def build_indexes(  # noqa: C901, PLR0913
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
@@ -445,10 +483,13 @@ def build_indexes(  # noqa: C901
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
     conditions: list[dict[str, Any]] | None = None,
+    diseases: list[dict[str, Any]] | None = None,
+    poisons: list[dict[str, Any]] | None = None,
+    features: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, table, lineage, class, condition, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, table, lineage, class, condition, disease, poison, feature, and entity indexes for dataset output."""
 
     monster_indexes = build_monster_index(monsters)
     by_name, name_conflicts = _build_by_name_map(monsters, display_normalizer=display_normalizer)
@@ -589,6 +630,56 @@ def build_indexes(  # noqa: C901
         payload["stats"]["conditions_with_levels"] = len(
             condition_indexes["by_has_levels"].get("true", [])
         )
+
+    # Add disease indexes if provided
+    if diseases is not None:
+        disease_entity_index = _build_simple_entity_index(diseases, "disease", "diseases.json")
+        by_name, _ = _build_by_name_map(diseases)
+
+        payload["diseases"] = {"by_name": by_name}
+        entities["diseases"] = disease_entity_index
+        payload["stats"]["total_diseases"] = len(diseases)
+
+    # Add poison indexes if provided
+    if poisons is not None:
+        poison_entity_index = _build_simple_entity_index(poisons, "poison", "poisons.json")
+        by_name, _ = _build_by_name_map(poisons)
+
+        payload["poisons"] = {"by_name": by_name}
+        entities["poisons"] = poison_entity_index
+        payload["stats"]["total_poisons"] = len(poisons)
+
+    # Add feature indexes if provided
+    if features is not None:
+        feature_indexes = build_feature_index(features)
+        feature_entity_index = _build_simple_entity_index(features, "feature", "features.json")
+
+        payload["features"] = feature_indexes
+        entities["features"] = feature_entity_index
+        payload["stats"]["total_features"] = len(features)
+
+    # Recalculate total entities to include new datasets
+    if diseases is not None or poisons is not None or features is not None:
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        if tables is not None:
+            total += len(table_entity_index)
+        if lineages is not None:
+            total += len(lineage_entity_index)
+        if classes is not None:
+            total += len(class_entity_index)
+        if conditions is not None:
+            total += len(condition_entity_index)
+        if diseases is not None:
+            total += len(disease_entity_index)
+        if poisons is not None:
+            total += len(poison_entity_index)
+        if features is not None:
+            total += len(feature_entity_index)
+        payload["stats"]["total_entities"] = total
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}

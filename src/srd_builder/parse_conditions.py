@@ -107,10 +107,10 @@ def _parse_standard_condition(
         "id": f"condition:{simple_name}",
         "name": name,
         "simple_name": simple_name,
-        "summary": summary,
-        "effects": effects,
         "page": page,
         "source": "SRD 5.1",
+        "summary": summary,
+        "effects": effects,
     }
 
 
@@ -180,11 +180,11 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
         "id": f"condition:{simple_name}",
         "name": name,
         "simple_name": simple_name,
+        "page": page,
+        "source": "SRD 5.1",
         "summary": summary,
         "effects": effects,
         "levels": levels,
-        "page": page,
-        "source": "SRD 5.1",
     }
 
     if special_rules:
