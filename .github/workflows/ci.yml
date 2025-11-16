@@ -11,7 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        # The project now targets Python 3.11+, so we only run CI on supported interpreters.
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
 
