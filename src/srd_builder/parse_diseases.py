@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from .postprocess import normalize_id
 from .prose_extraction import clean_pdf_text, extract_bullet_points
 
 
@@ -51,7 +52,7 @@ def _parse_single_disease(raw: dict[str, Any]) -> dict[str, Any] | None:
     text = clean_pdf_text(raw_text)
 
     # Generate simple_name
-    simple_name = name.lower().replace(" ", "_").replace("'", "")
+    simple_name = normalize_id(name)
 
     # Extract components
     description = text

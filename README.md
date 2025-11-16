@@ -28,7 +28,7 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.13.0)
+### Build pipeline (v0.14.0)
 
 The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking. v0.9.7 migrates travel_pace and size_categories tables from hardcoded to PDF extraction, removes non-SRD tables (cantrip_damage, spell_slots_by_level).
 
@@ -94,7 +94,7 @@ dist/srd_5_1/
 
 1. **Extract** (`extract_monsters.py`) - PDF text extraction with font metadata
 2. **Parse** (`parse_monsters.py`) - Stat block parsing (18 fields)
-3. **Postprocess** (`postprocess.py`) - Normalize and clean entries
+3. **Postprocess** (`postprocess/`) - Normalize and clean entries
 4. **Index** (`indexer.py`) - Build lookup tables
 5. **Validate** (`validate.py`) - JSON Schema validation
 
@@ -155,7 +155,7 @@ srd-builder/
 │   ├── build.py             # CLI orchestrator: --ruleset, --out
 │   ├── validate.py          # JSON Schema validation
 │   ├── parse_monsters.py    # Field mapping from raw to structured
-│   ├── postprocess.py       # Normalization & cleanup functions
+│   ├── postprocess/         # Normalization & cleanup functions
 │   └── indexer.py           # Build lookup indexes
 ├── rulesets/
 │   └── srd_5_1/
@@ -209,7 +209,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
 - 🎯 **v0.12.0** - Rules Dataset (core mechanics)
-- 🎯 **v0.13.0** - Quality & Polish (final cleanup before v1.0.0)
+- ✅ **v0.14.0** - Deterministic metadata + prose datasets (conditions, diseases, madness, poisons)
+- 🎯 **v0.15.0** - Quality & Polish (final cleanup before v1.0.0)
 - 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
 
 ## Testing

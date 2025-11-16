@@ -3,7 +3,7 @@ name = "srd-builder"
 version = "0.5.0"
 description = "Reproducible pipeline for extracting and normalizing SRD rulebooks (5.1 → 5.2.1 and beyond)."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
   { name = "Ken Hillier", email = "wolftales@example.com" }
@@ -44,7 +44,7 @@ packages = ["srd_builder"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 fix = true
 
 [tool.ruff.lint]
@@ -60,18 +60,18 @@ ignore = [
 max-branches = 50  # Complex parsing functions have legitimate branching (e.g., parse_monster_from_blocks: 46)
 max-returns = 25  # Router functions may have many returns (e.g., _extract_manual: 23)
 max-statements = 160  # Large parsing functions legitimately complex (e.g., parse_monster_from_blocks: 159)
-max-args = 10  # Some builder functions need many parameters (e.g., _generate_meta_json: 10)
+max-args = 10  # Some builder functions need many parameters (e.g., generate_meta_json: 10)
 
 [tool.black]
 line-length = 100
-target-version = ["py310"]
+target-version = ["py311"]
 
 [tool.isort]
 profile = "black"
 line_length = 100
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 strict = false
 warn_unused_ignores = true
 disallow_untyped_defs = false

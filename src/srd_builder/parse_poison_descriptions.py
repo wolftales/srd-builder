@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from .postprocess import normalize_id
 from .prose_extraction import clean_pdf_text
 
 
@@ -48,7 +49,7 @@ def _parse_single_description(raw: dict[str, Any]) -> dict[str, Any] | None:
         return None
 
     # Generate simple_name
-    simple_name = name.lower().replace(" ", "_").replace("'", "")
+    simple_name = normalize_id(name)
 
     result: dict[str, Any] = {
         "simple_name": simple_name,

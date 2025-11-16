@@ -1,6 +1,6 @@
 # SRD-Builder Architecture
 
-**Version:** v0.8.5
+**Version:** v0.14.0
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
 ---
@@ -12,18 +12,21 @@ SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the com
 | File | Status | Count | Version | Description |
 |------|--------|-------|---------|-------------|
 | `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
-| `monsters.json` | ✅ Complete | 296 | v0.4.2 | Monster statblocks (normalized) |
-| `equipment.json` | ✅ Complete | 111 | v0.5.0 | Weapons, armor, adventuring gear |
+| `monsters.json` | ✅ Complete | 317 | v0.13.0 | Monsters, creatures, and NPCs (normalized) |
+| `equipment.json` | ✅ Complete | 200 | v0.5.0 | Weapons, armor, adventuring gear |
 | `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
-| `tables.json` | ✅ Complete | 23 | v0.7.0 | Reference tables (equipment, expenses, services) |
-| `lineages.json` | ✅ Complete | 13 | v0.8.0 | Races/lineages with traits |
+| `tables.json` | ✅ Complete | 38 | v0.7.0 | Reference tables (equipment, expenses, services) |
+| `lineages.json` | ✅ Complete | 9 | v0.8.0 | Races/lineages with traits |
 | `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
 | `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
-| `conditions.json` | 📋 Planned | ~15-20 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
-| `features.json` | 📋 Planned | TBD | v0.11.0 | Class/lineage features (Action Surge, Darkvision) |
-| `rules.json` | 📋 Planned | TBD | v0.12.0 | Core mechanics, variant rules |
+| `conditions.json` | ✅ Complete | 15 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
+| `diseases.json` | ✅ Complete | 3 | v0.10.0 | Cackle Fever, Sewer Plague, Sight Rot |
+| `madness.json` | ✅ Complete | 3 | v0.10.0 | Short-, long-term, and indefinite madness tables |
+| `poisons.json` | ✅ Complete | 14 | v0.10.0 | Poison gear entries + descriptions |
+| `features.json` | ✅ Complete | 246 | v0.11.0 | Class features and lineage traits |
+| `rules.json` | 📋 Planned | TBD | v0.12.0+ | Core mechanics, variant rules |
 
-**Progress:** 8/11 datasets complete (73%)
+**Progress:** 13/14 datasets complete (93%)
 **Current Schema Version:** v1.4.0 (healing oneOf structure, ability modifiers)
 
 ---
@@ -70,11 +73,11 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ POSTPROCESS (postprocess.py)                               │
-│ • Normalize legendary actions (add name to entries)        │
-│ • Calculate challenge ratings                              │
-│ • Deduplicate defense arrays                               │
-│ • Generate stable IDs                                      │
+│ POSTPROCESS (postprocess/*.py)                             │
+│ • Domain-specific modules (monsters, equipment, spells)    │
+│ • Normalize legendary actions, challenge ratings           │
+│ • Deduplicate defense arrays + polish nested text          │
+│ • Generate stable IDs shared across parse + postprocess    │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
@@ -106,10 +109,10 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ BUILD (build.py)                                           │
+│ BUILD (build.py + metadata.py)                             │
 │ • Orchestrates pipeline (only I/O module)                  │
-│ • Generates meta.json with provenance                      │
-│ • Writes datasets to dist/                                 │
+│ • metadata.py builds deterministic _meta + meta.json       │
+│ • Writes datasets to dist/ + build_report.json             │
 └─────────────────────────────────────────────────────────────┘
                             │
                             ▼
@@ -218,7 +221,7 @@ tests/
 
 ### 1. Pure Parsing Functions
 
-**Decision:** `parse_monsters.py` and `postprocess.py` are pure functions (no I/O).
+**Decision:** `parse_monsters.py` and `postprocess/` are pure functions (no I/O).
 
 **Rationale:**
 - Testable without file system

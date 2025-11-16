@@ -1,6 +1,6 @@
 # SRD 5.1 Dataset Bundle
 
-**Version:** srd-builder v0.13.0
+**Version:** srd-builder v0.14.0
 **Schema Version:** 1.3.0
 **Generated:** November 9, 2025
 **Source:** System Reference Document 5.1 (SRD_CC_v5.1)
@@ -212,7 +212,7 @@ jsonschema -i monsters.json schemas/monster.schema.json
 **Required Attribution:**
 > This work includes material taken from the System Reference Document 5.1 ("SRD 5.1") by Wizards of the Coast LLC. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License.
 
-**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.13.0
+**Conversion:** [srd-builder](https://github.com/wolftales/srd-builder) v0.14.0
 
 Full license in `meta.json`.
 
