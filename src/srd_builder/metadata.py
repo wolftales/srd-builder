@@ -110,7 +110,7 @@ def generate_meta_json(  # noqa: PLR0913
         "builder_version": __version__,
         "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
     }
-    if build_timestamp:
+    if build_timestamp is not None:
         build_info["extracted_at"] = build_timestamp
 
     return {
