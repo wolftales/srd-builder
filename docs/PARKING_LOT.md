@@ -186,7 +186,7 @@ Implement when:
 
 ### Implementation Checklist (When Triggered)
 - [ ] Decide on alias direction and scope
-- [ ] Update `_generate_meta_json()` in `build.py`
+- [ ] Update `generate_meta_json()` in `srd_builder/metadata.py`
 - [ ] Add schema validation for terminology section
 - [ ] Document usage in README
 - [ ] Consider adding to TEMPLATE files
@@ -339,7 +339,7 @@ Actions had inconsistent parsing - some had structured fields, some didn't.
 
 **Implementation:**
 - New parse_actions.py module with regex-based extraction
-- Integrated into postprocess.py pipeline
+- Integrated into postprocess/ pipeline
 - Example: Aboleth Tentacle has attack_type, to_hit, reach, damage, damage_options, saving_throw
 
 **Why:** Enables Blackmoor's combat formulas (`resolve_5e_melee_attack`) to access data without text parsing.
@@ -393,7 +393,7 @@ Actions had inconsistent parsing - some had structured fields, some didn't.
 ```
 
 **Delivered:**
-- Added `add_ability_modifiers()` to postprocess.py
+- Added `add_ability_modifiers()` to postprocess/
 - Formula: (score - 10) // 2
 - Integrated into clean_monster_record() pipeline
 - 5 comprehensive tests (all passing)
@@ -429,7 +429,7 @@ Actions had inconsistent parsing - some had structured fields, some didn't.
 - Strip parenthetical data from properties during equipment parsing
 - Verify versatile_damage and range fields capture all the data
 - Update equipment tests to reflect clean properties
-- Consider adding to clean_equipment_record() in postprocess.py
+- Consider adding to clean_equipment_record() in postprocess/
 
 **Priority:** LOW - nice-to-have, non-blocking (Blackmoor's integration already complete)
 
@@ -491,7 +491,7 @@ Actions had inconsistent parsing - some had structured fields, some didn't.
 
 ### Related Files
 - `src/srd_builder/parse_monsters.py` - Action parsing logic
-- `src/srd_builder/postprocess.py` - Normalization and computed fields
+- `src/srd_builder/postprocess/` - Normalization and computed fields
 - `src/srd_builder/indexer.py` - Already has by_cr, by_type support ✅
 - `docs/external/blackmoor/blackmoor_srd_5_1_package review.md` - Full review
 
@@ -928,7 +928,7 @@ JSON output files have inconsistent field ordering:
   - Consumer code needs update to use entity-specific keys
   - Must be applied consistently in single version (no partial migration)
 - **Implementation:**
-  - Update `_wrap_with_meta()` in `build.py` to accept entity type parameter
+  - Update `wrap_with_meta()` in `srd_builder/metadata.py` to accept entity type parameter
   - Change `{"items": [...]}` to `{entity_type: [...]}`
   - Update all test fixtures to match new structure
   - Document in CHANGELOG as breaking change

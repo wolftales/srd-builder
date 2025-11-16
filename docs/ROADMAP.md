@@ -14,7 +14,7 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
                        ▼
             parse_monsters.py (field mapping)
                        ▼
-            postprocess.py (clean & normalize)
+            postprocess/ (clean & normalize)
                        ▼
             dist/<ruleset>/data/monsters.json  ← clean, deterministic output
 ```
@@ -154,7 +154,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 rulesets/srd_5_1/raw/monsters.json  (fixture from tests/)
    │
    ├─► parse_monsters.py      → field mapping
-   ├─► postprocess.py         → normalization & cleanup
+   ├─► postprocess/         → normalization & cleanup
    └─► indexer.py             → build lookups
    │
    ▼
@@ -681,7 +681,7 @@ table_indexer.discover_tables() → table_metadata.json
 
 **Implementation Pattern**
 ```
-extract_spells.py → parse_spells.py → postprocess.py → indexer.py
+extract_spells.py → parse_spells.py → postprocess/ → indexer.py
 ```
 
 **Success Criteria**
@@ -1021,7 +1021,7 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview only
 - `src/srd_builder/parse_equipment.py` - Property cleaning, proficiency extraction
 - `src/srd_builder/extract_equipment.py` - Fixed weapon subcategory markers
 - `src/srd_builder/indexer.py` - Added proficiency and weapon_type indexes
-- `src/srd_builder/postprocess.py` - Added proficiency to optional fields
+- `src/srd_builder/postprocess/` - Added proficiency to optional fields
 - `tests/test_parse_equipment.py` - Updated for clean properties
 
 **Schema:** 1.3.0 (no bump - additive changes only, pre-handoff)

@@ -13,6 +13,7 @@ import re
 from typing import Any
 
 from .data.poison_descriptions_manual import POISON_DESCRIPTIONS
+from .postprocess import normalize_id
 
 
 def parse_poisons_table(
@@ -44,8 +45,7 @@ def parse_poisons_table(
             poison_type = row[1]  # Ingested, Inhaled, Injury, Contact
             price_str = row[2]
 
-            # Normalize fancy apostrophe (U+2019) to regular (U+0027) for dict lookup
-            simple_name = name.lower().replace("\u2019", "'").replace(" ", "_")
+            simple_name = normalize_id(name)
 
             # Parse cost from price string (e.g., "150 gp" -> {"amount": 150, "currency": "gp"})
             cost = _parse_cost(price_str)

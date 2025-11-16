@@ -119,38 +119,16 @@ def _looks_numeric(value: str) -> bool:
     return True
 
 
-def _build_entity_index(monsters: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+def _build_entity_index_for_type(
+    entities: list[dict[str, Any]], *, entity_type: str, file_name: str
+) -> dict[str, dict[str, str]]:
     index: dict[str, dict[str, str]] = {}
-    for monster in monsters:
-        monster_id = fallback_id(monster)
-        index[monster_id] = {
-            "type": "monster",
-            "file": "monsters.json",
-            "name": monster.get("name", ""),
-        }
-    return index
-
-
-def _build_creature_entity_index(creatures: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
-    index: dict[str, dict[str, str]] = {}
-    for creature in creatures:
-        creature_id = fallback_id(creature)
-        index[creature_id] = {
-            "type": "creature",
-            "file": "monsters.json",
-            "name": creature.get("name", ""),
-        }
-    return index
-
-
-def _build_npc_entity_index(npcs: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
-    index: dict[str, dict[str, str]] = {}
-    for npc in npcs:
-        npc_id = fallback_id(npc)
-        index[npc_id] = {
-            "type": "npc",
-            "file": "monsters.json",
-            "name": npc.get("name", ""),
+    for entity in entities:
+        entity_id = fallback_id(entity)
+        index[entity_id] = {
+            "type": entity_type,
+            "file": file_name,
+            "name": entity.get("name", ""),
         }
     return index
 
@@ -527,21 +505,27 @@ def build_indexes(  # noqa: C901, PLR0913
     )
     if by_name:
         monster_indexes["by_name"] = by_name
-    monster_entity_index = _build_entity_index(actual_monsters)
+    monster_entity_index = _build_entity_index_for_type(
+        actual_monsters, entity_type="monster", file_name="monsters.json"
+    )
 
     # Build indexes for misc creatures (Appendix MM-A, pages 366-394)
     creature_indexes = build_monster_index(misc_creatures)
     creature_by_name, _ = _build_by_name_map(misc_creatures, display_normalizer=display_normalizer)
     if creature_by_name:
         creature_indexes["by_name"] = creature_by_name
-    creature_entity_index = _build_creature_entity_index(misc_creatures)
+    creature_entity_index = _build_entity_index_for_type(
+        misc_creatures, entity_type="creature", file_name="monsters.json"
+    )
 
     # Build indexes for NPCs (Appendix MM-B, pages 395-403)
     npc_indexes = build_monster_index(npcs)
     npc_by_name, _ = _build_by_name_map(npcs, display_normalizer=display_normalizer)
     if npc_by_name:
         npc_indexes["by_name"] = npc_by_name
-    npc_entity_index = _build_npc_entity_index(npcs)
+    npc_entity_index = _build_entity_index_for_type(
+        npcs, entity_type="npc", file_name="monsters.json"
+    )
 
     # Build entity structure with nested type-specific keys
     entities: dict[str, dict[str, dict[str, str]]] = {

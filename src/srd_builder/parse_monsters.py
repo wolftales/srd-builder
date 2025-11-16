@@ -7,6 +7,8 @@ from collections.abc import Iterable
 from copy import deepcopy
 from typing import Any
 
+from .postprocess import normalize_id
+
 __all__ = ["normalize_monster", "parse_monster_records", "parse_monster_from_blocks"]
 
 _ABILITY_MAP = {
@@ -831,7 +833,7 @@ def _parse_traits_and_actions(  # noqa: C901
         if is_name_block:
             # Extract name (remove trailing period)
             name = text[:-1].strip()
-            simple_name = name.lower().replace(" ", "_").replace("-", "_")
+            simple_name = normalize_id(name)
 
             # Collect text blocks until next BoldItalic or section header
             description_parts = []

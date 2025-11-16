@@ -120,7 +120,7 @@ patched["id"] = f"{id_prefix}:{simple_name}"
 
 ---
 
-### B. Postprocessor (`src/srd_builder/postprocess.py`)
+### B. Postprocessor (`src/srd_builder/postprocess/`)
 
 **Function:** `unify_simple_name()` (lines 59-67)
 
@@ -368,7 +368,7 @@ console.log(Object.keys(allCreatures).length);  // 317
 
 **If adding new creature categories in future:**
 1. Add page range check in `parse_monsters.py` (normalize_monster function)
-2. Update `postprocess.py` if prefix preservation needs changes
+2. Update `postprocess/` if prefix preservation needs changes
 3. Add index building in `indexer.py` (split list + build indexes)
 4. Add entity index builder function
 5. Update documentation (BUNDLE_README, DATA_DICTIONARY)
@@ -382,7 +382,7 @@ console.log(Object.keys(allCreatures).length);  // 317
 ```
 src/srd_builder/extract_monsters.py    (line 35: page_end 394→403)
 src/srd_builder/parse_monsters.py      (lines 372-381: ID prefix logic)
-src/srd_builder/postprocess.py         (lines 59-67: preserve prefixes)
+src/srd_builder/postprocess/         (lines 59-67: preserve prefixes)
 src/srd_builder/indexer.py             (lines 495-523: split indexing)
                                        (lines 120-138: entity indexes)
 ```

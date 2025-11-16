@@ -107,15 +107,16 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert index_doc["_meta"]["ruleset_version"] == "5.1"
     assert "conflicts" not in index_doc or index_doc["conflicts"]
 
-    # Check determinism: rebuilding should produce identical output (except timestamp in dist/meta.json)
+    # Check determinism: rebuilding should produce identical output (meta.json is now stable)
     first_pdf_meta_bytes = pdf_meta_path.read_bytes()
+    meta_bytes = dist_meta_path.read_bytes()
     monsters_bytes = monsters_path.read_bytes()
     index_bytes = index_path.read_bytes()
     build(ruleset=ruleset, output_format="json", out_dir=out_dir)
     assert first_pdf_meta_bytes == pdf_meta_path.read_bytes()
+    assert meta_bytes == dist_meta_path.read_bytes()
     assert monsters_bytes == monsters_path.read_bytes()
     assert index_bytes == index_path.read_bytes()
-    # Note: dist/meta.json contains timestamp, so it won't be deterministic
 
     monkeypatch.setattr(validate_module, "DIST_DIR", out_dir)
     monkeypatch.setattr(validate_module, "RULESETS_DIR", rulesets_root)
