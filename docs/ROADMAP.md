@@ -53,14 +53,15 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.11.0 — Features Dataset (246 class features + lineage traits extracted from PDF)
 - ✅ v0.12.0 — Appendix MM-B: NPCs (21 nonplayer characters, indexed separately)
 - ✅ v0.13.0 — Appendix MM-A: Misc Creatures (95 creatures, indexed separately)
+- ✅ v0.14.0 — Architecture Refinement (deterministic metadata, modular postprocessing, code quality)
 
 **In Progress:**
-- 🔄 v0.14.0 — Magic Items - Next target
+- 🔄 v0.15.0 — Magic Items - Next target
 
 **Planned:**
-- 📖 v0.14.0 — Magic Items
-- 📜 v0.15.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
-- 🎨 v0.16.0 — Quality & Polish (final cleanup before v1.0.0)
+- 📖 v0.15.0 — Magic Items
+- 📜 v0.16.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
+- 🎨 v0.17.0 — Quality & Polish (final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
 ---
@@ -2592,6 +2593,38 @@ Created reusable components for future prose sections (diseases, madness, poison
   }
 }
 ```
+
+---
+
+## ✅ **v0.14.0 — Architecture Refinement** **[QUALITY]**
+
+**Status:** COMPLETE
+**Priority:** HIGH - Code health and maintainability
+**Effort:** Low-Medium (focused refactoring)
+**Consumer Impact:** None (internal improvements only)
+
+**Goal:** Consolidate duplicate patterns and improve code maintainability following external code analysis recommendations.
+
+**Accomplished:**
+- **Generic Validator Helper:** Created `validate_dataset()` function, eliminating 47 lines of duplication across 3 validators
+- **Parametrized Entity Index Builder:** Consolidated 7 entity index builders to use `_build_simple_entity_index()`, reducing ~50 lines
+- **Text Cleaning Utilities:** Moved `clean_pdf_text()` to `postprocess/text.py` as canonical implementation, imported by `prose_extraction.py` (-27 lines)
+- **Net Code Reduction:** 71 lines removed (-46% in affected modules)
+- **Pattern Consolidation:** 12 duplicate functions → 3 generic helpers
+- **Zero Breaking Changes:** All public APIs preserved via thin wrapper functions
+
+**External Analysis Status:**
+- ✅ **100% of recommendations implemented** (9 total opportunities)
+- ✅ Phase 1: Critical issues (PR #10, #11)
+- ✅ Phase 2: High-priority improvements (PR #10, #11)
+- ✅ Phase 3: Medium-priority enhancements (PR #10, #11)
+- ✅ Phase 4: Low-priority cleanup (commit 3abd70b)
+
+**Quality Metrics:**
+- 161 tests passing (100%)
+- Ruff + Black clean
+- Type hints maintained throughout
+- Backward compatibility preserved
 
 ---
 
