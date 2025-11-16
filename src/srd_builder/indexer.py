@@ -200,15 +200,7 @@ def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_spell_entity_index(spells: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for spells."""
-    index: dict[str, dict[str, str]] = {}
-    for spell in spells:
-        spell_id = fallback_id(spell)
-        index[spell_id] = {
-            "type": "spell",
-            "file": "spells.json",
-            "name": spell.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(spells, "spell", "spells.json")
 
 
 def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
@@ -263,15 +255,7 @@ def build_equipment_index(equipment: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_equipment_entity_index(equipment: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for equipment."""
-    index: dict[str, dict[str, str]] = {}
-    for item in equipment:
-        item_id = fallback_id(item)
-        index[item_id] = {
-            "type": "equipment",
-            "file": "equipment.json",
-            "name": item.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(equipment, "equipment", "equipment.json")
 
 
 def build_table_index(tables: list[dict[str, Any]]) -> dict[str, Any]:
@@ -299,15 +283,7 @@ def build_table_index(tables: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_table_entity_index(tables: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for tables."""
-    index: dict[str, dict[str, str]] = {}
-    for table in tables:
-        table_id = fallback_id(table)
-        index[table_id] = {
-            "type": "table",
-            "file": "tables.json",
-            "name": table.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(tables, "table", "tables.json")
 
 
 def build_lineage_index(lineages: list[dict[str, Any]]) -> dict[str, Any]:
@@ -343,15 +319,7 @@ def build_lineage_index(lineages: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_lineage_entity_index(lineages: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for lineages."""
-    index: dict[str, dict[str, str]] = {}
-    for lineage in lineages:
-        lineage_id = fallback_id(lineage)
-        index[lineage_id] = {
-            "type": "lineage",
-            "file": "lineages.json",
-            "name": lineage.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(lineages, "lineage", "lineages.json")
 
 
 def build_class_index(classes: list[dict[str, Any]]) -> dict[str, Any]:
@@ -389,15 +357,7 @@ def build_class_index(classes: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_class_entity_index(classes: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for classes."""
-    index: dict[str, dict[str, str]] = {}
-    for class_record in classes:
-        class_id = fallback_id(class_record)
-        index[class_id] = {
-            "type": "class",
-            "file": "classes.json",
-            "name": class_record.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(classes, "class", "classes.json")
 
 
 def build_condition_index(conditions: list[dict[str, Any]]) -> dict[str, Any]:
@@ -428,15 +388,7 @@ def build_condition_index(conditions: list[dict[str, Any]]) -> dict[str, Any]:
 
 def _build_condition_entity_index(conditions: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
     """Build entity index for conditions."""
-    index: dict[str, dict[str, str]] = {}
-    for condition in conditions:
-        condition_id = fallback_id(condition)
-        index[condition_id] = {
-            "type": "condition",
-            "file": "conditions.json",
-            "name": condition.get("name", ""),
-        }
-    return index
+    return _build_simple_entity_index(conditions, "condition", "conditions.json")
 
 
 def _build_simple_entity_index(

@@ -20,109 +20,78 @@ def load_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def validate_monsters(ruleset: str, limit: int | None = None) -> int:
-    data_file = DIST_DIR / ruleset / "monsters.json"
+def validate_dataset(
+    ruleset: str,
+    *,
+    dataset_name: str,
+    schema_name: str,
+    items_key: str = "items",
+    limit: int | None = None,
+) -> int:
+    """Generic dataset validator to reduce duplication.
+
+    Args:
+        ruleset: Ruleset identifier (e.g., 'srd_5_1')
+        dataset_name: Name of dataset file (e.g., 'monsters', 'spells')
+        schema_name: Name of schema file (e.g., 'monster', 'spell')
+        items_key: Key containing items array (default: 'items')
+        limit: Optional limit on number of items to validate
+
+    Returns:
+        Number of items validated
+
+    Raises:
+        FileNotFoundError: If schema is missing
+        TypeError: If document structure is invalid
+    """
+    data_file = DIST_DIR / ruleset / f"{dataset_name}.json"
     if not data_file.exists():
-        print(f"No monsters.json found for ruleset '{ruleset}'. Skipping validation.")
+        print(f"No {dataset_name}.json found for ruleset '{ruleset}'. Skipping validation.")
         return 0
 
-    schema_file = SCHEMA_DIR / "monster.schema.json"
+    schema_file = SCHEMA_DIR / f"{schema_name}.schema.json"
     if not schema_file.exists():
         raise FileNotFoundError(
-            "Monster schema is missing. Did you remove schemas/monster.schema.json?"
+            f"{schema_name.capitalize()} schema is missing. Did you remove schemas/{schema_name}.schema.json?"
         )
 
     document = load_json(data_file)
     if not isinstance(document, dict):  # pragma: no cover - defensive guard
-        raise TypeError("monsters.json must contain a JSON object")
-    monsters = document.get("items", [])
-    if not isinstance(monsters, list):
-        raise TypeError("monsters.json 'items' must contain a JSON array")
+        raise TypeError(f"{dataset_name}.json must contain a JSON object")
+    items = document.get(items_key, [])
+    if not isinstance(items, list):
+        raise TypeError(f"{dataset_name}.json '{items_key}' must contain a JSON array")
 
     schema = load_json(schema_file)
     validator = Draft202012Validator(schema)
 
     count = 0
-    iterable: Iterable[object] = monsters
+    iterable: Iterable[object] = items
     if limit is not None:
         iterable = islice(iterable, limit)
 
-    for monster in iterable:
-        validator.validate(monster)
+    for item in iterable:
+        validator.validate(item)
         count += 1
 
-    print(f"Validated {count} monster entries for ruleset '{ruleset}'.")
+    entity_label = dataset_name.rstrip("s")  # "monsters" -> "monster"
+    print(f"Validated {count} {entity_label} entries for ruleset '{ruleset}'.")
     return count
+
+
+def validate_monsters(ruleset: str, limit: int | None = None) -> int:
+    """Validate monsters.json against monster.schema.json."""
+    return validate_dataset(ruleset, dataset_name="monsters", schema_name="monster", limit=limit)
 
 
 def validate_spells(ruleset: str, limit: int | None = None) -> int:
-    data_file = DIST_DIR / ruleset / "spells.json"
-    if not data_file.exists():
-        print(f"No spells.json found for ruleset '{ruleset}'. Skipping validation.")
-        return 0
-
-    schema_file = SCHEMA_DIR / "spell.schema.json"
-    if not schema_file.exists():
-        raise FileNotFoundError(
-            "Spell schema is missing. Did you remove schemas/spell.schema.json?"
-        )
-
-    document = load_json(data_file)
-    if not isinstance(document, dict):  # pragma: no cover - defensive guard
-        raise TypeError("spells.json must contain a JSON object")
-    spells = document.get("items", [])
-    if not isinstance(spells, list):
-        raise TypeError("spells.json 'items' must contain a JSON array")
-
-    schema = load_json(schema_file)
-    validator = Draft202012Validator(schema)
-
-    count = 0
-    iterable: Iterable[object] = spells
-    if limit is not None:
-        iterable = islice(iterable, limit)
-
-    for spell in iterable:
-        validator.validate(spell)
-        count += 1
-
-    print(f"Validated {count} spell entries for ruleset '{ruleset}'.")
-    return count
+    """Validate spells.json against spell.schema.json."""
+    return validate_dataset(ruleset, dataset_name="spells", schema_name="spell", limit=limit)
 
 
 def validate_lineages(ruleset: str, limit: int | None = None) -> int:
-    data_file = DIST_DIR / ruleset / "lineages.json"
-    if not data_file.exists():
-        print(f"No lineages.json found for ruleset '{ruleset}'. Skipping validation.")
-        return 0
-
-    schema_file = SCHEMA_DIR / "lineage.schema.json"
-    if not schema_file.exists():
-        raise FileNotFoundError(
-            "Lineage schema is missing. Did you remove schemas/lineage.schema.json?"
-        )
-
-    document = load_json(data_file)
-    if not isinstance(document, dict):  # pragma: no cover - defensive guard
-        raise TypeError("lineages.json must contain a JSON object")
-    lineages = document.get("items", [])
-    if not isinstance(lineages, list):
-        raise TypeError("lineages.json 'items' must contain a JSON array")
-
-    schema = load_json(schema_file)
-    validator = Draft202012Validator(schema)
-
-    count = 0
-    iterable: Iterable[object] = lineages
-    if limit is not None:
-        iterable = islice(iterable, limit)
-
-    for lineage in iterable:
-        validator.validate(lineage)
-        count += 1
-
-    print(f"Validated {count} lineage entries for ruleset '{ruleset}'.")
-    return count
+    """Validate lineages.json against lineage.schema.json."""
+    return validate_dataset(ruleset, dataset_name="lineages", schema_name="lineage", limit=limit)
 
 
 def check_data_quality(ruleset: str) -> None:  # noqa: C901

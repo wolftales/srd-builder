@@ -11,31 +11,10 @@ from __future__ import annotations
 import re
 from typing import Any
 
+# Import shared text cleaning utility to avoid duplication
+from .postprocess.text import clean_pdf_text
 
-def clean_pdf_text(text: str) -> str:
-    """Clean up common PDF encoding issues.
-
-    Args:
-        text: Raw text from PDF
-
-    Returns:
-        Cleaned text with normalized whitespace and fixed encoding
-    """
-    # Fix common PDF encoding issues
-    text = text.replace("­‐‑", "-")  # Replace garbled dashes (soft hyphen + hyphens)
-    text = text.replace("­‐", "-")
-    text = text.replace("‑", "-")
-    text = text.replace("–", "-")  # en-dash
-    text = text.replace("—", "--")  # em-dash
-    text = text.replace("'", "'")  # smart quotes
-    text = text.replace(
-        """, '"')
-    text = text.replace(""",
-        '"',
-    )
-    text = text.replace("\n", " ")  # Normalize newlines to spaces
-    text = re.sub(r"\s+", " ", text)  # Collapse multiple whitespace
-    return text.strip()
+__all__ = ["clean_pdf_text", "extract_bullet_points", "extract_table_by_pattern", "ProseExtractor"]
 
 
 def extract_bullet_points(text: str) -> list[str]:

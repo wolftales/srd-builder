@@ -5,13 +5,42 @@ from __future__ import annotations
 import re
 from typing import Any
 
-__all__ = ["polish_text", "polish_text_fields"]
+__all__ = ["clean_pdf_text", "polish_text", "polish_text_fields"]
 
 _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
     re.compile(r"Only one legendary action option can be used at a time\.\s*", re.IGNORECASE),
     re.compile(r"The [^.]+ regains spent legendary actions[^.]*\.\s*", re.IGNORECASE),
 ]
+
+
+def clean_pdf_text(text: str) -> str:
+    """Clean up common PDF encoding issues.
+
+    Consolidates text cleaning used across extraction and postprocessing.
+    Fixes encoding artifacts, normalizes whitespace, and handles special characters.
+
+    Args:
+        text: Raw text from PDF
+
+    Returns:
+        Cleaned text with normalized whitespace and fixed encoding
+    """
+    # Fix common PDF encoding issues
+    text = text.replace("­‐‑", "-")  # Replace garbled dashes (soft hyphen + hyphens)
+    text = text.replace("­‐", "-")
+    text = text.replace("‑", "-")
+    text = text.replace("–", "-")  # en-dash
+    text = text.replace("—", "--")  # em-dash
+    text = text.replace("'", "'")  # smart quotes
+    text = text.replace(
+        """, '"')
+    text = text.replace(""",
+        '"',
+    )
+    text = text.replace("\n", " ")  # Normalize newlines to spaces
+    text = re.sub(r"\s+", " ", text)  # Collapse multiple whitespace
+    return text.strip()
 
 
 def polish_text(text: str | None) -> str | None:
