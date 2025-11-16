@@ -54,8 +54,8 @@ def regenerate_fixtures() -> None:
     # Import after version update
     sys.path.insert(0, str(Path.cwd() / "src"))
     from srd_builder import __version__
-    from srd_builder.build import _meta_block
     from srd_builder.constants import SCHEMA_VERSION
+    from srd_builder.metadata import meta_block
     from srd_builder.parse_equipment import parse_equipment_records
     from srd_builder.parse_monsters import parse_monster_records
     from srd_builder.parse_spells import parse_spell_records
@@ -108,7 +108,7 @@ def regenerate_fixtures() -> None:
         processed = [fixture["cleaner"](item) for item in parsed]
 
         doc = {
-            "_meta": _meta_block("srd_5_1"),
+            "_meta": meta_block("srd_5_1"),
             "items": processed,
         }
 

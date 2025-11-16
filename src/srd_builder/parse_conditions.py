@@ -9,6 +9,9 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from .postprocess import normalize_id
+from .prose_extraction import clean_pdf_text, extract_bullet_points
+
 
 def parse_condition_records(raw_conditions: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Parse raw condition extractions into structured records.
@@ -45,35 +48,16 @@ def _parse_single_condition(raw: dict[str, Any]) -> dict[str, Any] | None:
     if not name or not raw_text:
         return None
 
-    # Clean up text encoding issues
-    text = _clean_text(raw_text)
+    text = clean_pdf_text(raw_text)
 
     # Generate simple_name
-    simple_name = name.lower().replace(" ", "_")
+    simple_name = normalize_id(name)
 
     # Parse based on condition type
     if name == "Exhaustion":
         return _parse_exhaustion(name, simple_name, text, pages)
     else:
         return _parse_standard_condition(name, simple_name, text, pages)
-
-
-def _clean_text(text: str) -> str:
-    """Clean up PDF encoding issues in text.
-
-    Args:
-        text: Raw text from PDF
-
-    Returns:
-        Cleaned text
-    """
-    # Fix common PDF encoding issues
-    text = text.replace("­‐‑", "-")  # Replace garbled dashes
-    text = text.replace("­‐", "-")
-    text = text.replace("‑", "-")
-    text = text.replace("\n", " ")  # Normalize newlines
-    text = re.sub(r"\s+", " ", text)  # Collapse whitespace
-    return text.strip()
 
 
 def _parse_standard_condition(
@@ -91,7 +75,7 @@ def _parse_standard_condition(
         Parsed condition dictionary
     """
     # Extract bullet points (effects)
-    effects = _extract_bullet_points(text)
+    effects = extract_bullet_points(text)
 
     # If no bullets found, use the whole text as a single effect
     if not effects:
@@ -191,23 +175,6 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
         condition_dict["special_rules"] = special_rules
 
     return condition_dict
-
-
-def _extract_bullet_points(text: str) -> list[str]:
-    """Extract bullet points from condition text.
-
-    Args:
-        text: Condition text
-
-    Returns:
-        List of bullet point strings
-    """
-    # Look for bullet points marked with •
-    bullets = re.findall(r"•\s*([^•]+)", text)
-    if bullets:
-        return [bullet.strip() for bullet in bullets if bullet.strip()]
-
-    return []
 
 
 def _generate_summary(text: str) -> str:

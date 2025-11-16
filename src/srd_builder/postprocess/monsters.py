@@ -1,4 +1,4 @@
-"""Pure post-processing utilities for normalized monster records."""
+"""Postprocessing helpers specific to monster statblocks."""
 
 from __future__ import annotations
 
@@ -6,47 +6,24 @@ import re
 from collections.abc import Iterable
 from typing import Any
 
-from srd_builder.spell_class_targets import get_spell_classes
+from .ids import normalize_id
+from .text import polish_text_fields
 
 __all__ = [
-    "normalize_id",
-    "unify_simple_name",
+    "add_ability_modifiers",
+    "clean_monster_record",
+    "dedup_defensive_lists",
+    "parse_action_structures",
+    "prune_empty_fields",
     "rename_abilities_to_traits",
     "split_legendary",
-    "structure_defenses",
     "standardize_challenge",
-    "add_ability_modifiers",
-    "parse_action_structures",
-    "polish_text",
-    "polish_text_fields",
-    "clean_monster_record",
-    "clean_equipment_record",
-    "dedup_defensive_lists",
-    "prune_empty_fields",
+    "structure_defenses",
+    "unify_simple_name",
 ]
 
 
-# Normalized IDs are restricted to lowercase letters, digits, and underscores.
-# Hyphens and spaces are converted to underscores before other characters are
-# stripped. This ensures compatibility with systems that require strict
-# identifier formats.
-_ID_CLEAN_RE = re.compile(r"[^0-9a-z_]+")
 _LEGENDARY_HEADER_RE = re.compile(r"can take\s+(?:\w+\s+)?legendary actions", re.IGNORECASE)
-_LEGENDARY_SENTENCES = [
-    re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
-    re.compile(r"Only one legendary action option can be used at a time\.\s*", re.IGNORECASE),
-    re.compile(r"The [^.]+ regains spent legendary actions[^.]*\.\s*", re.IGNORECASE),
-]
-
-
-def normalize_id(value: str) -> str:
-    """Normalize arbitrary text into a lowercase underscore identifier."""
-
-    simplified = value.strip().lower()
-    simplified = simplified.replace("-", "_").replace(" ", "_")
-    simplified = _ID_CLEAN_RE.sub("", simplified)
-    simplified = re.sub(r"_+", "_", simplified)
-    return simplified.strip("_")
 
 
 def _copy_entries(entries: Iterable[dict[str, Any]] | None) -> list[dict[str, Any]]:
@@ -65,7 +42,6 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
     simple_name = normalize_id(str(base_simple))
     if simple_name:
         patched["simple_name"] = simple_name
-        # Preserve existing ID prefix (monster:, creature:, npc:) if already set
         existing_id = patched.get("id", "")
         if existing_id and ":" in existing_id:
             prefix = existing_id.split(":")[0]
@@ -201,7 +177,6 @@ def normalize_damage_list(damage_str: str) -> list[dict[str, str]]:
         return []
 
     entries: list[dict[str, str]] = []
-
     segments = [segment.strip() for segment in damage_str.split(";") if segment.strip()]
 
     for segment in segments:
@@ -276,13 +251,8 @@ def standardize_challenge(monster: dict[str, Any]) -> dict[str, Any]:
 
 
 def add_ability_modifiers(monster: dict[str, Any]) -> dict[str, Any]:
-    """Add calculated ability score modifiers for convenience.
+    """Add calculated ability score modifiers for convenience."""
 
-    Modifiers follow D&D 5e formula: (score - 10) // 2
-
-    Example:
-        {"strength": 21} → {"strength": 21, "strength_modifier": 5}
-    """
     patched = {**monster}
     ability_scores = patched.get("ability_scores")
 
@@ -303,11 +273,8 @@ def add_ability_modifiers(monster: dict[str, Any]) -> dict[str, Any]:
 
 
 def parse_action_structures(monster: dict[str, Any]) -> dict[str, Any]:
-    """Parse structured fields from action text.
+    """Parse structured fields from action text."""
 
-    Extracts attack_type, to_hit, reach/range, damage, saving_throw from
-    action text while preserving original text for fallback.
-    """
     from srd_builder.parse_actions import parse_action_fields
 
     patched = {**monster}
@@ -322,57 +289,6 @@ def parse_action_structures(monster: dict[str, Any]) -> dict[str, Any]:
                 continue
             parsed_entries.append(parse_action_fields(entry))
         patched[key] = parsed_entries
-
-    return patched
-
-
-def polish_text(text: str | None) -> str | None:
-    """Clean OCR artifacts, spacing, and boilerplate from text fields."""
-
-    if text is None:
-        return None
-
-    cleaned = text
-    for pattern in _LEGENDARY_SENTENCES:
-        cleaned = pattern.sub("", cleaned)
-
-    cleaned = cleaned.replace("\u2013", "—").replace("\u2014", "—")
-    cleaned = re.sub(r"--+", "—", cleaned)
-    cleaned = re.sub(r"\bH\s*it\b", "Hit", cleaned)
-    cleaned = re.sub(r"Hit:\s*(\d)", r"Hit: \1", cleaned)
-    cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1 \2 \3", cleaned)
-    cleaned = cleaned.replace("keepsgoing", "keeps going")
-    cleaned = re.sub(r"\s+", " ", cleaned)
-    cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
-    cleaned = cleaned.strip()
-    return cleaned
-
-
-def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
-    """Apply :func:`polish_text` to summary, traits, actions, and legendary actions."""
-
-    patched = {**monster}
-
-    if "summary" in patched and isinstance(patched["summary"], str):
-        patched["summary"] = polish_text(patched["summary"]) or ""
-
-    for key in ("traits", "actions", "legendary_actions", "reactions"):
-        if key not in monster:
-            continue
-        formatted: list[dict[str, Any]] = []
-        for entry in monster.get(key, []):
-            if not isinstance(entry, dict):
-                formatted.append(entry)
-                continue
-            item = {**entry}
-            if "text" in item:
-                polished = polish_text(item["text"])
-                if polished is not None:
-                    item["text"] = polished
-            if "name" in item and isinstance(item["name"], str):
-                item["name"] = item["name"].rstrip(".")
-            formatted.append(item)
-        patched[key] = formatted
 
     return patched
 
@@ -424,7 +340,6 @@ def dedup_defensive_lists(monster: dict[str, Any]) -> dict[str, Any]:
     return patched
 
 
-_REQUIRED_FIELDS = {"id", "name", "page", "src", "armor_class", "hit_points", "ability_scores"}
 _OPTIONAL_ARRAY_FIELDS = {
     "traits",
     "reactions",
@@ -468,114 +383,4 @@ def clean_monster_record(monster: dict[str, Any]) -> dict[str, Any]:
     patched = monster
     for step in pipeline:
         patched = step(patched)
-    return patched
-
-
-def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
-    """Run the canonical post-processing pipeline over an equipment record.
-
-    This ensures:
-    - Names are cleaned (trailing periods removed)
-    - IDs are preserved with namespace prefix (item:*)
-    - Properties are lowercase and consistent
-    - Empty optional fields are pruned
-    """
-    patched = {**item}
-
-    # Clean name
-    if "name" in patched and isinstance(patched["name"], str):
-        patched["name"] = patched["name"].rstrip(".")
-
-    # NOTE: Do NOT normalize equipment IDs - they use "item:" namespace with hyphens
-    # IDs are already generated correctly by parse_equipment._generate_id()
-
-    # Ensure simple_name is normalized (lowercase, underscores)
-    if "simple_name" in patched and isinstance(patched["simple_name"], str):
-        patched["simple_name"] = normalize_id(patched["simple_name"])
-
-    # Normalize properties to lowercase
-    if "properties" in patched and isinstance(patched["properties"], list):
-        patched["properties"] = [
-            prop.lower().strip() if isinstance(prop, str) else prop
-            for prop in patched["properties"]
-        ]
-
-    # Prune empty optional fields
-    equipment_optional_fields = {
-        "properties",
-        "sub_category",
-        "weapon_type",
-        "proficiency",
-        "stealth_disadvantage",
-        "strength_req",
-        "versatile_damage",
-        "range",
-        "quantity",
-        "weight_lb",
-        "weight_raw",
-        "section",
-        "table_header",
-        "row_index",
-    }
-
-    for key in list(patched.keys()):
-        if key not in equipment_optional_fields:
-            continue
-        value = patched[key]
-        if value is None or (isinstance(value, list | str) and not value):
-            patched.pop(key)
-
-    return patched
-
-
-def clean_spell_record(spell: dict[str, Any]) -> dict[str, Any]:
-    """Run the canonical post-processing pipeline over a spell record.
-
-    This ensures:
-    - Consistent ID format (spell:*)
-    - simple_name is normalized (lowercase, underscores)
-    - School is lowercase
-    - Empty optional fields are pruned
-    - Field ordering follows schema
-    """
-    patched = {**spell}
-
-    # Generate simple_name from name if missing
-    if "simple_name" not in patched and "name" in patched:
-        patched["simple_name"] = normalize_id(patched["name"])
-
-    # Ensure simple_name is normalized
-    if "simple_name" in patched and isinstance(patched["simple_name"], str):
-        patched["simple_name"] = normalize_id(patched["simple_name"])
-
-    # Generate ID if missing
-    if "id" not in patched and "simple_name" in patched:
-        patched["id"] = f"spell:{patched['simple_name']}"
-
-    # Normalize school to lowercase
-    if "school" in patched and isinstance(patched["school"], str):
-        patched["school"] = patched["school"].lower()
-
-    # Add classes field (v0.8.0) - uses simple_name to lookup spell classes
-    if "simple_name" in patched:
-        classes = get_spell_classes(patched["simple_name"])
-        if classes:
-            patched["classes"] = classes
-
-    # Prune empty optional fields
-    spell_optional_fields = {
-        "effects",
-        "scaling",
-        "classes",
-        "source",
-        "summary",
-    }
-
-    for key in list(patched.keys()):
-        if key not in spell_optional_fields:
-            continue
-        value = patched[key]
-        if value is None or (isinstance(value, list | dict | str) and not value):
-            patched.pop(key)
-
     return patched

@@ -92,22 +92,22 @@ def test_template_files_have_version_note():
 
 
 def test_golden_test_uses_version_constant():
-    """Golden test should use _meta_block from build.py, not duplicate logic."""
+    """Golden test should use meta_block from metadata module, not duplicate logic."""
     test_path = Path("tests/test_golden_monsters.py")
     content = test_path.read_text(encoding="utf-8")
 
-    # Should import _meta_block from build.py
+    # Should import meta_block from metadata module
     assert (
-        "from srd_builder.build import _meta_block" in content
-    ), "test_golden_monsters.py must import _meta_block from build.py"
+        "from srd_builder.metadata import meta_block" in content
+    ), "test_golden_monsters.py must import meta_block from metadata"
 
-    # Should use _meta_block, not define its own _meta function
-    assert "_meta_block(" in content, "test_golden_monsters.py should use _meta_block()"
+    # Should use meta_block, not define its own _meta function
+    assert "meta_block(" in content, "test_golden_monsters.py should use meta_block()"
 
     # Should not define duplicate _meta function
     assert (
         "def _meta(" not in content
-    ), "test_golden_monsters.py should not duplicate _meta logic - use _meta_block from build.py"
+    ), "test_golden_monsters.py should not duplicate _meta logic - use meta_block"
 
     # Should not hardcode version strings
     lines = content.split("\n")

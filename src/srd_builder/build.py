@@ -11,16 +11,15 @@ from __future__ import annotations
 import argparse
 import json
 import platform
-from collections import OrderedDict
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from . import __version__
 from .assemble_equipment import assemble_equipment_from_tables
 from .build_prose_dataset import build_prose_dataset
-from .constants import DATA_SOURCE, RULESETS_DIRNAME, SCHEMA_VERSION
+from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract_equipment import extract_equipment
 from .extract_features import extract_class_features, extract_lineage_traits
 from .extract_monsters import extract_monsters
@@ -29,6 +28,7 @@ from .extract_spells import extract_spells
 from .extraction import extract_tables_to_json
 from .extraction.extraction_metadata import TABLES
 from .indexer import build_indexes
+from .metadata import generate_meta_json, wrap_with_meta
 from .parse_classes import parse_classes
 from .parse_conditions import parse_condition_records
 from .parse_diseases import parse_disease_records
@@ -42,35 +42,6 @@ from .parse_spells import parse_spell_records
 from .parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
 from .table_indexer import TableIndexer
-
-
-def _meta_block(ruleset: str, ruleset_version: str = "5.1") -> dict[str, str]:
-    """Generate standardized _meta block with consistent field order.
-
-    Standard order:
-    1. source
-    2. ruleset_version
-    3. schema_version
-    4. generated_by
-    5. build_report
-    """
-    return {
-        "source": DATA_SOURCE,
-        "ruleset_version": ruleset_version,
-        "schema_version": SCHEMA_VERSION,
-        "generated_by": f"srd-builder v{__version__}",
-        "build_report": "./build_report.json",
-    }
-
-
-def _wrap_with_meta(
-    payload: dict[str, Any], *, ruleset: str, ruleset_version: str = "5.1"
-) -> dict[str, Any]:
-    document: OrderedDict[str, Any] = OrderedDict()
-    document["_meta"] = _meta_block(ruleset, ruleset_version)
-    for key, value in payload.items():
-        document[key] = value
-    return document
 
 
 def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:
@@ -102,107 +73,6 @@ def _render_json(payload: Any) -> str:
     return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
 
 
-def _generate_meta_json(
-    *,
-    pdf_hash: str | None,
-    pdf_metadata: dict[str, Any] | None = None,
-    monsters_complete: bool,
-    monsters_page_range: tuple[int, int] | None = None,
-    equipment_complete: bool = False,
-    equipment_page_range: tuple[int, int] | None = None,
-    spells_complete: bool = False,
-    spells_page_range: tuple[int, int] | None = None,
-    table_page_index: dict[str, Any] | None = None,
-    classes_complete: bool = False,
-) -> dict[str, Any]:
-    """Generate rich metadata for dist/meta.json with provenance.
-
-    This is the consumer-facing metadata that includes license info,
-    page index for all content types, file manifest, and extraction status.
-    """
-    # Use extracted PDF metadata if available, otherwise fall back to hardcoded defaults
-    version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
-    license_type = pdf_metadata.get("license_type", "CC-BY-4.0") if pdf_metadata else "CC-BY-4.0"
-    license_url = (
-        pdf_metadata.get("license_url", "https://creativecommons.org/licenses/by/4.0/legalcode")
-        if pdf_metadata
-        else "https://creativecommons.org/licenses/by/4.0/legalcode"
-    )
-    attribution = (
-        pdf_metadata.get(
-            "attribution",
-            (
-                "This work includes material taken from the System Reference Document 5.1 "
-                '("SRD 5.1") by Wizards of the Coast LLC and available at '
-                "https://dnd.wizards.com/resources/systems-reference-document. "
-                "The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 "
-                "International License available at https://creativecommons.org/licenses/by/4.0/legalcode."
-            ),
-        )
-        if pdf_metadata
-        else (
-            "This work includes material taken from the System Reference Document 5.1 "
-            '("SRD 5.1") by Wizards of the Coast LLC and available at '
-            "https://dnd.wizards.com/resources/systems-reference-document. "
-            "The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 "
-            "International License available at https://creativecommons.org/licenses/by/4.0/legalcode."
-        )
-    )
-
-    return {
-        "source": DATA_SOURCE,
-        "ruleset_version": version,
-        "license": {
-            "type": license_type,
-            "url": license_url,
-            "attribution": attribution,
-            "conversion_note": (
-                "Converted from the original PDF by srd-builder "
-                f"(https://github.com/wolftales/srd-builder) version {__version__}"
-            ),
-        },
-        "build": {
-            "extracted_at": datetime.now(timezone.utc).isoformat(),
-            "builder_version": __version__,
-            "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
-        },
-        "page_index": _build_page_index(
-            monsters_page_range, equipment_page_range, spells_page_range, table_page_index
-        ),
-        "files": {
-            "meta": "meta.json",
-            "build_report": "build_report.json",
-            "index": "index.json",
-            "monsters": "monsters.json",
-            "equipment": "equipment.json",
-            "spells": "spells.json",
-            "tables": "tables.json",
-            "lineages": "lineages.json",
-            "classes": "classes.json",
-            "conditions": "conditions.json",
-            "diseases": "diseases.json",
-            "madness": "madness.json",
-            "poisons": "poisons.json",
-            "features": "features.json",
-        },
-        "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
-        "extraction_status": {
-            "monsters": "complete" if monsters_complete else "in_progress",
-            "equipment": "complete" if equipment_complete else "in_progress",
-            "spells": "complete" if spells_complete else "in_progress",
-            "tables": "complete",
-            "lineages": "complete",
-            "classes": "complete" if classes_complete else "in_progress",
-            "conditions": "complete",
-            "diseases": "complete",
-            "madness": "complete",
-            "poisons": "complete",
-            "features": "complete",
-        },
-        "$schema_version": SCHEMA_VERSION,
-    }
-
-
 def _write_datasets(  # noqa: PLR0913
     *,
     ruleset: str,
@@ -221,7 +91,7 @@ def _write_datasets(  # noqa: PLR0913
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
-    monsters_doc = _wrap_with_meta(
+    monsters_doc = wrap_with_meta(
         {"items": processed_monsters}, ruleset=ruleset, ruleset_version=ruleset_version
     )
     (dist_data_dir / "monsters.json").write_text(
@@ -233,7 +103,7 @@ def _write_datasets(  # noqa: PLR0913
     processed_equipment = None
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
-        equipment_doc = _wrap_with_meta(
+        equipment_doc = wrap_with_meta(
             {"items": processed_equipment}, ruleset=ruleset, ruleset_version=ruleset_version
         )
 
@@ -261,7 +131,7 @@ def _write_datasets(  # noqa: PLR0913
     else:
         processed_spells = []
 
-    spells_doc = _wrap_with_meta(
+    spells_doc = wrap_with_meta(
         {"items": processed_spells}, ruleset=ruleset, ruleset_version=ruleset_version
     )
     (dist_data_dir / "spells.json").write_text(
@@ -307,7 +177,7 @@ def _write_datasets(  # noqa: PLR0913
                 ordered["rows"] = table["rows"]
             reordered_tables.append(ordered)
 
-        tables_doc = _wrap_with_meta(
+        tables_doc = wrap_with_meta(
             {"items": reordered_tables}, ruleset=ruleset, ruleset_version=ruleset_version
         )
         (dist_data_dir / "tables.json").write_text(
@@ -319,7 +189,7 @@ def _write_datasets(  # noqa: PLR0913
     # Lineages are already fully normalized by parse_lineages, no additional cleaning needed
     processed_lineages = lineages if lineages else None
     if processed_lineages:
-        lineages_doc = _wrap_with_meta(
+        lineages_doc = wrap_with_meta(
             {"items": processed_lineages}, ruleset=ruleset, ruleset_version=ruleset_version
         )
         (dist_data_dir / "lineages.json").write_text(
@@ -331,7 +201,7 @@ def _write_datasets(  # noqa: PLR0913
     # Classes are already fully normalized by parse_classes, no additional cleaning needed
     processed_classes = classes if classes else None
     if processed_classes:
-        classes_doc = _wrap_with_meta(
+        classes_doc = wrap_with_meta(
             {"items": processed_classes}, ruleset=ruleset, ruleset_version=ruleset_version
         )
         (dist_data_dir / "classes.json").write_text(
@@ -393,7 +263,7 @@ def _write_datasets(  # noqa: PLR0913
         processed_poisons,
         processed_features,
     )
-    index_doc = _wrap_with_meta(index_payload, ruleset=ruleset, ruleset_version=ruleset_version)
+    index_doc = wrap_with_meta(index_payload, ruleset=ruleset, ruleset_version=ruleset_version)
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
         encoding="utf-8",
@@ -415,7 +285,7 @@ class BuildReport:
     def create(cls, ruleset: str, output_format: str) -> BuildReport:
         # The timestamp only lives in the report to aid debugging. Downstream
         # dataset files should remain timestamp-free to keep builds reproducible.
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
         return cls(
             ruleset=ruleset,
             output_format=output_format,
@@ -597,41 +467,6 @@ def _extract_raw_monsters(raw_dir: Path) -> Path | None:
     )
 
     return output_path
-
-
-def _build_page_index(
-    monsters_page_range: tuple[int, int] | None,
-    equipment_page_range: tuple[int, int] | None,
-    spells_page_range: tuple[int, int] | None,
-    table_page_index: dict[str, Any] | None,
-) -> dict[str, Any]:
-    """Build page_index section for meta.json.
-
-    Uses the authoritative PAGE_INDEX from page_index.py module.
-    This provides complete, verified SRD 5.1 table of contents.
-    """
-    from .page_index import PAGE_INDEX
-
-    # Convert PAGE_INDEX to meta.json format
-    # Include all sections for complete documentation
-    page_index: dict[str, dict[str, int | str]] = {}
-
-    for section_name, section in PAGE_INDEX.items():
-        section_data: dict[str, int | str] = {
-            "start": section["pages"]["start"],
-            "end": section["pages"]["end"],
-            "description": section["description"],
-        }
-        dataset = section.get("dataset")
-        if dataset is not None:
-            section_data["dataset"] = dataset
-        page_index[section_name] = section_data
-
-    # Add table-specific entries if table_page_index provided
-    if table_page_index and "reference_tables" in table_page_index:
-        page_index["reference_tables"] = table_page_index["reference_tables"]
-
-    return page_index
 
 
 def _extract_raw_equipment(raw_dir: Path) -> Path | None:
@@ -941,7 +776,7 @@ def build(  # noqa: C901
                 )
 
                 # Wrap as items array with proper _meta
-                poisons_doc = _wrap_with_meta(
+                poisons_doc = wrap_with_meta(
                     {"items": parsed_poisons}, ruleset=ruleset, ruleset_version=ruleset_version
                 )
                 print(f"✓ Parsed {len(parsed_poisons)} poison items")
@@ -950,7 +785,7 @@ def build(  # noqa: C901
 
     # Build features document (v0.11.0)
     if all_features:
-        features_doc = _wrap_with_meta(
+        features_doc = wrap_with_meta(
             {"features": all_features}, ruleset=ruleset, ruleset_version=ruleset_version
         )
 
@@ -1009,7 +844,7 @@ def build(  # noqa: C901
     table_page_index = _generate_table_page_index(layout["raw"], extracted_table_ids)
 
     # Generate rich meta.json for consumers (includes license, page_index, etc.)
-    meta_json = _generate_meta_json(
+    meta_json = generate_meta_json(
         pdf_hash=pdf_hash,
         pdf_metadata=pdf_metadata,
         monsters_complete=len(parsed_monsters) > 0,

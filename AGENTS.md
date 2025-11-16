@@ -14,7 +14,7 @@
 
 ## Boundaries
 - parse_monsters.py: pure parsing/mapping only (no I/O/logging).
-- postprocess.py: pure normalization/polish (legendary, CR, text, defenses, ids).
+- postprocess/: pure normalization/polish (legendary, CR, text, defenses, ids).
 - indexer.py: pure index building.
 - build.py: the only I/O orchestrator.
 - validate.py: schema validation; no mutations.
