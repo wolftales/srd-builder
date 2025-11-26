@@ -15,7 +15,7 @@
 - **Mechanics (v1 scope):** No structured mechanics objects yet; preserve prose and lightweight tags (`action`, `bonus_action`, `movement`, `saving_throw`, `advantage`) to enable search without over-modeling.
 
 ### Files & Intermediate Products
-- `rules_raw.json`: verbatim text blocks with font metadata (size, name, bold flag, page, bbox) extracted from SRD chapters slated for coverage.
+- `rules_raw.json`: verbatim text blocks with font metadata (size, name, bold flag, page, bounding box (bbox)) extracted from SRD chapters slated for coverage.
 - `rules_outline.json`: hierarchical outline recovered from header stack and relative font tiers; chapter → section → leaf topics with ordering and page anchors.
 - `rules_postprocessed.json`: flattened, normalized entities with IDs, simple names, tags, cross-refs, and cleaned text arrays.
 - `rules.json`: final distribution file with `_meta` and `items[]`, versioned alongside other datasets.
