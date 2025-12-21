@@ -18,8 +18,8 @@ from typing import Any
 
 from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
+from .assemble.build_prose_dataset import build_prose_dataset
 from .assemble.indexer import build_indexes
-from .build_prose_dataset import build_prose_dataset
 from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract.extract_equipment import extract_equipment
 from .extract.extract_features import extract_class_features, extract_lineage_traits

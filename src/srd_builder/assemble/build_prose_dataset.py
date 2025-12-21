@@ -16,9 +16,9 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-from . import __version__
-from .extract.prose_extraction import ProseExtractor
-from .extraction.extraction_metadata import TABLES
+from .. import __version__
+from ..extract.prose_extraction import ProseExtractor
+from ..extraction.extraction_metadata import TABLES
 
 
 def build_prose_dataset(
