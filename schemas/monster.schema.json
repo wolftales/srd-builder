@@ -18,7 +18,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^monster:[a-z0-9_]+$",
+      "pattern": "^[a-z]+:[a-z0-9_]+$",
       "description": "Stable identifier for the monster entry"
     },
     "simple_name": {

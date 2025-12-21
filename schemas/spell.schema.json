@@ -282,12 +282,12 @@
         },
         "healing": {
           "type": "object",
-          "additionalProperties": false,
           "oneOf": [
             {
               "required": [
                 "dice"
               ],
+              "additionalProperties": false,
               "properties": {
                 "dice": {
                   "type": "string",
@@ -300,6 +300,7 @@
               "required": [
                 "amount"
               ],
+              "additionalProperties": false,
               "properties": {
                 "amount": {
                   "type": "integer",
@@ -312,6 +313,7 @@
               "required": [
                 "condition"
               ],
+              "additionalProperties": false,
               "properties": {
                 "condition": {
                   "type": "string",

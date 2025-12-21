@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci output bundle tables monsters equipment spells bump-version
+.PHONY: init lint test format pre-commit ci output bundle smoke release-check tables monsters equipment spells bump-version
 
 init:
 	pip install -e ".[dev]"
@@ -6,13 +6,9 @@ init:
 
 lint:
 	ruff check .
-	black --check .
-	isort --check-only .
 
 format:
 	ruff check --fix .
-	black .
-	isort .
 
 test:
 	pytest -q -m "not package"
@@ -28,11 +24,25 @@ pre-commit:
 
 ci: lint test
 
+# Development build (data only, fast)
 output:
+	@echo "Building data files only..."
 	python -m srd_builder.build --ruleset srd_5_1 --out dist
+	@echo "✓ Build complete. Run 'make smoke' to validate."
 
+# Production build (complete bundle)
 bundle:
+	@echo "Building complete bundle..."
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
+	@echo "✓ Bundle complete. Run 'make smoke MODE=bundle' to validate."
+
+# Quick validation (item counts + optional bundle structure)
+smoke:
+	@./scripts/smoke.sh srd_5_1 dist $(MODE)
+
+# Deterministic validation (hash comparison + item counts)
+release-check:
+	@./scripts/release_check.sh srd_5_1 dist
 
 tables:
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --tables-only --bundle

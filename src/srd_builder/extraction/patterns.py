@@ -649,7 +649,7 @@ def _extract_multipage_text_region(
             sorted_words = sorted(row_words, key=lambda w: w[0])
             row_text = " ".join([text for _, text in sorted_words])
             if row_text.strip():
-                rows.append([row_text])  # type: ignore[list-item]
+                rows.append([row_text])
 
     return RawTable(
         table_id=table_id,

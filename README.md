@@ -32,19 +32,29 @@ make test
 
 The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking. v0.9.7 migrates travel_pace and size_categories tables from hardcoded to PDF extraction, removes non-SRD tables (cantrip_damage, spell_slots_by_level).
 
-**Development (fast iteration):**
+**Development workflow (fast iteration, data only):**
 ```bash
-# Build data only (no schemas/docs copied)
+# Build JSON data files only - NO schemas or docs copied
+# Output: 13 JSON files in dist/srd_5_1/
 make output
-# OR: python -m srd_builder.build --ruleset srd_5_1 --out dist
+
+# Verify data integrity
+./scripts/verify_build.sh srd_5_1 dist dev
 ```
 
-**Production (complete bundle for distribution):**
+**Production workflow (complete bundle for distribution):**
 ```bash
-# Build data + copy schemas and documentation
+# Build complete bundle: data + schemas + docs
+# Output: 24 files (13 JSON + 8 schemas + 2 docs + README)
 make bundle
-# OR: python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
+
+# Verify complete bundle structure
+./scripts/verify_build.sh srd_5_1 dist bundle
 ```
+
+**Key difference:**
+- `make output` → Fast (data only), use for development/testing
+- `make bundle` → Complete (adds schemas/, docs/, README.md), use for releases/packaging
 
 **Validation:**
 ```bash

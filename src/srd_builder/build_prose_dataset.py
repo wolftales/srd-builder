@@ -10,9 +10,11 @@ unified TABLES dictionary.
 from __future__ import annotations
 
 import hashlib
-from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from . import __version__
 from .extract.prose_extraction import ProseExtractor
@@ -22,7 +24,7 @@ from .extraction.extraction_metadata import TABLES
 def build_prose_dataset(
     dataset_name: str,
     pdf_path: Path,
-    parser_func: callable,
+    parser_func: Callable[[list], list[dict[str, Any]]],
 ) -> dict[str, Any]:
     """Build any prose dataset using configuration.
 
@@ -83,7 +85,7 @@ def build_prose_dataset(
             "source_pages": f"{start_page}-{end_page}",
             "description": config["description"],
             "pdf_sha256": raw_data["_meta"]["pdf_sha256"],
-            "generated_at": datetime.now(UTC).isoformat(),
+            # Note: No timestamps per AGENTS.md determinism requirement
             f"{output_key}_count": len(parsed_records),
             "extraction_warnings": raw_data["_meta"]["warnings"],
         },
