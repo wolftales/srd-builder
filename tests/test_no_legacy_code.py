@@ -35,9 +35,9 @@ def test_legacy_parser_migration_progress():
     modern_tables = total_tables - len(legacy_tables)
     progress_pct = (modern_tables / total_tables * 100) if total_tables > 0 else 0
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"TABLE MIGRATION PROGRESS: {modern_tables}/{total_tables} ({progress_pct:.1f}%)")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     if len(legacy_tables) > 0:
         print(f"\nRemaining legacy_parser tables ({len(legacy_tables)}):")

@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from srd_builder.metadata import meta_block
-from srd_builder.parse_monsters import parse_monster_records
+from srd_builder.parse.parse_monsters import parse_monster_records
 from srd_builder.postprocess import clean_monster_record
+from srd_builder.utils.metadata import meta_block
 
 
 def test_monster_dataset_matches_normalized_fixture() -> None:

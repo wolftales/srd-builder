@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from srd_builder.parse_spells import (
+from srd_builder.parse.parse_spells import (
     _extract_effects,
     _extract_scaling,
     _parse_casting_time,

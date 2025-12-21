@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from srd_builder.spell_class_targets import get_spell_classes
+from srd_builder.srd_5_1.spell_class_targets import get_spell_classes
 
 from .ids import normalize_id
 

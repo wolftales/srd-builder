@@ -54,9 +54,9 @@ def test_dataset_populated(dataset_name: str, expected_min: int) -> None:
 
     assert isinstance(items, list), f"{dataset_name}.json {items_key} should be a list"
     assert len(items) > 0, f"{dataset_name}.json should not be empty"
-    assert len(items) >= expected_min, (
-        f"{dataset_name}.json has {len(items)} items, " f"expected at least {expected_min}"
-    )
+    assert (
+        len(items) >= expected_min
+    ), f"{dataset_name}.json has {len(items)} items, expected at least {expected_min}"
 
 
 def test_all_datasets_have_standard_meta_fields() -> None:

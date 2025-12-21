@@ -14,8 +14,8 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from srd_builder.class_targets import CLASS_DATA
 from srd_builder.constants import DATA_SOURCE
+from srd_builder.srd_5_1.class_targets import CLASS_DATA
 
 
 def parse_classes() -> list[dict[str, Any]]:

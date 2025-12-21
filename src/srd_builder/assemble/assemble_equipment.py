@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from .parse_equipment import (
+from ..parse.parse_equipment import (
     _generate_id,
     _generate_simple_name,
     _parse_armor_class,

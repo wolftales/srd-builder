@@ -14,7 +14,7 @@ from typing import Any
 
 import fitz
 
-from .constants import EXTRACTOR_VERSION
+from ..constants import EXTRACTOR_VERSION
 
 # Spell section pages (descriptions, not spell lists)
 SPELL_START_PAGE = 114  # First page of spell descriptions

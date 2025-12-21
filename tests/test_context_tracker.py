@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from srd_builder.context_tracker import ContextTracker
+from srd_builder.utils.context_tracker import ContextTracker
 
 
 def test_context_tracker_propagates_latest_marker() -> None:

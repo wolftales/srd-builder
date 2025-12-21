@@ -12,7 +12,7 @@ import re
 from typing import Any
 
 # Import shared text cleaning utility to avoid duplication
-from .postprocess.text import clean_pdf_text
+from ..postprocess.text import clean_pdf_text
 
 __all__ = ["clean_pdf_text", "extract_bullet_points", "extract_table_by_pattern", "ProseExtractor"]
 

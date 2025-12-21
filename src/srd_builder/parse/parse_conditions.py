@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from .postprocess import normalize_id
-from .prose_extraction import clean_pdf_text, extract_bullet_points
+from ..extract.prose_extraction import clean_pdf_text, extract_bullet_points
+from ..postprocess import normalize_id
 
 
 def parse_condition_records(raw_conditions: list[dict[str, Any]]) -> list[dict[str, Any]]:

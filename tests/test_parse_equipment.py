@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from srd_builder.parse_equipment import parse_equipment_records
+from srd_builder.parse.parse_equipment import parse_equipment_records
 
 
 def test_parse_equipment_armor_uses_headers() -> None:

@@ -18,7 +18,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
 
     monkeypatch.setattr(jsonschema, "Draft202012Validator", _DummyValidator)
 
-    from srd_builder import validate as validate_module
+    from srd_builder.utils import validate as validate_module
 
     ruleset = "srd_5_1"
     rulesets_root = tmp_path / "rulesets"

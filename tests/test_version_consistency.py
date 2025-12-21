@@ -60,7 +60,7 @@ def test_normalized_fixture_version_matches():
         f"Fixture has outdated version. Expected '{expected_generated_by}', "
         f"got '{actual}'. Run: python -c \"from pathlib import Path; "
         f"import json; from srd_builder import __version__; "
-        f"from srd_builder.parse_monsters import parse_monster_records; "
+        f"from srd_builder.parse.parse_monsters import parse_monster_records; "
         f"from srd_builder.postprocess import clean_monster_record; "
         f"raw = json.loads(Path('tests/fixtures/srd_5_1/raw/monsters.json').read_text()); "
         f"parsed = parse_monster_records(raw); "
@@ -98,7 +98,7 @@ def test_golden_test_uses_version_constant():
 
     # Should import meta_block from metadata module
     assert (
-        "from srd_builder.metadata import meta_block" in content
+        "from srd_builder.utils.metadata import meta_block" in content
     ), "test_golden_monsters.py must import meta_block from metadata"
 
     # Should use meta_block, not define its own _meta function

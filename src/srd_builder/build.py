@@ -17,31 +17,31 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
-from .assemble_equipment import assemble_equipment_from_tables
+from .assemble.assemble_equipment import assemble_equipment_from_tables
 from .build_prose_dataset import build_prose_dataset
 from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
-from .extract_equipment import extract_equipment
-from .extract_features import extract_class_features, extract_lineage_traits
-from .extract_monsters import extract_monsters
+from .extract.extract_equipment import extract_equipment
+from .extract.extract_features import extract_class_features, extract_lineage_traits
+from .extract.extract_monsters import extract_monsters
+from .extract.extract_spells import extract_spells
 from .extract_pdf_metadata import extract_pdf_metadata
-from .extract_spells import extract_spells
 from .extraction import extract_tables_to_json
 from .extraction.extraction_metadata import TABLES
 from .indexer import build_indexes
-from .metadata import generate_meta_json, wrap_with_meta
-from .parse_classes import parse_classes
-from .parse_conditions import parse_condition_records
-from .parse_diseases import parse_disease_records
-from .parse_equipment import parse_equipment_records
-from .parse_features import parse_features
-from .parse_lineages import parse_lineages
-from .parse_monsters import parse_monster_records
-from .parse_poison_descriptions import parse_poison_description_records
-from .parse_poisons_table import parse_poisons_table
-from .parse_spells import parse_spell_records
-from .parse_tables import parse_single_table
+from .parse.parse_classes import parse_classes
+from .parse.parse_conditions import parse_condition_records
+from .parse.parse_diseases import parse_disease_records
+from .parse.parse_equipment import parse_equipment_records
+from .parse.parse_features import parse_features
+from .parse.parse_lineages import parse_lineages
+from .parse.parse_monsters import parse_monster_records
+from .parse.parse_poison_descriptions import parse_poison_description_records
+from .parse.parse_poisons_table import parse_poisons_table
+from .parse.parse_spells import parse_spell_records
+from .parse.parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
-from .table_indexer import TableIndexer
+from .utils.metadata import generate_meta_json, wrap_with_meta
+from .utils.table_indexer import TableIndexer
 
 
 def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:

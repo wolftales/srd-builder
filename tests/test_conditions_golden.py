@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from srd_builder.extract_conditions import extract_conditions
+from srd_builder.extract.extract_conditions import extract_conditions
 
 
 @pytest.fixture

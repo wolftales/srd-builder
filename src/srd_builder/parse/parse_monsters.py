@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from copy import deepcopy
 from typing import Any
 
-from .postprocess import normalize_id
+from ..postprocess import normalize_id
 
 __all__ = ["normalize_monster", "parse_monster_records", "parse_monster_from_blocks"]
 

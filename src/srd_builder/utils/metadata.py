@@ -5,8 +5,8 @@ from __future__ import annotations
 from collections import OrderedDict
 from typing import Any
 
-from . import __version__
-from .constants import DATA_SOURCE, SCHEMA_VERSION
+from .. import __version__
+from ..constants import DATA_SOURCE, SCHEMA_VERSION
 from .page_index import PAGE_INDEX
 
 __all__ = ["meta_block", "wrap_with_meta", "build_page_index", "generate_meta_json"]

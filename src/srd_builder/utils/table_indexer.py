@@ -18,7 +18,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from .constants import EXTRACTOR_VERSION
+from ..constants import EXTRACTOR_VERSION
 
 logger = logging.getLogger(__name__)
 

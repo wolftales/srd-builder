@@ -22,8 +22,8 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from .constants import EXTRACTOR_VERSION
-from .context_tracker import ContextTracker
+from ..constants import EXTRACTOR_VERSION
+from ..utils.context_tracker import ContextTracker
 
 logger = logging.getLogger(__name__)
 

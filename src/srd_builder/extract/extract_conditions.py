@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .constants import EXTRACTOR_VERSION
+from ..constants import EXTRACTOR_VERSION
 from .prose_extraction import ProseExtractor
 
 # Condition pages from Appendix PH-A

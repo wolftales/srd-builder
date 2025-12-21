@@ -187,5 +187,5 @@ def test_page_continuity(monsters_raw):
             gap = pages[i + 1] - pages[i]
             assert gap <= 2, (
                 f"{name} has suspicious page gap: {pages} "
-                f"(gap of {gap} between pages {pages[i]} and {pages[i+1]})"
+                f"(gap of {gap} between pages {pages[i]} and {pages[i + 1]})"
             )

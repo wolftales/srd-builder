@@ -17,7 +17,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from .constants import EXTRACTOR_VERSION
+from ..constants import EXTRACTOR_VERSION
 
 # PDF extraction tolerance constants
 Y_COORDINATE_TOLERANCE = 2.0  # Tolerance for Y-coordinate matching (points)

@@ -4,7 +4,7 @@ Tests for monster validation functions.
 
 import pytest
 
-from srd_builder.validate_monsters import (
+from srd_builder.utils.validate_monsters import (
     validate_all,
     validate_alphabetic_coverage,
     validate_category_completeness,

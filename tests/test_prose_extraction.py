@@ -9,7 +9,7 @@ def test_split_by_known_headers_handles_cross_references():
     - Grappled section to be cut short
     - Incapacitated section to include Grappled's text
     """
-    from srd_builder.prose_extraction import split_by_known_headers
+    from srd_builder.extract.prose_extraction import split_by_known_headers
 
     # Simulate the actual PDF text structure with references
     text = """
@@ -42,7 +42,7 @@ def test_split_by_known_headers_handles_cross_references():
 
 def test_split_by_known_headers_validates_boundaries():
     """Test that boundary validation catches cross-contamination."""
-    from srd_builder.prose_extraction import split_by_known_headers
+    from srd_builder.extract.prose_extraction import split_by_known_headers
 
     # Text with deliberate cross-contamination (Blinded section contains Charmed header)
     contaminated_text = """
@@ -69,7 +69,7 @@ def test_split_by_known_headers_validates_boundaries():
 
 def test_split_by_known_headers_case_sensitive():
     """Test that header matching is case-sensitive to avoid false matches."""
-    from srd_builder.prose_extraction import split_by_known_headers
+    from srd_builder.extract.prose_extraction import split_by_known_headers
 
     # Test with headers that appear in lowercase as references
     text = """
@@ -97,7 +97,7 @@ def test_split_by_known_headers_case_sensitive():
 
 def test_validate_section_boundaries_ignores_lowercase_references():
     """Test that validation doesn't flag lowercase condition references as contamination."""
-    from srd_builder.prose_extraction import _validate_section_boundaries
+    from srd_builder.extract.prose_extraction import _validate_section_boundaries
 
     # Text with lowercase reference to another condition
     text = "Paralyzed A paralyzed creature is incapacitated (see the condition) and can't move."
@@ -112,7 +112,7 @@ def test_validate_section_boundaries_ignores_lowercase_references():
 
 def test_validate_section_boundaries_detects_capitalized_contamination():
     """Test that validation catches actual header bleeding (capitalized)."""
-    from srd_builder.prose_extraction import _validate_section_boundaries
+    from srd_builder.extract.prose_extraction import _validate_section_boundaries
 
     # Text with actual capitalized header from another condition
     text = "Prone A prone creature's only movement. Restrained A restrained creature's speed is 0."
@@ -128,7 +128,7 @@ def test_validate_section_boundaries_detects_capitalized_contamination():
 
 def test_split_by_known_headers_with_multiple_references():
     """Test handling of multiple condition references in a single section."""
-    from srd_builder.prose_extraction import split_by_known_headers
+    from srd_builder.extract.prose_extraction import split_by_known_headers
 
     text = """
     Unconscious An unconscious creature is incapacitated (see the condition),

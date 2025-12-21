@@ -15,8 +15,8 @@ from pathlib import Path
 from typing import Any
 
 from . import __version__
+from .extract.prose_extraction import ProseExtractor
 from .extraction.extraction_metadata import TABLES
-from .prose_extraction import ProseExtractor
 
 
 def build_prose_dataset(
