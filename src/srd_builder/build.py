@@ -20,6 +20,7 @@ from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
 from .assemble.indexer import build_indexes
 from .build_prose_dataset import build_prose_dataset
+from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract.extract_equipment import extract_equipment
 from .extract.extract_features import extract_class_features, extract_lineage_traits
 from .extract.extract_monsters import extract_monsters
@@ -39,7 +40,6 @@ from .parse.parse_poisons_table import parse_poisons_table
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
-from .utils.constants import RULESETS_DIRNAME, SCHEMA_VERSION
 from .utils.metadata import generate_meta_json, wrap_with_meta
 from .utils.table_indexer import TableIndexer
 

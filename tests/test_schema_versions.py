@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from srd_builder.utils.constants import SCHEMA_VERSION
+from srd_builder.constants import SCHEMA_VERSION
 
 
 def test_schema_files_have_version():
@@ -77,7 +77,10 @@ def test_dataset_schema_versions_match():
 
 @pytest.mark.package
 def test_meta_json_schema_version():
-    """meta.json should declare the schema version matching constants.
+    """meta.json build section should reference builder_version.
+
+    Note: Schema versions are now in each dataset's _meta.schema_version,
+    not in meta.json. See test_dataset_schema_versions for that validation.
 
     Requires: Built package (run 'make output' first)
     """
@@ -90,17 +93,15 @@ def test_meta_json_schema_version():
     with open(meta_path) as f:
         meta = json.load(f)
 
-    assert "$schema_version" in meta, "meta.json missing $schema_version field"
-    assert isinstance(meta["$schema_version"], str), "$schema_version must be string"
+    # meta.json has builder_version in build section (not schema_version)
+    assert "build" in meta, "meta.json missing build section"
+    assert "builder_version" in meta["build"], "meta.json build section missing builder_version"
 
-    # Should match constants.SCHEMA_VERSION
-    version = meta["$schema_version"]
+    version = meta["build"]["builder_version"]
+    assert isinstance(version, str), "builder_version must be string"
     parts = version.split(".")
-    assert len(parts) == 3, "$schema_version must be MAJOR.MINOR.PATCH format"
-    assert all(p.isdigit() for p in parts), "$schema_version parts must be numeric"
-
-    # Note: meta.json may have an older $schema_version (1.1.0) for backward compatibility
-    # The actual schema version is in monsters.json _meta.schema_version which should match SCHEMA_VERSION
+    assert len(parts) == 3, "builder_version must be MAJOR.MINOR.PATCH format"
+    assert all(p.isdigit() for p in parts), "builder_version parts must be numeric"
 
 
 def test_schema_version_matches_constant():
