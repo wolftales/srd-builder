@@ -1015,7 +1015,7 @@ def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[di
     Returns:
         List of equipment pack items
     """
-    from src.srd_builder.equipment_packs import (
+    from .equipment_packs import (
         EQUIPMENT_PACKS,
         calculate_pack_weight,
         validate_pack_contents,
@@ -1074,7 +1074,7 @@ def _add_extended_equipment(items_by_id: dict[str, dict[str, Any]]) -> list[dict
     Returns:
         List of extended items that were added
     """
-    from src.srd_builder.equipment_extended import get_extended_equipment
+    from .equipment_extended import get_extended_equipment
 
     extended = get_extended_equipment()
     added_items = []
@@ -1099,7 +1099,7 @@ def _add_item_descriptions(items: list[dict[str, Any]]) -> None:
     Args:
         items: List of equipment items
     """
-    from src.srd_builder.equipment_descriptions import get_description_lookup
+    from .equipment_descriptions import get_description_lookup
 
     descriptions = get_description_lookup()
     added_count = 0

@@ -54,16 +54,16 @@ def regenerate_fixtures() -> None:
     # Import after version update
     sys.path.insert(0, str(Path.cwd() / "src"))
     from srd_builder import __version__
-    from srd_builder.constants import SCHEMA_VERSION
-    from srd_builder.metadata import meta_block
-    from srd_builder.parse_equipment import parse_equipment_records
-    from srd_builder.parse_monsters import parse_monster_records
-    from srd_builder.parse_spells import parse_spell_records
+    from srd_builder.parse.parse_equipment import parse_equipment_records
+    from srd_builder.parse.parse_monsters import parse_monster_records
+    from srd_builder.parse.parse_spells import parse_spell_records
     from srd_builder.postprocess import (
         clean_equipment_record,
         clean_monster_record,
         clean_spell_record,
     )
+    from srd_builder.utils.constants import SCHEMA_VERSION
+    from srd_builder.utils.metadata import meta_block
 
     fixtures = [
         {

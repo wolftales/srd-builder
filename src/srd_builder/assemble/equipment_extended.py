@@ -8,7 +8,7 @@ This module is maintained separately from core SRD extraction to clearly identif
 items that have been inferred or enhanced beyond the source material.
 """
 
-from typing import Any, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 
 class ExtendedItem(TypedDict):
@@ -24,6 +24,11 @@ class ExtendedItem(TypedDict):
     source: str
     is_magic: bool
     _note: str
+    weight_lb: NotRequired[float]  # Optional field
+    description: NotRequired[str]  # Optional field
+    weapon_type: NotRequired[str]  # Optional for weapons
+    damage: NotRequired[dict[str, str]]  # Optional for weapons
+    properties: NotRequired[list[str]]  # Optional for weapons
 
 
 # Extended equipment items - not in SRD tables but logically needed

@@ -34,7 +34,7 @@ def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
     pdf = fitz.open(pdf_path)
 
     all_features = []
-    warnings = []
+    warnings: list[str] = []
 
     for page_num in pages:
         page = pdf[page_num - 1]  # PyMuPDF uses 0-indexed

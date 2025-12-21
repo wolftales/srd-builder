@@ -1,4 +1,4 @@
-from srd_builder.indexer import build_indexes
+from srd_builder.assemble.indexer import build_indexes
 
 REQUIRED_FIELDS = {
     "page": "MM 1",

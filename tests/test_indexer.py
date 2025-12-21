@@ -1,5 +1,5 @@
 def test_build_monster_index():
-    from srd_builder.indexer import build_monster_index
+    from srd_builder.assemble.indexer import build_monster_index
 
     mons = [
         {"id": "monster:a", "name": "A", "challenge_rating": 1, "type": "fiend", "size": "Medium"},

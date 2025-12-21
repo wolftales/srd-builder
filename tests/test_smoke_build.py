@@ -3,7 +3,7 @@ from pathlib import Path
 
 from srd_builder import __version__
 from srd_builder.build import build
-from srd_builder.constants import SCHEMA_VERSION
+from srd_builder.utils.constants import SCHEMA_VERSION
 
 
 def test_build_writes_report_and_datasets(tmp_path: Path) -> None:

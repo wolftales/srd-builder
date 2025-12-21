@@ -3,7 +3,7 @@
 
 def test_parse_melee_weapon_attack():
     """Parse typical melee weapon attack."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Greataxe",
@@ -25,7 +25,7 @@ def test_parse_melee_weapon_attack():
 
 def test_parse_ranged_weapon_attack():
     """Parse ranged weapon attack with range."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Longbow",
@@ -47,7 +47,7 @@ def test_parse_ranged_weapon_attack():
 
 def test_parse_action_with_saving_throw():
     """Parse action with DC saving throw."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Breath Weapon",
@@ -69,7 +69,7 @@ def test_parse_action_with_saving_throw():
 
 def test_parse_action_multiple_damage_types():
     """Parse action with multiple damage instances."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Claw",
@@ -94,7 +94,7 @@ def test_parse_action_multiple_damage_types():
 
 def test_parse_melee_spell_attack():
     """Parse melee spell attack."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Shocking Grasp",
@@ -110,7 +110,7 @@ def test_parse_melee_spell_attack():
 
 def test_parse_ranged_spell_attack():
     """Parse ranged spell attack."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Fire Bolt",
@@ -126,7 +126,7 @@ def test_parse_ranged_spell_attack():
 
 def test_parse_negative_to_hit():
     """Parse action with negative to-hit modifier."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Weak Attack",
@@ -141,7 +141,7 @@ def test_parse_negative_to_hit():
 
 def test_parse_action_without_attack():
     """Non-attack actions should not be parsed."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Multiattack",
@@ -158,7 +158,7 @@ def test_parse_action_without_attack():
 
 def test_parse_action_preserves_all_fields():
     """Parsing should add fields without removing existing ones."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Bite",
@@ -267,7 +267,7 @@ def test_parse_reactions():
 
 def test_parse_constitution_saving_throw():
     """Test full ability name expansion from short form."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     action = {
         "name": "Poison",
@@ -284,7 +284,7 @@ def test_parse_constitution_saving_throw():
 
 def test_parse_damage_without_spacing():
     """Test damage parsing handles various spacing."""
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     # Compact formatting
     action1 = {"name": "Test", "text": "Hit: 10 (2d6+3) slashing damage."}

@@ -5,7 +5,7 @@ from pathlib import Path
 import jsonschema
 
 from srd_builder.build import build
-from srd_builder.constants import EXTRACTOR_VERSION, SCHEMA_VERSION
+from srd_builder.utils.constants import EXTRACTOR_VERSION, SCHEMA_VERSION
 
 
 def test_build_pipeline(tmp_path, monkeypatch):

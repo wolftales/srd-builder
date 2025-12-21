@@ -275,7 +275,7 @@ def add_ability_modifiers(monster: dict[str, Any]) -> dict[str, Any]:
 def parse_action_structures(monster: dict[str, Any]) -> dict[str, Any]:
     """Parse structured fields from action text."""
 
-    from srd_builder.parse_actions import parse_action_fields
+    from srd_builder.parse.parse_actions import parse_action_fields
 
     patched = {**monster}
 

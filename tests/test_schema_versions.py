@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from srd_builder.constants import SCHEMA_VERSION
+from srd_builder.utils.constants import SCHEMA_VERSION
 
 
 def test_schema_files_have_version():
