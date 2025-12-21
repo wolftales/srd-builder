@@ -552,14 +552,62 @@ Datasets conforming to these schemas are designed for:
 
 ---
 
+## Schema Change Log
+
+### Monster ID Pattern (v0.14.0 - December 2025)
+
+**Change:** Updated `monster.schema.json` ID pattern to accept three-tier ID system.
+
+**Before:**
+```json
+"pattern": "^monster:[a-z0-9_]+$"
+```
+
+**After:**
+```json
+"pattern": "^(monster|creature|npc):[a-z0-9_]+$"
+```
+
+**Reason:**
+V0.13.0 (November 2025) introduced a three-tier ID system for monsters to distinguish:
+- `monster:` - Main bestiary creatures (pages 261-365)
+- `creature:` - Appendix MM-A misc creatures (pages 366-394)
+- `npc:` - Appendix MM-B NPCs (pages 395-403)
+
+The schema was never updated to reflect this change, causing validation failures. This fix brings the schema in sync with the actual data structure.
+
+**Impact:**
+- **srd-builder:** Schema now validates all 317 creatures correctly
+- **Consumers:** Any code that assumed only `monster:` prefix will need updating
+  - Check for `id.startsWith('monster:')` → should check all three prefixes
+  - Or use the `simple_name` field which doesn't have prefixes
+
+**Migration Example:**
+```python
+# Old (v0.12.x and earlier)
+monsters = [m for m in data['items'] if m['id'].startswith('monster:')]
+
+# New (v0.13.0+)
+all_creatures = data['items']  # All 317 creatures
+just_monsters = [m for m in data['items'] if m['id'].startswith('monster:')]  # 201
+just_creatures = [m for m in data['items'] if m['id'].startswith('creature:')]  # 95
+just_npcs = [m for m in data['items'] if m['id'].startswith('npc:')]  # 21
+```
+
+**References:**
+- Commit 138321c: Schema fix
+- Commit 39c2263: v0.13.0 - Grand Slam (NPCs + Misc Creatures)
+- docs/releases/v0.13.0_HANDOFF.md for full v0.13.0 details
+
+---
+
 ## Related Documentation
 
 - **ARCHITECTURE.md** - Overall system design
 - **ROADMAP.md** - Version timeline and features
-- **terminology.aliases.md** - Naming conventions and namespace patterns
 - **DATA_DICTIONARY.md** - Field meanings and SRD source mappings
-- **INTEGRATION.md** - Consumer guidance (planned)
-- **MIGRATIONS.md** - Breaking change guides (planned)
+- **INTEGRATION.md** - Consumer guidance
+- **PARKING_LOT.md** - Deferred schema decisions
 
 ---
 
