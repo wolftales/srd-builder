@@ -141,6 +141,11 @@ make lint          # Ruff + Black formatting checks
 make test          # Run pytest
 make ci            # Full CI simulation (lint + test)
 
+# Verification (quick sanity checks)
+make smoke              # Dev build validation (item counts only)
+make smoke MODE=bundle  # Bundle build validation (+ structure checks)
+make release-check      # Determinism + item count validation
+
 # Version bump (automates __init__.py, fixtures, README, tests, commit)
 python scripts/bump_version.py 0.6.5
 python scripts/bump_version.py 0.7.0 --no-commit  # Preview changes without committing
@@ -151,11 +156,21 @@ python scripts/bump_version.py 0.7.0 --no-commit  # Preview changes without comm
 Validation uses JSON Schema to ensure output quality:
 
 ```bash
-python -m srd_builder.validate --ruleset srd_5_1
+python -m srd_builder.utils.validate --ruleset srd_5_1  # Full schema validation
+make smoke              # Quick item count check (dev builds)
+make smoke MODE=bundle  # Bundle structure validation (README, schemas/, docs/)
+make release-check      # Deterministic build + item counts (for releases)
 ```
 
-The validator checks `dist/srd_5_1/data/monsters.json` against
+The validator checks `dist/srd_5_1/monsters.json` against
 `schemas/monster.schema.json` and reports any schema violations.
+
+**Verification targets:**
+- `smoke`: Fast sanity check for development (item counts)
+- `smoke MODE=bundle`: Bundle structure validation
+- `release-check`: Full determinism verification (hash comparison + counts)
+
+See [docs/VERIFICATION_CHECKLIST.md](docs/VERIFICATION_CHECKLIST.md) for details.
 
 ## Repository layout
 
