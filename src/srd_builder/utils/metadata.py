@@ -113,9 +113,25 @@ def generate_meta_json(  # noqa: PLR0913
     if build_timestamp is not None:
         build_info["extracted_at"] = build_timestamp
 
+    # Schema versions for each dataset type (allows independent evolution)
+    schemas = {
+        "monster": SCHEMA_VERSION,
+        "spell": SCHEMA_VERSION,
+        "equipment": SCHEMA_VERSION,
+        "class": SCHEMA_VERSION,
+        "lineage": SCHEMA_VERSION,
+        "table": SCHEMA_VERSION,
+        "condition": SCHEMA_VERSION,
+        "disease": SCHEMA_VERSION,
+        "poison": SCHEMA_VERSION,
+        "features": SCHEMA_VERSION,
+        "madness": SCHEMA_VERSION,
+    }
+
     return {
         "source": DATA_SOURCE,
         "ruleset_version": version,
+        "schemas": schemas,
         "license": {
             "type": license_type,
             "url": license_url,

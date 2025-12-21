@@ -77,10 +77,10 @@ def test_dataset_schema_versions_match():
 
 @pytest.mark.package
 def test_meta_json_schema_version():
-    """meta.json build section should reference builder_version.
+    """meta.json should declare schema versions for all datasets.
 
-    Note: Schema versions are now in each dataset's _meta.schema_version,
-    not in meta.json. See test_dataset_schema_versions for that validation.
+    The schemas section provides a manifest of schema versions for each dataset type,
+    allowing independent evolution (e.g., monster schema can be 2.0.0 while spells stay 1.4.0).
 
     Requires: Built package (run 'make output' first)
     """
@@ -93,15 +93,78 @@ def test_meta_json_schema_version():
     with open(meta_path) as f:
         meta = json.load(f)
 
-    # meta.json has builder_version in build section (not schema_version)
-    assert "build" in meta, "meta.json missing build section"
-    assert "builder_version" in meta["build"], "meta.json build section missing builder_version"
+    # meta.json should have schemas section
+    assert "schemas" in meta, "meta.json missing schemas section"
+    schemas = meta["schemas"]
 
-    version = meta["build"]["builder_version"]
-    assert isinstance(version, str), "builder_version must be string"
-    parts = version.split(".")
-    assert len(parts) == 3, "builder_version must be MAJOR.MINOR.PATCH format"
-    assert all(p.isdigit() for p in parts), "builder_version parts must be numeric"
+    # All dataset types should be listed
+    expected_datasets = {
+        "monster",
+        "spell",
+        "equipment",
+        "class",
+        "lineage",
+        "table",
+        "condition",
+        "disease",
+        "poison",
+        "features",
+        "madness",
+    }
+    assert (
+        set(schemas.keys()) == expected_datasets
+    ), f"schemas section missing datasets: {expected_datasets - set(schemas.keys())}"
+
+    # Each schema version should be valid semver
+    for dataset, version in schemas.items():
+        assert isinstance(version, str), f"{dataset} schema version must be string"
+        parts = version.split(".")
+        assert len(parts) == 3, f"{dataset} schema version must be MAJOR.MINOR.PATCH format"
+        assert all(p.isdigit() for p in parts), f"{dataset} schema version parts must be numeric"
+
+    # All should currently be 1.4.0 (from SCHEMA_VERSION constant)
+    # This assertion can be relaxed in the future when schemas evolve independently
+    from srd_builder.constants import SCHEMA_VERSION
+
+    for dataset, version in schemas.items():
+        assert (
+            version == SCHEMA_VERSION
+        ), f"{dataset} schema version should match SCHEMA_VERSION constant for now"
+
+
+def test_meta_json_schemas_match_datasets() -> None:
+    """Cross-validate that meta.json schemas section matches individual dataset _meta.schema_version fields."""
+    dist_path = Path(__file__).parent.parent / "dist" / "srd_5_1"
+
+    # Skip if build hasn't been run yet
+    if not dist_path.exists():
+        pytest.skip("dist/srd_5_1 not found - run build first")
+
+    meta_path = dist_path / "meta.json"
+    with open(meta_path) as f:
+        meta = json.load(f)
+
+    schemas_section = meta.get("schemas", {})
+
+    # Check each dataset file
+    for dataset_name, expected_version in schemas_section.items():
+        dataset_path = dist_path / f"{dataset_name}.json"
+
+        # Skip if dataset file doesn't exist (e.g., madness might not be in SRD)
+        if not dataset_path.exists():
+            continue
+
+        with open(dataset_path) as f:
+            dataset = json.load(f)
+
+        # Check _meta.schema_version matches meta.json schemas entry
+        dataset_meta = dataset.get("_meta", {})
+        actual_version = dataset_meta.get("schema_version")
+
+        assert actual_version == expected_version, (
+            f"{dataset_name}.json _meta.schema_version ({actual_version}) "
+            f"doesn't match meta.json schemas.{dataset_name} ({expected_version})"
+        )
 
 
 def test_schema_version_matches_constant():
