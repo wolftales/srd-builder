@@ -1231,4 +1231,54 @@ SRD PDF pages 204-205 have corrupted text extraction. Poison descriptions cannot
 
 ---
 
+## Test Fixture Refactoring
+
+**Date Raised:** December 21, 2025
+**Status:** Nice-to-have - current approach works
+**Priority:** LOW
+
+### Context
+
+test_schema_versions.py tests directly reference `dist/srd_5_1/` directory instead of using pytest fixtures. Works fine but inconsistent with potential future test patterns.
+
+**Current Pattern:**
+```python
+def test_meta_json_schemas_match_datasets() -> None:
+    dist_path = Path(__file__).parent.parent / "dist" / "srd_5_1"
+    if not dist_path.exists():
+        pytest.skip("dist/srd_5_1 not found - run build first")
+```
+
+**Possible Fixture:**
+```python
+@pytest.fixture
+def srd_5_1_build_output() -> Path:
+    """Path to built srd_5_1 output directory."""
+    dist_path = Path(__file__).parent.parent / "dist" / "srd_5_1"
+    if not dist_path.exists():
+        pytest.skip("dist/srd_5_1 not found - run build first")
+    return dist_path
+```
+
+**Decision:** Defer until fixture pattern needed across multiple test files.
+
+**Benefits if implemented:**
+- DRY - single path resolution logic
+- Easier to switch build output locations
+- Consistent with other test fixtures (if we add them)
+
+**Cons:**
+- Extra abstraction for single use case
+- Current approach is explicit and clear
+- No actual code reuse benefit yet
+
+### Implementation (When Triggered)
+
+- [ ] Add fixture to tests/conftest.py
+- [ ] Update test_schema_versions.py to use fixture
+- [ ] Consider other tests that might benefit
+- [ ] Document fixture usage pattern
+
+---
+
 ## [Add more parked features here as needed]
