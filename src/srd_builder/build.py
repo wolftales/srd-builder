@@ -18,7 +18,7 @@ from typing import Any
 
 from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
-from .assemble.build_prose_dataset import build_prose_dataset
+from .assemble.assemble_prose import assemble_prose_dataset
 from .assemble.indexer import build_indexes
 from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
 from .extract.extract_equipment import extract_equipment
@@ -731,7 +731,7 @@ def build(  # noqa: C901
     if pdf_files:
         for dataset_name, parser_func in prose_parsers.items():
             try:
-                doc = build_prose_dataset(dataset_name, pdf_files[0], parser_func)
+                doc = assemble_prose_dataset(dataset_name, pdf_files[0], parser_func)
                 # Assign to appropriate variable
                 if dataset_name == "conditions":
                     conditions_doc = doc

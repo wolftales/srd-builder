@@ -1,7 +1,7 @@
-"""Generic prose dataset builder using configuration-driven approach.
+"""Generic prose dataset assembly using configuration-driven approach.
 
 Instead of build_conditions.py, build_diseases.py, etc., this single module
-handles all prose datasets using metadata from extraction/extraction_metadata.py.
+assembles all prose datasets using metadata from extraction/extraction_metadata.py.
 
 Prose datasets are configured as pattern_type='prose_section' entries in the
 unified TABLES dictionary.
@@ -21,12 +21,12 @@ from ..extract.prose_extraction import ProseExtractor
 from ..extraction.extraction_metadata import TABLES
 
 
-def build_prose_dataset(
+def assemble_prose_dataset(
     dataset_name: str,
     pdf_path: Path,
     parser_func: Callable[[list], list[dict[str, Any]]],
 ) -> dict[str, Any]:
-    """Build any prose dataset using configuration.
+    """Assemble any prose dataset using configuration.
 
     Args:
         dataset_name: Name from extraction_metadata TABLES (e.g., "conditions", "diseases")
