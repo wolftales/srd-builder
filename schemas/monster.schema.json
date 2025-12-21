@@ -18,8 +18,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z]+:[a-z0-9_]+$",
-      "description": "Stable identifier for the monster entry"
+      "pattern": "^(monster|creature|npc):[a-z0-9_]+$",
+      "description": "Stable identifier for the monster entry (monster:, creature:, or npc: prefix)"
     },
     "simple_name": {
       "type": "string",
