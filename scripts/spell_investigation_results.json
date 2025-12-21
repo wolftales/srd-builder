@@ -1,0 +1,145 @@
+{
+  "font_metadata": {
+    "sample_pages": [
+      117,
+      118,
+      119
+    ],
+    "font_families": {
+      "Calibri": {
+        "count": 3,
+        "sizes": [
+          10.8
+        ],
+        "sample_text": [
+          "System\t\r \u00a0Reference\t\r \u00a0Document\t\r \u00a05.1",
+          "System\t\r \u00a0Reference\t\r \u00a0Document\t\r \u00a05.1",
+          "System\t\r \u00a0Reference\t\r \u00a0Document\t\r \u00a05.1"
+        ]
+      },
+      "GillSans-SemiBold": {
+        "count": 11,
+        "sizes": [
+          10.8,
+          12.0
+        ],
+        "sample_text": [
+          "117",
+          "Antimagic Field",
+          "Antipathy/Sympathy"
+        ]
+      },
+      "Cambria": {
+        "count": 294,
+        "sizes": [
+          9.8
+        ],
+        "sample_text": [
+          "If\t\r \u00a0you\t\r \u00a0move\t\r \u00a0so\t\r \u00a0that\t\r \u00a0an\t\r \u00a0affected\t",
+          "to\t\r \u00a0pass\t\r \u00a0through\t\r \u00a0the\t\r \u00a0barrier,\t\r \u00a0the\t\r ",
+          "1\t\r \u00a0action"
+        ]
+      },
+      "Cambria-Italic": {
+        "count": 24,
+        "sizes": [
+          9.8
+        ],
+        "sample_text": [
+          "8th-\u00ad\u2010\u2011level\t\r \u00a0abjuration",
+          "magic\t\r \u00a0missile",
+          "charm\t\r \u00a0person"
+        ]
+      },
+      "Cambria-Bold": {
+        "count": 32,
+        "sizes": [
+          9.8
+        ],
+        "sample_text": [
+          "Casting\t\r \u00a0Time:",
+          "Range:",
+          "Components:"
+        ]
+      },
+      "Cambria-BoldItalic": {
+        "count": 17,
+        "sizes": [
+          9.8
+        ],
+        "sample_text": [
+          "Targeted\t\r \u00a0Effects.",
+          "Areas\t\r \u00a0of\t\r \u00a0Magic.",
+          "Spells."
+        ]
+      }
+    },
+    "size_distribution": {
+      "9.8": 367,
+      "10.8": 6,
+      "12.0": 8
+    },
+    "analysis": {
+      "most_common_font": "Cambria",
+      "unique_sizes": [
+        12.0,
+        10.8,
+        9.8
+      ],
+      "likely_spell_name_size": 12.0
+    }
+  },
+  "boundary_check": {
+    "total_spells": 319,
+    "contamination_count": 0,
+    "contaminated": [],
+    "clean": true
+  },
+  "paragraph_spacing": {
+    "page": 119,
+    "line_count": 102,
+    "gap_stats": {
+      "min": -13.19,
+      "avg": -4.92,
+      "max": 50.42
+    },
+    "large_gaps_count": 88,
+    "large_gaps": [
+      {
+        "gap": 0.23,
+        "after_text": "False\t\r \u00a0Aura.\t\r \u00a0You\t\r \u00a0change\t\r \u00a0the\t\r \u00a0way\t\r \u00a0t",
+        "before_text": "Components:\t\r \u00a0V,\t\r \u00a0S,\t\r \u00a0M\t\r \u00a0(gold\t\r \u00a0dust\t\r \u00a0w"
+      },
+      {
+        "gap": 0.23,
+        "after_text": "appears\t\r \u00a0to\t\r \u00a0spells\t\r \u00a0and\t\r \u00a0magical\t\r \u00a0effec",
+        "before_text": "which\t\r \u00a0the\t\r \u00a0spell\t\r \u00a0consumes)"
+      },
+      {
+        "gap": 0.22,
+        "after_text": "magic,\t\r \u00a0that\t\r \u00a0detect\t\r \u00a0magical\t\r \u00a0auras.\t\r \u00a0Y",
+        "before_text": "Duration:\t\r \u00a0Until\t\r \u00a0dispelled"
+      },
+      {
+        "gap": -0.01,
+        "after_text": "nonmagical\t\r \u00a0object\t\r \u00a0appear\t\r \u00a0magical,\t\r \u00a0a\t\r ",
+        "before_text": "appear\t\r \u00a0nonmagical,\t\r \u00a0or\t\r \u00a0change\t\r \u00a0the\t\r \u00a0ob"
+      },
+      {
+        "gap": -5.54,
+        "after_text": "appear\t\r \u00a0nonmagical,\t\r \u00a0or\t\r \u00a0change\t\r \u00a0the\t\r \u00a0ob",
+        "before_text": "You\t\r \u00a0touch\t\r \u00a0a\t\r \u00a0closed\t\r \u00a0door,\t\r \u00a0window,\t\r "
+      }
+    ],
+    "recommended_threshold": -7.38
+  },
+  "column_layout": {
+    "page": 118,
+    "page_width": 612.0,
+    "block_count": 11,
+    "left_half_blocks": 7,
+    "right_half_blocks": 4,
+    "avg_x_left": 160.96,
+    "layout": "two-column"
+  }
+}
