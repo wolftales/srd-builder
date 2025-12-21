@@ -47,7 +47,7 @@ def clean_equipment_record(item: dict[str, Any]) -> dict[str, Any]:
         if key not in equipment_optional_fields:
             continue
         value = patched[key]
-        if value is None or (isinstance(value, (list, str)) and not value):
+        if value is None or (isinstance(value, list | str) and not value):
             patched.pop(key)
 
     return patched

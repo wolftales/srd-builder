@@ -16,20 +16,12 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
-  - repo: https://github.com/psf/black
-    rev: 24.10.0
-    hooks:
-      - id: black
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.13.0
     hooks:
       - id: mypy
         additional_dependencies: []
-        args: [--explicit-package-bases]
+        args: [--explicit-package-bases, --namespace-packages]
         files: ^src/
   - repo: local
     hooks:

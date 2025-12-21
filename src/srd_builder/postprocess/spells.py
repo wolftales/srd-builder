@@ -45,7 +45,7 @@ def clean_spell_record(spell: dict[str, Any]) -> dict[str, Any]:
         if key not in spell_optional_fields:
             continue
         value = patched[key]
-        if value is None or (isinstance(value, (list, dict, str)) and not value):
+        if value is None or (isinstance(value, list | dict | str) and not value):
             patched.pop(key)
 
     return patched

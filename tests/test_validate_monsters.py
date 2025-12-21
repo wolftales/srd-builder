@@ -184,9 +184,7 @@ def test_validate_all_fail_on_duplicates():
     monsters = [
         {"name": "Dragon"},
         {"name": "Dragon"},
-    ] + [
-        {"name": f"Monster {i}"} for i in range(294)
-    ]  # Total 296
+    ] + [{"name": f"Monster {i}"} for i in range(294)]  # Total 296
 
     results = validate_all(monsters)
     assert results["pass"] is False

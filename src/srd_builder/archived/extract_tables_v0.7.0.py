@@ -307,9 +307,7 @@ class TableExtractor:
             notes=target.get("notes"),
         )
 
-    def _extract_manual(
-        self, target: TableTarget, page: fitz.Page, page_num: int
-    ) -> RawTable:  # noqa: C901
+    def _extract_manual(self, target: TableTarget, page: fitz.Page, page_num: int) -> RawTable:  # noqa: C901
         """Extract table using manual text-based pattern.
 
         Args:

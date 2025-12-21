@@ -102,7 +102,9 @@ def extract_level_effect_table(text: str) -> list[dict[str, str]]:
     return extract_table_by_pattern(text, pattern, ["level", "effect"])
 
 
-def split_by_known_headers(text: str, headers: list[str]) -> list[dict[str, Any]]:
+def split_by_known_headers(
+    text: str, headers: list[str], validate_boundaries: bool = True
+) -> list[dict[str, Any]]:
     """Split text into sections using known headers as boundaries.
 
     This is the core pattern used in extract_conditions.py and can be
@@ -111,9 +113,10 @@ def split_by_known_headers(text: str, headers: list[str]) -> list[dict[str, Any]
     Args:
         text: Full text to split
         headers: Ordered list of section headers
+        validate_boundaries: If True, add warnings for cross-contamination
 
     Returns:
-        List of sections with name, raw_text, start_pos, end_pos
+        List of sections with name, raw_text, start_pos, end_pos, warnings (optional)
 
     Example:
         >>> headers = ["Blinded", "Charmed", "Deafened"]
@@ -125,8 +128,14 @@ def split_by_known_headers(text: str, headers: list[str]) -> list[dict[str, Any]
 
     for i, header in enumerate(headers):
         # Find this header (word boundary to avoid partial matches)
+        # Use case-sensitive matching to avoid matching references like
+        # "incapacitated" in other conditions' text vs header "Incapacitated"
+        # This is critical because D&D conditions frequently reference each other
+        # (e.g., "The grappler is incapacitated" in Grappled condition)
+        # Without case-sensitivity, "incapacitated" would incorrectly match the
+        # "Incapacitated" header, causing Grappled section to be truncated
         pattern = rf"\b{re.escape(header)}\b"
-        match = re.search(pattern, cleaned_text, re.IGNORECASE)
+        match = re.search(pattern, cleaned_text)
 
         if not match:
             continue
@@ -137,11 +146,12 @@ def split_by_known_headers(text: str, headers: list[str]) -> list[dict[str, Any]
         end_pos = len(cleaned_text)
         if i + 1 < len(headers):
             next_header = headers[i + 1]
+            # Use case-sensitive matching to avoid matching lowercase references
+            # (same reasoning as above - preserve section integrity)
             next_pattern = rf"\b{re.escape(next_header)}\b"
             next_match = re.search(
                 next_pattern,
                 cleaned_text[start_pos + len(header) :],
-                re.IGNORECASE,
             )
             if next_match:
                 end_pos = start_pos + len(header) + next_match.start()
@@ -149,16 +159,66 @@ def split_by_known_headers(text: str, headers: list[str]) -> list[dict[str, Any]
         # Extract section text
         section_text = cleaned_text[start_pos:end_pos].strip()
 
-        sections.append(
-            {
-                "name": header,
-                "raw_text": section_text,
-                "start_pos": start_pos,
-                "end_pos": end_pos,
-            }
-        )
+        section = {
+            "name": header,
+            "raw_text": section_text,
+            "start_pos": start_pos,
+            "end_pos": end_pos,
+        }
+
+        # Validate boundaries if requested
+        if validate_boundaries:
+            warnings = _validate_section_boundaries(header, section_text, headers)
+            if warnings:
+                section["warnings"] = warnings
+
+        sections.append(section)
 
     return sections
+
+
+def _validate_section_boundaries(header: str, text: str, all_headers: list[str]) -> list[str]:
+    """Validate that section text doesn't contain cross-contamination.
+
+    Args:
+        header: This section's header name
+        text: Section text to validate
+        all_headers: All header names to check for contamination
+
+    Returns:
+        List of warning messages (empty if clean)
+    """
+    warnings = []
+
+    # Check for OTHER headers in this section's text (cross-contamination)
+    # Use case-sensitive matching to avoid false positives from lowercase references
+    for other_header in all_headers:
+        if other_header == header:
+            continue
+
+        # Look for other header (capitalized) after first occurrence of current header
+        # This catches actual headers bleeding across boundaries
+        first_header_pos = text.find(header)
+        if first_header_pos == -1:
+            continue
+
+        first_header_end = first_header_pos + len(header)
+        remaining_text = text[first_header_end:]
+
+        # Case-sensitive search for capitalized header (not lowercase references)
+        if re.search(rf"\b{re.escape(other_header)}\b", remaining_text):
+            warnings.append(
+                f"Section '{header}' contains text from '{other_header}' (cross-contamination)"
+            )
+
+    # Check for unreasonably long sections (likely merged multiple sections)
+    max_reasonable_length = 2000  # Most conditions are 200-500 chars
+    if len(text) > max_reasonable_length:
+        warnings.append(
+            f"Section '{header}' is {len(text)} chars (expected < {max_reasonable_length})"
+        )
+
+    return warnings
 
 
 def discover_headers_by_font(
@@ -269,7 +329,7 @@ class ProseExtractor:
         self.end_page = end_page
 
     def extract_from_pdf(self, pdf_path: Any) -> tuple[list[dict[str, Any]], list[str]]:
-        """Extract sections from PDF.
+        """Extract sections from PDF with proper column handling.
 
         Args:
             pdf_path: Path to PDF or open PyMuPDF document
@@ -290,11 +350,8 @@ class ProseExtractor:
             should_close = False
 
         try:
-            # Extract text from page range
-            full_text = ""
-            for page_num in range(self.start_page - 1, self.end_page):
-                page = doc[page_num]
-                full_text += page.get_text()
+            # Extract text with spatial awareness (column handling)
+            full_text = self._extract_text_with_columns(doc)
 
             # Split by headers
             sections = split_by_known_headers(full_text, self.known_headers)
@@ -311,6 +368,66 @@ class ProseExtractor:
         finally:
             if should_close:
                 doc.close()
+
+    def _extract_text_with_columns(self, doc: Any) -> str:
+        """Extract text with proper column reading order.
+
+        Uses spatial sorting to handle two-column layouts correctly.
+        Prevents text bleeding across column boundaries.
+
+        Args:
+            doc: Open PyMuPDF document
+
+        Returns:
+            Text extracted in proper reading order (left column top-to-bottom,
+            then right column top-to-bottom)
+        """
+        full_text = ""
+
+        for page_num in range(self.start_page - 1, self.end_page):
+            page = doc[page_num]
+            page_rect = page.rect
+            mid_x = page_rect.width / 2
+
+            # Extract blocks with position data
+            blocks = page.get_text("dict")["blocks"]
+
+            # Separate into columns and sort by position
+            left_col = []
+            right_col = []
+
+            for block in blocks:
+                if "lines" not in block:
+                    continue
+
+                bbox = block["bbox"]
+                block_x = bbox[0]
+                block_y = bbox[1]
+
+                # Extract text from block
+                text = ""
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        text += span["text"]
+                    text += "\n"
+
+                # Assign to column based on x position
+                if block_x < mid_x:
+                    left_col.append((block_y, text))
+                else:
+                    right_col.append((block_y, text))
+
+            # Sort each column by y position (top to bottom)
+            left_col.sort()
+            right_col.sort()
+
+            # Concatenate in reading order: left column, then right column
+            for _, text in left_col:
+                full_text += text
+            for _, text in right_col:
+                full_text += text
+
+        return full_text
 
     def enrich_section(self, section: dict[str, Any]) -> dict[str, Any]:
         """Add common metadata to a section.

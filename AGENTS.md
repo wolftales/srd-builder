@@ -7,7 +7,7 @@
   - pytest -q
 - **CI and container environments (no pre-commit available):**
   - ruff check .
-  - black --check .
+  - ruff format --check .
   - pytest -q
 - Determinism: No timestamps or environment-dependent values in dataset files.
 
@@ -26,5 +26,5 @@
 
 ## Style
 - Python 3.11 + type hints.
-- Ruff + Black must pass; import order via ruff/isort.
+- Ruff (linting + formatting) must pass; import order enforced by ruff.
 - No prints or side effects at import.

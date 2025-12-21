@@ -90,8 +90,8 @@ def test_class_progression_extraction(
         for h in validation["headers"]
     ]
 
-    assert len(extracted_headers) == len(
-        validation_headers
+    assert (
+        len(extracted_headers) == len(validation_headers)
     ), f"{class_name}: Header count mismatch - expected {len(validation_headers)}, got {len(extracted_headers)}"
 
     # Compare row data (compare string representations for flexibility)
