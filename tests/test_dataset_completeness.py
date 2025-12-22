@@ -58,9 +58,9 @@ def test_dataset_populated(dataset_name: str, expected_min: int) -> None:
 
     assert isinstance(items, list), f"{dataset_name}.json {items_key} should be a list"
     assert len(items) > 0, f"{dataset_name}.json should not be empty"
-    assert (
-        len(items) >= expected_min
-    ), f"{dataset_name}.json has {len(items)} items, expected at least {expected_min}"
+    assert len(items) >= expected_min, (
+        f"{dataset_name}.json has {len(items)} items, expected at least {expected_min}"
+    )
 
 
 def test_all_datasets_have_standard_meta_fields() -> None:
@@ -164,6 +164,6 @@ def test_meta_json_extraction_status() -> None:
 
     for dataset_name in EXPECTED_COUNTS.keys():
         status = extraction_status.get(dataset_name)
-        assert (
-            status == "complete"
-        ), f"meta.json shows {dataset_name} status as '{status}', expected 'complete'"
+        assert status == "complete", (
+            f"meta.json shows {dataset_name} status as '{status}', expected 'complete'"
+        )

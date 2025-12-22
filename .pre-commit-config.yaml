@@ -11,7 +11,7 @@ repos:
         args: ["--autofix", "--no-sort-keys"]
         exclude: tests/fixtures/.*/normalized/.*\.json$
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.14.10
     hooks:
       - id: ruff
         args: [--fix]
