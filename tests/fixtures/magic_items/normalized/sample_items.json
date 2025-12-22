@@ -1,57 +1,67 @@
 [
   {
-    "id": "adamantine_armor",
+    "id": "magic_item:adamantine_armor",
     "name": "Adamantine Armor",
-    "simple_name": "adamantine armor",
+    "simple_name": "adamantine_armor",
     "type": "Armor",
     "rarity": "uncommon",
     "requires_attunement": false,
     "description": [
-      "This suit of armor is reinforced with adamantine, one of the hardest substances in existence. While you\u2019re wearing it, any critical hit against you becomes a normal hit."
-    ]
+      "This suit of armor is reinforced with adamantine, one of the hardest substances in existence. While you’re wearing it, any critical hit against you becomes a normal hit."
+    ],
+    "page": 207,
+    "source": "SRD_CC_v5.1"
   },
   {
-    "id": "ammunition_1_2_or_3",
+    "id": "magic_item:ammunition_1_2_or_3",
     "name": "Ammunition, +1, +2, or +3",
-    "simple_name": "ammunition 1 2 or 3",
+    "simple_name": "ammunition_1_2_or_3",
     "type": "Weapon",
     "rarity": "very rare",
     "requires_attunement": false,
     "description": [
       "You have a bonus to attack and damage rolls made with this piece of magic ammunition. The bonus is determined by the rarity of the ammunition. Once it hits a target, the ammunition is no longer magical."
-    ]
+    ],
+    "page": 207,
+    "source": "SRD_CC_v5.1"
   },
   {
-    "id": "amulet_of_health",
+    "id": "magic_item:amulet_of_health",
     "name": "Amulet of Health",
-    "simple_name": "amulet of health",
+    "simple_name": "amulet_of_health",
     "type": "Wondrous item",
     "rarity": "rare",
     "requires_attunement": true,
     "description": [
       "Your Constitution score is 19 while you wear this amulet. It has no effect on you if your Constitution is already 19 or higher."
-    ]
+    ],
+    "page": 207,
+    "source": "SRD_CC_v5.1"
   },
   {
-    "id": "bag_of_holding",
+    "id": "magic_item:bag_of_holding",
     "name": "Bag of Holding",
-    "simple_name": "bag of holding",
+    "simple_name": "bag_of_holding",
     "type": "Wondrous item",
     "rarity": "uncommon",
     "requires_attunement": false,
     "description": [
-      "This bag has an interior space considerably larger than its outside dimensions, roughly 2 feet in diameter at the mouth and 4 feet deep. The bag can hold up to 500 pounds, not exceeding a volume of 64 cubic feet. The bag weighs 15 pounds, regardless of its contents. Retrieving an item from the bag requires an action. If the bag is overloaded, pierced, or torn, it ruptures and is destroyed, and its contents are scattered in the Astral Plane. If the bag is turned inside out, its contents spill forth, unharmed, but the bag must be put right before it can be used again. Breathing creatures inside the bag can survive up to a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they begin to suffocate. destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it to a random location on the Astral Plane. The gate then closes. The gate is one-\u00ad\u2010\u2011way only and can\u2019t be reopened."
-    ]
+      "This bag has an interior space considerably larger than its outside dimensions, roughly 2 feet in diameter at the mouth and 4 feet deep. The bag can hold up to 500 pounds, not exceeding a volume of 64 cubic feet. The bag weighs 15 pounds, regardless of its contents. Retrieving an item from the bag requires an action. If the bag is overloaded, pierced, or torn, it ruptures and is destroyed, and its contents are scattered in the Astral Plane. If the bag is turned inside out, its contents spill forth, unharmed, but the bag must be put right before it can be used again. Breathing creatures inside the bag can survive up to a number of minutes equal to 10 divided by the number of creatures (minimum 1 minute), after which time they begin to suffocate. destroys both items and opens a gate to the Astral Plane. The gate originates where the one item was placed inside the other. Any creature within 10 feet of the gate is sucked through it to a random location on the Astral Plane. The gate then closes. The gate is one-­‐‑way only and can’t be reopened."
+    ],
+    "page": 210,
+    "source": "SRD_CC_v5.1"
   },
   {
-    "id": "flame_tongue",
+    "id": "magic_item:flame_tongue",
     "name": "Flame Tongue",
-    "simple_name": "flame tongue",
+    "simple_name": "flame_tongue",
     "type": "Weapon",
     "rarity": "rare",
     "requires_attunement": true,
     "description": [
-      "You can use a bonus action to speak this magic sword\u2019s command word, causing flames to erupt from the blade. These flames shed bright light in a 40-\u00ad\u2010\u2011foot radius and dim light for an additional 40 feet. While the sword is ablaze, it deals an extra 2d6 fire damage to any target it hits. The flames last until you use a bonus action to speak the command word again or until you drop or sheathe the sword."
-    ]
+      "You can use a bonus action to speak this magic sword’s command word, causing flames to erupt from the blade. These flames shed bright light in a 40-­‐‑foot radius and dim light for an additional 40 feet. While the sword is ablaze, it deals an extra 2d6 fire damage to any target it hits. The flames last until you use a bonus action to speak the command word again or until you drop or sheathe the sword."
+    ],
+    "page": 223,
+    "source": "SRD_CC_v5.1"
   }
 ]

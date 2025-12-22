@@ -38,11 +38,8 @@ jobs:
       - name: Lint (ruff)
         run: ruff check .
 
-      - name: Format check (black)
-        run: black --check .
-
-      - name: Import order (isort)
-        run: isort --check-only .
+      - name: Format check (ruff)
+        run: ruff format --check .
 
       - name: Type check (mypy)
         run: mypy src

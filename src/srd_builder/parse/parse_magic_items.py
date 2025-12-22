@@ -61,7 +61,7 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
     """Parse a single raw magic item.
 
     Args:
-        raw: Raw item dict with name, metadata_blocks, description_blocks
+        raw: Raw item dict with name, metadata_blocks, description_blocks, page
 
     Returns:
         Parsed magic item dict
@@ -82,6 +82,11 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
     item_id = _generate_id(name)
     simple_name = _generate_simple_name(name)
 
+    # Extract metadata
+    page = raw.get("page")
+    if page is None:
+        raise ValueError(f"Missing page number for item '{name}'")
+
     result = {
         "id": item_id,
         "name": name,
@@ -90,6 +95,8 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
         "rarity": rarity,
         "requires_attunement": requires_attunement,
         "description": description,
+        "page": page,
+        "source": "SRD_CC_v5.1",
     }
 
     # Optional fields
@@ -226,14 +233,14 @@ def _generate_id(name: str) -> str:
         name: Item name
 
     Returns:
-        Slugified ID (lowercase, underscores)
+        Prefixed ID (magic_item:slugified_name)
     """
     # Lowercase and replace spaces/punctuation with underscores
     item_id = name.lower()
     item_id = re.sub(r"[^a-z0-9]+", "_", item_id)
     item_id = item_id.strip("_")
 
-    return item_id
+    return f"magic_item:{item_id}"
 
 
 def _generate_simple_name(name: str) -> str:
@@ -243,14 +250,13 @@ def _generate_simple_name(name: str) -> str:
         name: Item name
 
     Returns:
-        Simple name (lowercase, no punctuation, spaces preserved)
+        Simple name (lowercase, underscores, no special chars)
     """
     simple = name.lower()
-    # Remove special characters but keep spaces
-    simple = re.sub(r"[^a-z0-9 ]+", "", simple)
-    # Normalize multiple spaces
-    simple = re.sub(r" +", " ", simple)
-    simple = simple.strip()
+    # Replace spaces and special characters with underscores
+    simple = re.sub(r"[^a-z0-9]+", "_", simple)
+    # Remove leading/trailing underscores
+    simple = simple.strip("_")
 
     return simple
 

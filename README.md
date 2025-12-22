@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.15.0)
+### Build pipeline (v0.16.0)
 
-The build pipeline extracts monster, equipment, spell, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking. v0.9.7 migrates travel_pace and size_categories tables from hardcoded to PDF extraction, removes non-SRD tables (cantrip_damage, spell_slots_by_level).
+The build pipeline extracts monster, equipment, spell, magic item, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **264 magic items**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
 **Development workflow (fast iteration, data only):**
 ```bash
@@ -67,6 +67,7 @@ dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
+├── magic_items.json       # 264 magic items ✨ NEW in v0.16.0
 ├── tables.json            # 37 reference tables (12 class progression + 25 equipment/reference)
 ├── lineages.json          # 13 character lineages (9 base + 4 subraces)
 ├── classes.json           # 12 character classes
@@ -81,6 +82,7 @@ dist/srd_5_1/
 ├── monsters.json          # 296 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
+├── magic_items.json       # 264 magic items
 ├── tables.json            # 37 reference tables
 ├── lineages.json          # 13 character lineages
 ├── classes.json           # 12 character classes
@@ -92,6 +94,7 @@ dist/srd_5_1/
 │   ├── monster.schema.json
 │   ├── equipment.schema.json
 │   ├── spell.schema.json
+│   ├── magic_item.schema.json
 │   ├── table.schema.json
 │   ├── lineage.schema.json
 │   └── class.schema.json
@@ -235,7 +238,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
 - 🎯 **v0.12.0** - Rules Dataset (core mechanics)
 - ✅ **v0.14.0** - Deterministic metadata + prose datasets (conditions, diseases, madness, poisons)
-- 🎯 **v0.15.0** - Quality & Polish (final cleanup before v1.0.0)
+- ✅ **v0.15.0** - Module Reorganization + Monster/Spell Refactoring
+- ✅ **v0.16.0** - Magic Items Dataset (264 items with full metadata)
+- 🎯 **v0.17.0** - Rules Dataset (core mechanics)
+- 🎯 **v0.18.0** - Quality & Polish (final cleanup before v1.0.0)
 - 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
 
 ## Testing

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://srd-builder.example.com/schemas/magic_item.schema.json",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "title": "Magic Item",
   "description": "Schema for D&D 5e SRD magic items",
   "type": "object",
@@ -12,14 +12,16 @@
     "type",
     "rarity",
     "requires_attunement",
-    "description"
+    "description",
+    "page",
+    "source"
   ],
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique identifier (slugified name)",
-      "pattern": "^[a-z0-9_]+$"
+      "description": "Unique identifier (slugified name with magic_item: prefix)",
+      "pattern": "^magic_item:[a-z0-9_]+$"
     },
     "name": {
       "type": "string",
@@ -28,8 +30,16 @@
     },
     "simple_name": {
       "type": "string",
-      "description": "Simplified name for cross-referencing (lowercase, no punctuation)",
-      "pattern": "^[a-z0-9 ]+$"
+      "description": "Simplified name for cross-referencing (lowercase, underscore-separated)",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Alternative names or search terms for discoverability",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
     },
     "type": {
       "type": "string",
@@ -66,9 +76,23 @@
         "minLength": 1
       }
     },
+    "summary": {
+      "type": "string",
+      "description": "Optional one-sentence summary of the item's primary effect"
+    },
     "variant_of": {
       "type": "string",
-      "description": "Base item ID if this is a variant (e.g., '+1 longsword' variant_of 'longsword')"
+      "description": "Base item ID if this is a variant (e.g., '+1 longsword' variant_of 'equipment:longsword')"
+    },
+    "page": {
+      "type": "integer",
+      "description": "PDF page number where this item appears",
+      "minimum": 1
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD_CC_v5.1')",
+      "minLength": 1
     }
   }
 }
