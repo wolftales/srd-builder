@@ -291,29 +291,38 @@ def _parse_components(text: str) -> dict[str, Any]:
     return components
 
 
-def _extract_effects(description: str) -> dict[str, Any]:
-    """Extract damage, healing, saves, etc. from spell description.
+def _extract_damage(description: str) -> dict[str, str] | None:
+    """Extract damage dice and type from spell description.
 
     Args:
         description: Full spell description text
 
     Returns:
-        Effects dict (may be empty if no extractable effects)
+        Damage dict with dice and type, or None
     """
     import re
 
-    effects: dict[str, Any] = {}
-
-    # Extract damage
     damage_pattern = r"(\d+d\d+)\s+(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+damage"
     damage_match = re.search(damage_pattern, description, re.IGNORECASE)
     if damage_match:
-        effects["damage"] = {
+        return {
             "dice": damage_match.group(1),
             "type": damage_match.group(2).lower(),
         }
+    return None
 
-    # Extract saving throw
+
+def _extract_save(description: str) -> dict[str, str] | None:
+    """Extract saving throw from spell description.
+
+    Args:
+        description: Full spell description text
+
+    Returns:
+        Save dict with ability and on_success, or None
+    """
+    import re
+
     save_pattern = (
         r"(Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)\s+saving\s+throw"
     )
@@ -327,9 +336,21 @@ def _extract_effects(description: str) -> dict[str, Any]:
         elif "negates" in description.lower():
             on_success = "negates"
 
-        effects["save"] = {"ability": ability, "on_success": on_success}
+        return {"ability": ability, "on_success": on_success}
+    return None
 
-    # Extract healing
+
+def _extract_healing(description: str) -> dict[str, Any] | None:
+    """Extract healing from spell description.
+
+    Args:
+        description: Full spell description text
+
+    Returns:
+        Healing dict with dice/amount/condition, or None
+    """
+    import re
+
     # Pattern 1: Dice-based with modifier like "4d8 + 15 hit points" (Regenerate)
     dice_with_modifier_pattern = r"regains?\s+(\d+d\d+\s*[+\-]\s*\d+)\s+hit\s+points"
     dice_mod_match = re.search(dice_with_modifier_pattern, description, re.IGNORECASE)
@@ -354,30 +375,55 @@ def _extract_effects(description: str) -> dict[str, Any]:
 
     if dice_mod_match:
         # Dice with modifier (like Regenerate: 4d8+15)
-        effects["healing"] = {"dice": dice_mod_match.group(1).replace(" ", "")}
+        return {"dice": dice_mod_match.group(1).replace(" ", "")}
     elif dice_match:
         # Dice-based (like Cure Wounds: 1d8)
-        effects["healing"] = {"dice": dice_match.group(1)}
+        return {"dice": dice_match.group(1)}
     elif full_match:
         # Full healing (like Wish: regain all hit points)
-        effects["healing"] = {"condition": "all hit points"}
+        return {"condition": "all hit points"}
     elif conditional_match and not fixed_match:
         # Conditional healing (like Vampiric Touch: half the necrotic damage dealt)
         condition_text = conditional_match.group(1).strip()
         # Only capture if it's not a simple dice pattern we already caught
         if "d" not in condition_text or "damage" in condition_text.lower():
-            effects["healing"] = {"condition": condition_text}
+            return {"condition": condition_text}
     elif fixed_match:
         # Fixed amount (like Heal: 70 HP, Mass Heal: 700 HP)
-        effects["healing"] = {"amount": int(fixed_match.group(1))}
+        return {"amount": int(fixed_match.group(1))}
 
-    # Extract spell attack
+    return None
+
+
+def _extract_attack(description: str) -> dict[str, str] | None:
+    """Extract spell attack from spell description.
+
+    Args:
+        description: Full spell description text
+
+    Returns:
+        Attack dict with type, or None
+    """
+    import re
+
     attack_pattern = r"(?:make\s+a\s+)?(melee|ranged)\s+spell\s+attack"
     attack_match = re.search(attack_pattern, description, re.IGNORECASE)
     if attack_match:
-        effects["attack"] = {"type": attack_match.group(1).lower() + "_spell"}
+        return {"type": attack_match.group(1).lower() + "_spell"}
+    return None
 
-    # Extract area (handle PDF spacing like "20- foot- radius sphere")
+
+def _extract_area(description: str) -> dict[str, Any] | None:
+    """Extract area of effect from spell description.
+
+    Args:
+        description: Full spell description text
+
+    Returns:
+        Area dict with shape/size/unit, or None
+    """
+    import re
+
     # Pattern 1: Cylinder with dimensions like "10-foot-radius, 40-foot-high cylinder" or "10 feet tall with a 60-foot radius"
     cylinder_pattern1 = r"(\d+)-?\s*foot[-\s]*radius[-\s]*,\s*(\d+)-?\s*foot[-\s]*high\s+cylinder"
     cylinder_pattern2 = (
@@ -387,62 +433,88 @@ def _extract_effects(description: str) -> dict[str, Any]:
     cylinder_match2 = re.search(cylinder_pattern2, description, re.IGNORECASE)
 
     if cylinder_match1:
-        effects["area"] = {
+        return {
             "shape": "cylinder",
             "size": int(cylinder_match1.group(1)),
             "unit": "feet",
         }
     elif cylinder_match2:
-        effects["area"] = {
+        return {
             "shape": "cylinder",
             "size": int(cylinder_match2.group(1)),
             "unit": "feet",
         }
-    else:
-        # Pattern 2: Diameter (convert to radius) like "5-foot-diameter sphere"
-        diameter_pattern = r"(\d+)-?\s*foot[-\s]*diameter\s+(sphere|cube)"
-        diameter_match = re.search(diameter_pattern, description, re.IGNORECASE)
-        if diameter_match:
-            # Store diameter as-is (schema uses size generically)
-            effects["area"] = {
-                "shape": diameter_match.group(2).lower(),
-                "size": int(diameter_match.group(1)),
-                "unit": "feet",
-            }
-        else:
-            # Pattern 3: Standard "X-foot radius sphere/cone/cube/cylinder"
-            area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
-            area_match = re.search(area_pattern, description, re.IGNORECASE)
-            if area_match:
-                effects["area"] = {
-                    "shape": area_match.group(3).lower(),
-                    "size": int(area_match.group(1)),
-                    "unit": "feet",
-                }
-            else:
-                # Pattern 4: Just radius without shape (default to sphere)
-                radius_only_pattern = (
-                    r"(\d+)-?\s*foot[-\s]*radius(?!\s+(sphere|cone|cube|cylinder))"
-                )
-                radius_only_match = re.search(radius_only_pattern, description, re.IGNORECASE)
-                if radius_only_match:
-                    effects["area"] = {
-                        "shape": "sphere",
-                        "size": int(radius_only_match.group(1)),
-                        "unit": "feet",
-                    }
-                else:
-                    # Pattern 5: Line spells like "100 feet long and 5 feet wide"
-                    line_pattern = r"(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?"
-                    line_match = re.search(line_pattern, description, re.IGNORECASE)
-                    if line_match:
-                        effects["area"] = {
-                            "shape": "line",
-                            "size": int(line_match.group(1)),
-                            "unit": "feet",
-                        }
-                        # Optionally capture width if we want to extend the schema
-                        # width = int(line_match.group(2)) if line_match.group(2) else None
+
+    # Pattern 2: Diameter (convert to radius) like "5-foot-diameter sphere"
+    diameter_pattern = r"(\d+)-?\s*foot[-\s]*diameter\s+(sphere|cube)"
+    diameter_match = re.search(diameter_pattern, description, re.IGNORECASE)
+    if diameter_match:
+        # Store diameter as-is (schema uses size generically)
+        return {
+            "shape": diameter_match.group(2).lower(),
+            "size": int(diameter_match.group(1)),
+            "unit": "feet",
+        }
+
+    # Pattern 3: Standard "X-foot radius sphere/cone/cube/cylinder"
+    area_pattern = r"(\d+)-?\s*foot[-\s]*(radius[-\s]*)?(sphere|cone|cube|cylinder)"
+    area_match = re.search(area_pattern, description, re.IGNORECASE)
+    if area_match:
+        return {
+            "shape": area_match.group(3).lower(),
+            "size": int(area_match.group(1)),
+            "unit": "feet",
+        }
+
+    # Pattern 4: Just radius without shape (default to sphere)
+    radius_only_pattern = r"(\d+)-?\s*foot[-\s]*radius(?!\s+(sphere|cone|cube|cylinder))"
+    radius_only_match = re.search(radius_only_pattern, description, re.IGNORECASE)
+    if radius_only_match:
+        return {
+            "shape": "sphere",
+            "size": int(radius_only_match.group(1)),
+            "unit": "feet",
+        }
+
+    # Pattern 5: Line spells like "100 feet long and 5 feet wide"
+    line_pattern = r"(\d+)\s+feet\s+long(?:\s+and\s+(\d+)\s+feet\s+wide)?"
+    line_match = re.search(line_pattern, description, re.IGNORECASE)
+    if line_match:
+        return {
+            "shape": "line",
+            "size": int(line_match.group(1)),
+            "unit": "feet",
+        }
+
+    return None
+
+
+def _extract_effects(description: str) -> dict[str, Any]:
+    """Extract damage, healing, saves, etc. from spell description.
+
+    Args:
+        description: Full spell description text
+
+    Returns:
+        Effects dict (may be empty if no extractable effects)
+    """
+    effects: dict[str, Any] = {}
+
+    # Extract each effect type using specialized helpers
+    if damage := _extract_damage(description):
+        effects["damage"] = damage
+
+    if save := _extract_save(description):
+        effects["save"] = save
+
+    if healing := _extract_healing(description):
+        effects["healing"] = healing
+
+    if attack := _extract_attack(description):
+        effects["attack"] = attack
+
+    if area := _extract_area(description):
+        effects["area"] = area
 
     return effects
 
