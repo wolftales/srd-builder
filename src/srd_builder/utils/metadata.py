@@ -2,33 +2,87 @@
 
 from __future__ import annotations
 
+import json
 from collections import OrderedDict
+from pathlib import Path
 from typing import Any
 
 from .. import __version__
-from ..constants import DATA_SOURCE, SCHEMA_VERSION
+from ..constants import DATA_SOURCE
 from .page_index import PAGE_INDEX
 
-__all__ = ["meta_block", "wrap_with_meta", "build_page_index", "generate_meta_json"]
+# Schema directory location
+SCHEMA_DIR = Path(__file__).resolve().parents[3] / "schemas"
+
+__all__ = [
+    "meta_block",
+    "wrap_with_meta",
+    "build_page_index",
+    "generate_meta_json",
+    "read_schema_version",
+]
 
 
-def meta_block(ruleset: str, ruleset_version: str = "5.1") -> dict[str, str]:
-    """Generate standardized _meta block with consistent field order."""
+def read_schema_version(schema_name: str) -> str:
+    """Read version from a schema file.
 
+    Args:
+        schema_name: Name of schema (e.g., 'monster', 'spell', 'equipment')
+
+    Returns:
+        Version string from schema file
+
+    Raises:
+        FileNotFoundError: If schema file doesn't exist
+        KeyError: If schema file doesn't have 'version' field
+    """
+    schema_path = SCHEMA_DIR / f"{schema_name}.schema.json"
+    if not schema_path.exists():
+        raise FileNotFoundError(f"Schema file not found: {schema_path}")
+
+    schema_data = json.loads(schema_path.read_text(encoding="utf-8"))
+    if "version" not in schema_data:
+        raise KeyError(f"Schema file {schema_path} missing 'version' field")
+
+    return schema_data["version"]
+
+
+def meta_block(ruleset: str, schema_version: str, ruleset_version: str = "5.1") -> dict[str, str]:
+    """Generate standardized _meta block with consistent field order.
+
+    Args:
+        ruleset: Ruleset identifier (e.g., 'srd_5_1')
+        schema_version: Schema version for this specific dataset
+        ruleset_version: Version of the ruleset (default: '5.1')
+
+    Returns:
+        Metadata dictionary
+    """
     return {
         "source": DATA_SOURCE,
         "ruleset_version": ruleset_version,
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": schema_version,
         "generated_by": f"srd-builder v{__version__}",
         "build_report": "./build_report.json",
     }
 
 
 def wrap_with_meta(
-    payload: dict[str, Any], *, ruleset: str, ruleset_version: str = "5.1"
+    payload: dict[str, Any], *, ruleset: str, schema_version: str, ruleset_version: str = "5.1"
 ) -> dict[str, Any]:
+    """Wrap payload with _meta block.
+
+    Args:
+        payload: Data to wrap
+        ruleset: Ruleset identifier
+        schema_version: Schema version for this dataset
+        ruleset_version: Version of the ruleset
+
+    Returns:
+        Document with _meta block
+    """
     document: OrderedDict[str, Any] = OrderedDict()
-    document["_meta"] = meta_block(ruleset, ruleset_version)
+    document["_meta"] = meta_block(ruleset, schema_version, ruleset_version)
     for key, value in payload.items():
         document[key] = value
     return document
@@ -113,19 +167,19 @@ def generate_meta_json(  # noqa: PLR0913
     if build_timestamp is not None:
         build_info["extracted_at"] = build_timestamp
 
-    # Schema versions for each dataset type (allows independent evolution)
+    # Schema versions for each dataset type (read from schema files for independent evolution)
     schemas = {
-        "monster": SCHEMA_VERSION,
-        "spell": SCHEMA_VERSION,
-        "equipment": SCHEMA_VERSION,
-        "class": SCHEMA_VERSION,
-        "lineage": SCHEMA_VERSION,
-        "table": SCHEMA_VERSION,
-        "condition": SCHEMA_VERSION,
-        "disease": SCHEMA_VERSION,
-        "poison": SCHEMA_VERSION,
-        "features": SCHEMA_VERSION,
-        "madness": SCHEMA_VERSION,
+        "monster": read_schema_version("monster"),
+        "spell": read_schema_version("spell"),
+        "equipment": read_schema_version("equipment"),
+        "class": read_schema_version("class"),
+        "lineage": read_schema_version("lineage"),
+        "table": read_schema_version("table"),
+        "condition": read_schema_version("condition"),
+        "disease": read_schema_version("disease"),
+        "poison": read_schema_version("poison"),
+        "features": read_schema_version("features"),
+        "madness": read_schema_version("madness"),
     }
 
     return {

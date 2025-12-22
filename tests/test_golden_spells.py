@@ -7,7 +7,7 @@ from pathlib import Path
 
 from srd_builder.parse.parse_spells import parse_spell_records
 from srd_builder.postprocess import clean_spell_record
-from srd_builder.utils.metadata import meta_block
+from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
 def test_spell_dataset_matches_normalized_fixture() -> None:
@@ -36,7 +36,7 @@ def test_spell_dataset_matches_normalized_fixture() -> None:
     parsed = parse_spell_records(spells_raw)
     processed = [clean_spell_record(spell) for spell in parsed]
 
-    document = {"_meta": meta_block("srd_5_1"), "items": processed}
+    document = {"_meta": meta_block("srd_5_1", read_schema_version("spell")), "items": processed}
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
     expected = expected_path.read_text(encoding="utf-8")

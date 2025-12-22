@@ -7,8 +7,6 @@ from pathlib import Path
 
 import pytest
 
-from srd_builder.constants import SCHEMA_VERSION
-
 
 def test_schema_files_have_version():
     """All schema files should declare a version field."""
@@ -122,15 +120,6 @@ def test_meta_json_schema_version():
         assert len(parts) == 3, f"{dataset} schema version must be MAJOR.MINOR.PATCH format"
         assert all(p.isdigit() for p in parts), f"{dataset} schema version parts must be numeric"
 
-    # All should currently be 1.4.0 (from SCHEMA_VERSION constant)
-    # This assertion can be relaxed in the future when schemas evolve independently
-    from srd_builder.constants import SCHEMA_VERSION
-
-    for dataset, version in schemas.items():
-        assert (
-            version == SCHEMA_VERSION
-        ), f"{dataset} schema version should match SCHEMA_VERSION constant for now"
-
 
 def test_meta_json_schemas_match_datasets() -> None:
     """Cross-validate that meta.json schemas section matches individual dataset _meta.schema_version fields."""
@@ -165,19 +154,3 @@ def test_meta_json_schemas_match_datasets() -> None:
             f"{dataset_name}.json _meta.schema_version ({actual_version}) "
             f"doesn't match meta.json schemas.{dataset_name} ({expected_version})"
         )
-
-
-def test_schema_version_matches_constant():
-    """All schema files should match SCHEMA_VERSION constant (no build required)."""
-    schema_dir = Path(__file__).parent.parent / "schemas"
-    schema_files = list(schema_dir.glob("*.schema.json"))
-
-    for schema_file in schema_files:
-        with open(schema_file) as f:
-            schema = json.load(f)
-
-        if "version" in schema:
-            version = schema["version"]
-            assert (
-                version == SCHEMA_VERSION
-            ), f"{schema_file.name} has version {version}, expected {SCHEMA_VERSION} from constants.py. Update schema or constant to match."

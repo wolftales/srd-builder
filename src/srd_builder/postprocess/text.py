@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-__all__ = ["clean_pdf_text", "polish_text", "polish_text_fields"]
+__all__ = ["clean_text", "polish_text", "polish_text_fields"]
 
 _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
@@ -14,18 +14,26 @@ _LEGENDARY_SENTENCES = [
 ]
 
 
-def clean_pdf_text(text: str) -> str:
-    """Clean up common PDF encoding issues.
+def clean_text(text: str) -> str:
+    """Clean up common text encoding issues.
 
     Consolidates text cleaning used across extraction and postprocessing.
     Fixes encoding artifacts, normalizes whitespace, and handles special characters.
 
+    CRITICAL: Removes control characters (\\t, \\r, etc.) that corrupt text extraction.
+    These characters appear in spell descriptions, monster traits, and other text blocks
+    from data sources (PDF, etc.) and must be stripped before any processing.
+
     Args:
-        text: Raw text from PDF
+        text: Raw text from data source
 
     Returns:
         Cleaned text with normalized whitespace and fixed encoding
     """
+    # FIRST: Remove control characters that corrupt extraction (\t\r\n\xa0, etc.)
+    # This must happen before other replacements to prevent corruption
+    text = re.sub(r"[\t\r\n\u00ad\u2010\u2011\u00a0]+", " ", text)
+
     # Fix common PDF encoding issues
     text = text.replace("­‐‑", "-")  # Replace garbled dashes (soft hyphen + hyphens)
     text = text.replace("­‐", "-")
@@ -38,8 +46,9 @@ def clean_pdf_text(text: str) -> str:
     text = text.replace(""",
         '"',
     )
-    text = text.replace("\n", " ")  # Normalize newlines to spaces
-    text = re.sub(r"\s+", " ", text)  # Collapse multiple whitespace
+
+    # Normalize all whitespace sequences to single space
+    text = re.sub(r"\s+", " ", text)
     return text.strip()
 
 
@@ -82,10 +91,18 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
                 formatted.append(entry)
                 continue
             item = {**entry}
-            if "text" in item:
-                polished = polish_text(item["text"])
-                if polished is not None:
-                    item["text"] = polished
+
+            # Polish description paragraphs
+            if "description" in item and isinstance(item["description"], list):
+                polished_paras = []
+                for para in item["description"]:
+                    if isinstance(para, str):
+                        polished = polish_text(para)
+                        if polished is not None:
+                            polished_paras.append(polished)
+                if polished_paras:
+                    item["description"] = polished_paras
+
             if "name" in item and isinstance(item["name"], str):
                 item["name"] = item["name"].rstrip(".")
             formatted.append(item)

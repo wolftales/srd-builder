@@ -17,7 +17,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from .prose_extraction import clean_pdf_text
+from .extract_prose import clean_text
 
 
 def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
@@ -123,7 +123,7 @@ def _extract_features_from_page(page: fitz.Page, page_num: int) -> list[dict[str
 
     # Clean up text
     for feature in features:
-        feature["text"] = clean_pdf_text(feature["text"].strip())
+        feature["text"] = clean_text(feature["text"].strip())
 
     return features
 

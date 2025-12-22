@@ -9,7 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from ..extract.prose_extraction import clean_pdf_text
+from ..extract.extract_prose import clean_text
 from ..postprocess import normalize_id
 
 
@@ -42,7 +42,7 @@ def _parse_single_description(raw: dict[str, Any]) -> dict[str, Any] | None:
         Parsed description dict or None
     """
     name = raw.get("name", "").strip()
-    text = clean_pdf_text(raw.get("raw_text", ""))
+    text = clean_text(raw.get("raw_text", ""))
     page = raw.get("page", 204)
 
     if not name or not text:

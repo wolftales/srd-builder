@@ -54,7 +54,6 @@ def regenerate_fixtures() -> None:
     # Import after version update
     sys.path.insert(0, str(Path.cwd() / "src"))
     from srd_builder import __version__
-    from srd_builder.constants import SCHEMA_VERSION
     from srd_builder.parse.parse_equipment import parse_equipment_records
     from srd_builder.parse.parse_monsters import parse_monster_records
     from srd_builder.parse.parse_spells import parse_spell_records
@@ -63,11 +62,12 @@ def regenerate_fixtures() -> None:
         clean_monster_record,
         clean_spell_record,
     )
-    from srd_builder.utils.metadata import meta_block
+    from srd_builder.utils.metadata import meta_block, read_schema_version
 
     fixtures = [
         {
             "name": "monsters",
+            "schema_name": "monster",
             "raw": "tests/fixtures/srd_5_1/raw/monsters.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/monsters.json",
             "parser": parse_monster_records,
@@ -75,6 +75,7 @@ def regenerate_fixtures() -> None:
         },
         {
             "name": "equipment",
+            "schema_name": "equipment",
             "raw": "tests/fixtures/srd_5_1/raw/equipment.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/equipment.json",
             "parser": parse_equipment_records,
@@ -82,6 +83,7 @@ def regenerate_fixtures() -> None:
         },
         {
             "name": "spells",
+            "schema_name": "spell",
             "raw": "tests/fixtures/srd_5_1/raw/spells.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/spells.json",
             "parser": parse_spell_records,
@@ -107,13 +109,14 @@ def regenerate_fixtures() -> None:
         parsed = fixture["parser"](raw)
         processed = [fixture["cleaner"](item) for item in parsed]
 
+        schema_version = read_schema_version(fixture["schema_name"])
         doc = {
-            "_meta": meta_block("srd_5_1"),
+            "_meta": meta_block("srd_5_1", schema_version),
             "items": processed,
         }
 
         normalized_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
-        print(f"✓ Regenerated {fixture['name']}.json (v{__version__}, schema v{SCHEMA_VERSION})")
+        print(f"✓ Regenerated {fixture['name']}.json (v{__version__}, schema v{schema_version})")
 
 
 def update_readme(new_version: str) -> None:

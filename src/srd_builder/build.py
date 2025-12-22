@@ -20,7 +20,7 @@ from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
 from .assemble.assemble_prose import assemble_prose_dataset
 from .assemble.indexer import build_indexes
-from .constants import RULESETS_DIRNAME, SCHEMA_VERSION
+from .constants import RULESETS_DIRNAME
 from .extract.extract_equipment import extract_equipment
 from .extract.extract_features import extract_class_features, extract_lineage_traits
 from .extract.extract_monsters import extract_monsters
@@ -40,7 +40,7 @@ from .parse.parse_poisons_table import parse_poisons_table
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
-from .utils.metadata import generate_meta_json, wrap_with_meta
+from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
 from .utils.table_indexer import TableIndexer
 
 
@@ -92,7 +92,10 @@ def _write_datasets(  # noqa: PLR0913
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
     monsters_doc = wrap_with_meta(
-        {"items": processed_monsters}, ruleset=ruleset, ruleset_version=ruleset_version
+        {"items": processed_monsters},
+        ruleset=ruleset,
+        schema_version=read_schema_version("monster"),
+        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "monsters.json").write_text(
         _render_json(monsters_doc),
@@ -104,7 +107,10 @@ def _write_datasets(  # noqa: PLR0913
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
         equipment_doc = wrap_with_meta(
-            {"items": processed_equipment}, ruleset=ruleset, ruleset_version=ruleset_version
+            {"items": processed_equipment},
+            ruleset=ruleset,
+            schema_version=read_schema_version("equipment"),
+            ruleset_version=ruleset_version,
         )
 
         # Add equipment-specific metadata (SRD economic rules)
@@ -132,7 +138,10 @@ def _write_datasets(  # noqa: PLR0913
         processed_spells = []
 
     spells_doc = wrap_with_meta(
-        {"items": processed_spells}, ruleset=ruleset, ruleset_version=ruleset_version
+        {"items": processed_spells},
+        ruleset=ruleset,
+        schema_version=read_schema_version("spell"),
+        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "spells.json").write_text(
         _render_json(spells_doc),
@@ -178,7 +187,10 @@ def _write_datasets(  # noqa: PLR0913
             reordered_tables.append(ordered)
 
         tables_doc = wrap_with_meta(
-            {"items": reordered_tables}, ruleset=ruleset, ruleset_version=ruleset_version
+            {"items": reordered_tables},
+            ruleset=ruleset,
+            schema_version=read_schema_version("table"),
+            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
@@ -190,7 +202,10 @@ def _write_datasets(  # noqa: PLR0913
     processed_lineages = lineages if lineages else None
     if processed_lineages:
         lineages_doc = wrap_with_meta(
-            {"items": processed_lineages}, ruleset=ruleset, ruleset_version=ruleset_version
+            {"items": processed_lineages},
+            ruleset=ruleset,
+            schema_version=read_schema_version("lineage"),
+            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "lineages.json").write_text(
             _render_json(lineages_doc),
@@ -202,7 +217,10 @@ def _write_datasets(  # noqa: PLR0913
     processed_classes = classes if classes else None
     if processed_classes:
         classes_doc = wrap_with_meta(
-            {"items": processed_classes}, ruleset=ruleset, ruleset_version=ruleset_version
+            {"items": processed_classes},
+            ruleset=ruleset,
+            schema_version=read_schema_version("class"),
+            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "classes.json").write_text(
             _render_json(classes_doc),
@@ -263,7 +281,13 @@ def _write_datasets(  # noqa: PLR0913
         processed_poisons,
         processed_features,
     )
-    index_doc = wrap_with_meta(index_payload, ruleset=ruleset, ruleset_version=ruleset_version)
+    # Index doesn't have a formal schema yet - use generic version
+    index_doc = wrap_with_meta(
+        index_payload,
+        ruleset=ruleset,
+        schema_version="1.0.0",
+        ruleset_version=ruleset_version,
+    )
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
         encoding="utf-8",
@@ -278,7 +302,6 @@ class BuildReport:
     output_format: str
     timestamp_utc: str
     builder_version: str
-    schema_version: str
     python_version: str
 
     @classmethod
@@ -291,7 +314,6 @@ class BuildReport:
             output_format=output_format,
             timestamp_utc=timestamp,
             builder_version=__version__,
-            schema_version=SCHEMA_VERSION,
             python_version=platform.python_version(),
         )
 
@@ -777,7 +799,10 @@ def build(  # noqa: C901
 
                 # Wrap as items array with proper _meta
                 poisons_doc = wrap_with_meta(
-                    {"items": parsed_poisons}, ruleset=ruleset, ruleset_version=ruleset_version
+                    {"items": parsed_poisons},
+                    ruleset=ruleset,
+                    schema_version=read_schema_version("poison"),
+                    ruleset_version=ruleset_version,
                 )
                 print(f"✓ Parsed {len(parsed_poisons)} poison items")
             except Exception as exc:
@@ -786,7 +811,10 @@ def build(  # noqa: C901
     # Build features document (v0.11.0)
     if all_features:
         features_doc = wrap_with_meta(
-            {"features": all_features}, ruleset=ruleset, ruleset_version=ruleset_version
+            {"features": all_features},
+            ruleset=ruleset,
+            schema_version=read_schema_version("features"),
+            ruleset_version=ruleset_version,
         )
 
     _write_datasets(

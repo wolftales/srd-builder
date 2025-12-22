@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..extract.extract_prose import clean_text
 from .postprocess import normalize_id
-from .prose_extraction import clean_pdf_text
 
 
 def parse_poison_records(raw_poisons: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -49,7 +49,7 @@ def _parse_single_poison(raw: dict[str, Any]) -> dict[str, Any] | None:
         return None
 
     # Clean up text
-    text = clean_pdf_text(raw_text)
+    text = clean_text(raw_text)
 
     # Generate simple_name
     simple_name = normalize_id(name)

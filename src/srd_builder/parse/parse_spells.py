@@ -11,20 +11,91 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..postprocess.text import clean_text
+
 # Parsing constants
 EXPECTED_SRD_MARKER_PARTS = 2  # Expected parts after splitting on SRD marker
 
 
-def _clean_text(text: str) -> str:
-    """Clean garbled PDF text.
+def _segment_paragraphs_from_blocks(description_blocks: list[dict[str, Any]]) -> list[str]:
+    """Segment spell description into paragraphs using block structure.
 
-    Removes Unicode control characters, normalizes whitespace.
+    Uses font metadata and section markers to detect paragraph boundaries.
+    Detects breaks at:
+    - Section changes (e.g., main → higher_levels)
+    - Bold/italic text (often indicates new paragraph/section)
+
+    Args:
+        description_blocks: List of text blocks with font metadata
+
+    Returns:
+        List of paragraph strings
     """
-    # Remove control chars, soft hyphens, non-breaking spaces
-    text = re.sub(r"[\t\r\n\u00ad\u2010\u2011\u00a0]+", " ", text)
-    # Normalize whitespace
-    text = re.sub(r"\s+", " ", text)
-    return text.strip()
+    if not description_blocks:
+        return []
+
+    paragraphs: list[str] = []
+    current_paragraph: list[str] = []
+    current_section = None
+
+    for block in description_blocks:
+        text = clean_text(block.get("text", ""))
+        if not text:
+            continue
+
+        section = block.get("section")
+        is_bold = block.get("is_bold", False)
+        is_italic = block.get("is_italic", False)
+
+        # Detect paragraph break conditions
+        paragraph_break = False
+
+        # 1. Section change (main → higher_levels)
+        if section and section != current_section:
+            paragraph_break = True
+            current_section = section
+
+        # 2. Bold/Italic headers (like "At Higher Levels." or subsection headers)
+        #    But only if we already have content in current paragraph
+        if current_paragraph and (is_bold and is_italic):
+            paragraph_break = True
+
+        # Start new paragraph if needed
+        if paragraph_break and current_paragraph:
+            paragraphs.append(" ".join(current_paragraph))
+            current_paragraph = []
+
+        current_paragraph.append(text)
+
+    # Don't forget last paragraph
+    if current_paragraph:
+        paragraphs.append(" ".join(current_paragraph))
+
+    return paragraphs if paragraphs else []
+
+
+def _segment_paragraphs(text: str) -> list[str]:
+    """Segment spell description into paragraphs.
+
+    Uses double-newline detection (text-based) rather than Y-position gaps
+    (which are unreliable in PDFs with negative spacing values).
+
+    Args:
+        text: Full spell description text
+
+    Returns:
+        List of paragraph strings
+    """
+    # Split on double newlines or explicit paragraph markers
+    # PDF text often has \n\n between paragraphs
+    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+
+    # Fallback: if no double newlines found (single-paragraph spell),
+    # return as single-item list
+    if not paragraphs:
+        paragraphs = [text.strip()] if text.strip() else []
+
+    return paragraphs
 
 
 def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]]:  # noqa: C901
@@ -39,7 +110,7 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
     parsed = []
 
     for raw_spell in raw_spells:
-        name = _clean_text(raw_spell.get("name", "Unknown Spell"))
+        name = clean_text(raw_spell.get("name", "Unknown Spell"))
 
         # Reconstruct text from blocks (new format) or fall back to old format
         header_blocks = raw_spell.get("header_blocks", [])
@@ -54,9 +125,9 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
             header_text = raw_spell.get("header_text", "")
             description_text = raw_spell.get("description_text", "")
 
-        header_text = _clean_text(header_text)
-        description_text = _clean_text(description_text)
-        level_and_school = _clean_text(raw_spell.get("level_and_school", ""))
+        header_text = clean_text(header_text)
+        description_text = clean_text(description_text)
+        level_and_school = clean_text(raw_spell.get("level_and_school", ""))
 
         # Fix edge case: multi-page spells where description ended up in header_text
         # Pattern 1: description_text is empty, all text in header_text
@@ -116,6 +187,14 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
         effects = _extract_effects(description_text)
         scaling = _extract_scaling(description_text, level)
 
+        # Segment description into paragraphs
+        # Prefer block-based segmentation if available (new format)
+        if description_blocks:
+            description_paragraphs = _segment_paragraphs_from_blocks(description_blocks)
+        else:
+            # Fallback to text-based segmentation (old format)
+            description_paragraphs = _segment_paragraphs(description_text)
+
         # Build spell structure
         spell: dict[str, Any] = {
             "name": name,
@@ -128,7 +207,7 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
             },
             "duration": duration_value,
             "components": components_value,
-            "text": description_text,
+            "description": description_paragraphs,
             "page": raw_spell.get("pages", [0])[0] if raw_spell.get("pages") else 0,
         }
 

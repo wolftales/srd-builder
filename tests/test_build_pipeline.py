@@ -5,7 +5,8 @@ from pathlib import Path
 import jsonschema
 
 from srd_builder.build import build
-from srd_builder.constants import EXTRACTOR_VERSION, SCHEMA_VERSION
+from srd_builder.constants import EXTRACTOR_VERSION
+from srd_builder.utils.metadata import read_schema_version
 
 
 def test_build_pipeline(tmp_path, monkeypatch):
@@ -96,7 +97,7 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert monsters_doc["_meta"] == {
         "source": "SRD_CC_v5.1",
         "ruleset_version": "5.1",
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": read_schema_version("monster"),
         "generated_by": monsters_doc["_meta"]["generated_by"],
         "build_report": "./build_report.json",
     }

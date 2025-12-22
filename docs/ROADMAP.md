@@ -54,14 +54,17 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.12.0 — Appendix MM-B: NPCs (21 nonplayer characters, indexed separately)
 - ✅ v0.13.0 — Appendix MM-A: Misc Creatures (95 creatures, indexed separately)
 - ✅ v0.14.0 — Architecture Refinement (deterministic metadata, modular postprocessing, code quality)
+- ✅ v0.15.0 — Module Reorganization (assemble/, parse/, extract/ structure)
+- ✅ v0.15.1 — Spell Refactoring (paragraph arrays, font metadata, complexity reduction)
+- ✅ v0.15.2 — Monster Refactoring (paragraph arrays for traits/actions)
 
 **In Progress:**
-- 🔄 v0.15.0 — Magic Items - Next target
+- 🔄 v0.16.0 — Magic Items (next milestone)
 
 **Planned:**
-- 📖 v0.15.0 — Magic Items
-- 📜 v0.16.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
-- 🎨 v0.17.0 — Quality & Polish (final cleanup before v1.0.0)
+- 📖 v0.16.0 — Magic Items (weapons, armor, wondrous items)
+- 📜 v0.17.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
+- 🎨 v0.18.0 — Quality & Polish (final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
 ---
@@ -85,8 +88,8 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `madness.json` | ✅ Complete | 3 | v0.10.0 | Madness tables (short-term, long-term, indefinite) |
 | `poisons.json` | ✅ Complete | 14 | v0.10.0 | Poisons with effects, costs, and save DCs |
 | `features.json` | ✅ Complete | 246 | v0.11.0 | Class/lineage features (Rage, Darkvision, Action Surge) |
-| `magic_items.json` | 📋 Planned | TBD | v0.14.0 | Magic weapons, armor, wondrous items |
-| `rules.json` | 📋 Planned | TBD | v0.15.0 | Core mechanics, variant rules |
+| `magic_items.json` | 📋 Planned | TBD | v0.16.0 | Magic weapons, armor, wondrous items |
+| `rules.json` | 📋 Planned | TBD | v0.17.0 | Core mechanics, variant rules |
 
 **Progress:** 13/15 datasets complete (87%)
 
@@ -98,8 +101,20 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ **Reference Tables** - Character advancement, spell slots, class progressions, travel pace
 
 **Missing for Complete 5e Implementation:**
-- ⏳ **Magic Items** (v0.14.0) - Magic weapons, armor, and wondrous items
-- ⏳ **Rules** (v0.15.0) - Core mechanics (advantage, saving throws, combat actions)
+- ⏳ **Magic Items** (v0.16.0) - Magic weapons, armor, and wondrous items
+- ⏳ **Rules Dataset** (v0.17.0) - Core mechanics extracted from rules chapters
+
+**What's New in v0.15.2:**
+- ✅ Monster traits/actions as paragraph arrays (15/501 traits multi-paragraph)
+- ✅ Monster schema v1.4.0 → v1.5.0 (text → description arrays)
+- ✅ Legacy code cleanup (5 functions simplified, no backward compatibility)
+- ✅ 317 monsters refactored (~2 hours)
+
+**Combined v0.15.1 + v0.15.2:**
+- 636 entities total (319 spells + 317 monsters)
+- Both schemas at v1.5.0 (independent versioning)
+- Centralized text cleaning infrastructure
+- ~5.5 hours total implementation time
 
 **Note on CALCULATED Tables:**
 - `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**

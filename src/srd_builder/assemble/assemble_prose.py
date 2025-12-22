@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 from .. import __version__
-from ..extract.prose_extraction import ProseExtractor
+from ..extract.extract_prose import ProseExtractor
 from ..extraction.extraction_metadata import TABLES
 
 

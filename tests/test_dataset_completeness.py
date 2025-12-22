@@ -92,7 +92,11 @@ def test_all_datasets_have_standard_meta_fields() -> None:
 
 
 def test_all_datasets_have_consistent_versions() -> None:
-    """Test that all datasets use the same schema version and builder version."""
+    """Test that all datasets have valid schema versions and consistent builder version.
+
+    Schema versions can differ between datasets (independent versioning as of v0.15.1),
+    but generated_by should be consistent across all datasets.
+    """
     versions = {}
 
     for dataset_name in EXPECTED_COUNTS.keys():
@@ -107,14 +111,17 @@ def test_all_datasets_have_consistent_versions() -> None:
         schema_version = meta.get("schema_version")
         generated_by = meta.get("generated_by")
 
+        # Validate schema_version format (each dataset can have its own version)
+        if schema_version:
+            assert isinstance(schema_version, str), f"{dataset_name} schema_version must be string"
+            parts = schema_version.split(".")
+            assert len(parts) == 3, f"{dataset_name} schema_version must be MAJOR.MINOR.PATCH"
+            assert all(p.isdigit() for p in parts), f"{dataset_name} parts must be numeric"
+
+        # Check generated_by consistency across all datasets
         if not versions:
-            versions["schema_version"] = schema_version
             versions["generated_by"] = generated_by
         else:
-            assert schema_version == versions["schema_version"], (
-                f"{dataset_name}.json has schema_version {schema_version}, "
-                f"but other datasets use {versions['schema_version']}"
-            )
             assert generated_by == versions["generated_by"], (
                 f"{dataset_name}.json has generated_by {generated_by}, "
                 f"but other datasets use {versions['generated_by']}"

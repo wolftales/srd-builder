@@ -5,7 +5,7 @@ Extracts raw condition entries from Appendix PH-A (pages 358-359).
 Outputs verbatim text with metadata for downstream parsing.
 
 This module demonstrates the reusable prose extraction pattern - see
-prose_extraction.py for the framework components.
+extract_prose.py for the framework components.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from ..constants import EXTRACTOR_VERSION
-from .prose_extraction import ProseExtractor
+from .extract_prose import ProseExtractor
 
 # Condition pages from Appendix PH-A
 CONDITION_START_PAGE = 358
@@ -114,7 +114,7 @@ def extract_conditions(pdf_path: Path) -> dict[str, Any]:
 
 
 # Removed: _extract_conditions_from_text()
-# Now using ProseExtractor.extract_from_pdf() from prose_extraction.py
+# Now using ProseExtractor.extract_from_pdf() from extract_prose.py
 # This reduces duplication and makes the pattern reusable
 
 

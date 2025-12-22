@@ -808,7 +808,7 @@ def _extract_prose_section(
     """
     from pathlib import Path
 
-    from ..prose_extraction import ProseExtractor
+    from ..extract.extract_prose import ProseExtractor
 
     # Get page range
     if isinstance(page, list):
@@ -833,7 +833,7 @@ def _extract_prose_section(
     # Convert to table format
     rows = []
     for sect in sections:
-        rows.append([sect.name, sect.raw_text, sect.page])
+        rows.append([sect["name"], sect["raw_text"], sect["page"]])
 
     if warnings:
         logger.warning(f"Prose extraction warnings for {simple_name}: {warnings}")

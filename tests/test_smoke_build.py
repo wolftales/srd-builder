@@ -3,7 +3,6 @@ from pathlib import Path
 
 from srd_builder import __version__
 from srd_builder.build import build
-from srd_builder.constants import SCHEMA_VERSION
 
 
 def test_build_writes_report_and_datasets(tmp_path: Path) -> None:
@@ -20,7 +19,7 @@ def test_build_writes_report_and_datasets(tmp_path: Path) -> None:
         f"build_report.json has builder_version={report['builder_version']}, "
         f"but __version__ is {__version__}. These must match!"
     )
-    assert report["schema_version"] == SCHEMA_VERSION
+    # schema_version removed from BuildReport - each dataset has its own version now
     assert "python_version" in report
     assert "timestamp_utc" in report
 
