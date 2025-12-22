@@ -60,17 +60,91 @@ Two architectural patterns exist in the codebase, reflecting different design tr
   - Code duplication (reimplements `normalize_id()` instead of using shared utility)
   - Single module per dataset
 
-**Recommendation:** Prefer the **Modular Pattern** (Extract → Parse → Postprocess) for maintainability:
-- Clear separation between parsing (structure extraction) and normalization (cleanup/IDs)
-- Shared utilities (`postprocess/ids.py`, `postprocess/text.py`) promote code reuse
-- Better testability (can test parsing independent of normalization)
-- Follows original pipeline design: Extract → Parse → Postprocess → Index → Validate
+**Target Architecture (Modular Pattern):**
 
-The monolithic pattern exists due to expedient implementation. Future work should maintain modular boundaries.
+All datasets should follow this pattern for consistency and maintainability:
+
+```
+Extract (PDF → Raw JSON) → Parse (Structure) → Postprocess (Normalize) → Index → Validate
+```
+
+**Stage Responsibilities:**
+
+1. **Extract** (`extract_*.py`): PDF text extraction only
+   - Font/position metadata capture
+   - Block identification (headers, paragraphs)
+   - Output: `*_raw.json` with verbatim PDF content
+   - **No parsing, no normalization**
+
+2. **Parse** (`parse_*.py`): Structure extraction only
+   - Field mapping from raw blocks
+   - Type identification and conversion
+   - Description segmentation
+   - Output: Structured dicts with original values
+   - **No ID generation, no text cleanup**
+
+3. **Postprocess** (`postprocess/*.py`): Normalization only
+   - Generate stable IDs using shared `normalize_id()`
+   - Polish text using shared `polish_text()`
+   - Deduplicate arrays
+   - Apply domain-specific transformations
+   - Output: Final clean records
+   - **Uses shared utilities, no duplication**
+
+**Benefits:**
+- ✅ Separation of concerns (parsing ≠ normalization)
+- ✅ Code reuse (`normalize_id()`, `polish_text()` shared across datasets)
+- ✅ Testability (each stage independently testable)
+- ✅ Maintainability (change normalization without touching parsing)
+- ✅ Consistency (all datasets follow same pattern)
+
+**Migration Path:**
+- Monolithic datasets (magic_items, tables) should be refactored to extract normalization logic into `postprocess/` modules
+- Future datasets must use modular pattern from the start
 
 ## Pipeline Architecture
 
-**Legacy Pattern (monsters, spells, equipment):**
+**Target Modular Pattern (all datasets):**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. EXTRACT (extract_*.py) - PDF → Raw JSON                 │
+│ • Font/position metadata from PDF                          │
+│ • Block detection (headers, paragraphs)                    │
+│ • NO parsing, NO normalization                             │
+│ • Output: *_raw.json                                       │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 2. PARSE (parse_*.py) - Structure Extraction               │
+│ • Field mapping from raw blocks                            │
+│ • Type identification                                      │
+│ • Description segmentation                                 │
+│ • NO ID generation, NO text cleanup                        │
+│ • Output: Structured dicts (not normalized)                │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 3. POSTPROCESS (postprocess/*.py) - Normalization           │
+│ • Generate IDs: normalize_id() - SHARED UTILITY            │
+│ • Polish text: polish_text() - SHARED UTILITY              │
+│ • Deduplicate arrays                                       │
+│ • Domain-specific transformations                          │
+│ • Output: Final clean records                              │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 4. INDEX (indexer.py) - Build Lookups                      │
+│ • by_name, by_type, by_cr maps                            │
+│ • Expand aliases                                           │
+│ • Track conflicts                                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Current Implementation Example (monsters, spells, equipment):**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
