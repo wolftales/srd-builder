@@ -103,13 +103,6 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 **Missing for Complete 5e Implementation:**
 - ⏳ **Rules Dataset** (v0.17.0) - Core mechanics extracted from rules chapters
 
-**What's New in v0.15.2:**
-- ✅ Monster traits/actions as paragraph arrays (15/501 traits multi-paragraph)
-- ✅ Monster schema v1.4.0 → v1.5.0 (text → description arrays)
-- ✅ Legacy code cleanup (5 functions simplified, no backward compatibility)
-- ✅ 317 monsters refactored (~2 hours)
-- ✅ Combined with v0.15.1: 636 entities total (319 spells + 317 monsters)
-
 **Note on CALCULATED Tables:**
 - `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**
 - These are rules expressed as tables - not extractable from PDF source
@@ -117,6 +110,182 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - Carrying capacity is just the formula "Strength × 15" mentioned in ability scores text
 - **Metadata:** These should be marked as `"source": "calculated"` or `"type": "derived_reference"`
 - **Future (v0.12.0):** Move to rules dataset as rule-based reference tables
+
+---
+
+## ✅ **v0.15.0 — Module Reorganization** **[INFRASTRUCTURE]**
+
+**Released:** December 21, 2025
+**Status:** COMPLETE
+**Priority:** HIGH - Code organization and maintainability
+**Effort:** Medium (~6 hours)
+**Consumer Impact:** TRANSPARENT - Internal restructure, same outputs
+
+**Goal:** Reorganize modules by pipeline stage for better clarity and separation of concerns.
+
+**Delivered:**
+
+1. **Module Organization by Pipeline Stage** ✅
+   - `extract/` - PDF extraction (spells, monsters, magic_items, etc.)
+   - `parse/` - Raw data parsing (field mapping)
+   - `assemble/` - Multi-source assembly (equipment from tables)
+   - `postprocess/` - Normalization & cleanup
+   - Clear separation of concerns: extraction → parsing → assembly → postprocessing
+
+2. **Schema Manifest in meta.json** ✅
+   - Complete schema version tracking
+   - All 13 datasets with explicit schema versions
+   - Enables schema migration tooling
+
+3. **Documentation Reorganization** ✅
+   - `docs/templates/` - JSON templates for all datasets
+   - `docs/external/` - External project documentation
+   - `docs/archive/` - Historical planning docs
+   - Clear structure for consumer documentation
+
+4. **Script Consolidation** ✅
+   - Active scripts: 24 → 10 (59% reduction)
+   - Archived legacy/diagnostic scripts
+   - Kept only essential workflow tools
+
+5. **Complete Type Safety** ✅
+   - 61/61 Python files with type hints
+   - 0 `type: ignore` comments
+   - Full mypy compliance
+
+**Files Reorganized:**
+- `src/srd_builder/extract/` - Created (7 extraction modules)
+- `src/srd_builder/parse/` - Created (8 parsing modules)
+- `src/srd_builder/assemble/` - Created (indexer + equipment assembly)
+- `src/srd_builder/postprocess/` - Organized (5 modules)
+
+**Quality Metrics:**
+- ✅ All 13 datasets building successfully
+- ✅ 176 tests passing (100%)
+- ✅ Zero regressions
+- ✅ Deterministic output preserved
+
+**Schema Version:** All datasets at 1.4.0
+**Builder Version:** 0.15.0
+
+---
+
+## ✅ **v0.15.1 — Spell Refactoring** **[DATA]**
+
+**Released:** December 21, 2025
+**Status:** COMPLETE
+**Priority:** HIGH - Data quality improvement
+**Effort:** Medium (~3.5 hours)
+**Consumer Impact:** BREAKING - Spell schema v1.4.0 → v1.5.0
+
+**Goal:** Convert spell descriptions from single text strings to paragraph arrays for better formatting.
+
+**Delivered:**
+
+1. **Spell Description Paragraph Arrays** ✅
+   - 319 spells with structured description arrays
+   - 107 multi-paragraph spells (33%) properly segmented
+   - 212 single-paragraph spells (67%) in array format
+   - Breaking change: `text` field → `description` arrays
+
+2. **Independent Schema Versioning** ✅
+   - Removed global SCHEMA_VERSION constant
+   - Each dataset tracks its own schema version
+   - Enables independent dataset evolution
+   - spell.schema.json: v1.4.0 → v1.5.0
+
+3. **Centralized Text Cleaning** ✅
+   - Fixed \t\r corruption in spell text
+   - Clean paragraph formatting
+   - Consistent whitespace handling
+
+4. **Font Metadata Infrastructure** ✅
+   - Raw spell format uses structured blocks with font metadata
+   - Enables future semantic parsing (bolded spell names, etc.)
+   - Foundation for enhanced text extraction
+
+5. **Code Complexity Improvements** ✅
+   - parse_spell_records: C901:18 → C901:5 (complexity reduction)
+   - Better function decomposition
+   - Improved maintainability
+
+**Breaking Changes:**
+- Spell schema v1.4.0 → v1.5.0
+- Field change: `text: str` → `description: str[]`
+- Consumers must update to handle arrays
+
+**Files Modified:**
+- `src/srd_builder/extract/extract_spells.py` - Added font metadata blocks
+- `src/srd_builder/parse/parse_spells.py` - Paragraph segmentation
+- `schemas/spell.schema.json` - v1.4.0 → v1.5.0
+- `tests/` - Updated all spell tests to use description arrays
+
+**Quality Metrics:**
+- ✅ 319 spells with clean paragraph formatting
+- ✅ 107 multi-paragraph spells properly segmented
+- ✅ All tests passing (176 tests)
+- ✅ Zero data loss during conversion
+
+**Time:** 3 hours 25 minutes
+**Schema Version:** spell.schema.json v1.5.0
+
+---
+
+## ✅ **v0.15.2 — Monster Refactoring** **[DATA]**
+
+**Released:** December 21, 2025
+**Status:** COMPLETE
+**Priority:** HIGH - Data quality improvement
+**Effort:** Low (~2 hours)
+**Consumer Impact:** BREAKING - Monster schema v1.4.0 → v1.5.0
+
+**Goal:** Convert monster trait/action descriptions from single text strings to paragraph arrays, matching spell format from v0.15.1.
+
+**Delivered:**
+
+1. **Monster Description Paragraph Arrays** ✅
+   - 317 monsters with structured description arrays
+   - 15 traits improved with multi-paragraph segmentation (15/501 = 3%)
+   - Traits, actions, reactions, legendary_actions all use arrays
+   - Breaking change: `text` field → `description` arrays
+
+2. **Legacy Code Cleanup** ✅
+   - Removed backward compatibility code
+   - Clean single-format codebase
+   - Simplified parsing logic (5 functions)
+   - No more dual-format handling
+
+3. **EXTRACTOR_VERSION Bump** ✅
+   - 0.3.0 → 0.4.0
+   - Font metadata blocks now standard for all extracted entities
+   - Raw extraction format updated across all entity types
+
+4. **Test Updates** ✅
+   - All tests updated to use description arrays
+   - Fixed 3 tests still using old 'text' field
+   - 176 tests passing (100%)
+
+**Breaking Changes:**
+- Monster schema v1.4.0 → v1.5.0
+- Field change: `text: str` → `description: str[]` for traits/actions/reactions/legendary_actions
+- Consumers must update to handle arrays
+
+**Files Modified:**
+- `src/srd_builder/parse/parse_monsters.py` - Paragraph segmentation for traits/actions
+- `src/srd_builder/postprocess/monsters.py` - Removed backward compatibility
+- `schemas/monster.schema.json` - v1.4.0 → v1.5.0
+- `src/srd_builder/constants.py` - EXTRACTOR_VERSION 0.3.0 → 0.4.0
+- `tests/` - Updated tests to use description arrays
+
+**Quality Metrics:**
+- ✅ 317 monsters with paragraph arrays
+- ✅ 15 multi-paragraph traits properly segmented
+- ✅ All tests passing (176 tests)
+- ✅ Clean codebase (no legacy format support)
+
+**Time:** 2 hours
+**Schema Version:** monster.schema.json v1.5.0
+**Extractor Version:** 0.4.0
 
 ---
 
