@@ -15,6 +15,7 @@ __all__ = [
     "build_lineage_index",
     "build_class_index",
     "build_condition_index",
+    "build_rule_index",
     "build_indexes",
 ]
 
@@ -470,6 +471,38 @@ def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def build_rule_index(rules: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical rule lookup tables."""
+
+    by_name, _ = _build_by_name_map(rules)
+    by_category: defaultdict[str, list[str]] = defaultdict(list)
+    by_subcategory: defaultdict[str, list[str]] = defaultdict(list)
+
+    for rule in rules:
+        rule_id = fallback_id(rule)
+        category = str(rule.get("category", "unknown"))
+        subcategory = rule.get("subcategory")
+
+        by_category[category].append(rule_id)
+
+        if subcategory:
+            by_subcategory[str(subcategory)].append(rule_id)
+
+    sorted_by_category = _stable_dict(sorted(by_category.items()))
+    sorted_by_subcategory = _stable_dict(sorted(by_subcategory.items()))
+
+    for key, ids in sorted_by_category.items():
+        sorted_by_category[key] = sorted(ids)
+    for key, ids in sorted_by_subcategory.items():
+        sorted_by_subcategory[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_category": sorted_by_category,
+        "by_subcategory": sorted_by_subcategory,
+    }
+
+
 def build_indexes(  # noqa: C901, PLR0913, PLR0915
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
@@ -482,10 +515,11 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
     diseases: list[dict[str, Any]] | None = None,
     poisons: list[dict[str, Any]] | None = None,
     features: list[dict[str, Any]] | None = None,
+    rules: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, rule, and entity indexes for dataset output."""
 
     # Split into monsters, creatures (MM-A), and NPCs (MM-B) based on ID prefix
     actual_monsters = [m for m in monsters if fallback_id(m).startswith("monster:")]
@@ -718,8 +752,17 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
         entities["features"] = feature_entity_index
         payload["stats"]["total_features"] = len(features)
 
+    # Add rule indexes if provided
+    if rules is not None:
+        rule_indexes = build_rule_index(rules)
+        rule_entity_index = _build_simple_entity_index(rules, "rule", "rules.json")
+
+        payload["rules"] = rule_indexes
+        entities["rules"] = rule_entity_index
+        payload["stats"]["total_rules"] = len(rules)
+
     # Recalculate total entities to include new datasets
-    if diseases is not None or poisons is not None or features is not None:
+    if diseases is not None or poisons is not None or features is not None or rules is not None:
         total = len(monster_entity_index)
         if spells is not None:
             total += len(spell_entity_index)
@@ -741,6 +784,8 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
             total += len(poison_entity_index)
         if features is not None:
             total += len(feature_entity_index)
+        if rules is not None:
+            total += len(rule_entity_index)
         payload["stats"]["total_entities"] = total
 
     if name_conflicts:

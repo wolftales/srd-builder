@@ -26,6 +26,7 @@ from .extract.extract_features import extract_class_features, extract_lineage_tr
 from .extract.extract_magic_items import extract_magic_items
 from .extract.extract_monsters import extract_monsters
 from .extract.extract_pdf_metadata import extract_pdf_metadata
+from .extract.extract_rules import extract_rules
 from .extract.extract_spells import extract_spells
 from .extraction import extract_tables_to_json
 from .extraction.extraction_metadata import TABLES
@@ -39,12 +40,14 @@ from .parse.parse_magic_items import parse_magic_items
 from .parse.parse_monsters import parse_monster_records
 from .parse.parse_poison_descriptions import parse_poison_description_records
 from .parse.parse_poisons_table import parse_poisons_table
+from .parse.parse_rules import parse_rules
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import (
     clean_equipment_record,
     clean_magic_item_record,
     clean_monster_record,
+    clean_rule_record,
     clean_spell_record,
 )
 from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
@@ -96,6 +99,7 @@ def _write_datasets(  # noqa: PLR0913
     diseases: dict[str, Any] | None = None,  # Prose dataset document
     poisons: dict[str, Any] | None = None,  # Prose dataset document
     features: dict[str, Any] | None = None,  # Prose dataset document
+    rules: list[dict[str, Any]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -294,6 +298,22 @@ def _write_datasets(  # noqa: PLR0913
         # Extract just the features list for indexing
         processed_features = features.get("features", [])
 
+    # Write rules (v0.17.0)
+    # Parse extracts structure, postprocess normalizes (following modular pattern)
+    processed_rules = None
+    if rules:
+        processed_rules = [clean_rule_record(rule) for rule in rules]
+        rules_doc = wrap_with_meta(
+            {"items": processed_rules},
+            ruleset=ruleset,
+            schema_version=read_schema_version("rule"),
+            ruleset_version=ruleset_version,
+        )
+        (dist_data_dir / "rules.json").write_text(
+            _render_json(rules_doc),
+            encoding="utf-8",
+        )
+
     index_payload = build_indexes(
         processed_monsters,
         processed_spells,
@@ -306,6 +326,7 @@ def _write_datasets(  # noqa: PLR0913
         processed_diseases,
         processed_poisons,
         processed_features,
+        processed_rules,
     )
     # Index doesn't have a formal schema yet - use generic version
     index_doc = wrap_with_meta(
@@ -657,6 +678,52 @@ def _load_raw_magic_items(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
+def _extract_raw_rules(raw_dir: Path, ruleset_dir: Path) -> Path | None:
+    """Extract rules from PDF if present.
+
+    Returns:
+        Path to extracted rules_raw.json, or None if no PDF found
+    """
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
+    if not pdf_files:
+        return None
+
+    pdf_path = pdf_files[0]
+    print(f"Extracting rules from {pdf_path.name}...")
+
+    # Run extraction
+    try:
+        extracted_data = extract_rules(pdf_path)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        print(f"⚠️ Rules extraction skipped: {exc}")
+        return None
+
+    # Write to raw directory
+    output_path = raw_dir / "rules_raw.json"
+    output_path.write_text(
+        json.dumps(extracted_data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    sections = extracted_data.get("sections", [])
+    blocks = extracted_data.get("text_blocks", [])
+    print(f"✓ Extracted {len(sections)} sections ({len(blocks)} text blocks)")
+    print(f"✓ Saved to {output_path}")
+
+    return output_path
+
+
+def _load_raw_rules(raw_dir: Path) -> dict[str, Any]:
+    """Load raw rules data from extraction output."""
+    raw_source = raw_dir / "rules_raw.json"
+    if raw_source.exists():
+        data = json.loads(raw_source.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "text_blocks" in data:
+            return data
+        raise TypeError("rules_raw.json must contain 'text_blocks' key")
+    return {}
+
+
 def _extract_raw_tables(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract reference tables from PDF.
 
@@ -748,6 +815,10 @@ def build(  # noqa: C901
     if "magic_items" not in skip_datasets:
         _extract_raw_magic_items(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
+    # Extract rules from PDF (v0.17.0)
+    if "rules" not in skip_datasets:
+        _extract_raw_rules(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
+
     # Extract tables from PDF (v0.7.0)
     if "tables" not in skip_datasets:
         _extract_raw_tables(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
@@ -784,6 +855,10 @@ def build(  # noqa: C901
     )
     # parse_magic_items expects a dict with 'items' key (like extract output)
     parsed_magic_items = parse_magic_items({"items": raw_magic_items}) if raw_magic_items else []
+
+    # Parse rules (v0.17.0)
+    raw_rules = _load_raw_rules(layout["raw"]) if "rules" not in skip_datasets else {}
+    parsed_rules = parse_rules(raw_rules) if raw_rules else []
 
     # Parse lineages (v0.8.0)
     # Lineages come from canonical targets, not PDF extraction
@@ -917,6 +992,7 @@ def build(  # noqa: C901
         diseases=diseases_doc if diseases_doc else None,
         poisons=poisons_doc if poisons_doc else None,
         features=features_doc if features_doc else None,
+        rules=parsed_rules if parsed_rules else None,
     )
 
     # Read PDF hash from pdf_meta.json (if present)
