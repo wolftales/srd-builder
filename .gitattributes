@@ -1,4 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+*.py text eol=lf
 rulesets/*/raw/* binary diff=none
-tests/*.py text eol=lf

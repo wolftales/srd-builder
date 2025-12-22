@@ -63,7 +63,7 @@ max-args = 10  # Some builder functions need many parameters (e.g., generate_met
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-line-ending = "auto"
+line-ending = "lf"
 
 [tool.mypy]
 python_version = "3.11"
