@@ -45,33 +45,35 @@ def _compute_extraction_status(
     """
     if dist_dir is None:
         # Fallback to parameter-based approach (legacy)
+        # Keep in alphabetical order
         return {
-            "monsters": "complete" if monsters_complete else "in_progress",
-            "equipment": "complete" if equipment_complete else "in_progress",
-            "spells": "complete" if spells_complete else "in_progress",
-            "tables": "complete",
-            "lineages": "complete",
             "classes": "complete" if classes_complete else "in_progress",
             "conditions": "complete",
             "diseases": "complete",
-            "poisons": "complete",
+            "equipment": "complete" if equipment_complete else "in_progress",
             "features": "complete",
+            "lineages": "complete",
             "magic_items": "complete",
+            "monsters": "complete" if monsters_complete else "in_progress",
+            "poisons": "complete",
+            "spells": "complete" if spells_complete else "in_progress",
+            "tables": "complete",
         }
 
     # Check actual file existence
+    # Keep in alphabetical order for consistency in meta.json output
     datasets = [
-        "monsters",
-        "equipment",
-        "spells",
-        "tables",
-        "lineages",
         "classes",
         "conditions",
         "diseases",
-        "poisons",
+        "equipment",
         "features",
+        "lineages",
         "magic_items",
+        "monsters",
+        "poisons",
+        "spells",
+        "tables",
     ]
 
     status = {}
