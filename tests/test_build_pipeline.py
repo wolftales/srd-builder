@@ -23,7 +23,8 @@ def test_build_pipeline(tmp_path, monkeypatch):
 
     ruleset = "srd_5_1"
     rulesets_root = tmp_path / "rulesets"
-    raw_dir = rulesets_root / ruleset / "raw"
+    ruleset_dir = rulesets_root / ruleset
+    raw_dir = ruleset_dir / "raw"
     raw_dir.mkdir(parents=True)
 
     fixture_raw = Path("tests/fixtures/srd_5_1/raw/monsters.json")
@@ -34,8 +35,8 @@ def test_build_pipeline(tmp_path, monkeypatch):
         encoding="utf-8",
     )
 
-    # Create a mock PDF (any .pdf name works)
-    pdf_path = raw_dir / "test_srd.pdf"
+    # Create a mock PDF in ruleset root (changed from raw_dir in v0.16.0)
+    pdf_path = ruleset_dir / "test_srd.pdf"
     pdf_path.write_bytes(b"placeholder pdf data")
 
     # Mock extract_monsters to avoid PDF parsing issues with fake PDF

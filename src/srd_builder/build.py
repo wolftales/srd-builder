@@ -379,13 +379,15 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     """
 
     dist_ruleset_dir = out_dir / ruleset
-    raw_dir = Path(RULESETS_DIRNAME) / ruleset / "raw"
+    ruleset_dir = Path(RULESETS_DIRNAME) / ruleset
+    raw_dir = ruleset_dir / "raw"
 
     dist_ruleset_dir.mkdir(parents=True, exist_ok=True)
     raw_dir.mkdir(parents=True, exist_ok=True)
 
     return {
         "dist_ruleset": dist_ruleset_dir,
+        "ruleset": ruleset_dir,
         "raw": raw_dir,
     }
 
@@ -441,13 +443,13 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     print("  ✓ Copied docs/")
 
 
-def _extract_raw_monsters(raw_dir: Path) -> Path | None:
+def _extract_raw_monsters(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract monsters from PDF if present.
 
     Returns:
         Path to extracted monsters_raw.json, or None if no PDF found
     """
-    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
     if not pdf_files:
         print("No PDF found; extraction will skip.")
         return None
@@ -491,13 +493,13 @@ def _extract_raw_monsters(raw_dir: Path) -> Path | None:
     return output_path
 
 
-def _extract_raw_equipment(raw_dir: Path) -> Path | None:
+def _extract_raw_equipment(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract equipment from PDF if present.
 
     Returns:
         Path to extracted equipment_raw.json, or None if no PDF found
     """
-    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
     if not pdf_files:
         return None
 
@@ -537,13 +539,13 @@ def _load_raw_equipment(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
-def _extract_raw_spells(raw_dir: Path) -> Path | None:
+def _extract_raw_spells(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract spells from PDF if present.
 
     Returns:
         Path to extracted spells_raw.json, or None if no PDF found
     """
-    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
     if not pdf_files:
         return None
 
@@ -583,13 +585,13 @@ def _load_raw_spells(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
-def _extract_raw_tables(raw_dir: Path) -> Path | None:
+def _extract_raw_tables(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract reference tables from PDF.
 
     Returns:
         Path to extracted tables_raw.json, or None if no PDF found
     """
-    pdf_files = sorted(raw_dir.glob("*.pdf"))
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
     if not pdf_files:
         return None
 
@@ -660,19 +662,19 @@ def build(  # noqa: C901
 
     # Extract monsters from PDF (v0.3.0)
     if "monsters" not in skip_datasets:
-        _extract_raw_monsters(raw_dir=layout["raw"])
+        _extract_raw_monsters(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
     # Extract equipment from PDF (v0.5.0)
     if "equipment" not in skip_datasets:
-        _extract_raw_equipment(raw_dir=layout["raw"])
+        _extract_raw_equipment(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
     # Extract spells from PDF (v0.6.0)
     if "spells" not in skip_datasets:
-        _extract_raw_spells(raw_dir=layout["raw"])
+        _extract_raw_spells(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
     # Extract tables from PDF (v0.7.0)
     if "tables" not in skip_datasets:
-        _extract_raw_tables(raw_dir=layout["raw"])
+        _extract_raw_tables(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
     raw_monsters = _load_raw_monsters(layout["raw"]) if "monsters" not in skip_datasets else []
     parsed_monsters = parse_monster_records(raw_monsters) if raw_monsters else []
