@@ -35,6 +35,22 @@ SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the com
 
 srd-builder extracts structured data from PDF documents (specifically SRD 5.1) and produces clean, validated JSON datasets. The project prioritizes **reproducibility**, **provenance**, and **clean separation of concerns**.
 
+## Module Boundaries
+
+**Critical separation of concerns:**
+
+- **parse_*.py**: Pure parsing/mapping only (no I/O/logging)
+- **postprocess/**: Pure normalization/polish (legendary, CR, text, defenses, ids)
+- **indexer.py**: Pure index building
+- **build.py**: The only I/O orchestrator
+- **validate.py**: Schema validation; no mutations
+
+**Why these boundaries matter:**
+- Testability: Pure functions can be tested without file system
+- Composability: Stages can be chained or reordered
+- Clarity: Each module has ONE job
+- Maintainability: Change normalization without touching parsing
+
 ### Design Philosophy
 
 1. **Pure Functions**: Parsing and processing modules have no I/O or side effects
@@ -485,6 +501,31 @@ tests/
 
 ---
 
+## Data Consistency Guidelines
+
+**Output Determinism:**
+- **Alphabetical ordering:** Dictionary keys in metadata should be alphabetically sorted
+- **No timestamps:** Timestamps only in build_report.json, never in datasets
+- **Sorted arrays:** Sort by name/id, not insertion order
+- **Stable IDs:** Use slug from name, not UUID
+
+**Metadata Accuracy:**
+- meta.json must reflect actual build output, not design intent
+- Use file existence checks to determine what was built
+- PAGE_INDEX is authoritative for page ranges
+
+**Data Shapes:**
+- Target shapes defined in docs/templates/TEMPLATE_*.json
+- Fixtures split: tests/fixtures/.../raw vs .../normalized
+- Entities and nested entries must include `simple_name` where applicable
+
+**Testing Philosophy:**
+- **Test failures over skips:** Tests should FAIL when expected data is missing
+- This catches build issues immediately
+- Exception: CI tests where PDF is unavailable
+- **No duplication:** Use references/aliases instead of duplicating data
+- **Field ordering:** Maintain consistent field order in _meta blocks
+
 ## Lessons Learned
 
 ### PDF Extraction
@@ -511,7 +552,62 @@ tests/
 4. **ID generation**: Lowercase, snake_case, ASCII-only for stability
 5. **Text cleanup**: Remove PDF artifacts ("\n\n", extra spaces, etc.)
 
-### Testing
+### Testing Guidelines
+
+**Golden Test Pattern (Fixture-Based):**
+
+- **Location:** `tests/test_golden_*.py` (one per dataset)
+- **Purpose:** End-to-end validation that parsing produces consistent, deterministic output
+- **Fixture structure:**
+  - `tests/fixtures/srd_5_1/raw/{dataset}.json` - Raw extraction data (input to parser)
+  - `tests/fixtures/srd_5_1/normalized/{dataset}.json` - Expected final output (golden reference)
+- **Pattern:** Load raw fixture → parse (+ postprocess if modular) → compare to normalized fixture
+- **Benefits:**
+  - No dependency on `dist/` directory (works in CI without PDF)
+  - Uses committed fixtures (always available)
+  - Tests entire pipeline in one assertion
+  - Catches any regression in parsing or postprocessing logic
+
+**Golden Test Examples:**
+
+*All-in-one parse (monolithic pattern):*
+```python
+def test_magic_items_dataset_matches_normalized_fixture() -> None:
+    raw_path = Path("tests/fixtures/srd_5_1/raw/magic_items.json")
+    expected_path = Path("tests/fixtures/srd_5_1/normalized/magic_items.json")
+
+    magic_items_raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    parsed = parse_magic_items({"items": magic_items_raw})
+
+    document = {"_meta": meta_block(...), "items": parsed}
+
+    rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+    expected = expected_path.read_text(encoding="utf-8")
+    assert rendered == expected
+```
+
+*Parse + postprocess (modular pattern):*
+```python
+def test_monster_dataset_matches_normalized_fixture() -> None:
+    raw_path = Path("tests/fixtures/srd_5_1/raw/monsters.json")
+    expected_path = Path("tests/fixtures/srd_5_1/normalized/monsters.json")
+
+    monsters_raw = json.loads(raw_path.read_text(encoding="utf-8"))
+    parsed = parse_monster_records(monsters_raw)
+    processed = [clean_monster_record(monster) for monster in parsed]
+
+    document = {"_meta": meta_block(...), "items": processed}
+
+    rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
+    expected = expected_path.read_text(encoding="utf-8")
+    assert rendered == expected
+```
+
+**Fixture Maintenance:**
+- Keep fixtures small (5-10 representative items, not entire datasets)
+- Update fixtures when parser output format changes (expected breakage)
+- Fixtures are NOT for backwards compatibility - they validate current behavior
+- Regenerate fixtures from actual build output when making intentional changes
 
 **Test Organization:**
 Tests are split into two categories using pytest markers:
