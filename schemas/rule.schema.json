@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/rule.schema.json",
+  "version": "1.3.0",
+  "last_modified": "2024-12-21",
+  "title": "SRD 5.1 Rule",
+  "description": "Game rules and mechanics from SRD 5.1 core chapters (abilities, combat, spellcasting, adventuring). Rules are prose-first mechanical descriptions with optional tags and cross-references.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "category",
+    "page",
+    "source",
+    "text"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^rule:[a-z0-9_]+$",
+      "description": "Unique identifier using the rule: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Ability Checks', 'Attack Rolls', 'Concentration')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing and search"
+    },
+    "category": {
+      "type": "string",
+      "description": "Top-level category from SRD chapter (e.g., 'Combat', 'Spellcasting', 'Adventuring', 'Using Ability Scores')"
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Section within category (e.g., 'Actions in Combat', 'Movement and Position')"
+    },
+    "parent_id": {
+      "type": "string",
+      "pattern": "^rule:[a-z0-9_]+$",
+      "description": "Optional parent rule ID for hierarchical nesting (use sparingly)"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or legacy terminology for this rule"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description for tooltips and previews"
+    },
+    "text": {
+      "type": "array",
+      "description": "Rule text as array of paragraphs (prose-first representation)",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "tags": {
+      "type": "array",
+      "description": "Lightweight mechanical tags for search and filtering",
+      "items": {
+        "type": "string",
+        "enum": [
+          "action",
+          "bonus_action",
+          "reaction",
+          "movement",
+          "saving_throw",
+          "ability_check",
+          "attack",
+          "advantage",
+          "disadvantage",
+          "concentration",
+          "proficiency",
+          "rest",
+          "damage",
+          "healing",
+          "vision",
+          "cover",
+          "condition"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "related_conditions": {
+      "type": "array",
+      "description": "Cross-references to condition:* entities",
+      "items": {
+        "type": "string",
+        "pattern": "^condition:[a-z0-9_]+$"
+      },
+      "uniqueItems": true
+    },
+    "related_spells": {
+      "type": "array",
+      "description": "Cross-references to spell:* entities",
+      "items": {
+        "type": "string",
+        "pattern": "^spell:[a-z0-9_]+$"
+      },
+      "uniqueItems": true
+    },
+    "related_features": {
+      "type": "array",
+      "description": "Cross-references to feature:* entities",
+      "items": {
+        "type": "string",
+        "pattern": "^feature:[a-z0-9_]+$"
+      },
+      "uniqueItems": true
+    },
+    "related_tables": {
+      "type": "array",
+      "description": "Cross-references to table:* entities",
+      "items": {
+        "type": "string",
+        "pattern": "^table:[a-z0-9_]+$"
+      },
+      "uniqueItems": true
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata (timestamps, notes)"
+    }
+  }
+}

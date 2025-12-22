@@ -4,6 +4,87 @@ This document tracks features that have been discussed but deferred for later im
 
 ---
 
+## **v0.17.0 Rules Dataset - Parse Implementation** 🚧 IN PROGRESS
+
+**Status:** Scaffolding complete, parse logic needed
+**Priority:** HIGH (blocks v0.17.0 completion)
+**Date Added:** 2024-12-21
+
+**Current State:**
+- ✅ extract_rules.py: Extracts text blocks with font metadata from 7 sections (pages 76-104)
+- ✅ postprocess/rules.py: clean_rule_record() using normalize_id() and polish_text()
+- ⚠️ parse_rules.py: STUB (returns empty list)
+
+**Parse Implementation Needed:**
+The parse_rules.py module needs font-based header detection and outline building. Implementation should:
+
+1. **Identify Headers** (`_identify_headers()`)
+   - Use relative font_size to determine header tiers
+   - Larger fonts = higher level headers (chapter > section > subsection)
+   - Check is_bold flag and font_name patterns
+   - Example thresholds (to be discovered from actual data):
+     - Chapter headers: font_size ≥ 16pt, bold
+     - Section headers: font_size ≥ 14pt, bold
+     - Subsection headers: font_size ≥ 12pt, bold
+     - Body text: font_size ≤ 11pt
+
+2. **Group Paragraphs** (`_group_paragraphs_under_headers()`)
+   - Associate paragraph blocks with preceding header
+   - Track page boundaries
+   - Combine multi-line paragraphs (same block/line indices)
+   - Detect list items vs prose paragraphs
+
+3. **Build Outline** (`_build_outline_tree()`)
+   - Assign category from section name (e.g., "using_ability_scores" → "Using Ability Scores")
+   - Assign subcategory from section headers
+   - Optional parent_id for nested subsections
+   - Return flattened list with hierarchy metadata
+
+**Discovery Needed:**
+- Extract sample data to analyze font patterns: `python -m srd_builder.extract.extract_rules <pdf_path> > rules_raw_sample.json`
+- Analyze font_name, font_size, is_bold patterns for each chapter
+- Document font thresholds in parse module constants
+
+**Lightweight Tagging (Optional Phase 1):**
+- Scan text for keywords: "action", "bonus action", "reaction", "saving throw", "advantage"
+- Add to tags array if keywords found
+- Can be enhanced in later phases with more sophisticated detection
+
+**Cross-References (Deferred to Phase 2):**
+- Detect mentions of conditions: "blinded", "charmed", "stunned", etc.
+- Detect mentions of spells: spell names in text
+- Add to related_conditions, related_spells arrays
+- Requires matching against existing datasets
+
+**Testing Strategy:**
+- Start with one chapter (e.g., "combat" pages 90-99)
+- Manually verify header detection accuracy
+- Iterate on font thresholds
+- Once working, expand to all 7 sections
+
+---
+
+## **v0.17.0 Rules Dataset - Page Range Discovery** ✅ RESOLVED
+
+**Status:** ~~Need to identify exact page ranges for rules chapters~~ RESOLVED via PAGE_INDEX
+**Priority:** ~~HIGH~~ → COMPLETE
+**Date Added:** 2024-12-21
+**Resolved:** 2024-12-21
+
+**Resolution:**
+Found PAGE_INDEX module (src/srd_builder/utils/page_index.py) contains all chapter metadata:
+- using_ability_scores: pages 76-83
+- time: page 84
+- movement: pages 84-85
+- environment: pages 86-87
+- between_adventures: pages 88-89
+- combat: pages 90-99
+- spellcasting: pages 100-104
+
+Implemented extract_rules.py using PAGE_INDEX directly - no manual discovery needed.
+
+---
+
 ## **v0.8.2 Classes - Table Extraction** ✅ COMPLETE
 
 **Status:** All 12 class progression tables extracted and integrated!
