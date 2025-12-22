@@ -63,8 +63,8 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 🔄 v0.17.0 — Rules Dataset (next milestone)
 
 **Planned:**
-- 📖 v0.17.0 — Rules Dataset (core mechanics, variant rules, CALCULATED tables as rule-based references)
-- 🎨 v0.18.0 — Quality & Polish (index improvements, final cleanup before v1.0.0)
+- 📖 v0.18.0 — Modular Refactor (7 datasets to modular pattern)
+- 🎨 v0.19.0 — Dependency Audit (update all dependencies, verify versions)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
 ---

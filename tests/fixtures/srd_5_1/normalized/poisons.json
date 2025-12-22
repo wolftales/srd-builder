@@ -1,0 +1,126 @@
+{
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "ruleset_version": "5.1",
+    "schema_version": "1.4.0",
+    "generated_by": "srd-builder v0.16.0",
+    "build_report": "./build_report.json"
+  },
+  "items": [
+    {
+      "id": "poison:assassins_blood",
+      "name": "Assassin's blood",
+      "simple_name": "assassins_blood",
+      "page": [
+        204
+      ],
+      "source": "SRD 5.1",
+      "source_table": "poisons",
+      "row_index": 0,
+      "poison_type": "ingested",
+      "cost": {
+        "amount": 150,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "poison:drow_poison",
+      "name": "Drow poison",
+      "simple_name": "drow_poison",
+      "page": [
+        204
+      ],
+      "source": "SRD 5.1",
+      "source_table": "poisons",
+      "row_index": 1,
+      "poison_type": "injury",
+      "cost": {
+        "amount": 200,
+        "currency": "gp"
+      },
+      "description": "This poison is typically made only by the drow, and only in a place far removed from sunlight. A creature subjected to this poison must succeed on a DC 13 Constitution saving throw or be poisoned for 1 hour. If the saving throw fails by 5 or more, the creature is also unconscious while poisoned in this way. The creature wakes up if it takes damage or if another creature takes an action to shake it awake.",
+      "save": {
+        "dc": 13,
+        "ability": "constitution"
+      }
+    },
+    {
+      "id": "poison:midnight_tears",
+      "name": "Midnight tears",
+      "simple_name": "midnight_tears",
+      "page": [
+        204
+      ],
+      "source": "SRD 5.1",
+      "source_table": "poisons",
+      "row_index": 2,
+      "poison_type": "ingested",
+      "cost": {
+        "amount": 1500,
+        "currency": "gp"
+      },
+      "description": "A creature that ingests this poison suffers no effect until the stroke of midnight. If the poison has not been neutralized before then, the creature must succeed on a DC 17 Constitution saving throw, taking 31 (9d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 17,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 31,
+        "formula": "9d6",
+        "type": "poison"
+      }
+    },
+    {
+      "id": "poison:purple_worm_poison",
+      "name": "Purple worm poison",
+      "simple_name": "purple_worm_poison",
+      "page": [
+        204
+      ],
+      "source": "SRD 5.1",
+      "source_table": "poisons",
+      "row_index": 3,
+      "poison_type": "injury",
+      "cost": {
+        "amount": 2000,
+        "currency": "gp"
+      },
+      "description": "This poison must be harvested from a dead or incapacitated purple worm. A creature subjected to this poison must make a DC 19 Constitution saving throw, taking 42 (12d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 19,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 42,
+        "formula": "12d6",
+        "type": "poison"
+      }
+    },
+    {
+      "id": "poison:wyvern_poison",
+      "name": "Wyvern poison",
+      "simple_name": "wyvern_poison",
+      "page": [
+        204
+      ],
+      "source": "SRD 5.1",
+      "source_table": "poisons",
+      "row_index": 4,
+      "poison_type": "injury",
+      "cost": {
+        "amount": 1200,
+        "currency": "gp"
+      },
+      "description": "This poison must be harvested from a dead or incapacitated wyvern. A creature subjected to this poison must make a DC 15 Constitution saving throw, taking 24 (7d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 15,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 24,
+        "formula": "7d6",
+        "type": "poison"
+      }
+    }
+  ]
+}

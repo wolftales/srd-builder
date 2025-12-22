@@ -15,6 +15,7 @@ from .monsters import (
     structure_defenses,
     unify_simple_name,
 )
+from .poisons import clean_poison_record
 from .rules import clean_rule_record
 from .spells import clean_spell_record
 from .text import polish_text, polish_text_fields
@@ -24,6 +25,7 @@ __all__ = [
     "clean_equipment_record",
     "clean_magic_item_record",
     "clean_monster_record",
+    "clean_poison_record",
     "clean_rule_record",
     "clean_spell_record",
     "dedup_defensive_lists",

@@ -47,6 +47,7 @@ from .postprocess import (
     clean_equipment_record,
     clean_magic_item_record,
     clean_monster_record,
+    clean_poison_record,
     clean_rule_record,
     clean_spell_record,
 )
@@ -957,14 +958,17 @@ def build(  # noqa: C901
                     poisons_table, descriptions=poison_descriptions_by_name
                 )
 
+                # Postprocess: normalize IDs and polish text
+                processed_poisons = [clean_poison_record(p) for p in parsed_poisons]
+
                 # Wrap as items array with proper _meta
                 poisons_doc = wrap_with_meta(
-                    {"items": parsed_poisons},
+                    {"items": processed_poisons},
                     ruleset=ruleset,
                     schema_version=read_schema_version("poison"),
                     ruleset_version=ruleset_version,
                 )
-                print(f"✓ Parsed {len(parsed_poisons)} poison items")
+                print(f"✓ Parsed {len(processed_poisons)} poison items")
             except Exception as exc:
                 print(f"⚠️ Poison item parsing failed: {exc}")
 

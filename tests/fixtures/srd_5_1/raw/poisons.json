@@ -1,0 +1,83 @@
+{
+  "poisons_table": {
+    "id": "table:poisons",
+    "simple_name": "poisons",
+    "name": "Poisons",
+    "page": [
+      204
+    ],
+    "category": "hazards",
+    "rows": [
+      [
+        "Assassin's blood",
+        "Ingested",
+        "150 gp"
+      ],
+      [
+        "Drow poison",
+        "Injury",
+        "200 gp"
+      ],
+      [
+        "Midnight tears",
+        "Ingested",
+        "1,500 gp"
+      ],
+      [
+        "Purple worm poison",
+        "Injury",
+        "2,000 gp"
+      ],
+      [
+        "Wyvern poison",
+        "Injury",
+        "1,200 gp"
+      ]
+    ]
+  },
+  "poison_descriptions": {
+    "drow_poison": {
+      "description": "This poison is typically made only by the drow, and only in a place far removed from sunlight. A creature subjected to this poison must succeed on a DC 13 Constitution saving throw or be poisoned for 1 hour. If the saving throw fails by 5 or more, the creature is also unconscious while poisoned in this way. The creature wakes up if it takes damage or if another creature takes an action to shake it awake.",
+      "save": {
+        "dc": 13,
+        "ability": "constitution"
+      }
+    },
+    "midnight_tears": {
+      "description": "A creature that ingests this poison suffers no effect until the stroke of midnight. If the poison has not been neutralized before then, the creature must succeed on a DC 17 Constitution saving throw, taking 31 (9d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 17,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 31,
+        "formula": "9d6",
+        "type": "poison"
+      }
+    },
+    "purple_worm_poison": {
+      "description": "This poison must be harvested from a dead or incapacitated purple worm. A creature subjected to this poison must make a DC 19 Constitution saving throw, taking 42 (12d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 19,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 42,
+        "formula": "12d6",
+        "type": "poison"
+      }
+    },
+    "wyvern_poison": {
+      "description": "This poison must be harvested from a dead or incapacitated wyvern. A creature subjected to this poison must make a DC 15 Constitution saving throw, taking 24 (7d6) poison damage on a failed save, or half as much damage on a successful one.",
+      "save": {
+        "dc": 15,
+        "ability": "constitution"
+      },
+      "damage": {
+        "average": 24,
+        "formula": "7d6",
+        "type": "poison"
+      }
+    }
+  }
+}
