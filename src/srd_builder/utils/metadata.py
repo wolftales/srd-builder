@@ -56,6 +56,7 @@ def _compute_extraction_status(
             "magic_items": "complete",
             "monsters": "complete" if monsters_complete else "in_progress",
             "poisons": "complete",
+            "rules": "complete",
             "spells": "complete" if spells_complete else "in_progress",
             "tables": "complete",
         }
@@ -72,6 +73,7 @@ def _compute_extraction_status(
         "magic_items",
         "monsters",
         "poisons",
+        "rules",
         "spells",
         "tables",
     ]
