@@ -150,8 +150,8 @@ def _extract_page_spells(  # noqa: C901
                     current_spell = {
                         "name": text,
                         "level_and_school": "",
-                        "header_text": "",
-                        "description_text": "",
+                        "header_blocks": [],
+                        "description_blocks": [],
                         "page": page_num,
                     }
                     current_section = "header"
@@ -163,11 +163,29 @@ def _extract_page_spells(  # noqa: C901
                     and config.spell_level_font in font
                 ):
                     current_spell["level_and_school"] = text
+                    # Also store as block for consistency
+                    current_spell["header_blocks"].append(
+                        {
+                            "text": text,
+                            "font": font,
+                            "size": round(size, 1),
+                            "is_italic": True,
+                        }
+                    )
 
                 # Detect "At Higher Levels" section
                 elif HIGHER_LEVELS_FONT in font:
                     if current_spell:
-                        current_spell["description_text"] += f" {text}"
+                        current_spell["description_blocks"].append(
+                            {
+                                "text": text,
+                                "font": font,
+                                "size": round(size, 1),
+                                "is_bold": "Bold" in font,
+                                "is_italic": "Italic" in font,
+                                "section": "higher_levels",
+                            }
+                        )
 
                 # Field labels (bold) - part of header
                 elif config.field_label_font in font:
@@ -176,16 +194,23 @@ def _extract_page_spells(  # noqa: C901
                         current_spell = {
                             "name": "",
                             "level_and_school": "",
-                            "header_text": "",
-                            "description_text": "",
+                            "header_blocks": [],
+                            "description_blocks": [],
                             "page": page_num,
                         }
                         current_section = "header"
 
+                    text_block = {
+                        "text": text,
+                        "font": font,
+                        "size": round(size, 1),
+                        "is_bold": True,
+                        "is_field_label": True,
+                    }
                     if current_section == "header":
-                        current_spell["header_text"] += f" {text}"
+                        current_spell["header_blocks"].append(text_block)
                     else:
-                        current_spell["description_text"] += f" {text}"
+                        current_spell["description_blocks"].append(text_block)
 
                 # Regular text - header until we see description markers
                 else:
@@ -194,20 +219,30 @@ def _extract_page_spells(  # noqa: C901
                         current_spell = {
                             "name": "",
                             "level_and_school": "",
-                            "header_text": "",
-                            "description_text": "",
+                            "header_blocks": [],
+                            "description_blocks": [],
                             "page": page_num,
                         }
                         current_section = "header"
 
+                    text_block = {
+                        "text": text,
+                        "font": font,
+                        "size": round(size, 1),
+                        "is_bold": "Bold" in font,
+                        "is_italic": "Italic" in font,
+                    }
+
                     # Header includes: Casting Time, Range, Components, Duration
                     if current_section == "header":
-                        current_spell["header_text"] += f" {text}"
+                        current_spell["header_blocks"].append(text_block)
                         # Switch to description after Duration
-                        if "Duration:" in current_spell["header_text"]:
+                        # Check all header blocks for Duration marker
+                        header_text = " ".join(b["text"] for b in current_spell["header_blocks"])
+                        if "Duration:" in header_text:
                             current_section = "description"
                     else:
-                        current_spell["description_text"] += f" {text}"
+                        current_spell["description_blocks"].append(text_block)
 
     # Don't forget last spell on page
     if current_spell:
@@ -242,16 +277,18 @@ def _merge_multipage_spells(spells: list[dict[str, Any]]) -> list[dict[str, Any]
         if not current.get("name", "").strip() and merged:
             # Merge with previous spell
             prev = merged[-1]
-            prev["header_text"] += " " + current.get("header_text", "")
-            prev["description_text"] += " " + current.get("description_text", "")
+            prev["header_blocks"].extend(current.get("header_blocks", []))
+            prev["description_blocks"].extend(current.get("description_blocks", []))
             if current["page"] not in prev["pages"]:
                 prev["pages"].append(current["page"])
             i += 1
             continue
 
         # Check if spell looks incomplete (very short or no description)
-        desc_len = len(current.get("description_text", "").strip())
-        header_len = len(current.get("header_text", "").strip())
+        desc_text = " ".join(b["text"] for b in current.get("description_blocks", []))
+        header_text = " ".join(b["text"] for b in current.get("header_blocks", []))
+        desc_len = len(desc_text.strip())
+        header_len = len(header_text.strip())
 
         # If spell has name but minimal content, AND there's a following nameless spell, merge forward
         if i + 1 < len(spells):
@@ -263,8 +300,8 @@ def _merge_multipage_spells(spells: list[dict[str, Any]]) -> list[dict[str, Any]
                 desc_len < MIN_DESCRIPTION_LENGTH or header_len < MIN_HEADER_LENGTH
             ) and not next_has_name:
                 # Merge with next spell's content
-                current["header_text"] += " " + next_spell.get("header_text", "")
-                current["description_text"] += " " + next_spell.get("description_text", "")
+                current["header_blocks"].extend(next_spell.get("header_blocks", []))
+                current["description_blocks"].extend(next_spell.get("description_blocks", []))
                 if next_spell["page"] not in current["pages"]:
                     current["pages"].append(next_spell["page"])
                 i += 1  # Skip the merged spell
@@ -299,8 +336,12 @@ def main() -> None:  # pragma: no cover
     for spell in result["spells"][:3]:
         print(f"\n{spell['name']}")
         print(f"  {spell['level_and_school']}")
-        print(f"  Header: {spell['header_text'][:80]}...")
-        print(f"  Desc: {spell['description_text'][:80]}...")
+        header_text = " ".join(b["text"] for b in spell.get("header_blocks", []))
+        desc_text = " ".join(b["text"] for b in spell.get("description_blocks", []))
+        print(f"  Header blocks: {len(spell.get('header_blocks', []))}")
+        print(f"  Header: {header_text[:80]}...")
+        print(f"  Desc blocks: {len(spell.get('description_blocks', []))}")
+        print(f"  Desc: {desc_text[:80]}...")
 
 
 if __name__ == "__main__":  # pragma: no cover

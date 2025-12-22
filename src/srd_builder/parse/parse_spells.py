@@ -40,8 +40,22 @@ def parse_spell_records(raw_spells: list[dict[str, Any]]) -> list[dict[str, Any]
 
     for raw_spell in raw_spells:
         name = _clean_text(raw_spell.get("name", "Unknown Spell"))
-        header_text = _clean_text(raw_spell.get("header_text", ""))
-        description_text = _clean_text(raw_spell.get("description_text", ""))
+
+        # Reconstruct text from blocks (new format) or fall back to old format
+        header_blocks = raw_spell.get("header_blocks", [])
+        description_blocks = raw_spell.get("description_blocks", [])
+
+        if header_blocks or description_blocks:
+            # New format: reconstruct from blocks
+            header_text = " ".join(b["text"] for b in header_blocks)
+            description_text = " ".join(b["text"] for b in description_blocks)
+        else:
+            # Old format fallback (for existing test fixtures)
+            header_text = raw_spell.get("header_text", "")
+            description_text = raw_spell.get("description_text", "")
+
+        header_text = _clean_text(header_text)
+        description_text = _clean_text(description_text)
         level_and_school = _clean_text(raw_spell.get("level_and_school", ""))
 
         # Fix edge case: multi-page spells where description ended up in header_text

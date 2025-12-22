@@ -19,6 +19,12 @@
 - build.py: the only I/O orchestrator.
 - validate.py: schema validation; no mutations.
 
+## Design Philosophy
+- **No backwards compatibility:** Prefer clean, well-designed code over legacy support.
+- **No legacy code:** If refactoring, remove old approaches entirely.
+- **Breaking changes acceptable:** Schema and output formats can change between versions.
+- **Quality over compatibility:** Choose the right design, document breaking changes.
+
 ## Data Shapes
 - Target shapes = docs/templates/TEMPLATE_*.json.
 - Fixtures split: tests/fixtures/.../raw vs .../normalized.
