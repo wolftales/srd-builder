@@ -45,6 +45,7 @@ from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import (
     clean_equipment_record,
+    clean_lineage_record,
     clean_magic_item_record,
     clean_monster_record,
     clean_poison_record,
@@ -228,8 +229,8 @@ def _write_datasets(  # noqa: PLR0913
         )
 
     # Write lineages (v0.8.0)
-    # Lineages are already fully normalized by parse_lineages, no additional cleaning needed
-    processed_lineages = lineages if lineages else None
+    # Postprocess: normalize IDs and polish text
+    processed_lineages = [clean_lineage_record(lin) for lin in lineages] if lineages else None
     if processed_lineages:
         lineages_doc = wrap_with_meta(
             {"items": processed_lineages},

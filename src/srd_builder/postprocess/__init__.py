@@ -4,6 +4,7 @@ from .conditions import clean_condition_record
 from .diseases import clean_disease_record
 from .equipment import clean_equipment_record
 from .ids import normalize_id
+from .lineages import clean_lineage_record
 from .magic_items import clean_magic_item_record
 from .monsters import (
     add_ability_modifiers,
@@ -27,6 +28,7 @@ __all__ = [
     "clean_condition_record",
     "clean_disease_record",
     "clean_equipment_record",
+    "clean_lineage_record",
     "clean_magic_item_record",
     "clean_monster_record",
     "clean_poison_record",
