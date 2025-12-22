@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-03",
+  "version": "1.5.0",
+  "last_modified": "2025-12-21",
   "title": "Monster",
   "type": "object",
   "additionalProperties": true,
@@ -106,7 +106,7 @@
         "required": [
           "name",
           "simple_name",
-          "text"
+          "description"
         ],
         "properties": {
           "name": {
@@ -117,9 +117,14 @@
             "type": "string",
             "pattern": "^[a-z0-9_]+$"
           },
-          "text": {
-            "type": "string",
-            "minLength": 1
+          "description": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "description": "Array of paragraph strings describing the action/trait"
           }
         },
         "additionalProperties": true

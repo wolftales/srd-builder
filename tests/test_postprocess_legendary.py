@@ -10,11 +10,13 @@ def test_split_legendary_moves_actions():
         "actions": [
             {
                 "name": "Enslave",
-                "description": "The aboleth can take 3 legendary actions, choosing from the options below.",
+                "description": [
+                    "The aboleth can take 3 legendary actions, choosing from the options below."
+                ],
             },
             {
                 "name": "Tail Swipe (Costs 2 Actions)",
-                "description": "Tail attack dealing bludgeoning damage.",
+                "description": ["Tail attack dealing bludgeoning damage."],
             },
         ],
     }
@@ -25,4 +27,5 @@ def test_split_legendary_moves_actions():
 
     assert len(polished["actions"]) == 1
     assert len(polished["legendary_actions"]) == 1
-    assert "legendary actions" not in polished["actions"][0]["text"].lower()
+    # Check description array (new format)
+    assert "legendary actions" not in " ".join(polished["actions"][0]["description"]).lower()

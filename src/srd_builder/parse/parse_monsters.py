@@ -8,6 +8,7 @@ from copy import deepcopy
 from typing import Any
 
 from ..postprocess import normalize_id
+from ..postprocess.text import clean_text
 
 __all__ = ["normalize_monster", "parse_monster_records", "parse_monster_from_blocks"]
 
@@ -367,13 +368,19 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
 
     monster_id = monster.get("id")
 
-    # Extract summary from first trait's text
+    # Extract summary from first trait's description
     summary = ""
     traits = monster.get("traits", [])
     if traits and isinstance(traits, list) and len(traits) > 0:
         first_trait = traits[0]
         if isinstance(first_trait, dict):
-            summary = first_trait.get("text", "")
+            # Handle both old format (text) and new format (description array)
+            description = first_trait.get("description")
+            if isinstance(description, list) and description:
+                summary = description[0]  # First paragraph
+            else:
+                # Fallback to text field (legacy format)
+                summary = first_trait.get("text", "")
 
     # Determine ID prefix based on page number
     # - Monsters: pages 261-365 (main monster section)
@@ -435,7 +442,7 @@ def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, in
         block = blocks[idx]
         font = block.get("font", "")
         size = block.get("size", 0)
-        text = block.get("text", "").strip()
+        text = clean_text(block.get("text", ""))
 
         # Stop if we hit a bold label (next field)
         if "Bold" in font:
@@ -448,9 +455,8 @@ def _gather_multiline_value(blocks: list[dict], start_idx: int) -> tuple[str, in
             and size <= _MAX_BODY_TEXT_SIZE
             and "Calibri" in font
         ):
-            # Clean whitespace: tabs, newlines, carriage returns
-            cleaned_text = " ".join(text.split())
-            parts.append(cleaned_text)
+            # Text already cleaned by clean_text()
+            parts.append(text)
             idx += 1
         else:
             break
@@ -772,6 +778,76 @@ def _parse_ability_scores(text: str) -> dict[str, Any]:
     }
 
 
+def _segment_description_paragraphs(text_blocks: list[str]) -> list[str]:
+    """Segment trait/action description into paragraphs.
+
+    Uses sentence detection and text patterns to identify paragraph breaks.
+    Similar to spell description segmentation.
+
+    Args:
+        text_blocks: List of text strings from consecutive PDF blocks
+
+    Returns:
+        List of paragraph strings
+    """
+    if not text_blocks:
+        return []
+
+    # Join all blocks into full text
+    full_text = " ".join(text_blocks)
+
+    # For short descriptions (<300 chars), return as single paragraph
+    if len(full_text) < 300:
+        return [full_text]
+
+    # Split on sentence boundaries for longer descriptions
+    # Look for period followed by capital letter or specific markers
+    paragraphs: list[str] = []
+    current: list[str] = []
+
+    sentences = []
+    # Split on ". " followed by capital letter (sentence boundary)
+    parts = re.split(r"(\.\s+)(?=[A-Z])", full_text)
+    for i in range(0, len(parts), 2):
+        if i < len(parts):
+            sentence = parts[i]
+            if i + 1 < len(parts):
+                sentence += parts[i + 1]  # Re-add the ". "
+            sentences.append(sentence.strip())
+
+    # Group sentences into paragraphs by semantic breaks
+    for i, sentence in enumerate(sentences):
+        current.append(sentence)
+
+        # Detect paragraph breaks:
+        # 1. Sentence starts with Unless/However/Additionally (often new paragraph)
+        # 2. Sentence is long and next starts with conditional (If the...)
+        # 3. Every ~3-4 sentences for very long text
+        next_sentence = sentences[i + 1] if i + 1 < len(sentences) else ""
+
+        is_paragraph_break = False
+        if next_sentence:
+            # Next sentence starts new topic
+            if any(
+                next_sentence.startswith(w)
+                for w in ("Unless", "However", "Additionally", "When the")
+            ):
+                is_paragraph_break = True
+            # Current paragraph getting long (>300 chars)
+            elif len(" ".join(current)) > 300:
+                is_paragraph_break = True
+
+        if is_paragraph_break and current:
+            paragraphs.append(" ".join(current))
+            current = []
+
+    # Add final paragraph
+    if current:
+        paragraphs.append(" ".join(current))
+
+    return paragraphs if paragraphs else [full_text]
+
+
 def _parse_traits_and_actions(  # noqa: C901
     blocks: list[dict],
 ) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
@@ -787,7 +863,7 @@ def _parse_traits_and_actions(  # noqa: C901
 
     Returns:
         (traits, actions, reactions, legendary_actions) where each is a list of dicts with
-        {name, simple_name, text}
+        {name, simple_name, description} (description is array of paragraphs)
     """
     traits = []
     actions = []
@@ -798,8 +874,8 @@ def _parse_traits_and_actions(  # noqa: C901
     i = 0
     while i < len(blocks):
         block = blocks[i]
-        # Clean whitespace: tabs, newlines, carriage returns
-        text = " ".join(block.get("text", "").split()).strip()
+        # Clean control characters and whitespace
+        text = clean_text(block.get("text", ""))
         font = block.get("font", "")
         font_size = block.get("size", 0)
 
@@ -840,7 +916,7 @@ def _parse_traits_and_actions(  # noqa: C901
             j = i + 1
             while j < len(blocks):
                 next_block = blocks[j]
-                next_text = next_block.get("text", "").strip()
+                next_text = clean_text(next_block.get("text", ""))
                 next_font = next_block.get("font", "")
                 next_font_size = next_block.get("size", 0)
 
@@ -876,11 +952,13 @@ def _parse_traits_and_actions(  # noqa: C901
                     description_parts.append(next_text)
                 j += 1
 
-            # Build entry
+            # Build entry with paragraph segmentation
+            description_paragraphs = _segment_description_paragraphs(description_parts)
+
             entry = {
                 "name": name,
                 "simple_name": simple_name,
-                "text": " ".join(description_parts),
+                "description": description_paragraphs,
             }
 
             # Add to appropriate section

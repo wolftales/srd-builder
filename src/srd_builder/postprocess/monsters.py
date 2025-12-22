@@ -70,36 +70,26 @@ def unify_simple_name(monster: dict[str, Any]) -> dict[str, Any]:
 
 def rename_abilities_to_traits(monster: dict[str, Any]) -> dict[str, Any]:
     """Rename legacy ability fields to the canonical trait structure."""
-
     patched = {**monster}
     if "abilities" in monster and "traits" not in monster:
         patched["traits"] = _copy_entries(monster.get("abilities"))
         patched.pop("abilities", None)
-
-    for key in ("traits", "actions", "legendary_actions"):
-        if key not in monster:
-            continue
-        converted: list[dict[str, Any]] = []
-        for entry in monster.get(key, []):
-            if not isinstance(entry, dict):
-                converted.append(entry)
-                continue
-            item = {**entry}
-            if "description" in item and "text" not in item:
-                item["text"] = item.pop("description")
-            converted.append(item)
-        patched[key] = converted
-
     return patched
 
 
-def _contains_legendary_header(text: str) -> bool:
+def _contains_legendary_header(description: list[str]) -> bool:
+    """Check if description contains legendary action header."""
+    text = " ".join(description) if isinstance(description, list) else str(description)
     return bool(text and _LEGENDARY_HEADER_RE.search(text))
 
 
 def _is_legendary_action(entry: dict[str, Any]) -> bool:
     name = entry.get("name", "").lower()
-    text = entry.get("text", "").lower()
+    description = entry.get("description", [])
+    text = (
+        " ".join(description).lower() if isinstance(description, list) else str(description).lower()
+    )
+
     if "legendary action" in name or "legendary action" in text:
         return True
     if "(cost" in name:
@@ -109,7 +99,6 @@ def _is_legendary_action(entry: dict[str, Any]) -> bool:
 
 def split_legendary(monster: dict[str, Any]) -> dict[str, Any]:
     """Move legendary actions from the main action list into their own field."""
-
     patched = {**monster}
     actions = _copy_entries(monster.get("actions"))
     regular: list[dict[str, Any]] = []
@@ -117,8 +106,8 @@ def split_legendary(monster: dict[str, Any]) -> dict[str, Any]:
     seen_header = False
 
     for action in actions:
-        text = action.get("text", "")
-        if not seen_header and _contains_legendary_header(text):
+        description = action.get("description", [])
+        if not seen_header and _contains_legendary_header(description):
             seen_header = True
             regular.append(action)
             continue
