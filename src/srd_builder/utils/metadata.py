@@ -180,6 +180,7 @@ def generate_meta_json(  # noqa: PLR0913
         "poison": read_schema_version("poison"),
         "features": read_schema_version("features"),
         "madness": read_schema_version("madness"),
+        "magic_item": read_schema_version("magic_item"),
     }
 
     return {
@@ -217,6 +218,7 @@ def generate_meta_json(  # noqa: PLR0913
             "madness": "madness.json",
             "poisons": "poisons.json",
             "features": "features.json",
+            "magic_items": "magic_items.json",
         },
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": {
@@ -231,5 +233,6 @@ def generate_meta_json(  # noqa: PLR0913
             "madness": "complete",
             "poisons": "complete",
             "features": "complete",
+            "magic_items": "complete",  # v0.16.0
         },
     }
