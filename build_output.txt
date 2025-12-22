@@ -1,0 +1,21 @@
+Burglar's Pack: 1 items not in equipment.json
+Priest's Pack: 4 items not in equipment.json
+Scholar's Pack: 3 items not in equipment.json
+Extracting monsters from SRD_CC_v5.1.pdf...
+✓ Extracted 317 monsters (warnings: 0)
+✓ Saved to rulesets/srd_5_1/raw/monsters_raw.json
+Extracting equipment from SRD_CC_v5.1.pdf...
+✓ Extracted 111 equipment items (warnings: 0)
+✓ Saved to rulesets/srd_5_1/raw/equipment_raw.json
+Extracting spells from SRD_CC_v5.1.pdf...
+✓ Extracted 319 spells (warnings: 0)
+✓ Saved to rulesets/srd_5_1/raw/spells_raw.json
+Extracting magic items from SRD_CC_v5.1.pdf...
+✓ Extracted 245 magic items (warnings: 0)
+✓ Saved to rulesets/srd_5_1/raw/magic_items_raw.json
+Extracting tables from SRD_CC_v5.1.pdf...
+✓ Saved to rulesets/srd_5_1/raw/tables_raw.json
+✓ Parsed 14 poison items
+  ✓ Copied README.md
+  ✓ Copied schemas/
+  ✓ Copied docs/

@@ -788,7 +788,7 @@ def build(  # noqa: C901
 
     # Build prose datasets (v0.10.0+)
     # Generic config-driven approach for conditions, diseases, madness, poisons
-    pdf_files = sorted(layout["raw"].glob("*.pdf"))
+    pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
 
     # Extract features (v0.11.0)
     # Features come from PDF extraction: class features + lineage traits

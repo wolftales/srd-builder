@@ -15,7 +15,7 @@ from srd_builder.extract.extract_conditions import extract_conditions
 @pytest.fixture
 def pdf_path():
     """Path to SRD PDF for testing."""
-    path = Path("SRD_CC_v5.1.pdf")
+    path = Path("rulesets/srd_5_1/SRD_CC_v5.1.pdf")
     if not path.exists():
         pytest.skip(f"PDF not found: {path}")
     return path
