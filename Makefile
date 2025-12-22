@@ -10,6 +10,7 @@ lint:
 format:
 	ruff check --fix .
 
+
 test:
 	pytest -q -m "not package"
 
