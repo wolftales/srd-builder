@@ -34,9 +34,9 @@ def test_all_conditions_extract_cleanly(pdf_path):
     result = extract_conditions(pdf_path)
 
     # All 15 conditions present
-    assert (
-        len(result["conditions"]) == 15
-    ), f"Expected 15 conditions, got {len(result['conditions'])}"
+    assert len(result["conditions"]) == 15, (
+        f"Expected 15 conditions, got {len(result['conditions'])}"
+    )
 
     # No warnings about cross-contamination
     assert result["_meta"]["total_warnings"] == 0, (
@@ -57,20 +57,20 @@ def test_grappled_section_boundary_integrity(pdf_path):
     assert grappled is not None, "Grappled condition not found"
 
     # Should contain the full text including the end
-    assert (
-        "reach of the grappler" in grappled["raw_text"]
-    ), "Grappled section appears truncated - missing ending text"
+    assert "reach of the grappler" in grappled["raw_text"], (
+        "Grappled section appears truncated - missing ending text"
+    )
 
     # Should NOT contain the next section's header (Incapacitated)
     # Note: It SHOULD contain lowercase "incapacitated" (valid reference)
-    assert (
-        "Incapacitated" not in grappled["raw_text"]
-    ), "Grappled section contains Incapacitated header - boundary contamination"
+    assert "Incapacitated" not in grappled["raw_text"], (
+        "Grappled section contains Incapacitated header - boundary contamination"
+    )
 
     # Verify the cross-reference is preserved (lowercase is OK)
-    assert (
-        "incapacitated" in grappled["raw_text"].lower()
-    ), "Grappled section missing valid 'incapacitated' cross-reference"
+    assert "incapacitated" in grappled["raw_text"].lower(), (
+        "Grappled section missing valid 'incapacitated' cross-reference"
+    )
 
 
 def test_all_condition_names_present(pdf_path):

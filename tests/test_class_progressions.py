@@ -79,9 +79,9 @@ def test_class_progression_extraction(
     validation = VALIDATION_CLASS_PROGRESSIONS[class_name]
 
     # Compare row counts
-    assert len(extracted["rows"]) == len(
-        validation["rows"]
-    ), f"{class_name}: Expected {len(validation['rows'])} rows, got {len(extracted['rows'])}"
+    assert len(extracted["rows"]) == len(validation["rows"]), (
+        f"{class_name}: Expected {len(validation['rows'])} rows, got {len(extracted['rows'])}"
+    )
 
     # Compare headers (allow some flexibility in format)
     extracted_headers = [str(h).strip() for h in extracted["headers"]]
@@ -90,9 +90,9 @@ def test_class_progression_extraction(
         for h in validation["headers"]
     ]
 
-    assert (
-        len(extracted_headers) == len(validation_headers)
-    ), f"{class_name}: Header count mismatch - expected {len(validation_headers)}, got {len(extracted_headers)}"
+    assert len(extracted_headers) == len(validation_headers), (
+        f"{class_name}: Header count mismatch - expected {len(validation_headers)}, got {len(extracted_headers)}"
+    )
 
     # Compare row data (compare string representations for flexibility)
     mismatches = []
