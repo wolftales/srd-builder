@@ -30,6 +30,14 @@
 - Fixtures split: tests/fixtures/.../raw vs .../normalized.
 - Entities and nested entries must include `simple_name` where applicable.
 
+## Consistency Guidelines
+- **Alphabetical ordering:** Dictionary keys in metadata should be alphabetically sorted (extraction_status, schemas, files).
+- **Metadata accuracy:** meta.json must reflect actual build output, not design intent (use file existence checks).
+- **Test failures over skips:** Tests should FAIL when expected data is missing, not SKIP (catches build issues immediately).
+- **Single source of truth:** PAGE_INDEX is authoritative for page ranges; meta.json tracks build outputs.
+- **No duplication:** Use references/aliases instead of duplicating data across files.
+- **Field ordering:** Maintain consistent field order in _meta blocks across all datasets.
+
 ## Style
 - Python 3.11 + type hints.
 - Ruff (linting + formatting) must pass; import order enforced by ruff.
