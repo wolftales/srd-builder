@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 from .. import __version__
 from ..extract.extract_prose import ProseExtractor
 from ..extraction.extraction_metadata import TABLES
+from ..postprocess import clean_disease_record
 
 
 def assemble_prose_dataset(
@@ -62,6 +63,10 @@ def assemble_prose_dataset(
 
     # Parse into structured records using provided parser
     parsed_records = parser_func(raw_data["sections"])
+
+    # Postprocess: normalize IDs and polish text
+    if dataset_name == "diseases":
+        parsed_records = [clean_disease_record(r) for r in parsed_records]
 
     # Sort by name
     parsed_records.sort(key=lambda r: r.get("name", ""))
