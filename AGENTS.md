@@ -19,12 +19,15 @@ For software architecture and design patterns, see [docs/ARCHITECTURE.md](docs/A
 
 ### Code Quality (Non-Negotiable)
 - **Fix all linting errors:** Do NOT ignore or suppress ruff warnings without explicit justification
-- **Fix all test failures:** Tests exist to catch bugs - they must pass
+- **Fix all test failures:** Tests must pass, but sometimes the fix is updating the test
+  - **Bug in code:** Fix the implementation to match test expectations
+  - **Intentional behavior change:** Update test to match new behavior (document why in commit)
+  - **Outdated test:** Remove or update tests that no longer apply
 - **Exceptions are rare:** Only ignore linting/tests when:
   - User explicitly requests it
   - There is a documented technical limitation (add TODO comment)
   - It's a known issue being tracked separately
-- **Default behavior:** Fix the problem, don't bypass the check
+- **Default behavior:** Fix the problem (code OR test), don't bypass the check
 
 ### Code Changes
 - Always check [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for module boundaries and patterns
