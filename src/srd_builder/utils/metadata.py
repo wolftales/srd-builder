@@ -161,7 +161,6 @@ def generate_meta_json(  # noqa: PLR0913
     )
 
     build_info: dict[str, str | None] = {
-        "builder_version": __version__,
         "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
     }
     if build_timestamp is not None:
@@ -186,6 +185,7 @@ def generate_meta_json(  # noqa: PLR0913
     return {
         "source": DATA_SOURCE,
         "ruleset_version": version,
+        "builder_version": __version__,
         "schemas": schemas,
         "license": {
             "type": license_type,

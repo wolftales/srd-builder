@@ -108,6 +108,7 @@ def test_meta_json_schema_version():
         "poison",
         "features",
         "madness",
+        "magic_item",
     }
     assert (
         set(schemas.keys()) == expected_datasets
