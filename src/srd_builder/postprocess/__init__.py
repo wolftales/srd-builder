@@ -22,6 +22,7 @@ from .monsters import (
 from .poisons import clean_poison_record
 from .rules import clean_rule_record
 from .spells import clean_spell_record
+from .tables import clean_table_record
 from .text import polish_text, polish_text_fields
 
 __all__ = [
@@ -36,6 +37,7 @@ __all__ = [
     "clean_poison_record",
     "clean_rule_record",
     "clean_spell_record",
+    "clean_table_record",
     "dedup_defensive_lists",
     "normalize_id",
     "parse_action_structures",

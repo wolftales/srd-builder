@@ -52,6 +52,7 @@ from .postprocess import (
     clean_poison_record,
     clean_rule_record,
     clean_spell_record,
+    clean_table_record,
 )
 from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
 from .utils.table_indexer import TableIndexer
@@ -181,8 +182,8 @@ def _write_datasets(  # noqa: PLR0913
     )
 
     # Write tables (v0.7.0)
-    # Tables are already fully normalized by parse_single_table, no additional cleaning needed
-    processed_tables = tables if tables else None
+    # Postprocess: normalize IDs and polish text
+    processed_tables = [clean_table_record(t) for t in tables] if tables else None
     if processed_tables:
         # Sort tables by page number (document/TOC order)
         def get_sort_page(table):
