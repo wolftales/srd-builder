@@ -68,9 +68,9 @@ def test_dataset_schema_versions_match():
         dataset_version = dataset["_meta"]["schema_version"]
         schema_version = schema["version"]
 
-        assert (
-            dataset_version == schema_version
-        ), f"{dataset_file} schema_version ({dataset_version}) doesn't match {schema_file} version ({schema_version})"
+        assert dataset_version == schema_version, (
+            f"{dataset_file} schema_version ({dataset_version}) doesn't match {schema_file} version ({schema_version})"
+        )
 
 
 @pytest.mark.package
@@ -110,9 +110,9 @@ def test_meta_json_schema_version():
         "magic_item",
         # Note: madness is not a separate dataset - madness tables are in tables.json
     }
-    assert (
-        set(schemas.keys()) == expected_datasets
-    ), f"schemas section missing datasets: {expected_datasets - set(schemas.keys())}"
+    assert set(schemas.keys()) == expected_datasets, (
+        f"schemas section missing datasets: {expected_datasets - set(schemas.keys())}"
+    )
 
     # Each schema version should be valid semver
     for dataset, version in schemas.items():

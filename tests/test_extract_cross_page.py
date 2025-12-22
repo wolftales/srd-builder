@@ -41,14 +41,14 @@ def test_deva_spans_multiple_pages(monsters_raw):
 
     # Must have complete stat block (70+ blocks)
     block_count = len(deva["blocks"])
-    assert (
-        block_count >= 70
-    ), f"Deva should have 70+ blocks for complete stat block, got {block_count}"
+    assert block_count >= 70, (
+        f"Deva should have 70+ blocks for complete stat block, got {block_count}"
+    )
 
     # Verify no warnings
-    assert (
-        len(deva["warnings"]) == 0
-    ), f"Deva extraction should have no warnings, got {deva['warnings']}"
+    assert len(deva["warnings"]) == 0, (
+        f"Deva extraction should have no warnings, got {deva['warnings']}"
+    )
 
 
 def test_solar_complete_extraction(monsters_raw):
@@ -63,14 +63,14 @@ def test_solar_complete_extraction(monsters_raw):
 
     # Must have substantial block count (complex monster)
     block_count = len(solar["blocks"])
-    assert (
-        block_count >= 70
-    ), f"Solar should have 70+ blocks for complete stat block, got {block_count}"
+    assert block_count >= 70, (
+        f"Solar should have 70+ blocks for complete stat block, got {block_count}"
+    )
 
     # Verify no warnings
-    assert (
-        len(solar["warnings"]) == 0
-    ), f"Solar extraction should have no warnings, got {solar['warnings']}"
+    assert len(solar["warnings"]) == 0, (
+        f"Solar extraction should have no warnings, got {solar['warnings']}"
+    )
 
 
 def test_planetar_complete_extraction(monsters_raw):
@@ -134,9 +134,9 @@ def test_no_monsters_with_zero_blocks(monsters_raw):
     """
     empty_monsters = [name for name, monster in monsters_raw.items() if len(monster["blocks"]) == 0]
 
-    assert (
-        len(empty_monsters) == 0
-    ), f"Found {len(empty_monsters)} monsters with zero blocks: {empty_monsters}"
+    assert len(empty_monsters) == 0, (
+        f"Found {len(empty_monsters)} monsters with zero blocks: {empty_monsters}"
+    )
 
 
 def test_extraction_coverage(monsters_raw):
@@ -166,9 +166,9 @@ def test_complex_monsters_block_counts(monsters_raw, monster_name, expected_min_
         pytest.skip(f"{monster_name} not found in extraction")
 
     block_count = len(monster["blocks"])
-    assert (
-        block_count >= expected_min_blocks
-    ), f"{monster_name} should have {expected_min_blocks}+ blocks, got {block_count}"
+    assert block_count >= expected_min_blocks, (
+        f"{monster_name} should have {expected_min_blocks}+ blocks, got {block_count}"
+    )
 
 
 def test_page_continuity(monsters_raw):
