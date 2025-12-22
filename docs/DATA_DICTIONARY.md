@@ -702,6 +702,163 @@ Status: Schema exists (`spell.schema.json`) but dataset not yet built. Fields TB
 
 ---
 
+## Rules Dataset (v0.17.0)
+
+Game rules and mechanics extracted from SRD core chapters (abilities, combat, spellcasting, adventuring).
+
+### Core Identity
+
+#### `id`
+- **Type:** `string`
+- **Pattern:** `rule:<normalized_name>`
+- **Examples:** `rule:ability_checks`, `rule:attack_rolls`, `rule:concentration`, `rule:bonus_actions`
+- **SRD Source:** Derived from rule name and hierarchical position
+- **Purpose:** Stable identifier for cross-referencing mechanics
+
+#### `name`
+- **Type:** `string`
+- **Examples:** `"Ability Checks"`, `"Attack Rolls"`, `"Concentration"`, `"Bonus Actions"`
+- **SRD Source:** Section/subsection headers from SRD chapters
+- **Transformation:** Preserves original capitalization
+- **Purpose:** Display name for UI, search, and navigation
+
+#### `simple_name`
+- **Type:** `string`
+- **Pattern:** `[a-z0-9_]+`
+- **Examples:** `ability_checks`, `attack_rolls`, `concentration`, `bonus_actions`
+- **SRD Source:** Derived from `name`
+- **Transformation:** Lowercase, spaces to underscores
+- **Purpose:** Normalized search key
+
+#### `category`
+- **Type:** `string` (required)
+- **Examples:** `"Using Ability Scores"`, `"Spellcasting"`, `"Combat"`
+- **SRD Source:** Top-level chapter/section headers
+- **Purpose:** High-level grouping of related rules
+- **Coverage:** 7 categories from 76 pages:
+  - Using Ability Scores (abilities, checks, scores)
+  - Combat (actions, attacks, damage, movement)
+  - Spellcasting (casting, components, concentration)
+  - Movement (speed, terrain, climbing, jumping)
+  - Environment (vision, light, falling, suffocating)
+  - Resting (short rest, long rest)
+  - Time (initiative, turns, rounds)
+
+#### `subcategory`
+- **Type:** `string` (optional)
+- **Examples:** `"Ability Checks"`, `"Actions in Combat"`, `"Movement and Position"`, `"Casting a Spell"`
+- **SRD Source:** Section headers within chapters
+- **Purpose:** Fine-grained categorization within category
+- **Note:** Most rules have both category and subcategory; some top-level rules may omit subcategory
+
+### Hierarchical Structure
+
+#### `parent_id`
+- **Type:** `string` (optional)
+- **Pattern:** `rule:<normalized_name>`
+- **Examples:** `rule:ability_checks`, `rule:making_an_attack`
+- **SRD Source:** Derived from outline structure
+- **Purpose:** Links child rules to parent (rarely used - prefer subcategory)
+- **Note:** Minimally used in current implementation (flat hierarchy with subcategories is preferred)
+
+### Content
+
+#### `text`
+- **Type:** `array` of `string` (required)
+- **SRD Source:** Rule description paragraphs from SRD body text
+- **Transformation:**
+  - Split into paragraphs (array items)
+  - Remove PDF artifacts (\r, \n, control characters)
+  - Preserve original SRD wording
+- **Examples:**
+  ```json
+  "text": [
+    "An ability check tests a character's or monster's innate talent and training in an effort to overcome a challenge.",
+    "The DM calls for an ability check when a character or monster attempts an action (other than an attack) that has a chance of failure."
+  ]
+  ```
+- **Purpose:** Human-readable rule text for display and search
+
+#### `summary`
+- **Type:** `string` (optional)
+- **SRD Source:** Extracted from first sentence or manually curated
+- **Examples:** `"When you make an attack, your attack roll determines whether the attack hits or misses."`
+- **Purpose:** One-sentence preview for tooltips, search results, quick reference
+
+### Search and Classification
+
+#### `aliases`
+- **Type:** `array` of `string` (optional)
+- **Examples:** `["critical hit", "nat 20"]` for `rule:critical_hits`
+- **SRD Source:** Alternative terminology, common player phrases
+- **Purpose:** Improve search discoverability with alternative terms
+
+#### `tags`
+- **Type:** `array` of `enum` (optional)
+- **Allowed Values:** `action`, `bonus_action`, `reaction`, `movement`, `saving_throw`, `ability_check`, `attack`, `advantage`, `disadvantage`, `concentration`, `proficiency`, `rest`, `damage`, `healing`, `vision`, `cover`, `condition`
+- **Examples:** `["attack", "ability_check"]` for `rule:attack_rolls`
+- **SRD Source:** Derived from rule content and mechanical patterns
+- **Purpose:** Lightweight mechanical tagging for filtering and search
+- **Note:** Tags are intentionally minimal - not every rule needs tags
+
+### Cross-References
+
+#### `related_conditions`
+- **Type:** `array` of `string` (optional)
+- **Pattern:** `condition:<normalized_name>`
+- **Examples:** `["condition:blinded", "condition:invisible"]` for rules about vision
+- **Purpose:** Link rules to game conditions they reference
+
+#### `related_spells`
+- **Type:** `array` of `string` (optional)
+- **Pattern:** `spell:<normalized_name>`
+- **Examples:** `["spell:shield", "spell:mage_armor"]` for AC-related rules
+- **Purpose:** Link rules to spells that exemplify or interact with them
+
+#### `related_features`
+- **Type:** `array` of `string` (optional)
+- **Pattern:** `feature:<normalized_name>`
+- **Examples:** `["feature:action_surge", "feature:cunning_action"]` for action economy rules
+- **Purpose:** Link rules to class features that modify them
+
+#### `related_tables`
+- **Type:** `array` of `string` (optional)
+- **Pattern:** `table:<normalized_name>`
+- **Examples:** `["table:ability_scores_and_modifiers"]` for ability score rules
+- **Purpose:** Link rules to relevant reference tables
+
+### Source Tracking
+
+#### `page`
+- **Type:** `integer` (required)
+- **SRD Source:** PDF page number where rule text begins
+- **Examples:** `76`, `94`, `101`
+- **Purpose:** Citation and reference back to source PDF
+
+#### `source`
+- **Type:** `string` (required)
+- **Examples:** `"SRD 5.1"`
+- **Purpose:** Document provenance
+
+### Design Notes
+
+**Prose-First Philosophy:**
+- Rules are primarily human-readable text, not structured data
+- Unlike monsters/spells which have stat blocks, rules preserve SRD narrative
+- Tags and cross-references are lightweight aids, not comprehensive categorization
+
+**Minimal Hierarchy:**
+- Most rules are flat with category/subcategory for organization
+- `parent_id` is rarely used (prefer subcategory for grouping)
+- Avoids deep nesting that complicates navigation
+
+**No Formula Extraction:**
+- Rules don't extract mechanical formulas (e.g., damage dice, modifiers)
+- Preserves SRD wording for legal compliance and clarity
+- Consumers parse formulas from `text` arrays if needed
+
+---
+
 ## Tables Dataset
 
 Reference tables extracted from SRD including class progression tables.
@@ -945,13 +1102,14 @@ See `SCHEMAS.md` for architectural evolution and versioning strategy.
 
 ## Datasets Summary
 
-**v0.13.0 includes:**
+**v0.17.0 includes:**
 - **317 Creatures** (in monsters.json, semantically separated):
   - **201 Monsters** - Main bestiary creatures (monster: prefix, pages 261-365)
   - **95 Misc Creatures** - Appendix MM-A awakened/summoned creatures (creature: prefix, pages 366-394)
   - **21 NPCs** - Appendix MM-B nonplayer characters (npc: prefix, pages 395-403)
 - **106 Equipment** - Weapons, armor, adventuring gear
 - **319 Spells** - Complete spell descriptions with structured effects
+- **172 Rules** - Game mechanics and rules from 7 core chapters (76 pages)
 - **23 Tables** - Reference tables (12 class progression + 11 general reference)
 - **13 Lineages** - Character lineages (9 base + 4 subraces)
 - **12 Classes** - Character classes with full progression

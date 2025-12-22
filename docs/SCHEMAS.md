@@ -23,6 +23,7 @@ All dataset files produced by srd-builder conform to schema version 1.3.0, which
 - `monster:*` - Monster stat blocks
 - `item:*` - Equipment, weapons, armor, gear
 - `spell:*` - Spells (v0.6.0)
+- `rule:*` - Game rules and mechanics (v0.17.0)
 - `class:*` - Character classes (planned)
 - `lineage:*` - Lineages/races (planned)
 - `condition:*` - Game conditions (planned)
@@ -44,6 +45,7 @@ schemas/
 ├── monster.schema.json       # Monster stat blocks
 ├── equipment.schema.json     # Equipment/items
 ├── spell.schema.json         # Spells (v1.3.0)
+├── rule.schema.json          # Game rules and mechanics (v1.3.0)
 └── ...
 ```
 
@@ -501,6 +503,110 @@ The spell schema uses **structured nested objects** for related fields, followin
 2. **Human-readable formula field** - Preserves SRD text, directly displayable to users
 3. **Optional effects wrapper** - Not all spells have damage/healing/saves (utility spells)
 4. **Flexible range type** - Structured object for numeric ranges, special strings for self/touch/sight
+
+---
+
+## Rule Schema (v1.3.0)
+
+**Added in:** v0.17.0 (December 2024)
+**Schema File:** `schemas/rule.schema.json`
+**Version:** 1.3.0
+**Dataset:** `rules.json` (172 rules from 7 chapters)
+
+### Design Philosophy
+
+The rule schema uses a **prose-first, hierarchical structure** for game mechanics documentation. Unlike structured entities (monsters, spells), rules are primarily human-readable text organized by category/subcategory with optional tags and cross-references for enhanced navigation.
+
+### Core Structure
+
+```json
+{
+  "id": "rule:ability_checks",
+  "name": "Ability Checks",
+  "simple_name": "ability_checks",
+  "category": "Using Ability Scores",
+  "subcategory": "Ability Checks",
+  "text": [
+    "An ability check tests a character's or monster's...",
+    "The DM calls for an ability check when a character..."
+  ],
+  "tags": ["ability_check", "proficiency"],
+  "page": 77,
+  "source": "SRD 5.1"
+}
+```
+
+### Required Fields
+
+- **`id`** (string, pattern: `rule:[a-z0-9_]+`) - Unique identifier using rule: namespace
+- **`name`** (string) - Display name (e.g., "Ability Checks", "Attack Rolls")
+- **`simple_name`** (string) - Lowercase normalized name for indexing
+- **`category`** (string) - Top-level chapter (e.g., "Combat", "Spellcasting", "Using Ability Scores")
+- **`page`** (integer) - Page number in source PDF
+- **`source`** (string) - Source document (e.g., "SRD 5.1")
+- **`text`** (array of strings) - Rule description as array of paragraphs
+
+### Optional Fields
+
+- **`subcategory`** (string) - Section within category (e.g., "Actions in Combat", "Movement and Position")
+- **`parent_id`** (string, pattern: `rule:[a-z0-9_]+`) - Parent rule ID for hierarchical nesting (use sparingly)
+- **`aliases`** (array of strings) - Alternative names or legacy terminology
+- **`summary`** (string) - One-sentence description for tooltips/previews
+- **`tags`** (array of enum) - Lightweight mechanical tags for search:
+  - `action`, `bonus_action`, `reaction`, `movement`
+  - `saving_throw`, `ability_check`, `attack`
+  - `advantage`, `disadvantage`, `concentration`, `proficiency`
+  - `rest`, `damage`, `healing`, `vision`, `cover`, `condition`
+- **`related_conditions`** (array) - Cross-references to `condition:*` entities
+- **`related_spells`** (array) - Cross-references to `spell:*` entities
+- **`related_features`** (array) - Cross-references to `feature:*` entities
+- **`related_tables`** (array) - Cross-references to `table:*` entities
+
+### Categories Included
+
+Rules are extracted from 7 SRD chapters (76 pages):
+1. **Using Ability Scores** - Ability checks, scores, modifiers, using each ability
+2. **Combat** - Actions, movement, attack rolls, damage, mounted combat
+3. **Spellcasting** - Casting spells, spell components, duration, concentration
+4. **Movement** - Speed, travel pace, difficult terrain, climbing, jumping
+5. **Environment** - Vision, light, falling, suffocating
+6. **Resting** - Short rest, long rest
+7. **Time** - Initiative, turns, rounds
+
+### Index Structure
+
+Rules are indexed by:
+- **`by_name`** - Direct lookup by rule ID
+- **`by_category`** - Grouped by top-level category
+- **`by_subcategory`** - Grouped by section within category
+
+### Design Decisions
+
+1. **Prose-first** - Rules are primarily text, not structured data (unlike spells/monsters)
+2. **Minimal tagging** - Tags are optional and lightweight (avoid over-categorization)
+3. **Flat hierarchy** - Most rules are flat; `parent_id` is rarely used (prefer subcategory)
+4. **Cross-references** - `related_*` fields connect to other datasets but are optional
+5. **No formulas** - Rules don't extract mechanical formulas (preserve SRD prose)
+
+### Example Rule
+
+```json
+{
+  "id": "rule:attack_rolls",
+  "name": "Attack Rolls",
+  "simple_name": "attack_rolls",
+  "category": "Using Ability Scores",
+  "subcategory": "Making an Attack",
+  "summary": "When you make an attack, your attack roll determines whether the attack hits or misses.",
+  "text": [
+    "When you make an attack, your attack roll determines whether the attack hits or misses. To make an attack roll, roll a d20 and add the appropriate modifiers.",
+    "If the total of the roll plus modifiers equals or exceeds the target's Armor Class (AC), the attack hits. The AC of a character is determined at character creation, whereas the AC of a monster is in its stat block."
+  ],
+  "tags": ["attack", "ability_check"],
+  "page": 94,
+  "source": "SRD 5.1"
+}
+```
 
 ---
 

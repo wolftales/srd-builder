@@ -28,9 +28,9 @@ make pre-commit
 make test
 ```
 
-### Build pipeline (v0.16.0)
+### Build pipeline (v0.17.0)
 
-The build pipeline extracts monster, equipment, spell, magic item, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **296 monsters**, **111 equipment items**, **319 spells**, **264 magic items**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
+The build pipeline extracts monster, equipment, spell, magic item, rule, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **317 creatures**, **106 equipment items**, **319 spells**, **264 magic items**, **172 rules**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
 **Development workflow (fast iteration, data only):**
 ```bash
@@ -64,10 +64,11 @@ python -m srd_builder.validate --ruleset srd_5_1
 **Development output:**
 ```
 dist/srd_5_1/
-├── monsters.json          # 296 creature stat blocks
+├── monsters.json          # 317 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
-├── magic_items.json       # 264 magic items ✨ NEW in v0.16.0
+├── magic_items.json       # 264 magic items
+├── rules.json             # 172 rules ✨ NEW in v0.17.0
 ├── tables.json            # 37 reference tables (12 class progression + 25 equipment/reference)
 ├── lineages.json          # 13 character lineages (9 base + 4 subraces)
 ├── classes.json           # 12 character classes
@@ -235,12 +236,10 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
 - 🎯 **v0.9.8** - Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
 - 🎯 **v0.10.0** - Conditions dataset (~15 conditions)
 - 🎯 **v0.10.0** - Features dataset (class/racial features)
-- 🎯 **v0.11.0** - Rules dataset (core mechanics, variant rules)
-- 🎯 **v0.12.0** - Rules Dataset (core mechanics)
 - ✅ **v0.14.0** - Deterministic metadata + prose datasets (conditions, diseases, madness, poisons)
 - ✅ **v0.15.0** - Module Reorganization + Monster/Spell Refactoring
 - ✅ **v0.16.0** - Magic Items Dataset (264 items with full metadata)
-- 🎯 **v0.17.0** - Rules Dataset (core mechanics)
+- ✅ **v0.17.0** - Rules Dataset (172 rules from 7 core chapters)
 - 🎯 **v0.18.0** - Quality & Polish (final cleanup before v1.0.0)
 - 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
 

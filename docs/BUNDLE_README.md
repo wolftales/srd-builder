@@ -1,8 +1,8 @@
 # SRD 5.1 Dataset Bundle
 
-**Version:** srd-builder v0.14.0
+**Version:** srd-builder v0.17.0
 **Schema Version:** 1.3.0
-**Generated:** November 9, 2025
+**Generated:** December 22, 2024
 **Source:** System Reference Document 5.1 (SRD_CC_v5.1)
 
 ---
@@ -14,6 +14,7 @@ Machine-readable D&D 5e SRD data extracted from official PDF:
 - **317 Creatures** - 201 monsters + 95 misc creatures (MM-A) + 21 NPCs (MM-B) - Full stat blocks (schema v1.3.0)
 - **106 Equipment Items** - Weapons, armor, gear (schema v1.3.0)
 - **319 Spells** - Spell data with structured casting/effects (schema v1.3.0)
+- **172 Rules** - Game mechanics and rules from 7 core chapters (schema v1.3.0)
 - **23 Tables** - Reference tables including 12 class progression tables (schema v1.3.0)
 - **13 Lineages** - Character lineages (formerly races) with traits, abilities, subraces (schema v1.3.0)
 - **12 Classes** - Character classes with progression, features, proficiencies (schema v1.3.0)
@@ -61,6 +62,7 @@ srd_5_1/
 ├── monsters.json          # 317 creature stat blocks (201 monsters + 95 creatures + 21 NPCs)
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
+├── rules.json             # 172 game rules and mechanics
 ├── tables.json            # 23 reference tables (12 class progression + 11 reference)
 ├── lineages.json          # 13 character lineages (9 base + 4 subraces)
 ├── classes.json           # 12 character classes
@@ -72,6 +74,7 @@ srd_5_1/
 │   ├── monster.schema.json
 │   ├── equipment.schema.json
 │   ├── spell.schema.json
+│   ├── rule.schema.json
 │   ├── table.schema.json
 │   ├── lineage.schema.json
 │   └── class.schema.json
@@ -122,6 +125,11 @@ The `index.json` file provides pre-built search indexes for all datasets:
     "by_concentration": {"true": [...], "false": [...]},
     "by_ritual": {"true": [...], "false": [...]}
   },
+  "rules": {
+    "by_name": {"ability_checks": "rule:ability_checks", ...},
+    "by_category": {"Using Ability Scores": [...], "Spellcasting": [...], ...},
+    "by_subcategory": {"Ability Checks": [...], "Movement": [...], ...}
+  },
   "lineages": {
     "by_name": {"dwarf": "lineage:dwarf", "elf": "lineage:elf", ...},
     "by_size": {"Medium": [...], "Small": [...]},
@@ -133,16 +141,18 @@ The `index.json` file provides pre-built search indexes for all datasets:
     "npcs": {"npc:acolyte": {"type": "npc", "file": "monsters.json", "name": "Acolyte"}, ...},
     "equipment": {"item:longsword": {"type": "equipment", "file": "equipment.json", "name": "Longsword"}, ...},
     "spells": {"spell:fireball": {"type": "spell", "file": "spells.json", "name": "Fireball"}, ...},
+    "rules": {"rule:ability_checks": {"type": "rule", "file": "rules.json", "name": "Ability Checks"}, ...},
     "lineages": {"lineage:dwarf": {"type": "lineage", "file": "lineages.json", "name": "Dwarf"}, ...}
   },
   "stats": {
     "total_monsters": 201,
     "total_creatures": 95,
     "total_npcs": 21,
-    "total_equipment": 114,
-    "total_spells": 0,
+    "total_equipment": 106,
+    "total_spells": 319,
+    "total_rules": 172,
     "total_lineages": 13,
-    "total_entities": 444,
+    "total_entities": 839,
     ...
   }
 }

@@ -29,10 +29,21 @@ srd-builder currently produces the following files for downstream consumption:
 ```
 dist/srd_5_1/
 ├── data/
-│   ├── monsters.json         # 296 monsters with structured fields
+│   ├── monsters.json         # 317 creatures with structured fields
+│   ├── equipment.json        # 106 equipment items
+│   ├── spells.json           # 319 spells with structured effects
+│   ├── rules.json            # 172 game rules and mechanics (v0.17.0)
+│   ├── tables.json           # 23 reference tables
+│   ├── lineages.json         # 13 character lineages
+│   ├── classes.json          # 12 character classes
 │   └── index.json            # Lookup tables (by_name, by_cr, by_type, etc.)
 ├── build_report.json         # Build metadata and version info
-└── [schemas TBD]             # JSON schemas for validation
+└── schemas/                  # JSON schemas for validation
+    ├── monster.schema.json
+    ├── equipment.schema.json
+    ├── spell.schema.json
+    ├── rule.schema.json      # v0.17.0
+    └── ...
 ```
 
 ## What We Provide vs What They Need
@@ -52,19 +63,24 @@ dist/srd_5_1/
 
 ### 📋 Future Content Types
 Following the SRD structure, srd-builder will expand to extract:
-- Week 2: Equipment (weapons, armor, gear)
-- Week 3-4: Classes & Lineages
-- Week 5: Spells & Features
-- Week 6: Conditions, Rules, Tables
+- ✅ Equipment (weapons, armor, gear) - v0.5.0
+- ✅ Classes & Lineages - v0.13.0
+- ✅ Spells & Features - v0.6.0
+- ✅ Tables - v0.8.3
+- ✅ Rules & Mechanics - v0.17.0
+- 🔄 Conditions - Future
 
-Each content type will follow the same pattern:
+Each content type follows the same pattern:
 ```
 dist/srd_5_1/
 └── data/
-    ├── monsters.json     # ✅ v0.5.0 (296 monsters)
-    ├── equipment.json    # ✅ v0.5.0 (111 items)
-    ├── classes.json      # 🔄 Future
-    ├── spells.json       # 🔄 Future
+    ├── monsters.json     # ✅ v0.5.0 (317 creatures)
+    ├── equipment.json    # ✅ v0.5.0 (106 items)
+    ├── spells.json       # ✅ v0.6.0 (319 spells)
+    ├── rules.json        # ✅ v0.17.0 (172 rules)
+    ├── tables.json       # ✅ v0.8.3 (23 tables)
+    ├── lineages.json     # ✅ v0.13.0 (13 lineages)
+    ├── classes.json      # ✅ v0.13.0 (12 classes)
     ├── conditions.json   # 🔄 Future
     └── index.json        # Unified indexes
 ```
@@ -165,11 +181,82 @@ srd-builder → [monsters.json, equipment.json, index.json, meta.json, schemas] 
 ### Target (v1.0)
 ```
 srd-builder → [full SRD data + schemas + provenance] → Consumers
-  - Monsters (296) ✅
-  - Equipment (111) ✅
-  - Classes (TBD)
-  - Spells (TBD)
-  - Conditions/Rules/Tables (TBD)
+  - Monsters (317) ✅
+  - Equipment (106) ✅
+  - Spells (319) ✅
+  - Rules (172) ✅
+  - Tables (23) ✅
+  - Lineages (13) ✅
+  - Classes (12) ✅
+  - Conditions (TBD)
+```
+
+## Consumption Examples
+
+### Loading Rules Data
+
+```python
+import json
+
+# Load rules dataset
+with open("dist/srd_5_1/rules.json") as f:
+    rules_data = json.load(f)
+
+# Access metadata
+meta = rules_data["_meta"]
+print(f"Rules from {meta['source']} (schema v{meta['schema_version']})")
+
+# Access rules
+rules = rules_data["items"]
+print(f"Loaded {len(rules)} rules")
+
+# Find rules by category
+combat_rules = [r for r in rules if r["category"] == "Using Ability Scores"
+                and r.get("subcategory") == "Making an Attack"]
+
+# Display a rule
+attack_roll = next(r for r in rules if r["id"] == "rule:attack_rolls")
+print(f"\n{attack_roll['name']}")
+for paragraph in attack_roll["text"]:
+    print(f"  {paragraph}")
+
+# Search by tags
+action_rules = [r for r in rules if "action" in r.get("tags", [])]
+print(f"\nFound {len(action_rules)} rules tagged with 'action'")
+
+# Use index for fast lookup
+with open("dist/srd_5_1/index.json") as f:
+    index = json.load(f)
+
+# Lookup by name
+ability_check_id = index["rules"]["by_name"]["ability_checks"]
+# Get from main dataset using ID
+ability_check_rule = next(r for r in rules if r["id"] == ability_check_id)
+
+# Browse by category
+combat_rule_ids = index["rules"]["by_category"]["Using Ability Scores"]
+combat_rules = [r for r in rules if r["id"] in combat_rule_ids]
+```
+
+### Cross-Referencing Rules with Other Datasets
+
+```python
+# Rules can reference other datasets via cross-reference fields
+rule = next(r for r in rules if r["id"] == "rule:concentration")
+
+# Load related spells
+if "related_spells" in rule:
+    with open("dist/srd_5_1/spells.json") as f:
+        spells_data = json.load(f)
+
+    related_spells = [s for s in spells_data["items"]
+                     if s["id"] in rule["related_spells"]]
+    print(f"Spells requiring concentration: {len(related_spells)}")
+
+# Load related conditions
+if "related_conditions" in rule:
+    # Future: load conditions.json when available
+    pass
 ```
 
 ## Design Philosophy
