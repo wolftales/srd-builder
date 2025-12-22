@@ -1,9 +1,22 @@
 {
-  "id": "feature:second-wind",
-  "name": "Second Wind",
-  "text": [
-    "..."
-  ],
-  "page": 72,
-  "src": "SRD_CC_v5.1"
+  "raw_features": [
+    {
+      "name": "Rage",
+      "page": 8,
+      "summary": "In battle, you fight with primal ferocity.",
+      "text": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren\u2019t wearing heavy armor: \u2022 You have advantage on Strength checks and Strength saving throws. \u2022 When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table. \u2022 You have resistance to bludgeoning, piercing, and slashing damage. If you are able to cast spells, you can\u2019t cast them or concentrate on them while raging. Your rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven\u2019t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action. Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again."
+    },
+    {
+      "name": "Evasion",
+      "page": 40,
+      "summary": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon\u2019s fiery breath or an ice storm spell.",
+      "text": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon\u2019s fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."
+    },
+    {
+      "name": "Languages",
+      "page": 7,
+      "summary": "You can speak, read, and write Common and Infernal.",
+      "text": "You can speak, read, and write Common and Infernal."
+    }
+  ]
 }

@@ -45,6 +45,7 @@ from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import (
     clean_equipment_record,
+    clean_feature_record,
     clean_lineage_record,
     clean_magic_item_record,
     clean_monster_record,
@@ -975,8 +976,10 @@ def build(  # noqa: C901
 
     # Build features document (v0.11.0)
     if all_features:
+        # Postprocess: normalize IDs and polish text
+        processed_features_list = [clean_feature_record(f) for f in all_features]
         features_doc = wrap_with_meta(
-            {"features": all_features},
+            {"features": processed_features_list},
             ruleset=ruleset,
             schema_version=read_schema_version("features"),
             ruleset_version=ruleset_version,
