@@ -1,19 +1,19 @@
 {
-  "id": "rule:resting",
-  "title": "Resting",
-  "level": 2,
-  "path": [
-    "Adventuring",
-    "Resting"
-  ],
-  "blocks": [
-    "Short Rests: ...",
-    "Long Rests: ..."
-  ],
-  "crossrefs": [
-    "condition:exhaustion",
-    "feature:hit-dice"
-  ],
-  "page": 186,
-  "src": "SRD_CC_v5.1"
+  "sections": [
+    {
+      "name": "Blinded",
+      "raw_text": "A blinded creature can\u2019t see and automatically fails any ability check that requires sight.\n\nA blinded creature can\u2019t see and automatically fails any ability check that requires sight.\n\nAttack rolls against the creature have advantage, and the creature\u2019s attack rolls have disadvantage.",
+      "page": 358
+    },
+    {
+      "name": "Invisible",
+      "raw_text": "An invisible creature is impossible to see without the aid of magic or a special sense.\n\nAn invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature\u2019s location can be detected by any noise it makes or any tracks it leaves.\n\nAttack rolls against the creature have disadvantage, and the creature\u2019s attack rolls have advantage.",
+      "page": 358
+    },
+    {
+      "name": "Unconscious",
+      "raw_text": "An unconscious creature is incapacitated (see the condition), can\u2019t move or speak, and is unaware...\n\nAn unconscious creature is incapacitated (see the condition), can\u2019t move or speak, and is unaware of its surroundings\n\nThe creature drops whatever it\u2019s holding and falls prone.\n\nThe creature automatically fails Strength and Dexterity saving throws.\n\nAttack rolls against the creature have advantage.\n\nAny attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature. System Reference Document 5.1 359",
+      "page": 358
+    }
+  ]
 }

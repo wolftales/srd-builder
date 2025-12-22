@@ -1,5 +1,6 @@
 """Domain-specific postprocessing helpers for SRD datasets."""
 
+from .conditions import clean_condition_record
 from .diseases import clean_disease_record
 from .equipment import clean_equipment_record
 from .ids import normalize_id
@@ -23,6 +24,7 @@ from .text import polish_text, polish_text_fields
 
 __all__ = [
     "add_ability_modifiers",
+    "clean_condition_record",
     "clean_disease_record",
     "clean_equipment_record",
     "clean_magic_item_record",
