@@ -23,19 +23,33 @@
 
 ### Two Dataset Processing Patterns Exist:
 
-**Pattern 1: Parse + Postprocess (Legacy - monsters, spells, equipment)**
-- Parse phase: Extract and structure data from PDF
-- Postprocess phase: Normalize, clean, generate IDs, polish text
-- Two separate modules required
+**Pattern 1: Parse + Postprocess (Correct - monsters, spells, equipment)**
+- Parse phase: Extract and structure data from PDF (parsing only)
+- Postprocess phase: Normalize, clean, generate IDs, polish text (normalization only)
+- Clear separation of concerns
+- Shared utilities: `postprocess/ids.py`, `postprocess/text.py`
 - Example: `parse_monsters.py` (987 lines) + `postprocess/monsters.py` (375 lines)
+- **Benefits:**
+  - Testable: Can test parsing separate from normalization
+  - Modular: Can change normalization without touching parsing
+  - Reusable: Shared utilities (`normalize_id()`, `polish_text()`)
+  - Clear boundaries: Each module has ONE job
 
-**Pattern 2: All-in-One Parse (Preferred - magic_items, tables)**
+**Pattern 2: All-in-One Parse (Technical Debt - magic_items, tables)**
 - Parse phase does everything: extraction, structuring, normalization, ID generation
-- No postprocess module needed
-- Single module, cleaner architecture
+- No postprocess module
 - Example: `parse_magic_items.py` (325 lines), `parse_tables.py` (196 lines)
+- **Problems:**
+  - Mixed concerns: Parsing AND normalization in one module
+  - Code duplication: `_generate_id()` reimplements `normalize_id()`
+  - Less testable: Can't test parsing without normalization
+  - Not reusable: ID generation logic is embedded, not shared
 
-**Guideline:** New datasets should use Pattern 2 (all-in-one parse). Pattern 1 datasets are legacy and may be refactored in future versions.
+**Architectural Guideline:**
+- **Prefer Pattern 1** (Parse + Postprocess) for new datasets
+- Pattern 2 exists due to expedient implementation during v0.16.0
+- magic_items should be refactored to use Pattern 1 in future versions
+- Maintain clear pipeline: Extract → Parse → Postprocess → Index → Validate
 
 ## Design Philosophy
 - **No backwards compatibility:** Prefer clean, well-designed code over legacy support.

@@ -45,21 +45,28 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
 
 **Note on Pipeline Evolution:**
 
-Two architectural patterns exist in the codebase:
+Two architectural patterns exist in the codebase, reflecting different design tradeoffs:
 
-- **Legacy Pattern (monsters, spells, equipment):** Extract → Parse → **Postprocess** → Output
-  - Parse: Extract/structure data (e.g., `parse_monsters.py` - 987 lines)
-  - Postprocess: Normalize/clean/IDs (e.g., `postprocess/monsters.py` - 375 lines)
+- **Modular Pattern (monsters, spells, equipment):** Extract → Parse → **Postprocess** → Output
+  - Parse: Extract/structure data from PDF metadata (e.g., `parse_monsters.py` - 987 lines)
+  - Postprocess: Normalize/clean/generate IDs using shared utilities (e.g., `postprocess/monsters.py` - 375 lines)
+  - **Benefits:** Clear separation of concerns, reusable utilities, better testability
   - Two modules per dataset
 
-- **Preferred Pattern (magic_items, tables):** Extract → Parse → Output
+- **Monolithic Pattern (magic_items, tables):** Extract → Parse (All-in-One) → Output
   - Parse does everything: structure + normalize + IDs (e.g., `parse_magic_items.py` - 325 lines)
-  - No postprocess module needed
-  - Single module per dataset, cleaner architecture
+  - No postprocess module
+  - **Trade-offs:** Simpler file structure, but mixes parsing and normalization concerns
+  - Code duplication (reimplements `normalize_id()` instead of using shared utility)
+  - Single module per dataset
 
-New datasets should follow the **Preferred Pattern** (all-in-one parse). Legacy datasets may be refactored to this pattern in future versions.
+**Recommendation:** Prefer the **Modular Pattern** (Extract → Parse → Postprocess) for maintainability:
+- Clear separation between parsing (structure extraction) and normalization (cleanup/IDs)
+- Shared utilities (`postprocess/ids.py`, `postprocess/text.py`) promote code reuse
+- Better testability (can test parsing independent of normalization)
+- Follows original pipeline design: Extract → Parse → Postprocess → Index → Validate
 
----
+The monolithic pattern exists due to expedient implementation. Future work should maintain modular boundaries.
 
 ## Pipeline Architecture
 
@@ -452,7 +459,7 @@ Tests are split into two categories using pytest markers:
 
 Golden tests validate the complete pipeline using committed fixtures:
 
-- **Legacy pattern** (monsters/spells/equipment):
+- **Modular pattern** (monsters/spells/equipment):
   ```python
   # Load raw → parse → postprocess → compare to normalized fixture
   raw = json.loads(Path("tests/fixtures/srd_5_1/raw/monsters.json").read_text())
@@ -461,7 +468,7 @@ Golden tests validate the complete pipeline using committed fixtures:
   assert rendered_output == expected_fixture
   ```
 
-- **Preferred pattern** (magic_items/tables):
+- **Monolithic pattern** (magic_items/tables):
   ```python
   # Load raw → parse (all-in-one) → compare to normalized fixture
   raw = json.loads(Path("tests/fixtures/srd_5_1/raw/magic_items.json").read_text())
