@@ -21,19 +21,21 @@ def test_split_legendary_moves_cost_markers() -> None:
         "actions": [
             {
                 "name": "Multiattack",
-                "text": "The dragon makes three attacks.",
+                "description": ["The dragon makes three attacks."],
             },
             {
                 "name": "Legendary Overview",
-                "text": "The dragon can take 3 legendary actions, choosing from the options below.",
+                "description": [
+                    "The dragon can take 3 legendary actions, choosing from the options below."
+                ],
             },
             {
                 "name": "Wing Attack (Costs 2 Actions)",
-                "text": "The dragon beats its wings.",
+                "description": ["The dragon beats its wings."],
             },
             {
                 "name": "Tail Attack",
-                "text": "Tail Attack (Costs 2 Actions).",
+                "description": ["Tail Attack (Costs 2 Actions)."],
             },
         ]
     }
