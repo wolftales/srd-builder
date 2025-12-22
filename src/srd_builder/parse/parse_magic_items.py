@@ -48,6 +48,13 @@ def parse_magic_items(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
     for raw_item in raw_data.get("items", []):
         try:
             parsed = _parse_single_item(raw_item)
+
+            # Filter out sentient magic item rule headers (page 251)
+            # These are section headers like "Abilities", "Communication", etc.
+            # that describe rules for sentient items, not actual items
+            if _is_sentient_rule_header(parsed):
+                continue
+
             items.append(parsed)
         except Exception as e:
             # Log warning but continue
@@ -259,6 +266,31 @@ def _generate_simple_name(name: str) -> str:
     simple = simple.strip("_")
 
     return simple
+
+
+def _is_sentient_rule_header(item: dict[str, Any]) -> bool:
+    """Check if item is a sentient magic item rule section header.
+
+    Page 251 has section headers for sentient magic items rules
+    (Abilities, Communication, Senses, Alignment, Special Purpose)
+    that get extracted as items. Filter these out.
+
+    Args:
+        item: Parsed magic item dict
+
+    Returns:
+        True if this is a rule header, not an actual item
+    """
+    # Check if type is "Item" (these headers don't match standard types)
+    if item.get("type") != "Item":
+        return False
+
+    # Check if description mentions sentient items (rule headers do)
+    description = " ".join(item.get("description", []))
+    if "sentient" in description.lower():
+        return True
+
+    return False
 
 
 def main():

@@ -49,10 +49,10 @@ def test_dataset_structure(dataset):
 
 def test_dataset_count(dataset):
     """Test dataset has expected number of items."""
-    # SRD should have ~200+ magic items
-    assert len(dataset["magic_items"]) >= 200
-    # Note: _meta structure may vary, so just check count is reasonable
-    # assert dataset["_meta"]["item_count"] == len(dataset["magic_items"])
+    # SRD 5.1 magic items on pages 206-253 = 240 items
+    # (19 monster traits from pages 257-259 excluded)
+    # (5 sentient item rule headers from page 251 excluded)
+    assert len(dataset["magic_items"]) == 240
 
 
 def test_all_items_valid_schema(dataset, schema):
@@ -76,7 +76,7 @@ def test_adamantine_armor(sample_items):
     assert item["type"] == "Armor"
     assert item["rarity"] == "uncommon"
     assert item["requires_attunement"] is False
-    assert item["page"] >= 205
+    assert item["page"] >= 206
     assert item["source"] == "SRD_CC_v5.1"
     assert len(item["description"]) >= 1
     assert "adamantine" in item["description"][0].lower()
@@ -190,10 +190,10 @@ def test_all_items_have_page(dataset):
         assert "page" in item, f"{item['name']} missing page field"
         assert isinstance(item["page"], int), f"{item['name']} page is not an integer"
         assert (
-            item["page"] >= 205
+            item["page"] >= 206
         ), f"{item['name']} page {item['page']} is before magic items section"
         assert (
-            item["page"] <= 267
+            item["page"] <= 253
         ), f"{item['name']} page {item['page']} is after magic items section"
 
 

@@ -25,8 +25,8 @@ except ImportError:
     from srd_builder.constants import EXTRACTOR_VERSION
 
 # Magic Items section pages
-MAGIC_ITEMS_START_PAGE = 205  # "Magic Items" chapter start
-MAGIC_ITEMS_END_PAGE = 267  # End of magic items section
+MAGIC_ITEMS_START_PAGE = 206  # "Magic Items" chapter start (first actual item)
+MAGIC_ITEMS_END_PAGE = 253  # End of magic items section (before Appendix MM-A)
 
 # Font patterns (similar to spells)
 ITEM_NAME_FONT = "GillSans-SemiBold"

@@ -156,6 +156,8 @@ def build_spell_index(spells: list[dict[str, Any]]) -> dict[str, Any]:
         by_level[str(level)].append(spell_id)
         by_school[school].append(spell_id)
 
+        # Check duration.requires_concentration field (v0.8.6 schema)
+        concentration = spell.get("duration", {}).get("requires_concentration", False)
         if concentration:
             by_concentration["true"].append(spell_id)
         else:
