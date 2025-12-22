@@ -1,0 +1,1230 @@
+[
+  {
+    "name": "Adamantine Armor",
+    "page": 207,
+    "metadata_blocks": [
+      {
+        "text": "Armor\t\r \u00a0(medium\t\r \u00a0or\t\r \u00a0heavy,\t\r \u00a0but\t\r \u00a0not\t\r \u00a0hide),\t\r \u00a0uncommon\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "This\t\r \u00a0suit\t\r \u00a0of\t\r \u00a0armor\t\r \u00a0is\t\r \u00a0reinforced\t\r \u00a0with\t\r \u00a0adamantine,\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "one\t\r \u00a0of\t\r \u00a0the\t\r \u00a0hardest\t\r \u00a0substances\t\r \u00a0in\t\r \u00a0existence.\t\r \u00a0While\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "you\u2019re\t\r \u00a0wearing\t\r \u00a0it,\t\r \u00a0any\t\r \u00a0critical\t\r \u00a0hit\t\r \u00a0against\t\r \u00a0you\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "becomes\t\r \u00a0a\t\r \u00a0normal\t\r \u00a0hit.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Ammunition, +1, +2, or +3",
+    "page": 207,
+    "metadata_blocks": [
+      {
+        "text": "Weapon\t\r \u00a0(any\t\r \u00a0ammunition),\t\r \u00a0uncommon\t\r \u00a0(+1),\t\r \u00a0rare\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      },
+      {
+        "text": "(+2),\t\r \u00a0or\t\r \u00a0very\t\r \u00a0rare\t\r \u00a0(+3)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "You\t\r \u00a0have\t\r \u00a0a\t\r \u00a0bonus\t\r \u00a0to\t\r \u00a0attack\t\r \u00a0and\t\r \u00a0damage\t\r \u00a0rolls\t\r \u00a0made\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "with\t\r \u00a0this\t\r \u00a0piece\t\r \u00a0of\t\r \u00a0magic\t\r \u00a0ammunition.\t\r \u00a0The\t\r \u00a0bonus\t\r \u00a0is\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "determined\t\r \u00a0by\t\r \u00a0the\t\r \u00a0rarity\t\r \u00a0of\t\r \u00a0the\t\r \u00a0ammunition.\t\r \u00a0Once\t\r \u00a0it\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "hits\t\r \u00a0a\t\r \u00a0target,\t\r \u00a0the\t\r \u00a0ammunition\t\r \u00a0is\t\r \u00a0no\t\r \u00a0longer\t\r \u00a0magical.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Amulet of Health",
+    "page": 207,
+    "metadata_blocks": [
+      {
+        "text": "Wondrous\t\r \u00a0item,\t\r \u00a0rare\t\r \u00a0(requires\t\r \u00a0attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "Your\t\r \u00a0Constitution\t\r \u00a0score\t\r \u00a0is\t\r \u00a019\t\r \u00a0while\t\r \u00a0you\t\r \u00a0wear\t\r \u00a0this\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "amulet.\t\r \u00a0It\t\r \u00a0has\t\r \u00a0no\t\r \u00a0effect\t\r \u00a0on\t\r \u00a0you\t\r \u00a0if\t\r \u00a0your\t\r \u00a0Constitution\t\r \u00a0is\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "already\t\r \u00a019\t\r \u00a0or\t\r \u00a0higher.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Amulet of Proof against Detection and Location",
+    "page": 207,
+    "metadata_blocks": [
+      {
+        "text": "Wondrous\t\r \u00a0item,\t\r \u00a0uncommon\t\r \u00a0(requires\t\r \u00a0attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "While\t\r \u00a0wearing\t\r \u00a0this\t\r \u00a0amulet,\t\r \u00a0you\t\r \u00a0are\t\r \u00a0hidden\t\r \u00a0from\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "divination\t\r \u00a0magic.\t\r \u00a0You\t\r \u00a0can\u2019t\t\r \u00a0be\t\r \u00a0targeted\t\r \u00a0by\t\r \u00a0such\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "magic\t\r \u00a0or\t\r \u00a0perceived\t\r \u00a0through\t\r \u00a0magical\t\r \u00a0scrying\t\r \u00a0sensors.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Amulet of the Planes",
+    "page": 207,
+    "metadata_blocks": [
+      {
+        "text": "Wondrous\t\r \u00a0item,\t\r \u00a0very\t\r \u00a0rare\t\r \u00a0(requires\t\r \u00a0attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      },
+      {
+        "text": "the\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "plane\t\r \u00a0shift",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      },
+      {
+        "text": "\t\r \u00a0spell.\t\r \u00a0On\t\r \u00a0a\t\r \u00a0failure,\t\r \u00a0you\t\r \u00a0and\t\r \u00a0each\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "While\t\r \u00a0wearing\t\r \u00a0this\t\r \u00a0amulet,\t\r \u00a0you\t\r \u00a0can\t\r \u00a0use\t\r \u00a0an\t\r \u00a0action\t\r \u00a0to\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "name\t\r \u00a0a\t\r \u00a0location\t\r \u00a0that\t\r \u00a0you\t\r \u00a0are\t\r \u00a0familiar\t\r \u00a0with\t\r \u00a0on\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "another\t\r \u00a0plane\t\r \u00a0of\t\r \u00a0existence.\t\r \u00a0Then\t\r \u00a0make\t\r \u00a0a\t\r \u00a0DC\t\r \u00a015\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Intelligence\t\r \u00a0check.\t\r \u00a0On\t\r \u00a0a\t\r \u00a0successful\t\r \u00a0check,\t\r \u00a0you\t\r \u00a0cast\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "creature\t\r \u00a0and\t\r \u00a0object\t\r \u00a0within\t\r \u00a015\t\r \u00a0feet\t\r \u00a0of\t\r \u00a0you\t\r \u00a0travel\t\r \u00a0to\t\r \u00a0a\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "random\t\r \u00a0destination.\t\r \u00a0Roll\t\r \u00a0a\t\r \u00a0d100.\t\r \u00a0On\t\r \u00a0a\t\r \u00a01\u201360,\t\r \u00a0you\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "travel\t\r \u00a0to\t\r \u00a0a\t\r \u00a0random\t\r \u00a0location\t\r \u00a0on\t\r \u00a0the\t\r \u00a0plane\t\r \u00a0you\t\r \u00a0named.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "On\t\r \u00a0a\t\r \u00a061\u2013100,\t\r \u00a0you\t\r \u00a0travel\t\r \u00a0to\t\r \u00a0a\t\r \u00a0randomly\t\r \u00a0determined\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "plane\t\r \u00a0of\t\r \u00a0existence.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Animated Shield",
+    "page": 208,
+    "metadata_blocks": [
+      {
+        "text": "Armor\t\r \u00a0(shield),\t\r \u00a0very\t\r \u00a0rare\t\r \u00a0(requires\t\r \u00a0attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "While\t\r \u00a0holding\t\r \u00a0this\t\r \u00a0shield,\t\r \u00a0you\t\r \u00a0can\t\r \u00a0speak\t\r \u00a0its\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "command\t\r \u00a0word\t\r \u00a0as\t\r \u00a0a\t\r \u00a0bonus\t\r \u00a0action\t\r \u00a0to\t\r \u00a0cause\t\r \u00a0it\t\r \u00a0to\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "animate.\t\r \u00a0The\t\r \u00a0shield\t\r \u00a0leaps\t\r \u00a0into\t\r \u00a0the\t\r \u00a0air\t\r \u00a0and\t\r \u00a0hovers\t\r \u00a0in\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "your\t\r \u00a0space\t\r \u00a0to\t\r \u00a0protect\t\r \u00a0you\t\r \u00a0as\t\r \u00a0if\t\r \u00a0you\t\r \u00a0were\t\r \u00a0wielding\t\r \u00a0it,\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "leaving\t\r \u00a0your\t\r \u00a0hands\t\r \u00a0free.\t\r \u00a0The\t\r \u00a0shield\t\r \u00a0remains\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "animated\t\r \u00a0for\t\r \u00a01\t\r \u00a0minute,\t\r \u00a0until\t\r \u00a0you\t\r \u00a0use\t\r \u00a0a\t\r \u00a0bonus\t\r \u00a0action\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "to\t\r \u00a0end\t\r \u00a0this\t\r \u00a0effect,\t\r \u00a0or\t\r \u00a0until\t\r \u00a0you\t\r \u00a0are\t\r \u00a0incapacitated\t\r \u00a0or\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "die,\t\r \u00a0at\t\r \u00a0which\t\r \u00a0point\t\r \u00a0the\t\r \u00a0shield\t\r \u00a0falls\t\r \u00a0to\t\r \u00a0the\t\r \u00a0ground\t\r \u00a0or\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "into\t\r \u00a0your\t\r \u00a0hand\t\r \u00a0if\t\r \u00a0you\t\r \u00a0have\t\r \u00a0one\t\r \u00a0free.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Apparatus of the Crab",
+    "page": 208,
+    "metadata_blocks": [
+      {
+        "text": "Wondrous\t\r \u00a0item,\t\r \u00a0legendary\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "This\t\r \u00a0item\t\r \u00a0first\t\r \u00a0appears\t\r \u00a0to\t\r \u00a0be\t\r \u00a0a\t\r \u00a0Large\t\r \u00a0sealed\t\r \u00a0iron\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "barrel\t\r \u00a0weighing\t\r \u00a0500\t\r \u00a0pounds.\t\r \u00a0The\t\r \u00a0barrel\t\r \u00a0has\t\r \u00a0a\t\r \u00a0hidden\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "catch,\t\r \u00a0which\t\r \u00a0can\t\r \u00a0be\t\r \u00a0found\t\r \u00a0with\t\r \u00a0a\t\r \u00a0successful\t\r \u00a0DC\t\r \u00a020\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Intelligence\t\r \u00a0(Investigation)\t\r \u00a0check.\t\r \u00a0Releasing\t\r \u00a0the\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "catch\t\r \u00a0unlocks\t\r \u00a0a\t\r \u00a0hatch\t\r \u00a0at\t\r \u00a0one\t\r \u00a0end\t\r \u00a0of\t\r \u00a0the\t\r \u00a0barrel,\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "allowing\t\r \u00a0two\t\r \u00a0Medium\t\r \u00a0or\t\r \u00a0smaller\t\r \u00a0creatures\t\r \u00a0to\t\r \u00a0crawl\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "inside.\t\r \u00a0Ten\t\r \u00a0levers\t\r \u00a0are\t\r \u00a0set\t\r \u00a0in\t\r \u00a0a\t\r \u00a0row\t\r \u00a0at\t\r \u00a0the\t\r \u00a0far\t\r \u00a0end,\t\r \u00a0each\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "in\t\r \u00a0a\t\r \u00a0neutral\t\r \u00a0position,\t\r \u00a0able\t\r \u00a0to\t\r \u00a0move\t\r \u00a0either\t\r \u00a0up\t\r \u00a0or\t\r \u00a0down.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "When\t\r \u00a0certain\t\r \u00a0levers\t\r \u00a0are\t\r \u00a0used,\t\r \u00a0the\t\r \u00a0apparatus\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "transforms\t\r \u00a0to\t\r \u00a0resemble\t\r \u00a0a\t\r \u00a0giant\t\r \u00a0lobster.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a0 The\t\r \u00a0apparatus\t\r \u00a0of\t\r \u00a0the\t\r \u00a0Crab\t\r \u00a0is\t\r \u00a0a\t\r \u00a0Large\t\r \u00a0object\t\r \u00a0with\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "the\t\r \u00a0following\t\r \u00a0statistics:\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Armor\t\r \u00a0Class:",
+        "font": "Cambria-Bold",
+        "size": 9.8,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a020\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Hit\t\r \u00a0Points:",
+        "font": "Cambria-Bold",
+        "size": 9.8,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a0200\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Speed:",
+        "font": "Cambria-Bold",
+        "size": 9.8,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a030\t\r \u00a0ft.,\t\r \u00a0swim\t\r \u00a030\t\r \u00a0ft.\t\r \u00a0(or\t\r \u00a00\t\r \u00a0ft.\t\r \u00a0for\t\r \u00a0both\t\r \u00a0if\t\r \u00a0the\t\r \u00a0legs\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "and\t\r \u00a0tail\t\r \u00a0aren\u2019t\t\r \u00a0extended)\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Damage\t\r \u00a0Immunities:\t\r \u00a0",
+        "font": "Cambria-Bold",
+        "size": 9.8,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "poison,\t\r \u00a0psychic\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "To\t\r \u00a0be\t\r \u00a0used\t\r \u00a0as\t\r \u00a0a\t\r \u00a0vehicle,\t\r \u00a0the\t\r \u00a0apparatus\t\r \u00a0requires\t\r \u00a0one\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "pilot.\t\r \u00a0While\t\r \u00a0the\t\r \u00a0apparatus\u2019s\t\r \u00a0hatch\t\r \u00a0is\t\r \u00a0closed,\t\r \u00a0the\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "compartment\t\r \u00a0is\t\r \u00a0airtight\t\r \u00a0and\t\r \u00a0watertight.\t\r \u00a0The\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "compartment\t\r \u00a0holds\t\r \u00a0enough\t\r \u00a0air\t\r \u00a0for\t\r \u00a010\t\r \u00a0hours\t\r \u00a0of\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "breathing,\t\r \u00a0divided\t\r \u00a0by\t\r \u00a0the\t\r \u00a0number\t\r \u00a0of\t\r \u00a0breathing\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "creatures\t\r \u00a0inside.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a0 The\t\r \u00a0apparatus\t\r \u00a0floats\t\r \u00a0on\t\r \u00a0water.\t\r \u00a0It\t\r \u00a0can\t\r \u00a0also\t\r \u00a0go\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "underwater\t\r \u00a0to\t\r \u00a0a\t\r \u00a0depth\t\r \u00a0of\t\r \u00a0900\t\r \u00a0feet.\t\r \u00a0Below\t\r \u00a0that,\t\r \u00a0the\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "vehicle\t\r \u00a0takes\t\r \u00a02d6\t\r \u00a0bludgeoning\t\r \u00a0damage\t\r \u00a0per\t\r \u00a0minute\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "from\t\r \u00a0pressure.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "\t\r \u00a0 A\t\r \u00a0creature\t\r \u00a0in\t\r \u00a0the\t\r \u00a0compartment\t\r \u00a0can\t\r \u00a0use\t\r \u00a0an\t\r \u00a0action\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "to\t\r \u00a0move\t\r \u00a0as\t\r \u00a0many\t\r \u00a0as\t\r \u00a0two\t\r \u00a0of\t\r \u00a0the\t\r \u00a0apparatus\u2019s\t\r \u00a0levers\t\r \u00a0up\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "or\t\r \u00a0down.\t\r \u00a0After\t\r \u00a0each\t\r \u00a0use,\t\r \u00a0a\t\r \u00a0lever\t\r \u00a0goes\t\r \u00a0back\t\r \u00a0to\t\r \u00a0its\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "neutral\t\r \u00a0position.\t\r \u00a0Each\t\r \u00a0lever,\t\r \u00a0from\t\r \u00a0left\t\r \u00a0to\t\r \u00a0right,\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "functions\t\r \u00a0as\t\r \u00a0shown\t\r \u00a0in\t\r \u00a0the\t\r \u00a0Apparatus\t\r \u00a0of\t\r \u00a0the\t\r \u00a0Crab\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Levers\t\r \u00a0table.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Apparatus\t\r \u00a0of\t\r \u00a0the\t\r \u00a0Crab\t\r \u00a0Levers\t\r \u00a0",
+        "font": "Calibri-Bold",
+        "size": 12.0,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "Lever\t\r \u00a0",
+        "font": "Calibri-Bold",
+        "size": 8.9,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "Up\t\r \u00a0",
+        "font": "Calibri-Bold",
+        "size": 8.9,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "Down\t\r \u00a0",
+        "font": "Calibri-Bold",
+        "size": 8.9,
+        "is_bold": true,
+        "is_italic": false
+      },
+      {
+        "text": "1\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Legs\t\r \u00a0and\t\r \u00a0tail\t\r \u00a0extend,\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Legs\t\r \u00a0and\t\r \u00a0tail\t\r \u00a0retract,\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "allowing\t\r \u00a0the\t\r \u00a0apparatus\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "to\t\r \u00a0walk\t\r \u00a0and\t\r \u00a0swim.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "reducing\t\r \u00a0the\t\r \u00a0apparatus\u2019s\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "speed\t\r \u00a0to\t\r \u00a00\t\r \u00a0and\t\r \u00a0making\t\r \u00a0it\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "unable\t\r \u00a0to\t\r \u00a0benefit\t\r \u00a0from\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "bonuses\t\r \u00a0to\t\r \u00a0speed.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "2\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Forward\t\r \u00a0window\t\r \u00a0shutter\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "opens.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Forward\t\r \u00a0window\t\r \u00a0shutter\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "closes.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "3\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Side\t\r \u00a0window\t\r \u00a0shutters\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "open\t\r \u00a0(two\t\r \u00a0per\t\r \u00a0side).\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Side\t\r \u00a0window\t\r \u00a0shutters\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "close\t\r \u00a0(two\t\r \u00a0per\t\r \u00a0side).\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "4\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Two\t\r \u00a0claws\t\r \u00a0extend\t\r \u00a0from\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "the\t\r \u00a0front\t\r \u00a0sides\t\r \u00a0of\t\r \u00a0the\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "apparatus.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0claws\t\r \u00a0retract.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "5\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Each\t\r \u00a0extended\t\r \u00a0claw\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "makes\t\r \u00a0the\t\r \u00a0following\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "melee\t\r \u00a0weapon\t\r \u00a0attack:\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "+8\t\r \u00a0to\t\r \u00a0hit,\t\r \u00a0reach\t\r \u00a05\t\r \u00a0ft.,\t\r \u00a0one",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "target.\t\r \u00a0Hit:\t\r \u00a07\t\r \u00a0(2d6)",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "bludgeoning\t\r \u00a0damage.",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Each\t\r \u00a0extended\t\r \u00a0claw\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "makes\t\r \u00a0the\t\r \u00a0following\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "melee\t\r \u00a0weapon\t\r \u00a0attack:\t\r \u00a0+8\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "to\t\r \u00a0hit,\t\r \u00a0reach\t\r \u00a05\t\r \u00a0ft.,\t\r \u00a0one\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "target.\t\r \u00a0Hit:\t\r \u00a0The\t\r \u00a0target\t\r \u00a0is\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "grappled\t\r \u00a0(escape\t\r \u00a0DC\t\r \u00a015).\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "6\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0walks\t\r \u00a0or\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "swims\t\r \u00a0forward.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0walks\t\r \u00a0or\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "swims\t\r \u00a0backward.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "7\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0turns\t\r \u00a090\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "degrees\t\r \u00a0left.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0turns\t\r \u00a090\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "degrees\t\r \u00a0right.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "8\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "Eyelike\t\r \u00a0fixtures\t\r \u00a0emit\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "bright\t\r \u00a0light\t\r \u00a0in\t\r \u00a0a\t\r \u00a030-\u00ad\u2010foot\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "radius\t\r \u00a0and\t\r \u00a0dim\t\r \u00a0light\t\r \u00a0for\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "an\t\r \u00a0additional\t\r \u00a030\t\r \u00a0feet.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0light\t\r \u00a0turns\t\r \u00a0off.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "9\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0sinks\t\r \u00a0as\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "much\t\r \u00a0as\t\r \u00a020\t\r \u00a0feet\t\r \u00a0in\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "liquid.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0apparatus\t\r \u00a0rises\t\r \u00a0up\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "to\t\r \u00a020\t\r \u00a0feet\t\r \u00a0in\t\r \u00a0liquid.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "10\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0rear\t\r \u00a0hatch\t\r \u00a0unseals\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "and\t\r \u00a0opens.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0rear\t\r \u00a0hatch\t\r \u00a0closes\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "and\t\r \u00a0seals.\t\r \u00a0",
+        "font": "Calibri",
+        "size": 8.9,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Armor, +1, +2, or +3",
+    "page": 208,
+    "metadata_blocks": [
+      {
+        "text": "Armor\t\r \u00a0(light,\t\r \u00a0medium,\t\r \u00a0or\t\r \u00a0heavy),\t\r \u00a0rare\t\r \u00a0(+1),\t\r \u00a0very\t\r \u00a0rare\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      },
+      {
+        "text": "(+2),\t\r \u00a0or\t\r \u00a0legendary\t\r \u00a0(+3)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "You\t\r \u00a0have\t\r \u00a0a\t\r \u00a0bonus\t\r \u00a0to\t\r \u00a0AC\t\r \u00a0while\t\r \u00a0wearing\t\r \u00a0this\t\r \u00a0armor.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "The\t\r \u00a0bonus\t\r \u00a0is\t\r \u00a0determined\t\r \u00a0by\t\r \u00a0its\t\r \u00a0rarity.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Armor of Invulnerability",
+    "page": 208,
+    "metadata_blocks": [
+      {
+        "text": "Armor\t\r \u00a0(plate),\t\r \u00a0legendary\t\r \u00a0(requires\t\r \u00a0attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "You\t\r \u00a0have\t\r \u00a0resistance\t\r \u00a0to\t\r \u00a0nonmagical\t\r \u00a0damage\t\r \u00a0while\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "you\t\r \u00a0wear\t\r \u00a0this\t\r \u00a0armor.\t\r \u00a0Additionally,\t\r \u00a0you\t\r \u00a0can\t\r \u00a0use\t\r \u00a0an\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "action\t\r \u00a0to\t\r \u00a0make\t\r \u00a0yourself\t\r \u00a0immune\t\r \u00a0to\t\r \u00a0nonmagical\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "damage\t\r \u00a0for\t\r \u00a010\t\r \u00a0minutes\t\r \u00a0or\t\r \u00a0until\t\r \u00a0you\t\r \u00a0are\t\r \u00a0no\t\r \u00a0longer\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "wearing\t\r \u00a0the\t\r \u00a0armor.\t\r \u00a0Once\t\r \u00a0this\t\r \u00a0special\t\r \u00a0action\t\r \u00a0is\t\r \u00a0used,\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "it\t\r \u00a0can\u2019t\t\r \u00a0be\t\r \u00a0used\t\r \u00a0again\t\r \u00a0until\t\r \u00a0the\t\r \u00a0next\t\r \u00a0dawn.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  },
+  {
+    "name": "Armor of Resistance",
+    "page": 208,
+    "metadata_blocks": [
+      {
+        "text": "Armor\t\r \u00a0(light,\t\r \u00a0medium,\t\r \u00a0or\t\r \u00a0heavy),\t\r \u00a0rare\t\r \u00a0(requires\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      },
+      {
+        "text": "attunement)\t\r \u00a0",
+        "font": "Cambria-Italic",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": true
+      }
+    ],
+    "description_blocks": [
+      {
+        "text": "You\t\r \u00a0have\t\r \u00a0resistance\t\r \u00a0to\t\r \u00a0one\t\r \u00a0type\t\r \u00a0of\t\r \u00a0damage\t\r \u00a0while\t\r \u00a0you\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "wear\t\r \u00a0this\t\r \u00a0armor.\t\r \u00a0The\t\r \u00a0GM\t\r \u00a0chooses\t\r \u00a0the\t\r \u00a0type\t\r \u00a0or\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      },
+      {
+        "text": "determines\t\r \u00a0it\t\r \u00a0randomly\t\r \u00a0from\t\r \u00a0the\t\r \u00a0options\t\r \u00a0below.\t\r \u00a0",
+        "font": "Cambria",
+        "size": 9.8,
+        "is_bold": false,
+        "is_italic": false
+      }
+    ]
+  }
+]
