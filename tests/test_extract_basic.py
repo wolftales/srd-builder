@@ -118,9 +118,9 @@ def test_no_extraction_warnings(monsters_raw):
 
     # Allow some warnings but not too many
     warning_rate = len(monsters_with_warnings) / len(monsters_raw)
-    assert warning_rate < 0.05, (
-        f"Too many monsters with warnings: {len(monsters_with_warnings)}/296 ({warning_rate:.1%})"
-    )
+    assert (
+        warning_rate < 0.05
+    ), f"Too many monsters with warnings: {len(monsters_with_warnings)}/296 ({warning_rate:.1%})"
 
 
 def test_block_count_reasonable(monsters_raw):
@@ -141,6 +141,6 @@ def test_font_sizes_in_expected_range(monsters_raw):
         # Most monster stat block text is 9-13pt
         # (9.84pt for stats, 10.8pt for headers, 12pt for name)
         if size > 0:  # Skip blocks without size info
-            assert 8 <= size <= 14, (
-                f"Goblin block has unusual font size: {size}pt (text: {block.get('text', '')[:50]})"
-            )
+            assert (
+                8 <= size <= 14
+            ), f"Goblin block has unusual font size: {size}pt (text: {block.get('text', '')[:50]})"

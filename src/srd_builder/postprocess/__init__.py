@@ -2,6 +2,7 @@
 
 from .equipment import clean_equipment_record
 from .ids import normalize_id
+from .magic_items import clean_magic_item_record
 from .monsters import (
     add_ability_modifiers,
     clean_monster_record,
@@ -20,6 +21,7 @@ from .text import polish_text, polish_text_fields
 __all__ = [
     "add_ability_modifiers",
     "clean_equipment_record",
+    "clean_magic_item_record",
     "clean_monster_record",
     "clean_spell_record",
     "dedup_defensive_lists",

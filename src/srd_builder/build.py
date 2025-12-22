@@ -41,7 +41,12 @@ from .parse.parse_poison_descriptions import parse_poison_description_records
 from .parse.parse_poisons_table import parse_poisons_table
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
-from .postprocess import clean_equipment_record, clean_monster_record, clean_spell_record
+from .postprocess import (
+    clean_equipment_record,
+    clean_magic_item_record,
+    clean_monster_record,
+    clean_spell_record,
+)
 from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
 from .utils.table_indexer import TableIndexer
 
@@ -152,8 +157,10 @@ def _write_datasets(  # noqa: PLR0913
     )
 
     # Write magic items (v0.16.0)
-    # No postprocessing needed - parse_magic_items already produces clean output
-    processed_magic_items = magic_items if magic_items else []
+    # Parse extracts structure, postprocess normalizes (following modular pattern)
+    processed_magic_items = (
+        [clean_magic_item_record(item) for item in magic_items] if magic_items else []
+    )
 
     magic_items_doc = wrap_with_meta(
         {"items": processed_magic_items},

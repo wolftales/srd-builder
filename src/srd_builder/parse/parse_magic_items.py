@@ -71,7 +71,7 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
         raw: Raw item dict with name, metadata_blocks, description_blocks, page
 
     Returns:
-        Parsed magic item dict
+        Parsed magic item dict (not normalized - normalization happens in postprocess)
     """
     name = raw["name"].strip()
 
@@ -85,19 +85,13 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
     desc_text = _reconstruct_text(raw.get("description_blocks", []))
     description = _segment_description(desc_text)
 
-    # Generate IDs
-    item_id = _generate_id(name)
-    simple_name = _generate_simple_name(name)
-
     # Extract metadata
     page = raw.get("page")
     if page is None:
         raise ValueError(f"Missing page number for item '{name}'")
 
     result = {
-        "id": item_id,
         "name": name,
-        "simple_name": simple_name,
         "type": item_type,
         "rarity": rarity,
         "requires_attunement": requires_attunement,
@@ -231,41 +225,6 @@ def _segment_description(text: str) -> list[str]:
     # For v1, return as single paragraph
     # TODO: Add smarter paragraph detection if needed
     return [text] if text else [""]
-
-
-def _generate_id(name: str) -> str:
-    """Generate a unique ID from item name.
-
-    Args:
-        name: Item name
-
-    Returns:
-        Prefixed ID (magic_item:slugified_name)
-    """
-    # Lowercase and replace spaces/punctuation with underscores
-    item_id = name.lower()
-    item_id = re.sub(r"[^a-z0-9]+", "_", item_id)
-    item_id = item_id.strip("_")
-
-    return f"magic_item:{item_id}"
-
-
-def _generate_simple_name(name: str) -> str:
-    """Generate a simplified name for cross-referencing.
-
-    Args:
-        name: Item name
-
-    Returns:
-        Simple name (lowercase, underscores, no special chars)
-    """
-    simple = name.lower()
-    # Replace spaces and special characters with underscores
-    simple = re.sub(r"[^a-z0-9]+", "_", simple)
-    # Remove leading/trailing underscores
-    simple = simple.strip("_")
-
-    return simple
 
 
 def _is_sentient_rule_header(item: dict[str, Any]) -> bool:
