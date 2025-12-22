@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci output bundle smoke release-check tables monsters equipment spells bump-version
+.PHONY: init lint test format pre-commit ci verify-ci output bundle smoke release-check tables monsters equipment spells bump-version
 
 init:
 	pip install -e ".[dev]"
@@ -24,6 +24,17 @@ pre-commit:
 	pre-commit run --all-files
 
 ci: lint test
+
+# Verify CI will pass (run before pushing)
+verify-ci:
+	@echo "🔍 Verifying CI checks..."
+	@echo "1/3 Checking formatting..."
+	@ruff format --check . || (echo "❌ Format errors! Run: make format" && exit 1)
+	@echo "2/3 Checking linting..."
+	@ruff check . || (echo "❌ Lint errors! Run: ruff check . --fix" && exit 1)
+	@echo "3/3 Running tests..."
+	@pytest -q || (echo "❌ Test failures!" && exit 1)
+	@echo "✅ All CI checks passed! Safe to push."
 
 # Development build (data only, fast)
 output:

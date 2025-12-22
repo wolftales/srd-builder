@@ -160,14 +160,18 @@ jq '.stats' dist/srd_5_1/index.json
 ### 7. Code Quality Checks
 
 ```bash
-# Linting and formatting
-ruff check .
+# Before commit - runs formatting, linting, tests
+make verify-ci
 
-# Type checking (optional - has pre-existing errors)
-mypy src/srd_builder/
+# Or individual checks:
+ruff format .          # Auto-format
+ruff check .           # Linting
+pytest -q              # Tests
 ```
 
-**Expected:** Ruff clean, mypy may have 1 pre-existing error about duplicate module names.
+**Expected:** All checks pass. Pre-push hook blocks bad pushes automatically.
+
+**Note:** Always run `make verify-ci` before pushing to ensure GitHub Actions will pass.
 
 ---
 
