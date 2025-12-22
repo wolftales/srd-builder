@@ -258,6 +258,45 @@ def _build_equipment_entity_index(equipment: list[dict[str, Any]]) -> dict[str, 
     return _build_simple_entity_index(equipment, "equipment", "equipment.json")
 
 
+def build_magic_item_index(magic_items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Build canonical magic item lookup tables."""
+
+    by_name, _ = _build_by_name_map(magic_items)
+    by_rarity: defaultdict[str, list[str]] = defaultdict(list)
+    by_type: defaultdict[str, list[str]] = defaultdict(list)
+    by_attunement: defaultdict[str, list[str]] = defaultdict(list)
+
+    for item in magic_items:
+        item_id = fallback_id(item)
+        rarity = str(item.get("rarity", "common"))
+        item_type = str(item.get("type", "unknown"))
+        requires_attunement = item.get("requires_attunement", False)
+
+        by_rarity[rarity].append(item_id)
+        by_type[item_type].append(item_id)
+        by_attunement[str(requires_attunement)].append(item_id)
+
+    sorted_by_rarity = _stable_dict(sorted(by_rarity.items()))
+    sorted_by_type = _stable_dict(sorted(by_type.items()))
+    sorted_by_attunement = _stable_dict(sorted(by_attunement.items()))
+
+    for mapping in (sorted_by_rarity, sorted_by_type, sorted_by_attunement):
+        for key, ids in mapping.items():
+            mapping[key] = sorted(ids)
+
+    return {
+        "by_name": by_name,
+        "by_rarity": sorted_by_rarity,
+        "by_type": sorted_by_type,
+        "by_attunement": sorted_by_attunement,
+    }
+
+
+def _build_magic_item_entity_index(magic_items: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
+    """Build entity index for magic items."""
+    return _build_simple_entity_index(magic_items, "magic_item", "magic_items.json")
+
+
 def build_table_index(tables: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical table lookup tables."""
 
@@ -429,10 +468,11 @@ def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def build_indexes(  # noqa: C901, PLR0913
+def build_indexes(  # noqa: C901, PLR0913, PLR0915
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
+    magic_items: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
@@ -443,7 +483,7 @@ def build_indexes(  # noqa: C901, PLR0913
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, table, lineage, class, condition, disease, poison, feature, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, and entity indexes for dataset output."""
 
     # Split into monsters, creatures (MM-A), and NPCs (MM-B) based on ID prefix
     actual_monsters = [m for m in monsters if fallback_id(m).startswith("monster:")]
@@ -534,6 +574,25 @@ def build_indexes(  # noqa: C901, PLR0913
         payload["stats"]["unique_equipment_categories"] = len(equipment_indexes["by_category"])
         payload["stats"]["unique_equipment_rarities"] = len(equipment_indexes["by_rarity"])
 
+    # Add magic item indexes if magic_items provided (including empty list)
+    if magic_items is not None:
+        magic_item_indexes = build_magic_item_index(magic_items)
+        magic_item_entity_index = _build_magic_item_entity_index(magic_items)
+
+        payload["magic_items"] = magic_item_indexes
+        entities["magic_items"] = magic_item_entity_index
+        payload["stats"]["total_magic_items"] = len(magic_items)
+        # Recalculate total entities
+        total = len(monster_entity_index)
+        if spells is not None:
+            total += len(spell_entity_index)
+        if equipment is not None:
+            total += len(equipment_entity_index)
+        total += len(magic_item_entity_index)
+        payload["stats"]["total_entities"] = total
+        payload["stats"]["unique_magic_item_rarities"] = len(magic_item_indexes["by_rarity"])
+        payload["stats"]["unique_magic_item_types"] = len(magic_item_indexes["by_type"])
+
     # Add table indexes if tables provided (including empty list)
     if tables is not None:
         table_indexes = build_table_index(tables)
@@ -548,6 +607,8 @@ def build_indexes(  # noqa: C901, PLR0913
             total += len(spell_entity_index)
         if equipment is not None:
             total += len(equipment_entity_index)
+        if magic_items is not None:
+            total += len(magic_item_entity_index)
         total += len(table_entity_index)
         payload["stats"]["total_entities"] = total
         payload["stats"]["unique_table_categories"] = len(table_indexes["by_category"])
@@ -566,6 +627,8 @@ def build_indexes(  # noqa: C901, PLR0913
             total += len(spell_entity_index)
         if equipment is not None:
             total += len(equipment_entity_index)
+        if magic_items is not None:
+            total += len(magic_item_entity_index)
         if tables is not None:
             total += len(table_entity_index)
         total += len(lineage_entity_index)
@@ -587,6 +650,8 @@ def build_indexes(  # noqa: C901, PLR0913
             total += len(spell_entity_index)
         if equipment is not None:
             total += len(equipment_entity_index)
+        if magic_items is not None:
+            total += len(magic_item_entity_index)
         if tables is not None:
             total += len(table_entity_index)
         if lineages is not None:
@@ -610,6 +675,8 @@ def build_indexes(  # noqa: C901, PLR0913
             total += len(spell_entity_index)
         if equipment is not None:
             total += len(equipment_entity_index)
+        if magic_items is not None:
+            total += len(magic_item_entity_index)
         if tables is not None:
             total += len(table_entity_index)
         if lineages is not None:
@@ -656,6 +723,8 @@ def build_indexes(  # noqa: C901, PLR0913
             total += len(spell_entity_index)
         if equipment is not None:
             total += len(equipment_entity_index)
+        if magic_items is not None:
+            total += len(magic_item_entity_index)
         if tables is not None:
             total += len(table_entity_index)
         if lineages is not None:

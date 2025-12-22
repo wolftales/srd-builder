@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://srd-builder.example.com/schemas/magic_item.schema.json",
+  "version": "1.0.0",
+  "title": "Magic Item",
+  "description": "Schema for D&D 5e SRD magic items",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "type",
+    "rarity",
+    "requires_attunement",
+    "description"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier (slugified name)",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full item name as it appears in SRD",
+      "minLength": 1
+    },
+    "simple_name": {
+      "type": "string",
+      "description": "Simplified name for cross-referencing (lowercase, no punctuation)",
+      "pattern": "^[a-z0-9 ]+$"
+    },
+    "type": {
+      "type": "string",
+      "description": "Item type (Armor, Weapon, Wondrous item, Potion, etc.)",
+      "minLength": 1
+    },
+    "rarity": {
+      "type": "string",
+      "description": "Item rarity tier",
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "very rare",
+        "legendary",
+        "artifact",
+        "varies"
+      ]
+    },
+    "requires_attunement": {
+      "type": "boolean",
+      "description": "Whether the item requires attunement to use"
+    },
+    "attunement_requirements": {
+      "type": "string",
+      "description": "Specific requirements for attunement (e.g., 'by a spellcaster', 'by a cleric or paladin')"
+    },
+    "description": {
+      "type": "array",
+      "description": "Item description as array of paragraphs",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "variant_of": {
+      "type": "string",
+      "description": "Base item ID if this is a variant (e.g., '+1 longsword' variant_of 'longsword')"
+    }
+  }
+}

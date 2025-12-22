@@ -23,6 +23,7 @@ from .assemble.indexer import build_indexes
 from .constants import RULESETS_DIRNAME
 from .extract.extract_equipment import extract_equipment
 from .extract.extract_features import extract_class_features, extract_lineage_traits
+from .extract.extract_magic_items import extract_magic_items
 from .extract.extract_monsters import extract_monsters
 from .extract.extract_pdf_metadata import extract_pdf_metadata
 from .extract.extract_spells import extract_spells
@@ -34,6 +35,7 @@ from .parse.parse_diseases import parse_disease_records
 from .parse.parse_equipment import parse_equipment_records
 from .parse.parse_features import parse_features
 from .parse.parse_lineages import parse_lineages
+from .parse.parse_magic_items import parse_magic_items
 from .parse.parse_monsters import parse_monster_records
 from .parse.parse_poison_descriptions import parse_poison_description_records
 from .parse.parse_poisons_table import parse_poisons_table
@@ -81,6 +83,7 @@ def _write_datasets(  # noqa: PLR0913
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
     spells: list[dict[str, Any]] | None = None,
+    magic_items: list[dict[str, Any]] | None = None,
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
@@ -145,6 +148,21 @@ def _write_datasets(  # noqa: PLR0913
     )
     (dist_data_dir / "spells.json").write_text(
         _render_json(spells_doc),
+        encoding="utf-8",
+    )
+
+    # Write magic items (v0.16.0)
+    # No postprocessing needed - parse_magic_items already produces clean output
+    processed_magic_items = magic_items if magic_items else []
+
+    magic_items_doc = wrap_with_meta(
+        {"items": processed_magic_items},
+        ruleset=ruleset,
+        schema_version=read_schema_version("magic_item"),
+        ruleset_version=ruleset_version,
+    )
+    (dist_data_dir / "magic_items.json").write_text(
+        _render_json(magic_items_doc),
         encoding="utf-8",
     )
 
@@ -273,6 +291,7 @@ def _write_datasets(  # noqa: PLR0913
         processed_monsters,
         processed_spells,
         processed_equipment,
+        processed_magic_items,
         processed_tables,
         processed_lineages,
         processed_classes,
@@ -585,6 +604,52 @@ def _load_raw_spells(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
+def _extract_raw_magic_items(raw_dir: Path, ruleset_dir: Path) -> Path | None:
+    """Extract magic items from PDF if present.
+
+    Returns:
+        Path to extracted magic_items_raw.json, or None if no PDF found
+    """
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
+    if not pdf_files:
+        return None
+
+    pdf_path = pdf_files[0]
+    print(f"Extracting magic items from {pdf_path.name}...")
+
+    # Run extraction
+    try:
+        extracted_data = extract_magic_items(pdf_path)
+    except Exception as exc:  # pragma: no cover - defensive guard
+        print(f"⚠️ Magic items extraction skipped: {exc}")
+        return None
+
+    # Write to raw directory
+    output_path = raw_dir / "magic_items_raw.json"
+    output_path.write_text(
+        json.dumps(extracted_data, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+    item_count = extracted_data["_meta"]["item_count"]
+    warnings = extracted_data["_meta"]["total_warnings"]
+    print(f"✓ Extracted {item_count} magic items (warnings: {warnings})")
+    print(f"✓ Saved to {output_path}")
+
+    return output_path
+
+
+def _load_raw_magic_items(raw_dir: Path) -> list[dict[str, Any]]:
+    """Load raw magic items data from extraction output."""
+    raw_source = raw_dir / "magic_items_raw.json"
+    if raw_source.exists():
+        data = json.loads(raw_source.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and "items" in data:
+            return data["items"]
+        raise TypeError("magic_items_raw.json must contain 'items' key with array")
+    return []
+
+
 def _extract_raw_tables(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract reference tables from PDF.
 
@@ -672,6 +737,10 @@ def build(  # noqa: C901
     if "spells" not in skip_datasets:
         _extract_raw_spells(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
 
+    # Extract magic items from PDF (v0.16.0)
+    if "magic_items" not in skip_datasets:
+        _extract_raw_magic_items(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
+
     # Extract tables from PDF (v0.7.0)
     if "tables" not in skip_datasets:
         _extract_raw_tables(raw_dir=layout["raw"], ruleset_dir=layout["ruleset"])
@@ -701,6 +770,13 @@ def build(  # noqa: C901
 
     raw_spells = _load_raw_spells(layout["raw"]) if "spells" not in skip_datasets else []
     parsed_spells = parse_spell_records(raw_spells) if raw_spells else []
+
+    # Parse magic items (v0.16.0)
+    raw_magic_items = (
+        _load_raw_magic_items(layout["raw"]) if "magic_items" not in skip_datasets else []
+    )
+    # parse_magic_items expects a dict with 'items' key (like extract output)
+    parsed_magic_items = parse_magic_items({"items": raw_magic_items}) if raw_magic_items else []
 
     # Parse lineages (v0.8.0)
     # Lineages come from canonical targets, not PDF extraction
@@ -826,6 +902,7 @@ def build(  # noqa: C901
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
         spells=parsed_spells if parsed_spells else None,
+        magic_items=parsed_magic_items if parsed_magic_items else None,
         tables=parsed_tables if parsed_tables else None,
         lineages=parsed_lineages if parsed_lineages else None,
         classes=parsed_classes if parsed_classes else None,

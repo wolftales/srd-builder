@@ -116,10 +116,14 @@ def analyze_quality(parsed_path: Path, raw_path: Path) -> None:  # noqa: C901
     vuln_count = sum(1 for m in monsters if m.get("damage_vulnerabilities"))
     cond_count = sum(1 for m in monsters if m.get("condition_immunities"))
 
-    print(f"Damage Resistances:       {resist_count:3d} monsters ({resist_count/total*100:5.1f}%)")
-    print(f"Damage Immunities:        {immune_count:3d} monsters ({immune_count/total*100:5.1f}%)")
-    print(f"Damage Vulnerabilities:   {vuln_count:3d} monsters ({vuln_count/total*100:5.1f}%)")
-    print(f"Condition Immunities:     {cond_count:3d} monsters ({cond_count/total*100:5.1f}%)")
+    print(
+        f"Damage Resistances:       {resist_count:3d} monsters ({resist_count / total * 100:5.1f}%)"
+    )
+    print(
+        f"Damage Immunities:        {immune_count:3d} monsters ({immune_count / total * 100:5.1f}%)"
+    )
+    print(f"Damage Vulnerabilities:   {vuln_count:3d} monsters ({vuln_count / total * 100:5.1f}%)")
+    print(f"Condition Immunities:     {cond_count:3d} monsters ({cond_count / total * 100:5.1f}%)")
     print()
 
     # 5. Legendary Actions
@@ -128,7 +132,7 @@ def analyze_quality(parsed_path: Path, raw_path: Path) -> None:  # noqa: C901
     legendary_count = sum(1 for m in monsters if m.get("legendary_actions"))
     legendary_monsters = [m["name"] for m in monsters if m.get("legendary_actions")][:10]
     print(
-        f"✅ {legendary_count} monsters with legendary actions ({legendary_count/total*100:.1f}%)"
+        f"✅ {legendary_count} monsters with legendary actions ({legendary_count / total * 100:.1f}%)"
     )
     print(f"Examples: {', '.join(legendary_monsters)}")
     print()
