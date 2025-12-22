@@ -24,7 +24,8 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parents[2]))
     from srd_builder.constants import EXTRACTOR_VERSION
 
-# Magic Items section pages
+# Magic Items section pages (from PAGE_INDEX - see src/srd_builder/utils/page_index.py)
+# TODO: Consider importing from PAGE_INDEX['magic_items']['pages'] to centralize
 MAGIC_ITEMS_START_PAGE = 206  # "Magic Items" chapter start (first actual item)
 MAGIC_ITEMS_END_PAGE = 253  # End of magic items section (before Appendix MM-A)
 

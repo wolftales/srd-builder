@@ -1281,4 +1281,418 @@ def srd_5_1_build_output() -> Path:
 
 ---
 
+## Index.json Quality Enhancements (v0.16.0+)
+
+**Date Raised:** December 21, 2025
+**Status:** Deferred enhancements - functional but could be improved
+**Priority:** MEDIUM (UX improvements for consumers)
+**Version:** Identified during v0.16.0 magic items index review
+
+### Context
+
+During v0.16.0 index.json review, user identified several enhancement opportunities that would improve consumer experience but are not critical bugs. All core functionality works correctly.
+
+### 1. Spell Groupings Order/Alphabetization
+
+**Current State:**
+- Spell groups appear scattered in index.json
+- Not always alphabetically ordered within sections
+- Location in file may not match logical grouping
+
+**Request:**
+- Consistent alphabetical ordering within spell index sections
+- Logical grouping of related indexes (all spell indexes together)
+- Potentially reorganize index.json structure for better readability
+
+**Impact:** LOW - consumers can still find all spell data, just less organized for humans reading index.json
+
+**Implementation Notes:**
+- May require ordered dict usage throughout indexer
+- Consider: should by_level preserve 0-9 order or be "0", "1", "2"... "9"?
+- May relate to "JSON Field Ordering & Consistency" parking lot item above
+
+---
+
+### 2. Magic Item Rarity Ordering (Semantic vs Alphabetical)
+
+**Current State:**
+```json
+"by_rarity": {
+  "artifact": [...],
+  "common": [...],
+  "legendary": [...],
+  "rare": [...],
+  "uncommon": [...],
+  "varies": [...],
+  "very rare": [...]
+}
+```
+
+**Request:**
+- Order by game rarity progression, not alphabetical
+- Expected order: common → uncommon → rare → very rare → legendary → artifact → varies
+
+**Rationale:**
+- Rarity has inherent semantic ordering (power/value progression)
+- Alphabetical ordering obscures this relationship
+- Consumers may want to iterate rarity groups in power order
+
+**Implementation:**
+```python
+RARITY_ORDER = ["common", "uncommon", "rare", "very rare", "legendary", "artifact", "varies"]
+by_rarity = OrderedDict((rarity, []) for rarity in RARITY_ORDER)
+```
+
+**Impact:** LOW - data is correct, just ordering preference
+
+---
+
+### 3. Spell Terminology Aliases (Cantrips, etc.)
+
+**Current State:**
+- Level 0 spells accessible via `by_level["0"]`
+- No alias for "cantrips" terminology
+
+**Request:**
+- Add common D&D terminology aliases
+- Example: "cantrips" → level 0 spells
+- Potentially others: "orisons" (Pathfinder term), etc.
+
+**Implementation Options:**
+
+**Option A: Index aliases**
+```json
+"by_level": {
+  "0": ["spell:acid_splash", ...],
+  "cantrips": ["spell:acid_splash", ...]  // Reference same array
+}
+```
+
+**Option B: Metadata aliases**
+```json
+"_terminology": {
+  "cantrips": "0th level spells",
+  "cantrip": "0th level spell"
+}
+```
+
+**Option C: Both**
+- Metadata for documentation/UX
+- Index aliases for convenience lookup
+
+**Related:** See "terminology.aliases Field in meta.json" parking lot item - same pattern
+
+**Impact:** LOW - consumers know to use `by_level["0"]`, but aliases improve UX
+
+---
+
+### 4. "Varies" vs "Variable" Terminology
+
+**Current State:**
+- Magic items use "varies" for rarity (e.g., Weapon +1/+2/+3)
+- Inconsistent: sometimes "varies", sometimes full "variable"
+
+**Request:**
+- Standardize terminology across dataset
+- Choose either "varies" or "variable" consistently
+
+**Investigation Needed:**
+- Check: Does SRD PDF use "varies" or "variable"?
+- Check: Do any other fields use similar terminology?
+- Check: Is this in rarity enum in schema?
+
+**Decision Criteria:**
+- Match SRD terminology if possible
+- Shorter is better if no SRD preference ("varies" vs "variable")
+- Update schema enum and all uses consistently
+
+**Impact:** LOW - semantic meaning is clear either way
+
+---
+
+### 5. Variable Magic Items Separation Strategy
+
+**Current State:**
+- Items like "Weapon, +1, +2, or +3" are single entries with rarity "varies"
+- Potion of Healing (variants) handled similarly
+
+**Question:**
+- Should these be split into separate entries?
+- "Weapon +1" (uncommon), "Weapon +2" (rare), "Weapon +3" (very rare)
+- Or keep combined with rarity "varies"?
+
+**Trade-offs:**
+
+**Current (Combined):**
+- ✅ Matches SRD presentation
+- ✅ Less redundant data
+- ❌ Harder to filter by specific rarity
+- ❌ Can't precisely index "all rare magic items"
+
+**Alternative (Split):**
+- ✅ Precise rarity filtering
+- ✅ Each variant is distinct entity
+- ❌ More entries in dataset
+- ❌ Diverges from SRD structure
+- ❌ Need variant_of relationships
+
+**User Question:** How should consumers handle variable-rarity items?
+
+**Impact:** MEDIUM - affects data model and consumer code
+
+**Recommendation:** Defer until consumer feedback indicates preference
+
+---
+
+### 6. Equipment vs Magic Items Relationship
+
+**Current State:**
+- Separate datasets: equipment.json, magic_items.json
+- No explicit linking between base item and magic variant
+- Example: "Longsword" in equipment, "Sword of Sharpness" in magic_items
+
+**Clarification (User Feedback):**
+- Separate listing is intentional for clarity
+- Magic items list shows common/known examples
+- In reality, any item could be magical
+- This is not a bug, just architectural decision
+
+**Future Enhancement:**
+- Could add `variant_of` field to link magic items to base equipment
+- Example: `"variant_of": "item:longsword"` in magic sword entry
+- Enables queries like "all magic variants of longsword"
+
+**Implementation Notes:**
+- Requires base item identification (not all magic items have mundane base)
+- Artifacts and unique items may not have base equipment reference
+- Optional field - only for magic items with clear equipment base
+
+**Impact:** LOW - nice-to-have for advanced queries
+
+**Related:** See "Item Variants & Magic Items Architecture" parking lot item above
+
+---
+
+### Implementation Priority
+
+**When to Address:**
+
+1. **v0.18.0 (Quality & Polish)** - Good target for index improvements
+   - Rarity ordering (easy win)
+   - Spell groupings organization
+   - Terminology aliases (if pattern established elsewhere)
+
+2. **Post-v1.0.0** - After stable release
+   - Variable items separation (needs consumer feedback)
+   - Equipment relationships (low impact, nice-to-have)
+   - "varies" vs "variable" (cosmetic)
+
+3. **Consumer-Driven** - When feedback indicates need
+   - Specific terminology requests
+   - Use cases for variant linking
+   - UX pain points with current structure
+
+### Related Files
+
+- `src/srd_builder/assemble/indexer.py` - Index generation logic
+- `dist/srd_5_1/index.json` - Generated index output
+- `docs/DATA_DICTIONARY.md` - Index structure documentation
+- Parking lot items: "terminology.aliases Field", "Item Variants & Magic Items Architecture"
+
+---
+
+## Sentient Magic Items as Rules Content
+
+**Date Raised:** December 21, 2025
+**Status:** Architectural question - data model design
+**Priority:** MEDIUM (affects v0.17.0 rules extraction)
+**Version:** Discovered during v0.16.0 magic items filtering
+
+### Context
+
+Page 251 of SRD contains "Sentient Magic Items" section headers (Abilities, Communication, Senses, Alignment, Special Purpose) that were initially extracted as magic items but then filtered out. These are actually rules/mechanics for creating sentient magic items, not items themselves.
+
+**Current Solution:**
+- Filtered in `parse_magic_items.py` using content-based detection
+- Correctly excluded from magic_items.json (240 items)
+- Rules text exists in PDF but not captured in structured data
+
+**Architectural Question:**
+Should sentient magic items rules be extracted as part of v0.17.0 Rules Dataset?
+
+### Rules Content Categories
+
+SRD contains several "rules-style" sections that aren't entity datasets:
+
+1. **Sentient Magic Items** (page 251)
+   - Rules for creating sentient items
+   - Attributes: Intelligence/Wisdom/Charisma, alignment, communication, senses, special purpose
+   - Not a magic item - it's a rules framework
+
+2. **Artifacts** (pages 252-253)
+   - General artifact rules
+   - Properties, destruction conditions
+   - Framework for artifact creation
+
+3. **Spellcasting Rules** (pages 100-104)
+   - How spells work
+   - Components, concentration, duration, range, etc.
+
+4. **Combat Rules** (pages 90-99)
+   - Initiative, actions, attacks, cover, etc.
+
+5. **Environment Rules** (pages 86-87)
+   - Falling, suffocation, vision, light
+
+### Proposed Rules Dataset Structure
+
+**Option A: Rules by Chapter**
+```json
+{
+  "rules": {
+    "combat": {
+      "initiative": {...},
+      "actions": {...},
+      "attacks": {...}
+    },
+    "magic_items": {
+      "sentient_items": {...},
+      "artifacts": {...}
+    },
+    "spellcasting": {...}
+  }
+}
+```
+
+**Option B: Rules by Type**
+```json
+{
+  "rules": {
+    "mechanics": ["combat", "spellcasting", ...],
+    "frameworks": ["sentient_items", "artifacts", "traps", ...],
+    "references": ["ability_scores", "conditions", ...]
+  }
+}
+```
+
+**Option C: Mixed (like tables.json)**
+```json
+{
+  "rule_sections": [
+    {
+      "id": "rule:sentient_magic_items",
+      "name": "Sentient Magic Items",
+      "category": "magic_items",
+      "pages": {"start": 251, "end": 251},
+      "subsections": [
+        {"name": "Abilities", "description": "..."},
+        {"name": "Communication", "description": "..."},
+        ...
+      ]
+    }
+  ]
+}
+```
+
+### Extraction Strategy
+
+**Content-Based Extraction:**
+- Identify rule sections by headers, page structure
+- Extract prose paragraphs with hierarchy preservation
+- Maintain cross-references between rule sections
+- Link to related entity datasets (e.g., sentient_items → magic_items)
+
+**Metadata Tracking:**
+- Rule sections need different metadata than entities:
+  - `pages`: Where rule appears in PDF
+  - `references`: What entities/tables this rule affects
+  - `subsections`: Hierarchical structure
+  - `related_to`: Cross-references to other rules
+
+**Centralized in PAGE_INDEX:**
+- Already tracks rule sections with `dataset: None`
+- Could add `"dataset": "rules"` for extraction targets
+- Provides authoritative page ranges
+
+### Implementation for v0.17.0
+
+**Phase 1: Rules Extraction Framework**
+- Build prose extraction similar to conditions (v0.10.0)
+- Handle multi-level section headers
+- Preserve paragraph structure and formatting
+
+**Phase 2: Metadata Schema**
+```json
+{
+  "id": "rule:sentient_magic_items",
+  "simple_name": "sentient_magic_items",
+  "name": "Sentient Magic Items",
+  "category": "magic_items",
+  "type": "framework",
+  "pages": {"start": 251, "end": 251},
+  "description": [...],
+  "subsections": [...]
+}
+```
+
+**Phase 3: Update PAGE_INDEX**
+```python
+"sentient_magic_items_rules": {
+    "pages": {"start": 251, "end": 251},
+    "description": "Rules for creating sentient magic items",
+    "dataset": "rules",
+}
+```
+
+### Benefits of Rules Dataset
+
+1. **Completeness:** Capture all SRD content, not just entities
+2. **Discoverability:** Rules are searchable and indexable
+3. **Cross-referencing:** Link rules to entities they affect
+4. **Centralization:** Single source of truth for mechanics
+5. **Provenance:** Clear page references for rule lookups
+
+### Open Questions
+
+1. **Scope:** Which rule sections to extract?
+   - All prose sections marked `dataset: None` in PAGE_INDEX?
+   - Only "framework" style rules (sentient items, artifacts)?
+   - Combat/spellcasting mechanics too?
+
+2. **Structure:** Flat list or hierarchical?
+   - Matches PDF structure (hierarchical)?
+   - Or normalized flat structure with references?
+
+3. **Cross-references:** How to link rules to entities?
+   - Sentient items rules → magic_items dataset?
+   - Combat rules → monster actions?
+   - Bidirectional links or one-way?
+
+4. **Calculated Tables:** Should CALCULATED tables (proficiency_bonus, carrying_capacity) move to rules?
+   - Currently in tables.json with `type: "calculated"`
+   - Arguably belong in rules.json as "rule-based references"
+   - See "Note on CALCULATED Tables" in ROADMAP.md
+
+### Decision Point
+
+**Recommend for v0.17.0:**
+- Extract sentient magic items rules as pilot
+- Build rules extraction framework
+- Establish schema and patterns
+- Expand to other rule sections in subsequent releases
+
+**Don't address until:**
+- v0.17.0 planning begins
+- Rules dataset schema designed
+- Clear understanding of rules vs entities distinction
+
+### Related Files
+
+- `src/srd_builder/parse/parse_magic_items.py` - Current filtering logic
+- `src/srd_builder/extract/extract_conditions.py` - Prose extraction reference (v0.10.0)
+- `src/srd_builder/utils/page_index.py` - Authoritative page ranges (sections with `dataset: None`)
+- `docs/ROADMAP.md` - v0.17.0 rules dataset plans
+
+---
+
 ## [Add more parked features here as needed]

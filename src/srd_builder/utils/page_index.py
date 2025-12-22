@@ -136,7 +136,7 @@ PAGE_INDEX: dict[str, Section] = {
     "magic_items": {
         "pages": {"start": 206, "end": 253},
         "description": "Magic items: rarity, tables, A-Z descriptions, sentient items, artifacts",
-        "dataset": None,  # Future extraction
+        "dataset": "magic_items",  # v0.16.0 extraction complete
     },
     # Monsters
     "monsters": {

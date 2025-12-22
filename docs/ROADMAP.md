@@ -57,15 +57,14 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - ✅ v0.15.0 — Module Reorganization (assemble/, parse/, extract/ structure)
 - ✅ v0.15.1 — Spell Refactoring (paragraph arrays, font metadata, complexity reduction)
 - ✅ v0.15.2 — Monster Refactoring (paragraph arrays for traits/actions)
-- ✅ v0.16.0 — Magic Items Dataset (264 items, schema v1.1.0 with full metadata)
+- ✅ v0.16.0 — Magic Items Dataset (240 items, schema v1.1.0 with full metadata)
 
 **In Progress:**
 - 🔄 v0.17.0 — Rules Dataset (next milestone)
 
 **Planned:**
-- 📖 v0.17.0 — Rules Dataset (core mechanics, variant rules)
-- 📜 v0.17.0 — Rules Dataset (core mechanics, CALCULATED tables as rule-based references)
-- 🎨 v0.18.0 — Quality & Polish (final cleanup before v1.0.0)
+- 📖 v0.17.0 — Rules Dataset (core mechanics, variant rules, CALCULATED tables as rule-based references)
+- 🎨 v0.18.0 — Quality & Polish (index improvements, final cleanup before v1.0.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 
 ---
@@ -89,7 +88,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `madness.json` | ✅ Complete | 3 | v0.10.0 | Madness tables (short-term, long-term, indefinite) |
 | `poisons.json` | ✅ Complete | 14 | v0.10.0 | Poisons with effects, costs, and save DCs |
 | `features.json` | ✅ Complete | 246 | v0.11.0 | Class/lineage features (Rage, Darkvision, Action Surge) |
-| `magic_items.json` | ✅ Complete | 264 | v0.16.0 | Magic weapons, armor, wondrous items (schema v1.1.0 with full metadata) |
+| `magic_items.json` | ✅ Complete | 240 | v0.16.0 | Magic weapons, armor, wondrous items (schema v1.1.0 with full metadata) |
 | `rules.json` | 📋 Planned | TBD | v0.17.0 | Core mechanics, variant rules |
 
 **Progress:** 14/15 datasets complete (93%)
@@ -109,12 +108,7 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 - ✅ Monster schema v1.4.0 → v1.5.0 (text → description arrays)
 - ✅ Legacy code cleanup (5 functions simplified, no backward compatibility)
 - ✅ 317 monsters refactored (~2 hours)
-
-**Combined v0.15.1 + v0.15.2:**
-- 636 entities total (319 spells + 317 monsters)
-- Both schemas at v1.5.0 (independent versioning)
-- Centralized text cleaning infrastructure
-- ~5.5 hours total implementation time
+- ✅ Combined with v0.15.1: 636 entities total (319 spells + 317 monsters)
 
 **Note on CALCULATED Tables:**
 - `proficiency_bonus` (20 rows) and `carrying_capacity` (30 rows) are **convenience tables**
@@ -129,22 +123,22 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 ## **v0.16.0 — Magic Items Dataset** ✅ COMPLETE
 
 **Released:** December 21, 2025 (schema v1.1.0)
-**Status:** COMPLETE - 264 magic items with full metadata
+**Status:** COMPLETE - 240 magic items with full metadata
 **Priority:** HIGH - Core content for 5e gameplay
 **Effort:** High (~25 hours)
 **Consumer Impact:** NEW - Complete magic items dataset
 
-**Goal:** Extract all SRD 5.1 magic items from PDF pages 205-267 with structured rarity, type, attunement, and metadata fields matching quality standards of other datasets.
+**Goal:** Extract all SRD 5.1 magic items from PDF pages 206-253 with structured rarity, type, attunement, and metadata fields matching quality standards of other datasets.
 
 **Delivered:**
 
 1. **Magic Items Extraction** (extract_magic_items.py) ✅
    - Font-based extraction using GillSans-SemiBold 12pt headers
-   - PDF pages 205-267 coverage (63 pages)
+   - PDF pages 206-253 coverage (48 pages)
    - Multi-line item name merging (e.g., "Amulet of Proof against Detection and Location")
    - Metadata extraction from italic text (rarity, type, attunement)
    - Description text with font metadata preservation
-   - 264 items extracted successfully
+   - 240 items extracted successfully (19 monster traits + 5 sentient rule headers filtered)
 
 2. **Parsing & Structuring** (parse_magic_items.py) ✅
    - Rarity extraction: common, uncommon, rare, very rare, legendary, artifact, varies
@@ -178,13 +172,15 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
    - All linting and formatting checks pass
 
 **Quality Metrics:**
-- ✅ 264 magic items (100% of SRD 5.1 magic items section)
+- ✅ 240 magic items (100% of SRD 5.1 magic items section, pages 206-253)
 - ✅ All items validate against schema v1.1.0
 - ✅ 184 tests passing (17 magic items tests)
 - ✅ No duplicate IDs or names
-- ✅ All items have page numbers (205-267)
+- ✅ All items have page numbers (206-253)
 - ✅ All items have source field ("SRD_CC_v5.1")
 - ✅ ~45% require attunement
+- ✅ Sentient item rule headers filtered (5 items from page 251)
+- ✅ Monster trait entries filtered (19 items from pages 257-259)
 
 **Testing:**
 - 17 tests in test_golden_magic_items.py
@@ -216,8 +212,9 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 **Equipment vs Magic Items:**
 - `equipment.json`: Mundane items (cost, weight, basic properties)
 - `magic_items.json`: Enchanted items (rarity, attunement, magical effects)
-- Both are separate datasets with complementary coverage
-- Future: `variant_of` field can link magic items to base equipment
+- Listed separately for clarity - magic items shown in SRD are common/known examples
+- Note: Technically any item could be magical or enchanted
+- Future: `variant_of` field could link magic items to base equipment
 
 **What's Next:**
 - v0.17.0: Rules Dataset (core mechanics, variant rules)
