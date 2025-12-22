@@ -23,6 +23,67 @@ __all__ = [
 ]
 
 
+def _compute_extraction_status(
+    *,
+    dist_dir: Path | None,
+    monsters_complete: bool,
+    equipment_complete: bool,
+    spells_complete: bool,
+    classes_complete: bool,
+) -> dict[str, str]:
+    """Compute extraction_status by checking which files actually exist.
+
+    Args:
+        dist_dir: Distribution directory to check. If None, use parameter flags.
+        monsters_complete: Whether monsters extraction completed
+        equipment_complete: Whether equipment extraction completed
+        spells_complete: Whether spells extraction completed
+        classes_complete: Whether classes extraction completed
+
+    Returns:
+        Dictionary mapping dataset names to "complete" or "in_progress"
+    """
+    if dist_dir is None:
+        # Fallback to parameter-based approach (legacy)
+        return {
+            "monsters": "complete" if monsters_complete else "in_progress",
+            "equipment": "complete" if equipment_complete else "in_progress",
+            "spells": "complete" if spells_complete else "in_progress",
+            "tables": "complete",
+            "lineages": "complete",
+            "classes": "complete" if classes_complete else "in_progress",
+            "conditions": "complete",
+            "diseases": "complete",
+            "madness": "complete",
+            "poisons": "complete",
+            "features": "complete",
+            "magic_items": "complete",
+        }
+
+    # Check actual file existence
+    datasets = [
+        "monsters",
+        "equipment",
+        "spells",
+        "tables",
+        "lineages",
+        "classes",
+        "conditions",
+        "diseases",
+        "madness",
+        "poisons",
+        "features",
+        "magic_items",
+    ]
+
+    status = {}
+    for dataset in datasets:
+        file_path = dist_dir / f"{dataset}.json"
+        status[dataset] = "complete" if file_path.exists() else "in_progress"
+
+    return status
+
+
 def read_schema_version(schema_name: str) -> str:
     """Read version from a schema file.
 
@@ -129,8 +190,14 @@ def generate_meta_json(  # noqa: PLR0913
     table_page_index: dict[str, Any] | None = None,
     classes_complete: bool = False,
     build_timestamp: str | None = None,
+    dist_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Generate rich metadata for dist/meta.json with provenance."""
+    """Generate rich metadata for dist/meta.json with provenance.
+
+    Args:
+        dist_dir: Distribution directory to check for actual file existence.
+                  If provided, extraction_status will reflect what was actually built.
+    """
 
     version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
     license_type = pdf_metadata.get("license_type", "CC-BY-4.0") if pdf_metadata else "CC-BY-4.0"
@@ -221,18 +288,11 @@ def generate_meta_json(  # noqa: PLR0913
             "magic_items": "magic_items.json",
         },
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
-        "extraction_status": {
-            "monsters": "complete" if monsters_complete else "in_progress",
-            "equipment": "complete" if equipment_complete else "in_progress",
-            "spells": "complete" if spells_complete else "in_progress",
-            "tables": "complete",
-            "lineages": "complete",
-            "classes": "complete" if classes_complete else "in_progress",
-            "conditions": "complete",
-            "diseases": "complete",
-            "madness": "complete",
-            "poisons": "complete",
-            "features": "complete",
-            "magic_items": "complete",  # v0.16.0
-        },
+        "extraction_status": _compute_extraction_status(
+            dist_dir=dist_dir,
+            monsters_complete=monsters_complete,
+            equipment_complete=equipment_complete,
+            spells_complete=spells_complete,
+            classes_complete=classes_complete,
+        ),
     }

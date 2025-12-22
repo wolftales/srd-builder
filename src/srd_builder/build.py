@@ -962,6 +962,7 @@ def build(  # noqa: C901
         spells_page_range=spells_page_range,
         table_page_index=table_page_index,
         classes_complete=len(parsed_classes) > 0,
+        dist_dir=target_dir,
     )
     meta_path = target_dir / "meta.json"
     meta_path.write_text(_render_json(meta_json), encoding="utf-8")

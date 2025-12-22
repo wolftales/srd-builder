@@ -34,8 +34,12 @@ def test_dataset_populated(dataset_name: str, expected_min: int) -> None:
     """Test that each dataset exists and has at least the expected number of items."""
     dataset_path = DIST_DIR / f"{dataset_name}.json"
 
-    if not dataset_path.exists():
-        pytest.skip(f"{dataset_name}.json not found - build may not have run")
+    # FAIL instead of SKIP - catches build issues like missing PDF
+    assert dataset_path.exists(), (
+        f"{dataset_name}.json not found at {dataset_path}. "
+        "This likely indicates a build failure. Check that the PDF is in the correct location "
+        "and that the build completed successfully."
+    )
 
     document = json.loads(dataset_path.read_text(encoding="utf-8"))
 
@@ -128,12 +132,34 @@ def test_all_datasets_have_consistent_versions() -> None:
             )
 
 
+def test_pdf_location() -> None:
+    """Test that the PDF is in the expected location.
+
+    The PDF should be at rulesets/srd_5_1/SRD_CC_v5.1.pdf (not in the raw/ subdirectory).
+    This catches bugs where build.py looks in the wrong directory.
+    """
+    expected_pdf = Path("rulesets/srd_5_1/SRD_CC_v5.1.pdf")
+
+    assert expected_pdf.exists(), (
+        f"SRD PDF not found at {expected_pdf}. "
+        "The PDF should be in the ruleset directory (not raw/ subdirectory). "
+        "This is required for extraction to work."
+    )
+
+    # Also check that it's NOT in the wrong location (raw/ subdirectory)
+    wrong_location = Path("rulesets/srd_5_1/raw/SRD_CC_v5.1.pdf")
+    if wrong_location.exists():
+        pytest.fail(
+            f"PDF found at {wrong_location} - it should be in the parent directory instead. "
+            "Move it to rulesets/srd_5_1/SRD_CC_v5.1.pdf"
+        )
+
+
 def test_meta_json_extraction_status() -> None:
     """Test that meta.json marks all datasets as complete."""
     meta_path = DIST_DIR / "meta.json"
 
-    if not meta_path.exists():
-        pytest.skip("meta.json not found - build may not have run")
+    assert meta_path.exists(), f"meta.json not found at {meta_path}. Build failed or incomplete."
 
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
     extraction_status = meta.get("extraction_status", {})
