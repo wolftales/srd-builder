@@ -41,11 +41,29 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
 2. **Single Responsibility**: Each module does one thing well
 3. **Determinism**: Same input → same output (no timestamps in datasets)
 4. **Provenance**: Track everything back to source PDF (page numbers, hash)
-5. **Clean Boundaries**: Extract → Parse → Postprocess → Index → Validate
+5. **Clean Boundaries**: Extract → Parse → (Postprocess) → Index → Validate
+
+**Note on Pipeline Evolution:**
+
+Two architectural patterns exist in the codebase:
+
+- **Legacy Pattern (monsters, spells, equipment):** Extract → Parse → **Postprocess** → Output
+  - Parse: Extract/structure data (e.g., `parse_monsters.py` - 987 lines)
+  - Postprocess: Normalize/clean/IDs (e.g., `postprocess/monsters.py` - 375 lines)
+  - Two modules per dataset
+
+- **Preferred Pattern (magic_items, tables):** Extract → Parse → Output
+  - Parse does everything: structure + normalize + IDs (e.g., `parse_magic_items.py` - 325 lines)
+  - No postprocess module needed
+  - Single module per dataset, cleaner architecture
+
+New datasets should follow the **Preferred Pattern** (all-in-one parse). Legacy datasets may be refactored to this pattern in future versions.
 
 ---
 
 ## Pipeline Architecture
+
+**Legacy Pattern (monsters, spells, equipment):**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -88,17 +106,47 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
 │ • Add terminology aliases (races→lineages)                 │
 │ • Track conflicts                                          │
 └─────────────────────────────────────────────────────────────┘
+```
+
+**Preferred Pattern (magic_items, tables):**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ INPUT: rulesets/srd_5_1/raw/SRD_CC_v5.1.pdf                │
+└─────────────────────────────────────────────────────────────┘
                             │
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
-│ CONTINUE EXISTING PIPELINE                                 │
-│ • Fix CR formatting (handle fractions, "0", edge cases)    │
-│ • Clean defense fields (arrays, deduplication)             │
-│ • Generate IDs (monster:aboleth from name)                 │
-│ • Text cleanup (remove artifacts, normalize whitespace)    │
-│ • Pure function: dict → dict                               │
+│ EXTRACT (extract_magic_items.py)                           │
+│ • PDF text extraction with font/position metadata          │
+│ • Detect item headers (18pt GillSans-SemiBold)             │
+│ • Extract metadata, description blocks                     │
+│ • Output: magic_items_raw.json (blocks + metadata)         │
 └─────────────────────────────────────────────────────────────┘
                             │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ PARSE (parse_magic_items.py) - ALL-IN-ONE                 │
+│ • Parse rarity, type, attunement from metadata             │
+│ • Segment description paragraphs                           │
+│ • Generate stable IDs (magic_item:bag_of_holding)          │
+│ • Normalize text (remove PDF artifacts)                    │
+│ • Filter invalid entries                                   │
+│ • Pure function: dict → list[dict] (FINAL OUTPUT)          │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│ INDEX (indexer.py)                                         │
+│ • Build by_name, by_type, by_rarity lookups               │
+│ • Track conflicts                                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Key Differences:**
+- Legacy: Parse → Postprocess (two modules, ~1300 lines total)
+- Preferred: Parse only (one module, ~300 lines)
+- Preferred pattern produces final output directly from parse phase
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ INDEX (indexer.py)                                         │
@@ -400,6 +448,27 @@ Tests are split into two categories using pytest markers:
    - Ensure meta.json structure is correct
    - Run after `make output` or `make bundle`
 
+**Golden Fixture Tests:**
+
+Golden tests validate the complete pipeline using committed fixtures:
+
+- **Legacy pattern** (monsters/spells/equipment):
+  ```python
+  # Load raw → parse → postprocess → compare to normalized fixture
+  raw = json.loads(Path("tests/fixtures/srd_5_1/raw/monsters.json").read_text())
+  parsed = parse_monster_records(raw)
+  processed = [clean_monster_record(m) for m in parsed]
+  assert rendered_output == expected_fixture
+  ```
+
+- **Preferred pattern** (magic_items/tables):
+  ```python
+  # Load raw → parse (all-in-one) → compare to normalized fixture
+  raw = json.loads(Path("tests/fixtures/srd_5_1/raw/magic_items.json").read_text())
+  parsed = parse_magic_items({"items": raw})  # Returns final output
+  assert rendered_output == expected_fixture
+  ```
+
 **Key Principles:**
 1. **Golden files catch everything**: One test covers entire pipeline
 2. **Fixtures need both formats**: raw (for parsing tests) + normalized (for golden)
@@ -407,6 +476,7 @@ Tests are split into two categories using pytest markers:
 4. **Small unit tests**: Better for debugging than large integration tests
 5. **Coverage != quality**: 100% coverage can still miss edge cases
 6. **Separate package tests**: Don't require a build for unit tests
+7. **Committed fixtures**: Always available, work in CI without PDF
 
 ### Project Organization
 
