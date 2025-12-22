@@ -107,8 +107,8 @@ def test_meta_json_schema_version():
         "disease",
         "poison",
         "features",
-        "madness",
         "magic_item",
+        # Note: madness is not a separate dataset - madness tables are in tables.json
     }
     assert set(schemas.keys()) == expected_datasets, (
         f"schemas section missing datasets: {expected_datasets - set(schemas.keys())}"

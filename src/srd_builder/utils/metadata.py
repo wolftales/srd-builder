@@ -54,7 +54,6 @@ def _compute_extraction_status(
             "classes": "complete" if classes_complete else "in_progress",
             "conditions": "complete",
             "diseases": "complete",
-            "madness": "complete",
             "poisons": "complete",
             "features": "complete",
             "magic_items": "complete",
@@ -70,7 +69,6 @@ def _compute_extraction_status(
         "classes",
         "conditions",
         "diseases",
-        "madness",
         "poisons",
         "features",
         "magic_items",
@@ -245,7 +243,6 @@ def generate_meta_json(  # noqa: PLR0913
         "disease": read_schema_version("disease"),
         "poison": read_schema_version("poison"),
         "features": read_schema_version("features"),
-        "madness": read_schema_version("madness"),
         "magic_item": read_schema_version("magic_item"),
     }
 
@@ -282,7 +279,6 @@ def generate_meta_json(  # noqa: PLR0913
             "classes": "classes.json",
             "conditions": "conditions.json",
             "diseases": "diseases.json",
-            "madness": "madness.json",
             "poisons": "poisons.json",
             "features": "features.json",
             "magic_items": "magic_items.json",

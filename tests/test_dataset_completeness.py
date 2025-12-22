@@ -26,6 +26,7 @@ EXPECTED_COUNTS = {
     "diseases": 3,  # Cackle Fever, Sewer Plague, Sight Rot
     "poisons": 14,  # Poison items from table
     "features": 246,  # Class features + lineage traits
+    # Note: madness tables are in tables.json, not a separate madness.json file
 }
 
 
