@@ -17,9 +17,9 @@ def test_no_legacy_parser_tables():
         name for name, config in TABLES.items() if config.get("pattern_type") == "legacy_parser"
     ]
 
-    assert len(legacy_tables) == 0, (
-        f"Found {len(legacy_tables)} tables still using legacy_parser: {sorted(legacy_tables)}"
-    )
+    assert (
+        len(legacy_tables) == 0
+    ), f"Found {len(legacy_tables)} tables still using legacy_parser: {sorted(legacy_tables)}"
 
 
 def test_legacy_parser_migration_progress():

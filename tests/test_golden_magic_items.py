@@ -24,6 +24,9 @@ def schema():
 @pytest.fixture
 def dataset():
     """Load full magic items dataset."""
+    if not DATASET_PATH.exists():
+        pytest.skip(f"{DATASET_PATH} not found - build may not have run")
+
     data = json.loads(DATASET_PATH.read_text())
     # Support both 'items' and 'magic_items' keys for backward compatibility
     items_key = "items" if "items" in data else "magic_items"
@@ -155,9 +158,9 @@ def test_valid_rarities(dataset):
     valid_rarities = {"common", "uncommon", "rare", "very rare", "legendary", "artifact", "varies"}
 
     for item in dataset["magic_items"]:
-        assert item["rarity"] in valid_rarities, (
-            f"{item['name']} has invalid rarity: {item['rarity']}"
-        )
+        assert (
+            item["rarity"] in valid_rarities
+        ), f"{item['name']} has invalid rarity: {item['rarity']}"
 
 
 def test_valid_types(dataset):
@@ -173,15 +176,15 @@ def test_simple_names_valid(dataset):
     for item in dataset["magic_items"]:
         # Should be lowercase, underscores only
         assert item["simple_name"].islower(), f"{item['name']} simple_name not lowercase"
-        assert item["simple_name"].strip() == item["simple_name"], (
-            f"{item['name']} simple_name has extra whitespace"
-        )
+        assert (
+            item["simple_name"].strip() == item["simple_name"]
+        ), f"{item['name']} simple_name has extra whitespace"
         # Should only contain a-z, 0-9, and underscores
         import re
 
-        assert re.match(r"^[a-z0-9_]+$", item["simple_name"]), (
-            f"{item['name']} simple_name has invalid characters: {item['simple_name']}"
-        )
+        assert re.match(
+            r"^[a-z0-9_]+$", item["simple_name"]
+        ), f"{item['name']} simple_name has invalid characters: {item['simple_name']}"
 
 
 def test_all_items_have_page(dataset):
@@ -189,31 +192,31 @@ def test_all_items_have_page(dataset):
     for item in dataset["magic_items"]:
         assert "page" in item, f"{item['name']} missing page field"
         assert isinstance(item["page"], int), f"{item['name']} page is not an integer"
-        assert item["page"] >= 206, (
-            f"{item['name']} page {item['page']} is before magic items section"
-        )
-        assert item["page"] <= 253, (
-            f"{item['name']} page {item['page']} is after magic items section"
-        )
+        assert (
+            item["page"] >= 206
+        ), f"{item['name']} page {item['page']} is before magic items section"
+        assert (
+            item["page"] <= 253
+        ), f"{item['name']} page {item['page']} is after magic items section"
 
 
 def test_all_items_have_source(dataset):
     """Test all items have source field."""
     for item in dataset["magic_items"]:
         assert "source" in item, f"{item['name']} missing source field"
-        assert item["source"] == "SRD_CC_v5.1", (
-            f"{item['name']} has unexpected source: {item['source']}"
-        )
+        assert (
+            item["source"] == "SRD_CC_v5.1"
+        ), f"{item['name']} has unexpected source: {item['source']}"
 
 
 def test_ids_have_prefix(dataset):
     """Test all IDs have magic_item: prefix."""
     for item in dataset["magic_items"]:
-        assert item["id"].startswith("magic_item:"), (
-            f"{item['name']} ID doesn't have magic_item: prefix: {item['id']}"
-        )
+        assert item["id"].startswith(
+            "magic_item:"
+        ), f"{item['name']} ID doesn't have magic_item: prefix: {item['id']}"
         # ID should be magic_item:simple_name
         expected_id = f"magic_item:{item['simple_name']}"
-        assert item["id"] == expected_id, (
-            f"{item['name']} ID mismatch: {item['id']} vs {expected_id}"
-        )
+        assert (
+            item["id"] == expected_id
+        ), f"{item['name']} ID mismatch: {item['id']} vs {expected_id}"

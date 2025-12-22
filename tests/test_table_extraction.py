@@ -85,14 +85,14 @@ def test_progression_tables_structure(tables_raw):
         table = tables_raw[simple_name]
 
         # All progression tables should have 20 levels
-        assert len(table["rows"]) == 20, (
-            f"{simple_name}: expected 20 levels, got {len(table['rows'])}"
-        )
+        assert (
+            len(table["rows"]) == 20
+        ), f"{simple_name}: expected 20 levels, got {len(table['rows'])}"
 
         # First column should be "Level"
-        assert table["headers"][0] == "Level", (
-            f"{simple_name}: first header should be 'Level', got '{table['headers'][0]}'"
-        )
+        assert (
+            table["headers"][0] == "Level"
+        ), f"{simple_name}: first header should be 'Level', got '{table['headers'][0]}'"
 
 
 def test_equipment_tables_present(tables_raw):
@@ -126,9 +126,9 @@ def test_armor_table_format(tables_raw):
 
     # Should have 6 columns including Strength requirement
     expected_headers = ["Armor", "Cost", "Armor Class (AC)", "Strength", "Stealth", "Weight"]
-    assert table["headers"] == expected_headers, (
-        f"Armor headers mismatch. Expected {expected_headers}, got {table['headers']}"
-    )
+    assert (
+        table["headers"] == expected_headers
+    ), f"Armor headers mismatch. Expected {expected_headers}, got {table['headers']}"
 
     # Should have 17 rows (Light: 3, Medium: 6, Heavy: 6, Shield: 1, plus category headers)
     assert len(table["rows"]) == 17, f"Expected 17 armor rows, got {len(table['rows'])}"
@@ -141,9 +141,9 @@ def test_weapons_table_format(tables_raw):
 
     # Should have 5 columns including Properties
     expected_headers = ["Name", "Cost", "Damage", "Weight", "Properties"]
-    assert table["headers"] == expected_headers, (
-        f"Weapons headers mismatch. Expected {expected_headers}, got {table['headers']}"
-    )
+    assert (
+        table["headers"] == expected_headers
+    ), f"Weapons headers mismatch. Expected {expected_headers}, got {table['headers']}"
 
     # Should have 41 rows (Simple Melee: 11, Simple Ranged: 4, Martial Melee: 18, Martial Ranged: 8)
     assert len(table["rows"]) == 41, f"Expected 41 weapon rows, got {len(table['rows'])}"
@@ -155,9 +155,9 @@ def test_poison_table_format(tables_raw):
     assert table is not None, "poisons table not found"
 
     # Should have 3 columns: Poison, Type, Price per Dose
-    assert len(table["headers"]) == 3, (
-        f"Expected 3 poison columns, got {len(table['headers'])}: {table['headers']}"
-    )
+    assert (
+        len(table["headers"]) == 3
+    ), f"Expected 3 poison columns, got {len(table['headers'])}: {table['headers']}"
 
     # Expect around 14 poisons (may have extra rows due to split-column extraction)
     assert len(table["rows"]) >= 14, f"Expected at least 14 poison rows, got {len(table['rows'])}"
