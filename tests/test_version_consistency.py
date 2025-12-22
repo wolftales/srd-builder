@@ -18,9 +18,9 @@ from srd_builder import __version__
 
 def test_version_format():
     """Version should follow semantic versioning format."""
-    assert re.match(
-        r"^\d+\.\d+\.\d+$", __version__
-    ), f"Version '{__version__}' doesn't match semantic versioning (X.Y.Z)"
+    assert re.match(r"^\d+\.\d+\.\d+$", __version__), (
+        f"Version '{__version__}' doesn't match semantic versioning (X.Y.Z)"
+    )
 
 
 def test_build_module_uses_version_constant():
@@ -86,9 +86,9 @@ def test_template_files_have_version_note():
         if "_meta" in data and "generated_by" in data["_meta"]:
             generated_by = data["_meta"]["generated_by"]
             # Templates can have any version, but let's check they're marked as templates
-            assert (
-                "srd-builder" in generated_by
-            ), f"{template_path.name} should reference srd-builder in generated_by"
+            assert "srd-builder" in generated_by, (
+                f"{template_path.name} should reference srd-builder in generated_by"
+            )
 
 
 def test_golden_test_uses_version_constant():
@@ -97,17 +97,17 @@ def test_golden_test_uses_version_constant():
     content = test_path.read_text(encoding="utf-8")
 
     # Should import meta_block from metadata module
-    assert (
-        "from srd_builder.utils.metadata import meta_block" in content
-    ), "test_golden_monsters.py must import meta_block from metadata"
+    assert "from srd_builder.utils.metadata import meta_block" in content, (
+        "test_golden_monsters.py must import meta_block from metadata"
+    )
 
     # Should use meta_block, not define its own _meta function
     assert "meta_block(" in content, "test_golden_monsters.py should use meta_block()"
 
     # Should not define duplicate _meta function
-    assert (
-        "def _meta(" not in content
-    ), "test_golden_monsters.py should not duplicate _meta logic - use meta_block"
+    assert "def _meta(" not in content, (
+        "test_golden_monsters.py should not duplicate _meta logic - use meta_block"
+    )
 
     # Should not hardcode version strings
     lines = content.split("\n")
@@ -173,6 +173,6 @@ def test_readme_mentions_current_version():
     if readme.exists():
         content = readme.read_text(encoding="utf-8")
         # Should mention version somewhere (roadmap, changelog, etc.)
-        assert (
-            f"v{__version__}" in content or __version__ in content
-        ), f"README.md should mention current version {__version__}"
+        assert f"v{__version__}" in content or __version__ in content, (
+            f"README.md should mention current version {__version__}"
+        )
