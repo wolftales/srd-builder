@@ -11,7 +11,8 @@ from typing import Final
 # Extractor version: Raw extraction format for *_raw.json files
 # Tracks PDF extraction structure across all entity types (monsters, equipment, spells, etc.)
 # Bump when raw extraction format changes (new metadata, structural changes)
-EXTRACTOR_VERSION: Final = "0.3.0"
+# v0.4.0: Added font metadata blocks (header_blocks/description_blocks) for spells
+EXTRACTOR_VERSION: Final = "0.4.0"
 
 # Data source identifier
 DATA_SOURCE: Final = "SRD_CC_v5.1"
