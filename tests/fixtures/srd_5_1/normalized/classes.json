@@ -1,5 +1,12 @@
 {
-  "class_data": [
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "ruleset_version": "5.1",
+    "schema_version": "1.4.0",
+    "generated_by": "srd-builder v0.16.0",
+    "build_report": "./build_report.json"
+  },
+  "items": [
     {
       "name": "Barbarian",
       "description": "",
@@ -9,7 +16,10 @@
         "strength",
         "constitution"
       ],
-      "page": 8
+      "page": 8,
+      "source": "SRD 5.1",
+      "simple_name": "barbarian",
+      "id": "class:barbarian"
     },
     {
       "name": "Paladin",
@@ -20,7 +30,10 @@
         "wisdom",
         "charisma"
       ],
-      "page": 31
+      "page": 31,
+      "source": "SRD 5.1",
+      "simple_name": "paladin",
+      "id": "class:paladin"
     },
     {
       "name": "Wizard",
@@ -31,7 +44,10 @@
         "intelligence",
         "wisdom"
       ],
-      "page": 46
+      "page": 46,
+      "source": "SRD 5.1",
+      "simple_name": "wizard",
+      "id": "class:wizard"
     }
   ]
 }

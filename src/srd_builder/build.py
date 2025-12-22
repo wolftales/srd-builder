@@ -44,6 +44,7 @@ from .parse.parse_rules import parse_rules
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .postprocess import (
+    clean_class_record,
     clean_equipment_record,
     clean_feature_record,
     clean_lineage_record,
@@ -246,8 +247,8 @@ def _write_datasets(  # noqa: PLR0913
         )
 
     # Write classes (v0.8.2)
-    # Classes are already fully normalized by parse_classes, no additional cleaning needed
-    processed_classes = classes if classes else None
+    # Postprocess: normalize IDs and polish text
+    processed_classes = [clean_class_record(c) for c in classes] if classes else None
     if processed_classes:
         classes_doc = wrap_with_meta(
             {"items": processed_classes},
