@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/class.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-03",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "D&D 5e SRD Class",
   "description": "Schema for character classes from D&D 5e System Reference Document",
   "type": "object",
