@@ -377,16 +377,18 @@ def _extract_damage(description: str) -> dict[str, str] | None:
         description: Full spell description text
 
     Returns:
-        Damage dict with dice and type, or None
+        Damage dict with dice, type, and type_id, or None
     """
     import re
 
     damage_pattern = r"(\d+d\d+)\s+(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|poison|psychic|radiant|slashing|thunder)\s+damage"
     damage_match = re.search(damage_pattern, description, re.IGNORECASE)
     if damage_match:
+        damage_type = damage_match.group(2).lower()
         return {
             "dice": damage_match.group(1),
-            "type": damage_match.group(2).lower(),
+            "type": damage_type,
+            "type_id": damage_type,
         }
     return None
 
