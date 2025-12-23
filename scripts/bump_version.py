@@ -54,45 +54,187 @@ def regenerate_fixtures() -> None:
     # Import after version update
     sys.path.insert(0, str(Path.cwd() / "src"))
     from srd_builder import __version__
+    from srd_builder.parse.parse_conditions import parse_condition_records
+    from srd_builder.parse.parse_diseases import parse_disease_records
     from srd_builder.parse.parse_equipment import parse_equipment_records
+    from srd_builder.parse.parse_lineages import _build_lineage_record
+    from srd_builder.parse.parse_magic_items import parse_magic_items
     from srd_builder.parse.parse_monsters import parse_monster_records
+    from srd_builder.parse.parse_poisons_table import parse_poisons_table
     from srd_builder.parse.parse_spells import parse_spell_records
     from srd_builder.postprocess import (
+        clean_class_record,
+        clean_condition_record,
+        clean_disease_record,
         clean_equipment_record,
+        clean_feature_record,
+        clean_lineage_record,
+        clean_magic_item_record,
         clean_monster_record,
+        clean_poison_record,
+        clean_rule_record,
         clean_spell_record,
+        clean_table_record,
     )
     from srd_builder.utils.metadata import meta_block, read_schema_version
 
     fixtures = [
+        # Original 3 datasets
         {
             "name": "monsters",
             "schema_name": "monster",
             "raw": "tests/fixtures/srd_5_1/raw/monsters.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/monsters.json",
-            "parser": parse_monster_records,
-            "cleaner": clean_monster_record,
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_monster_record(item) for item in parse_monster_records(raw)
+            ],
         },
         {
             "name": "equipment",
             "schema_name": "equipment",
             "raw": "tests/fixtures/srd_5_1/raw/equipment.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/equipment.json",
-            "parser": parse_equipment_records,
-            "cleaner": clean_equipment_record,
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_equipment_record(item) for item in parse_equipment_records(raw)
+            ],
         },
         {
             "name": "spells",
             "schema_name": "spell",
             "raw": "tests/fixtures/srd_5_1/raw/spells.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/spells.json",
-            "parser": parse_spell_records,
-            "cleaner": clean_spell_record,
-            "preprocess": lambda raw: (
-                raw["spells"]
-                if isinstance(raw, dict) and "spells" in raw
-                else (raw if isinstance(raw, list) else [raw])
-            ),
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_spell_record(item)
+                for item in parse_spell_records(
+                    raw["spells"]
+                    if isinstance(raw, dict) and "spells" in raw
+                    else (raw if isinstance(raw, list) else [raw])
+                )
+            ],
+        },
+        # v0.18.0 datasets
+        {
+            "name": "classes",
+            "schema_name": "class",
+            "raw": "tests/fixtures/srd_5_1/raw/classes.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/classes.json",
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_class_record(
+                    {
+                        "name": rc["name"],
+                        "description": rc["description"],
+                        "hit_die": rc["hit_die"],
+                        "primary_ability": rc["primary_ability"],
+                        "saving_throw_proficiencies": rc["saving_throw_proficiencies"],
+                        "page": rc["page"],
+                        "source": "SRD 5.1",
+                    }
+                )
+                for rc in raw["class_data"]
+            ],
+        },
+        {
+            "name": "conditions",
+            "schema_name": "condition",
+            "raw": "tests/fixtures/srd_5_1/raw/conditions.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/conditions.json",
+            "output_key": "conditions",
+            "process": lambda raw: [
+                clean_condition_record(item) for item in parse_condition_records(raw["sections"])
+            ],
+        },
+        {
+            "name": "diseases",
+            "schema_name": "disease",
+            "raw": "tests/fixtures/srd_5_1/raw/diseases.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/diseases.json",
+            "output_key": "diseases",
+            "process": lambda raw: [
+                clean_disease_record(item) for item in parse_disease_records(raw["sections"])
+            ],
+        },
+        {
+            "name": "features",
+            "schema_name": "features",
+            "raw": "tests/fixtures/srd_5_1/raw/features.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/features.json",
+            "output_key": "features",
+            "process": lambda raw: [
+                clean_feature_record(
+                    {
+                        "name": rf["name"],
+                        "page": rf["page"],
+                        "source": "SRD 5.1",
+                        "summary": rf["summary"],
+                        "text": rf["text"],
+                    }
+                )
+                for rf in raw["raw_features"]
+            ],
+        },
+        {
+            "name": "lineages",
+            "schema_name": "lineage",
+            "raw": "tests/fixtures/srd_5_1/raw/lineages.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/lineages.json",
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_lineage_record(_build_lineage_record(ld)) for ld in raw["lineage_data"]
+            ],
+        },
+        {
+            "name": "magic_items",
+            "schema_name": "magic_item",
+            "raw": "tests/fixtures/srd_5_1/raw/magic_items.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/magic_items.json",
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_magic_item_record(item) for item in parse_magic_items({"items": raw})
+            ],
+        },
+        {
+            "name": "poisons",
+            "schema_name": "poison",
+            "raw": "tests/fixtures/srd_5_1/raw/poisons.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/poisons.json",
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_poison_record(item)
+                for item in parse_poisons_table(
+                    raw["poisons_table"], descriptions=raw["poison_descriptions"]
+                )
+            ],
+        },
+        {
+            "name": "rules",
+            "schema_name": "rule",
+            "raw": "tests/fixtures/srd_5_1/raw/rules.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/rules.json",
+            "output_key": "items",
+            "process": lambda raw: [clean_rule_record(rule) for rule in raw["parsed_rules"]],
+        },
+        {
+            "name": "tables",
+            "schema_name": "table",
+            "raw": "tests/fixtures/srd_5_1/raw/tables.json",
+            "normalized": "tests/fixtures/srd_5_1/normalized/tables.json",
+            "output_key": "items",
+            "process": lambda raw: [
+                clean_table_record(
+                    {
+                        "name": rt["name"],
+                        "page": rt["page"],
+                        "source": "SRD 5.1",
+                        "headers": rt["headers"],
+                        "rows": rt["rows"],
+                    }
+                )
+                for rt in raw["raw_tables"]
+            ],
         },
     ]
 
@@ -101,18 +243,12 @@ def regenerate_fixtures() -> None:
         normalized_path = Path(fixture["normalized"])
 
         raw = json.loads(raw_path.read_text())
-
-        # Optional preprocessing
-        if "preprocess" in fixture:
-            raw = fixture["preprocess"](raw)
-
-        parsed = fixture["parser"](raw)
-        processed = [fixture["cleaner"](item) for item in parsed]
+        processed = fixture["process"](raw)
 
         schema_version = read_schema_version(fixture["schema_name"])
         doc = {
             "_meta": meta_block("srd_5_1", schema_version),
-            "items": processed,
+            fixture["output_key"]: processed,
         }
 
         normalized_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
@@ -170,10 +306,19 @@ def commit_changes(new_version: str) -> None:
 Version Changes:
 - src/srd_builder/__init__.py: → {new_version}
 
-Regenerated Fixtures:
+Regenerated Fixtures (all 12 datasets):
 - tests/fixtures/srd_5_1/normalized/monsters.json
 - tests/fixtures/srd_5_1/normalized/equipment.json
 - tests/fixtures/srd_5_1/normalized/spells.json
+- tests/fixtures/srd_5_1/normalized/classes.json
+- tests/fixtures/srd_5_1/normalized/conditions.json
+- tests/fixtures/srd_5_1/normalized/diseases.json
+- tests/fixtures/srd_5_1/normalized/features.json
+- tests/fixtures/srd_5_1/normalized/lineages.json
+- tests/fixtures/srd_5_1/normalized/magic_items.json
+- tests/fixtures/srd_5_1/normalized/poisons.json
+- tests/fixtures/srd_5_1/normalized/rules.json
+- tests/fixtures/srd_5_1/normalized/tables.json
 
 Documentation:
 - README.md: Updated build pipeline version
