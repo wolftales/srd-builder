@@ -46,6 +46,7 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
                 "item_name": "Ball bearings (bag of 1,000)",
                 "quantity": 1,
             },
+            {"item_id": "item:string-10-feet", "item_name": "String (10 feet)", "quantity": 1},
             {"item_id": "item:bell", "item_name": "Bell", "quantity": 1},
             {"item_id": "item:candle", "item_name": "Candle", "quantity": 5},
             {"item_id": "item:crowbar", "item_name": "Crowbar", "quantity": 1},
@@ -71,7 +72,7 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
             },
         ],
         "total_weight_lb": 0.0,  # Will be calculated
-        "missing_items": ["String (10 feet)"],  # Not in SRD equipment tables
+        "missing_items": [],  # Not in SRD equipment tables
     },
     {
         "name": "Diplomat's Pack",
@@ -223,6 +224,14 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
             {"item_id": "item:blanket", "item_name": "Blanket", "quantity": 1},
             {"item_id": "item:candle", "item_name": "Candle", "quantity": 10},
             {"item_id": "item:tinderbox", "item_name": "Tinderbox", "quantity": 1},
+            {"item_id": "item:alms-box", "item_name": "Alms box", "quantity": 1},
+            {
+                "item_id": "item:incense-2-blocks",
+                "item_name": "Incense (2 blocks)",
+                "quantity": 1,
+            },
+            {"item_id": "item:censer", "item_name": "Censer", "quantity": 1},
+            {"item_id": "item:vestments", "item_name": "Vestments", "quantity": 1},
             {
                 "item_id": "item:rations-1-day",
                 "item_name": "Rations (1 day)",
@@ -231,12 +240,7 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
             {"item_id": "item:waterskin", "item_name": "Waterskin", "quantity": 1},
         ],
         "total_weight_lb": 0.0,
-        "missing_items": [
-            "Alms box",
-            "Incense (2 blocks)",
-            "Censer",
-            "Vestments",
-        ],  # Religious items not in SRD tables
+        "missing_items": [],  # Religious items not in SRD tables
     },
     {
         "name": "Scholar's Pack",
@@ -247,6 +251,7 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
         ),
         "contents": [
             {"item_id": "item:backpack", "item_name": "Backpack", "quantity": 1},
+            {"item_id": "item:book-of-lore", "item_name": "Book of lore", "quantity": 1},
             {
                 "item_id": "item:ink-1-ounce-bottle",
                 "item_name": "Ink (1 ounce bottle)",
@@ -258,13 +263,15 @@ EQUIPMENT_PACKS: list[EquipmentPack] = [
                 "item_name": "Parchment (one sheet)",
                 "quantity": 10,
             },
+            {
+                "item_id": "item:bag-of-sand-little",
+                "item_name": "Bag of sand (little)",
+                "quantity": 1,
+            },
+            {"item_id": "item:knife-small", "item_name": "Knife (small)", "quantity": 1},
         ],
         "total_weight_lb": 0.0,
-        "missing_items": [
-            "Book of lore",
-            "Bag of sand (little)",
-            "Knife (small)",
-        ],  # Scholarly items not in SRD tables
+        "missing_items": [],  # Scholarly items not in SRD tables
     },
 ]
 

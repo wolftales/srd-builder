@@ -76,10 +76,18 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
     warnings: list[str] = []
 
     try:
-        # Extract spells from each page
+        # Extract spells from each page, carrying over incomplete spells
+        carry_over_spell = None
+        carry_over_section = ""
         for page_num in range(config.page_start - 1, config.page_end):
-            page_spells = _extract_page_spells(doc[page_num], page_num + 1, config)
+            page_spells, carry_over_spell, carry_over_section = _extract_page_spells(
+                doc[page_num], page_num + 1, config, carry_over_spell, carry_over_section
+            )
             spells.extend(page_spells)
+
+        # Add final carry-over spell if any
+        if carry_over_spell:
+            spells.append(carry_over_spell)
 
         # Merge multi-page spells
         spells = _merge_multipage_spells(spells)
@@ -107,25 +115,31 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
 
 
 def _extract_page_spells(  # noqa: C901
-    page: fitz.Page, page_num: int, config: ExtractionConfig
-) -> list[dict[str, Any]]:
+    page: fitz.Page,
+    page_num: int,
+    config: ExtractionConfig,
+    carry_over_spell: dict[str, Any] | None = None,
+    carry_over_section: str = "",
+) -> tuple[list[dict[str, Any]], dict[str, Any] | None, str]:
     """Extract spell entries from a single page.
 
     Args:
         page: PyMuPDF page object
         page_num: 1-based page number
         config: Extraction configuration
+        carry_over_spell: Incomplete spell from previous page
+        carry_over_section: Section mode from previous page ("header" or "description")
 
     Returns:
-        List of spell dictionaries
+        Tuple of (completed spells, incomplete spell to carry over, section mode)
     """
     # Get structured text with font metadata
     textpage = page.get_textpage(flags=fitz.TEXTFLAGS_TEXT)
     page_dict = page.get_text("dict", textpage=textpage)
 
     spells: list[dict[str, Any]] = []
-    current_spell: dict[str, Any] | None = None
-    current_section = ""  # "header" or "description"
+    current_spell: dict[str, Any] | None = carry_over_spell
+    current_section = carry_over_section if carry_over_spell else ""
 
     for block in page_dict.get("blocks", []):
         for line in block.get("lines", []):
@@ -244,11 +258,22 @@ def _extract_page_spells(  # noqa: C901
                     else:
                         current_spell["description_blocks"].append(text_block)
 
-    # Don't forget last spell on page
+    # Return incomplete spell for carry-over to next page instead of appending
+    # Only carry over if spell has name and no description (header-only)
+    carry_over = None
+    carry_section = ""
     if current_spell:
-        spells.append(current_spell)
+        has_name = bool(current_spell.get("name", "").strip())
+        has_description = bool(current_spell.get("description_blocks"))
+        if has_name and not has_description:
+            # Incomplete spell - carry to next page
+            carry_over = current_spell
+            carry_section = current_section
+        else:
+            # Complete or nameless - add to results
+            spells.append(current_spell)
 
-    return spells
+    return spells, carry_over, carry_section
 
 
 def _merge_multipage_spells(spells: list[dict[str, Any]]) -> list[dict[str, Any]]:

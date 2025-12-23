@@ -109,13 +109,29 @@ def check_data_quality(ruleset: str) -> None:  # noqa: C901
         document = load_json(spells_file)
         if isinstance(document, dict):
             spells = document.get("items", [])
-            empty_text_spells = [
-                s.get("name", "unknown")
-                for s in spells
-                if isinstance(s, dict) and not s.get("text", "").strip()
-            ]
-            if empty_text_spells:
-                issues.append(f"Spells with empty text: {', '.join(empty_text_spells)}")
+            empty_desc_spells = []
+            only_higher_levels_spells = []
+            for s in spells:
+                if isinstance(s, dict):
+                    description = s.get("description")
+                    # Check if 'description' is missing, is not a list, or is an empty list
+                    if not isinstance(description, list) or not description:
+                        empty_desc_spells.append(s.get("name", "unknown"))
+                    # Check if all strings within the list are empty/whitespace
+                    elif all(not para.strip() for para in description):
+                        empty_desc_spells.append(s.get("name", "unknown"))
+                    # Check if spell only has "At Higher Levels" text (missing main description)
+                    elif len(description) == 1 and description[0].strip().startswith(
+                        "At Higher Levels"
+                    ):
+                        only_higher_levels_spells.append(s.get("name", "unknown"))
+
+            if empty_desc_spells:
+                issues.append(f"Spells with empty description: {', '.join(empty_desc_spells)}")
+            if only_higher_levels_spells:
+                issues.append(
+                    f"Spells with only 'At Higher Levels' text (missing main description): {', '.join(only_higher_levels_spells)}"
+                )
 
     # Check index for duplicates
     index_file = DIST_DIR / ruleset / "index.json"
