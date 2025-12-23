@@ -66,15 +66,27 @@ def _coerce_int(value: Any) -> int | None:
     return None
 
 
-def _expand_scores(raw_scores: dict[str, Any] | None) -> dict[str, int]:
+def _calculate_ability_modifier(score: int) -> int:
+    """Calculate D&D ability modifier from score.
+
+    Formula: floor((score - 10) / 2)
+    """
+    return (score - 10) // 2
+
+
+def _expand_scores(raw_scores: dict[str, Any] | None) -> dict[str, dict[str, int]]:
+    """Expand ability scores to nested {value, modifier} format.
+
+    Schema v2.0.0 format: {strength: {value: 20, modifier: 5}, ...}
+    """
     if not raw_scores:
         return {}
-    expanded: dict[str, int] = {}
+    expanded: dict[str, dict[str, int]] = {}
     for short, full in _ABILITY_MAP.items():
         score = raw_scores.get(short)
         coerced = _coerce_int(score)
         if coerced is not None:
-            expanded[full] = coerced
+            expanded[full] = {"value": coerced, "modifier": _calculate_ability_modifier(coerced)}
     return expanded
 
 
@@ -373,6 +385,24 @@ def _parse_hit_point_values(raw_hp: Any, raw_dice: Any) -> tuple[int, str]:
     return points, dice_text
 
 
+def _extract_pure_hit_dice(formula: str) -> str:
+    """Extract just the dice part from a hit dice formula.
+
+    Examples:
+        "7d10+21" -> "7d10"
+        "7d10 + 21" -> "7d10"
+        "18d10+36" -> "18d10"
+        "7d10" -> "7d10"
+    """
+    if not formula:
+        return ""
+    # Remove all spaces
+    clean = formula.replace(" ", "")
+    # Extract just XdY part (before any + or -)
+    match = re.match(r"(\d+d\d+)", clean)
+    return match.group(1) if match else clean
+
+
 def _parse_armor_class(raw_ac: Any) -> dict[str, Any]:
     """Parse armor class into v2.0 structured format.
 
@@ -478,14 +508,31 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     monster = deepcopy(raw)
 
     # v0.3.0+ parser outputs full key names (strength, dexterity, etc.)
-    # If we get short keys (str, dex, etc.), expand them
+    # Convert ability scores to nested {value, modifier} format (schema v2.0.0)
     raw_abilities = monster.get("ability_scores", {})
-    if raw_abilities and any(
-        k in raw_abilities for k in ("str", "dex", "con", "int", "wis", "cha")
-    ):
+    if not raw_abilities or not isinstance(raw_abilities, dict):
+        ability_scores = {}
+    elif any(k in raw_abilities for k in ("str", "dex", "con", "int", "wis", "cha")):
+        # Abbreviated format: str, dex, con, int, wis, cha
         ability_scores = _expand_scores(raw_abilities)
     else:
-        ability_scores = dict(raw_abilities) if isinstance(raw_abilities, dict) else {}
+        # Full format: strength, dexterity, etc. - convert to nested
+        ability_scores = {}
+        for ability in [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma",
+        ]:
+            if ability in raw_abilities:
+                score = _coerce_int(raw_abilities[ability])
+                if score is not None:
+                    ability_scores[ability] = {
+                        "value": score,
+                        "modifier": _calculate_ability_modifier(score),
+                    }
 
     saving_throws = _expand_proficiencies(monster.get("saving_throws"))
     skills = _expand_proficiencies(monster.get("skills"))
@@ -502,24 +549,11 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
     raw_hp = monster.get("hit_points") or monster.get("hp")
     hit_points = _parse_hit_points_structured(raw_hp)
 
-    # Keep hit_dice for backward compatibility (deprecated in favor of HP formula)
-    _, hit_dice_text = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
+    # Extract pure hit dice (just XdY, no modifiers) for game mechanics
+    _, hit_dice_formula = _parse_hit_point_values(raw_hp, monster.get("hit_dice"))
+    hit_dice = _extract_pure_hit_dice(hit_dice_formula)
 
     monster_id = monster.get("id")
-
-    # Extract summary from first trait's description
-    summary = ""
-    traits = monster.get("traits", [])
-    if traits and isinstance(traits, list) and len(traits) > 0:
-        first_trait = traits[0]
-        if isinstance(first_trait, dict):
-            # Handle both old format (text) and new format (description array)
-            description = first_trait.get("description")
-            if isinstance(description, list) and description:
-                summary = description[0]  # First paragraph
-            else:
-                # Fallback to text field (legacy format)
-                summary = first_trait.get("text", "")
 
     # Determine ID prefix based on page number
     # - Monsters: pages 261-365 (main monster section)
@@ -537,13 +571,12 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "id": str(monster_id) if monster_id else f"{id_prefix}:{simple_name}",
         "simple_name": simple_name,
         "name": str(monster.get("name", "")),
-        "summary": summary,
         "size": str(monster.get("size", "")),
         "type": str(monster.get("type", "")),
         "alignment": str(monster.get("alignment", "")),
         "armor_class": armor_class_value,
         "hit_points": hit_points,
-        "hit_dice": hit_dice_text,
+        "hit_dice": hit_dice,
         "speed": _normalize_speed(monster.get("speed")),
         "ability_scores": ability_scores,
         "saving_throws": saving_throws,

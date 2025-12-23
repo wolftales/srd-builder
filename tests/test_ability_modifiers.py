@@ -1,128 +1,103 @@
-"""Tests for ability score modifier calculation."""
+"""Tests for ability score nested {value, modifier} format in schema v2.0.0."""
 
 
-def test_add_ability_modifiers_calculates_correctly():
-    """Verify D&D 5e modifier formula: (score - 10) // 2."""
-    from srd_builder.postprocess import add_ability_modifiers
+def test_parser_generates_nested_ability_scores():
+    """Verify parser generates nested {value, modifier} format."""
+    from srd_builder.parse.parse_monsters import normalize_monster
 
-    monster = {
-        "name": "Test Monster",
-        "ability_scores": {
-            "strength": 21,  # +5
-            "dexterity": 10,  # +0
-            "constitution": 18,  # +4
-            "intelligence": 8,  # -1
-            "wisdom": 13,  # +1
-            "charisma": 6,  # -2
-        },
-    }
-
-    result = add_ability_modifiers(monster)
-
-    assert result["ability_scores"]["strength"] == 21
-    assert result["ability_scores"]["strength_modifier"] == 5
-
-    assert result["ability_scores"]["dexterity"] == 10
-    assert result["ability_scores"]["dexterity_modifier"] == 0
-
-    assert result["ability_scores"]["constitution"] == 18
-    assert result["ability_scores"]["constitution_modifier"] == 4
-
-    assert result["ability_scores"]["intelligence"] == 8
-    assert result["ability_scores"]["intelligence_modifier"] == -1
-
-    assert result["ability_scores"]["wisdom"] == 13
-    assert result["ability_scores"]["wisdom_modifier"] == 1
-
-    assert result["ability_scores"]["charisma"] == 6
-    assert result["ability_scores"]["charisma_modifier"] == -2
-
-
-def test_add_ability_modifiers_handles_missing_scores():
-    """Handle monsters with no ability scores."""
-    from srd_builder.postprocess import add_ability_modifiers
-
-    monster = {"name": "Test", "ability_scores": {}}
-    result = add_ability_modifiers(monster)
-    assert result["ability_scores"] == {}
-
-    monster_no_scores = {"name": "Test"}
-    result = add_ability_modifiers(monster_no_scores)
-    assert "ability_scores" not in result or result.get("ability_scores") == {}
-
-
-def test_add_ability_modifiers_handles_partial_scores():
-    """Handle monsters with only some ability scores."""
-    from srd_builder.postprocess import add_ability_modifiers
-
-    monster = {
-        "name": "Partial",
-        "ability_scores": {
-            "strength": 16,  # +3
-            "intelligence": 3,  # -4
-        },
-    }
-
-    result = add_ability_modifiers(monster)
-
-    assert result["ability_scores"]["strength"] == 16
-    assert result["ability_scores"]["strength_modifier"] == 3
-    assert result["ability_scores"]["intelligence"] == 3
-    assert result["ability_scores"]["intelligence_modifier"] == -4
-    assert "dexterity_modifier" not in result["ability_scores"]
-
-
-def test_add_ability_modifiers_in_pipeline():
-    """Verify modifiers are added during clean_monster_record."""
-    from srd_builder.postprocess import clean_monster_record
-
-    monster = {
+    raw_monster = {
         "id": "monster:test",
         "name": "Test Monster",
-        "page": 1,
-        "src": "SRD 5.1",
-        "armor_class": 15,
-        "hit_points": 50,
         "ability_scores": {
-            "strength": 14,  # +2
-            "dexterity": 12,  # +1
-            "constitution": 16,  # +3
-            "intelligence": 10,  # +0
-            "wisdom": 8,  # -1
-            "charisma": 7,  # -2
+            "str": 21,  # +5
+            "dex": 10,  # +0
+            "con": 18,  # +4
+            "int": 8,  # -1
+            "wis": 13,  # +1
+            "cha": 6,  # -2
         },
     }
 
-    result = clean_monster_record(monster)
+    result = normalize_monster(raw_monster)
 
-    # Verify original scores preserved
-    assert result["ability_scores"]["strength"] == 14
-    assert result["ability_scores"]["wisdom"] == 8
-
-    # Verify modifiers calculated
-    assert result["ability_scores"]["strength_modifier"] == 2
-    assert result["ability_scores"]["dexterity_modifier"] == 1
-    assert result["ability_scores"]["constitution_modifier"] == 3
-    assert result["ability_scores"]["intelligence_modifier"] == 0
-    assert result["ability_scores"]["wisdom_modifier"] == -1
-    assert result["ability_scores"]["charisma_modifier"] == -2
+    # Verify nested format: {value, modifier}
+    assert result["ability_scores"]["strength"] == {"value": 21, "modifier": 5}
+    assert result["ability_scores"]["dexterity"] == {"value": 10, "modifier": 0}
+    assert result["ability_scores"]["constitution"] == {"value": 18, "modifier": 4}
+    assert result["ability_scores"]["intelligence"] == {"value": 8, "modifier": -1}
+    assert result["ability_scores"]["wisdom"] == {"value": 13, "modifier": 1}
+    assert result["ability_scores"]["charisma"] == {"value": 6, "modifier": -2}
 
 
-def test_ability_modifiers_edge_cases():
-    """Test edge cases for ability scores."""
+def test_parser_handles_missing_ability_scores():
+    """Handle monsters with no ability scores."""
+    from srd_builder.parse.parse_monsters import normalize_monster
+
+    raw_monster = {
+        "id": "monster:test",
+        "name": "Test Monster",
+        "ability_scores": {},
+    }
+
+    result = normalize_monster(raw_monster)
+    assert result["ability_scores"] == {}
+
+
+def test_parser_handles_partial_ability_scores():
+    """Handle monsters with only some ability scores."""
+    from srd_builder.parse.parse_monsters import normalize_monster
+
+    raw_monster = {
+        "id": "monster:partial",
+        "name": "Partial",
+        "ability_scores": {
+            "str": 16,  # +3
+            "int": 3,  # -4
+        },
+    }
+
+    result = normalize_monster(raw_monster)
+
+    assert result["ability_scores"]["strength"] == {"value": 16, "modifier": 3}
+    assert result["ability_scores"]["intelligence"] == {"value": 3, "modifier": -4}
+    assert "dexterity" not in result["ability_scores"]
+
+
+def test_ability_score_modifier_formula():
+    """Verify D&D 5e modifier formula: (score - 10) // 2 for edge cases."""
+    from srd_builder.parse.parse_monsters import normalize_monster
+
+    # Score of 1 (common for constructs' mental stats): -5 modifier
+    raw_monster = {"id": "monster:test", "ability_scores": {"int": 1}}
+    result = normalize_monster(raw_monster)
+    assert result["ability_scores"]["intelligence"] == {"value": 1, "modifier": -5}
+
+    # Score of 30 (legendary creatures): +10 modifier
+    raw_monster = {"id": "monster:test", "ability_scores": {"str": 30}}
+    result = normalize_monster(raw_monster)
+    assert result["ability_scores"]["strength"] == {"value": 30, "modifier": 10}
+
+    # Odd scores round down: 15 -> +2 modifier
+    raw_monster = {"id": "monster:test", "ability_scores": {"dex": 15}}
+    result = normalize_monster(raw_monster)
+    assert result["ability_scores"]["dexterity"] == {"value": 15, "modifier": 2}
+
+
+def test_postprocess_add_ability_modifiers_is_noop():
+    """Verify add_ability_modifiers is now a no-op (parser handles it)."""
     from srd_builder.postprocess import add_ability_modifiers
 
-    # Score of 1 (common for constructs' mental stats)
-    monster = {"ability_scores": {"intelligence": 1}}  # -5
-    result = add_ability_modifiers(monster)
-    assert result["ability_scores"]["intelligence_modifier"] == -5
+    # Input already has nested format from parser
+    monster = {
+        "name": "Test Monster",
+        "ability_scores": {
+            "strength": {"value": 14, "modifier": 2},
+            "dexterity": {"value": 12, "modifier": 1},
+        },
+    }
 
-    # Score of 30 (legendary creatures)
-    monster = {"ability_scores": {"strength": 30}}  # +10
     result = add_ability_modifiers(monster)
-    assert result["ability_scores"]["strength_modifier"] == 10
 
-    # Odd scores
-    monster = {"ability_scores": {"dexterity": 15}}  # +2
-    result = add_ability_modifiers(monster)
-    assert result["ability_scores"]["dexterity_modifier"] == 2
+    # Function should pass through unchanged
+    assert result == monster
+    assert result["ability_scores"]["strength"] == {"value": 14, "modifier": 2}

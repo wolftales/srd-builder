@@ -84,32 +84,6 @@
         }
       ]
     },
-    "ability_scores": {
-      "type": "object",
-      "description": "Ability score block keyed by ability name",
-      "minProperties": 1,
-      "properties": {
-        "strength": {
-          "type": "integer"
-        },
-        "dexterity": {
-          "type": "integer"
-        },
-        "constitution": {
-          "type": "integer"
-        },
-        "intelligence": {
-          "type": "integer"
-        },
-        "wisdom": {
-          "type": "integer"
-        },
-        "charisma": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": true
-    },
     "speed": {
       "type": "object",
       "description": "Movement speeds in feet",
@@ -150,8 +124,139 @@
       },
       "additionalProperties": false
     },
+    "ability_scores": {
+      "type": "object",
+      "description": "Ability score block keyed by ability name",
+      "minProperties": 1,
+      "properties": {
+        "strength": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        },
+        "dexterity": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        },
+        "constitution": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        },
+        "intelligence": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        },
+        "wisdom": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        },
+        "charisma": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 30,
+              "description": "Ability score value"
+            },
+            "modifier": {
+              "type": "integer",
+              "description": "Calculated ability modifier"
+            }
+          },
+          "required": [
+            "value",
+            "modifier"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "senses": {
       "type": "object",
+      "required": [
+        "passive_perception"
+      ],
       "description": "Sensory abilities in feet",
       "properties": {
         "darkvision": {
@@ -318,19 +423,19 @@
             "items": {
               "type": "object",
               "required": [
-                "damage_dice"
+                "dice"
               ],
               "properties": {
-                "damage_dice": {
+                "dice": {
                   "type": "string",
                   "pattern": "^\\d+d\\d+(\\+\\d+)?$",
                   "description": "Damage dice expression (e.g., 2d6+3)"
                 },
-                "damage_type": {
+                "type": {
                   "type": "string",
                   "description": "Damage type (slashing, fire, etc.)"
                 },
-                "damage_type_id": {
+                "type_id": {
                   "type": "string",
                   "pattern": "^[a-z0-9_]+$",
                   "description": "Normalized damage type identifier"
@@ -367,7 +472,7 @@
                   "half",
                   "other"
                 ],
-                "description": "Effect on successful save"
+                "description": "Effect on successful save: 'none' for no effect, 'half' for half damage, 'other' for special effects"
               }
             },
             "additionalProperties": false,
@@ -381,12 +486,12 @@
                 "minimum": 0,
                 "description": "Melee reach in feet"
               },
-              "range_normal": {
+              "normal": {
                 "type": "integer",
                 "minimum": 0,
                 "description": "Normal range in feet"
               },
-              "range_long": {
+              "long": {
                 "type": "integer",
                 "minimum": 0,
                 "description": "Long range in feet"

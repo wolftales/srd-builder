@@ -14,6 +14,7 @@
     "average": 7,
     "formula": "2d6"
   },
+  "hit_dice": "2d6",
   "speed": {
     "walk": 30,
     "swim": 0,
@@ -21,13 +22,6 @@
     "burrow": 0,
     "climb": 0,
     "hover": false
-  },
-  "senses": {
-    "darkvision": 60,
-    "blindsight": 0,
-    "tremorsense": 0,
-    "truesight": 0,
-    "passive_perception": 9
   },
   "ability_scores": {
     "strength": 8,
@@ -40,6 +34,13 @@
   "skills": {
     "stealth": 6
   },
+  "senses": {
+    "darkvision": 60,
+    "blindsight": 0,
+    "tremorsense": 0,
+    "truesight": 0,
+    "passive_perception": 9
+  },
   "actions": [
     {
       "name": "Scimitar",
@@ -50,9 +51,9 @@
       "attack_bonus": 4,
       "damage": [
         {
-          "damage_dice": "1d6+2",
-          "damage_type": "slashing",
-          "damage_type_id": "slashing"
+          "dice": "1d6+2",
+          "type": "slashing",
+          "type_id": "slashing"
         }
       ],
       "range": {

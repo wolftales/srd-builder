@@ -14,6 +14,7 @@
     "average": 256,
     "formula": "19d12+133"
   },
+  "hit_dice": "19d12",
   "speed": {
     "walk": 40,
     "swim": 0,
@@ -22,19 +23,6 @@
     "climb": 40,
     "hover": false
   },
-  "senses": {
-    "darkvision": 120,
-    "blindsight": 60,
-    "tremorsense": 0,
-    "truesight": 0,
-    "passive_perception": 23
-  },
-  "damage_immunities": [
-    {
-      "type": "fire",
-      "type_id": "fire"
-    }
-  ],
   "ability_scores": {
     "strength": 27,
     "dexterity": 10,
@@ -53,6 +41,19 @@
     "perception": 13,
     "stealth": 6
   },
+  "senses": {
+    "darkvision": 120,
+    "blindsight": 60,
+    "tremorsense": 0,
+    "truesight": 0,
+    "passive_perception": 23
+  },
+  "damage_immunities": [
+    {
+      "type": "fire",
+      "type_id": "fire"
+    }
+  ],
   "actions": [
     {
       "name": "Bite",
@@ -63,14 +64,14 @@
       "attack_bonus": 14,
       "damage": [
         {
-          "damage_dice": "2d10+8",
-          "damage_type": "piercing",
-          "damage_type_id": "piercing"
+          "dice": "2d10+8",
+          "type": "piercing",
+          "type_id": "piercing"
         },
         {
-          "damage_dice": "2d6",
-          "damage_type": "fire",
-          "damage_type_id": "fire"
+          "dice": "2d6",
+          "type": "fire",
+          "type_id": "fire"
         }
       ],
       "range": {
@@ -85,9 +86,9 @@
       ],
       "damage": [
         {
-          "damage_dice": "18d6",
-          "damage_type": "fire",
-          "damage_type_id": "fire"
+          "dice": "18d6",
+          "type": "fire",
+          "type_id": "fire"
         }
       ],
       "dc": {

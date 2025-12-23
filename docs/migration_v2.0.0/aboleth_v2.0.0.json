@@ -2,7 +2,6 @@
   "id": "monster:aboleth",
   "simple_name": "aboleth",
   "name": "Aboleth",
-  "summary": "The aboleth can breathe air and water.",
   "size": "Large",
   "type": "aberration",
   "alignment": "lawful evil",
@@ -15,6 +14,7 @@
     "average": 135,
     "formula": "18d10+36"
   },
+  "hit_dice": "18d10",
   "speed": {
     "walk": 10,
     "swim": 40,
@@ -22,13 +22,6 @@
     "burrow": 0,
     "climb": 0,
     "hover": false
-  },
-  "senses": {
-    "darkvision": 120,
-    "blindsight": 0,
-    "tremorsense": 0,
-    "truesight": 0,
-    "passive_perception": 20
   },
   "ability_scores": {
     "strength": 21,
@@ -47,6 +40,13 @@
     "history": 12,
     "perception": 10
   },
+  "senses": {
+    "darkvision": 120,
+    "blindsight": 0,
+    "tremorsense": 0,
+    "truesight": 0,
+    "passive_perception": 20
+  },
   "actions": [
     {
       "name": "Tentacle",
@@ -57,9 +57,9 @@
       "attack_bonus": 9,
       "damage": [
         {
-          "damage_dice": "2d6+5",
-          "damage_type": "bludgeoning",
-          "damage_type_id": "bludgeoning"
+          "dice": "2d6+5",
+          "type": "bludgeoning",
+          "type_id": "bludgeoning"
         }
       ],
       "dc": {

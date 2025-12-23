@@ -31,9 +31,9 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
 
     Extracts (schema v2.0.0 format):
     - attack_bonus: integer (from "+X to hit")
-    - damage: array of {damage_dice: str, damage_type: str, damage_type_id: str}
+    - damage: array of {dice: str, type: str, type_id: str}
     - dc: {dc_value: int, dc_type: str, dc_type_id: str, success_type: str}
-    - range: {reach: int, range_normal: int, range_long: int}
+    - range: {reach: int, normal: int, long: int}
 
     Uses description array (not legacy text field).
     """
@@ -75,8 +75,8 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
     range_match = _RANGE.search(text)
     if range_match:
         try:
-            range_obj["range_normal"] = int(range_match.group(1))
-            range_obj["range_long"] = int(range_match.group(2))
+            range_obj["normal"] = int(range_match.group(1))
+            range_obj["long"] = int(range_match.group(2))
         except ValueError:
             pass
 
@@ -96,9 +96,9 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
 
                 damage_array.append(
                     {
-                        "damage_dice": damage_dice,
-                        "damage_type": damage_type,
-                        "damage_type_id": damage_type.replace(" ", "_"),
+                        "dice": damage_dice,
+                        "type": damage_type,
+                        "type_id": damage_type.replace(" ", "_"),
                     }
                 )
             except (ValueError, IndexError):
