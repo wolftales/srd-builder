@@ -1,6 +1,6 @@
 # SRD-Builder Architecture
 
-**Version:** v0.14.0
+**Version:** v0.19.4
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
 ---
@@ -9,25 +9,25 @@
 
 SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the complete target list and current status:
 
-| File | Status | Count | Version | Description |
-|------|--------|-------|---------|-------------|
-| `meta.json` | ✅ Complete | 1 | v0.1.0+ | Version, license, page index, terminology aliases |
-| `monsters.json` | ✅ Complete | 317 | v0.13.0 | Monsters, creatures, and NPCs (normalized) |
-| `equipment.json` | ✅ Complete | 200 | v0.5.0 | Weapons, armor, adventuring gear |
-| `spells.json` | ✅ Complete | 319 | v0.6.2 | Spell list with effects, components, casting |
-| `tables.json` | ✅ Complete | 38 | v0.7.0 | Reference tables (equipment, expenses, services) |
-| `lineages.json` | ✅ Complete | 9 | v0.8.0 | Races/lineages with traits |
-| `classes.json` | ✅ Complete | 12 | v0.8.2 | Character classes with progression |
-| `index.json` | ✅ Complete | - | v0.2.0+ | Fast lookup maps (by name, CR, type, etc.) |
-| `conditions.json` | ✅ Complete | 15 | v0.10.0 | Status conditions (poisoned, stunned, etc.) |
-| `diseases.json` | ✅ Complete | 3 | v0.10.0 | Cackle Fever, Sewer Plague, Sight Rot |
-| `madness.json` | ✅ Complete | 3 | v0.10.0 | Short-, long-term, and indefinite madness tables |
-| `poisons.json` | ✅ Complete | 14 | v0.10.0 | Poison gear entries + descriptions |
-| `features.json` | ✅ Complete | 246 | v0.11.0 | Class features and lineage traits |
-| `rules.json` | 📋 Planned | TBD | v0.12.0+ | Core mechanics, variant rules |
+| File | Status | Count | Schema | Description |
+|------|--------|-------|--------|-------------|
+| `meta.json` | ✅ Complete | 1 | - | Version, license, page index, terminology aliases |
+| `monsters.json` | ✅ Complete | 317 | v2.0.0 | Monsters, creatures, and NPCs (normalized) |
+| `equipment.json` | ✅ Complete | 258 | v2.0.0 | Weapons, armor, adventuring gear |
+| `spells.json` | ✅ Complete | 319 | v2.0.0 | Spell list with effects, components, casting |
+| `classes.json` | ✅ Complete | 12 | v2.0.0 | Character classes with progression |
+| `conditions.json` | ✅ Complete | 15 | v2.0.0 | Status conditions (poisoned, stunned, etc.) |
+| `diseases.json` | ✅ Complete | 3 | v2.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
+| `features.json` | ✅ Complete | 246 | v2.0.0 | Class features and lineage traits |
+| `lineages.json` | ✅ Complete | 13 | v2.0.0 | Races/lineages with traits |
+| `magic_items.json` | ✅ Complete | 240 | v2.0.0 | Magic items with descriptions |
+| `poisons.json` | ✅ Complete | 14 | v2.0.0 | Poison gear entries + descriptions |
+| `rules.json` | ✅ Complete | 172 | v2.0.0 | Core mechanics from 7 chapters |
+| `tables.json` | ✅ Complete | 38 | v2.0.0 | Reference tables (equipment, expenses, services) |
+| `index.json` | ✅ Complete | - | - | Fast lookup maps (by name, CR, type, etc.) |
 
-**Progress:** 13/14 datasets complete (93%)
-**Current Schema Version:** v1.4.0 (healing oneOf structure, ability modifiers)
+**Progress:** 13/13 datasets complete (100%)
+**Current Schema Version:** v2.0.0 (stable baseline, cross-reference IDs, no summary fields)
 
 ---
 
@@ -58,6 +58,14 @@ srd-builder extracts structured data from PDF documents (specifically SRD 5.1) a
 3. **Determinism**: Same input → same output (no timestamps in datasets)
 4. **Provenance**: Track everything back to source PDF (page numbers, hash)
 5. **Clean Boundaries**: Extract → Parse → (Postprocess) → Index → Validate
+6. **Maximum SRD Extraction**: Extract as much structured information *from the SRD* as possible
+   - Goal: Comprehensive extraction of what exists in the source document, not data augmentation
+   - Beyond minimal requirements: enrich datasets with prose descriptions, mechanics details found in SRD
+   - Example: Poison table data + poison descriptions (both from SRD) merged into comprehensive records
+   - Example: Equipment stats + equipment descriptions (both from SRD) for richer item details
+   - Boundary: No external data sources, no homebrew content, no data invented beyond what's in the PDF
+   - Future: Consider merging prose datasets (equipment_descriptions, poison_descriptions) into parent datasets at engine/consumer layer
+   - Rationale: Downstream applications benefit from rich, complete data extracted from the official SRD
 
 **Note on Pipeline Evolution:**
 

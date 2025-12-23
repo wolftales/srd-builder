@@ -82,16 +82,12 @@ def _parse_single_disease(raw: dict[str, Any]) -> dict[str, Any] | None:
     if incubation_match:
         incubation = incubation_match.group(1).strip()
 
-    # Generate summary (first sentence or first 100 chars)
-    summary = _generate_summary(text)
-
     result = {
         "id": f"disease:{simple_name}",
         "name": name,
         "simple_name": simple_name,
         "page": page,
         "source": "SRD 5.1",
-        "summary": summary,
         "description": description,
     }
 
@@ -104,25 +100,3 @@ def _parse_single_disease(raw: dict[str, Any]) -> dict[str, Any] | None:
         result["incubation"] = incubation
 
     return result
-
-
-def _generate_summary(text: str) -> str:
-    """Generate a one-sentence summary from text.
-
-    Args:
-        text: Full text to summarize
-
-    Returns:
-        Summary string (first sentence or first 100 chars)
-    """
-    # Try to get first sentence
-    match = re.match(r"([^.!?]+[.!?])", text)
-    if match:
-        summary = match.group(1).strip()
-        if len(summary) <= 150:
-            return summary
-
-    # Fallback to first 100 chars
-    if len(text) <= 100:
-        return text
-    return text[:97] + "..."

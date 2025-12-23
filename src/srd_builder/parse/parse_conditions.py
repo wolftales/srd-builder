@@ -81,9 +81,6 @@ def _parse_standard_condition(
     if not effects:
         effects = [text]
 
-    # Generate summary from first effect
-    summary = _generate_summary(effects[0] if effects else text)
-
     # Get source page (use first page)
     page = pages[0] if pages else 358
 
@@ -93,7 +90,6 @@ def _parse_standard_condition(
         "simple_name": simple_name,
         "page": page,
         "source": "SRD 5.1",
-        "summary": summary,
         "effects": effects,
     }
 
@@ -156,8 +152,6 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
     # Main effects (bullet points if any, plus intro)
     effects = [intro_text] if intro_text else []
 
-    summary = "Exhaustion is measured in six levels"
-
     page = pages[0] if pages else 358
 
     condition_dict: dict[str, Any] = {
@@ -166,7 +160,6 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
         "simple_name": simple_name,
         "page": page,
         "source": "SRD 5.1",
-        "summary": summary,
         "effects": effects,
         "levels": levels,
     }
@@ -175,24 +168,3 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
         condition_dict["special_rules"] = special_rules
 
     return condition_dict
-
-
-def _generate_summary(text: str) -> str:
-    """Generate a one-sentence summary from the first effect.
-
-    Args:
-        text: Effect text
-
-    Returns:
-        Summary sentence
-    """
-    # Take first sentence
-    match = re.match(r"^([^.!?]+[.!?])", text)
-    if match:
-        return match.group(1).strip()
-
-    # Fallback: take first 100 characters
-    if len(text) > 100:
-        return text[:97] + "..."
-
-    return text

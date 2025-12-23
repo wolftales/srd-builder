@@ -168,11 +168,6 @@ def parse_single_table(raw: dict[str, Any], targets_by_id: dict[str, Any]) -> di
     if raw.get("metadata"):
         parsed["metadata"] = raw["metadata"]
 
-    # Generate summary if target has one
-    if target.get("notes"):
-        # Use the target notes as a summary
-        parsed["summary"] = target["notes"]
-
     return parsed
 
 

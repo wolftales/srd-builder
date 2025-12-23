@@ -13,7 +13,6 @@
       "simple_name": "blinded",
       "page": 358,
       "source": "SRD 5.1",
-      "summary": "A blinded creature can’t see and automatically fails any ability check that requires sight.",
       "effects": [
         "A blinded creature can’t see and automatically fails any ability check that requires sight. A blinded creature can’t see and automatically fails any ability check that requires sight. Attack rolls against the creature have advantage, and the creature’s attack rolls have disadvantage."
       ]
@@ -24,7 +23,6 @@
       "simple_name": "invisible",
       "page": 358,
       "source": "SRD 5.1",
-      "summary": "An invisible creature is impossible to see without the aid of magic or a special sense.",
       "effects": [
         "An invisible creature is impossible to see without the aid of magic or a special sense. An invisible creature is impossible to see without the aid of magic or a special sense. For the purpose of hiding, the creature is heavily obscured. The creature’s location can be detected by any noise it makes or any tracks it leaves. Attack rolls against the creature have disadvantage, and the creature’s attack rolls have advantage."
       ]
@@ -35,7 +33,6 @@
       "simple_name": "unconscious",
       "page": 358,
       "source": "SRD 5.1",
-      "summary": "An unconscious creature is incapacitated (see the condition), can’t move or speak, and is unaware.",
       "effects": [
         "An unconscious creature is incapacitated (see the condition), can’t move or speak, and is unaware... An unconscious creature is incapacitated (see the condition), can’t move or speak, and is unaware of its surroundings The creature drops whatever it’s holding and falls prone. The creature automatically fails Strength and Dexterity saving throws. Attack rolls against the creature have advantage. Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature. System Reference Document 5.1 359"
       ]
