@@ -1064,6 +1064,100 @@ Character classes with progression, features, and proficiencies.
 
 ---
 
+## Atomic Reference Datasets (v0.20.0)
+
+These datasets provide fundamental D&D game constants as standalone, cross-referenceable JSON files. Added in v0.20.0 to enable validation of type_id cross-references.
+
+### Damage Types Dataset (13 items)
+
+**File:** `damage_types.json`
+**Schema:** `damage_type.schema.json` v1.0.0
+**Source:** SRD 5.1 page 97
+
+The 13 canonical D&D damage types with descriptions and examples.
+
+#### Core Fields
+- `id` - Namespaced identifier (e.g., `"damage_type:fire"`)
+- `simple_name` - Normalized name (e.g., `"fire"`)
+- `name` - Display name (e.g., `"Fire"`)
+- `description` - Array of description paragraphs
+- `examples` - Array of example sources (e.g., `["red dragon breath", "fireball spell"]`)
+- `page` - SRD page number (97)
+
+#### Canonical Types
+**Physical (3):** bludgeoning, piercing, slashing
+**Elemental (5):** acid, cold, fire, lightning, thunder
+**Exotic (5):** force, necrotic, poison, psychic, radiant
+
+### Ability Scores Dataset (6 items)
+
+**File:** `ability_scores.json`
+**Schema:** `ability_score.schema.json` v1.0.0
+**Source:** SRD 5.1 pages 76-77
+
+The 6 core D&D ability scores with descriptions and skill associations.
+
+#### Core Fields
+- `id` - Namespaced identifier (e.g., `"ability:strength"`)
+- `simple_name` - Normalized name (e.g., `"strength"`)
+- `abbreviation` - Three-letter code (e.g., `"STR"`)
+- `name` - Display name (e.g., `"Strength"`)
+- `description` - Array of description paragraphs
+- `skills` - Array of skill IDs (e.g., `["skill:athletics"]`)
+- `page` - SRD page number (76-77)
+
+#### The Six Abilities
+- **STR (Strength)** → Athletics
+- **DEX (Dexterity)** → Acrobatics, Sleight of Hand, Stealth
+- **CON (Constitution)** → No associated skills
+- **INT (Intelligence)** → Arcana, History, Investigation, Nature, Religion
+- **WIS (Wisdom)** → Animal Handling, Insight, Medicine, Perception, Survival
+- **CHA (Charisma)** → Deception, Intimidation, Performance, Persuasion
+
+### Skills Dataset (18 items)
+
+**File:** `skills.json`
+**Schema:** `skill.schema.json` v1.0.0
+**Source:** SRD 5.1 pages 77-78
+
+All 18 D&D skills with governing abilities and descriptions.
+
+#### Core Fields
+- `id` - Namespaced identifier (e.g., `"skill:athletics"`)
+- `simple_name` - Normalized name (e.g., `"athletics"`)
+- `name` - Display name (e.g., `"Athletics"`)
+- `ability` - Governing ability name (e.g., `"strength"`)
+- `ability_id` - Cross-reference to ability (e.g., `"ability:strength"`)
+- `description` - Array of description paragraphs
+- `page` - SRD page number (77-78)
+
+#### Skill Groups
+- **STR (1):** Athletics
+- **DEX (3):** Acrobatics, Sleight of Hand, Stealth
+- **INT (5):** Arcana, History, Investigation, Nature, Religion
+- **WIS (5):** Animal Handling, Insight, Medicine, Perception, Survival
+- **CHA (4):** Deception, Intimidation, Performance, Persuasion
+
+### Weapon Properties Dataset (11 items)
+
+**File:** `weapon_properties.json`
+**Schema:** `weapon_property.schema.json` v1.0.0
+**Source:** SRD 5.1 page 66
+
+The 11 weapon properties that modify weapon behavior.
+
+#### Core Fields
+- `id` - Namespaced identifier (e.g., `"weapon_property:versatile"`)
+- `simple_name` - Normalized name (e.g., `"versatile"`)
+- `name` - Display name (e.g., `"Versatile"`)
+- `description` - Array of description paragraphs
+- `page` - SRD page number (66)
+
+#### Properties
+Ammunition, Finesse, Heavy, Light, Loading, Range, Reach, Special, Thrown, Two-Handed, Versatile
+
+---
+
 ## Data Quality Notes
 
 ### Known Limitations (v1.3.0)
@@ -1102,17 +1196,30 @@ See `SCHEMAS.md` for architectural evolution and versioning strategy.
 
 ## Datasets Summary
 
-**v0.17.0 includes:**
+**v0.20.0 includes:**
 - **317 Creatures** (in monsters.json, semantically separated):
   - **201 Monsters** - Main bestiary creatures (monster: prefix, pages 261-365)
   - **95 Misc Creatures** - Appendix MM-A awakened/summoned creatures (creature: prefix, pages 366-394)
   - **21 NPCs** - Appendix MM-B nonplayer characters (npc: prefix, pages 395-403)
-- **106 Equipment** - Weapons, armor, adventuring gear
+- **111 Equipment** - Weapons, armor, adventuring gear
 - **319 Spells** - Complete spell descriptions with structured effects
 - **172 Rules** - Game mechanics and rules from 7 core chapters (76 pages)
-- **23 Tables** - Reference tables (12 class progression + 11 general reference)
+- **38 Tables** - Reference tables (12 class progression + 26 general reference)
 - **13 Lineages** - Character lineages (9 base + 4 subraces)
 - **12 Classes** - Character classes with full progression
+- **15 Conditions** - Game conditions from Appendix PH-A
+- **3 Diseases** - Diseases with transmission and effects
+- **246 Features** - Class features and lineage traits (154 class + 92 lineage)
+- **240 Magic Items** - Magic items with rarity and attunement
+- **14 Poisons** - Poisons with effects and costs
+
+**v0.20.0 Atomic Reference Datasets:**
+- **13 Damage Types** - Canonical D&D damage types with descriptions
+- **6 Ability Scores** - Core abilities with skill associations
+- **18 Skills** - All skills with governing abilities
+- **11 Weapon Properties** - Weapon properties with behavior descriptions
+
+**Total: 17 datasets, 1,548 items**
 
 ---
 

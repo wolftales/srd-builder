@@ -33,7 +33,7 @@ class ExtractionConfig:
 
     sections: list[str] = None  # type: ignore[assignment]  # __post_init__ ensures non-None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize default sections if none provided."""
         if self.sections is None:
             self.sections = RULES_SECTIONS.copy()
@@ -186,7 +186,7 @@ def _extract_page_text_blocks(page: Any, page_num: int) -> list[dict[str, Any]]:
     return blocks
 
 
-def main():
+def main() -> int:
     """Command-line entry point for testing."""
     import json
     import sys

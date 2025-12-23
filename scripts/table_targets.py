@@ -424,14 +424,14 @@ TARGET_TABLES: list[TableTarget] = [
 ]
 
 
-def print_summary():
+def print_summary() -> None:
     """Print summary of target tables."""
     print("=" * 80)
     print("v0.7.0 Target Reference Tables")
     print("=" * 80)
     print()
 
-    by_priority = {"HIGH": [], "MEDIUM": [], "LOW": []}
+    by_priority: dict[str, list[TableTarget]] = {"HIGH": [], "MEDIUM": [], "LOW": []}
     for table in TARGET_TABLES:
         by_priority[table["priority"]].append(table)
 

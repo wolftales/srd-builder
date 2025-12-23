@@ -1,0 +1,106 @@
+{
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "ruleset_version": "5.1",
+    "schema_version": "1.0.0",
+    "generated_by": "srd-builder v0.18.1",
+    "build_report": "./build_report.json"
+  },
+  "items": [
+    {
+      "id": "ability:strength",
+      "simple_name": "strength",
+      "name": "Strength",
+      "abbreviation": "STR",
+      "description": [
+        "Strength measures bodily power, athletic training, and the extent to which you can exert raw physical force."
+      ],
+      "skills": [
+        "skill:athletics"
+      ],
+      "page": 76,
+      "source": "SRD_CC_v5.1"
+    },
+    {
+      "id": "ability:dexterity",
+      "simple_name": "dexterity",
+      "name": "Dexterity",
+      "abbreviation": "DEX",
+      "description": [
+        "Dexterity measures agility, reflexes, and balance."
+      ],
+      "skills": [
+        "skill:acrobatics",
+        "skill:sleight_of_hand",
+        "skill:stealth"
+      ],
+      "page": 77,
+      "source": "SRD_CC_v5.1"
+    },
+    {
+      "id": "ability:constitution",
+      "simple_name": "constitution",
+      "name": "Constitution",
+      "abbreviation": "CON",
+      "description": [
+        "Constitution measures health, stamina, and vital force."
+      ],
+      "skills": [],
+      "page": 77,
+      "source": "SRD_CC_v5.1"
+    },
+    {
+      "id": "ability:intelligence",
+      "simple_name": "intelligence",
+      "name": "Intelligence",
+      "abbreviation": "INT",
+      "description": [
+        "Intelligence measures mental acuity, accuracy of recall, and the ability to reason."
+      ],
+      "skills": [
+        "skill:arcana",
+        "skill:history",
+        "skill:investigation",
+        "skill:nature",
+        "skill:religion"
+      ],
+      "page": 78,
+      "source": "SRD_CC_v5.1"
+    },
+    {
+      "id": "ability:wisdom",
+      "simple_name": "wisdom",
+      "name": "Wisdom",
+      "abbreviation": "WIS",
+      "description": [
+        "Wisdom reflects how attuned you are to the world around you and represents perceptiveness and intuition."
+      ],
+      "skills": [
+        "skill:animal_handling",
+        "skill:insight",
+        "skill:medicine",
+        "skill:perception",
+        "skill:survival"
+      ],
+      "page": 78,
+      "source": "SRD_CC_v5.1"
+    },
+    {
+      "id": "ability:charisma",
+      "simple_name": "charisma",
+      "name": "Charisma",
+      "abbreviation": "CHA",
+      "description": [
+        "Charisma measures your ability to interact effectively with others. It includes such factors as confidence and eloquence, and it can represent a charming or commanding personality."
+      ],
+      "skills": [
+        "skill:deception",
+        "skill:intimidation",
+        "skill:performance",
+        "skill:persuasion"
+      ],
+      "page": 78,
+      "source": "SRD_CC_v5.1"
+    }
+  ]
+}

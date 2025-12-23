@@ -263,7 +263,7 @@ def _build_rule_list(
     return rules
 
 
-def main():
+def main() -> int:
     """Command-line entry point for testing."""
     import json
     import sys

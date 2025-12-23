@@ -271,7 +271,7 @@ def _merge_multipage_items(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return merged
 
 
-def main():
+def main() -> None:
     """CLI entry point for testing extraction."""
     import sys
 

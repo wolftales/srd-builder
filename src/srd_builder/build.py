@@ -30,8 +30,10 @@ from .extract.extract_rules import extract_rules
 from .extract.extract_spells import extract_spells
 from .extraction import extract_tables_to_json
 from .extraction.extraction_metadata import TABLES
+from .parse.parse_ability_scores import parse_ability_scores
 from .parse.parse_classes import parse_classes
 from .parse.parse_conditions import parse_condition_records
+from .parse.parse_damage_types import parse_damage_types
 from .parse.parse_diseases import parse_disease_records
 from .parse.parse_equipment import parse_equipment_records
 from .parse.parse_features import parse_features
@@ -41,10 +43,14 @@ from .parse.parse_monsters import parse_monster_records
 from .parse.parse_poison_descriptions import parse_poison_description_records
 from .parse.parse_poisons_table import parse_poisons_table
 from .parse.parse_rules import parse_rules
+from .parse.parse_skills import parse_skills
 from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
+from .parse.parse_weapon_properties import parse_weapon_properties
 from .postprocess import (
+    clean_ability_score_record,
     clean_class_record,
+    clean_damage_type_record,
     clean_equipment_record,
     clean_feature_record,
     clean_lineage_record,
@@ -52,8 +58,10 @@ from .postprocess import (
     clean_monster_record,
     clean_poison_record,
     clean_rule_record,
+    clean_skill_record,
     clean_spell_record,
     clean_table_record,
+    clean_weapon_property_record,
 )
 from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
 from .utils.table_indexer import TableIndexer
@@ -100,6 +108,10 @@ def _write_datasets(  # noqa: PLR0913
     tables: list[dict[str, Any]] | None = None,
     lineages: list[dict[str, Any]] | None = None,
     classes: list[dict[str, Any]] | None = None,
+    ability_scores: list[dict[str, Any]] | None = None,
+    damage_types: list[dict[str, Any]] | None = None,
+    skills: list[dict[str, Any]] | None = None,
+    weapon_properties: list[dict[str, Any]] | None = None,
     conditions: dict[str, Any] | None = None,  # Prose dataset document
     diseases: dict[str, Any] | None = None,  # Prose dataset document
     poisons: dict[str, Any] | None = None,  # Prose dataset document
@@ -187,7 +199,7 @@ def _write_datasets(  # noqa: PLR0913
     processed_tables = [clean_table_record(t) for t in tables] if tables else None
     if processed_tables:
         # Sort tables by page number (document/TOC order)
-        def get_sort_page(table):
+        def get_sort_page(table: dict[str, Any]) -> int:
             page = table.get("page")
             if page is None:
                 return 99999  # Put tables without pages at end
@@ -258,6 +270,78 @@ def _write_datasets(  # noqa: PLR0913
         )
         (dist_data_dir / "classes.json").write_text(
             _render_json(classes_doc),
+            encoding="utf-8",
+        )
+
+    # Write ability_scores (v0.20.0)
+    # Atomic reference dataset: 6 core D&D ability scores
+    # Static data from SRD pages 76-78, no PDF extraction required
+    processed_ability_scores = (
+        [clean_ability_score_record(a) for a in ability_scores] if ability_scores else None
+    )
+    if processed_ability_scores:
+        ability_scores_doc = wrap_with_meta(
+            {"items": processed_ability_scores},
+            ruleset=ruleset,
+            schema_version=read_schema_version("ability_score"),
+            ruleset_version=ruleset_version,
+        )
+        (dist_data_dir / "ability_scores.json").write_text(
+            _render_json(ability_scores_doc),
+            encoding="utf-8",
+        )
+
+    # Write damage_types (v0.20.0)
+    # Atomic reference dataset: 13 canonical D&D damage types
+    # Static data from SRD page 97, no PDF extraction required
+    processed_damage_types = (
+        [clean_damage_type_record(dt) for dt in damage_types] if damage_types else None
+    )
+    if processed_damage_types:
+        damage_types_doc = wrap_with_meta(
+            {"items": processed_damage_types},
+            ruleset=ruleset,
+            schema_version=read_schema_version("damage_type"),
+            ruleset_version=ruleset_version,
+        )
+        (dist_data_dir / "damage_types.json").write_text(
+            _render_json(damage_types_doc),
+            encoding="utf-8",
+        )
+
+    # Write skills (v0.20.0)
+    # Atomic reference dataset: 18 D&D 5e skills
+    # Static data from SRD pages 76-79, no PDF extraction required
+    processed_skills = [clean_skill_record(s) for s in skills] if skills else None
+    if processed_skills:
+        skills_doc = wrap_with_meta(
+            {"items": processed_skills},
+            ruleset=ruleset,
+            schema_version=read_schema_version("skill"),
+            ruleset_version=ruleset_version,
+        )
+        (dist_data_dir / "skills.json").write_text(
+            _render_json(skills_doc),
+            encoding="utf-8",
+        )
+
+    # Write weapon_properties (v0.20.0)
+    # Atomic reference dataset: 11 D&D 5e weapon properties
+    # Static data from SRD page 147, no PDF extraction required
+    processed_weapon_properties = (
+        [clean_weapon_property_record(wp) for wp in weapon_properties]
+        if weapon_properties
+        else None
+    )
+    if processed_weapon_properties:
+        weapon_properties_doc = wrap_with_meta(
+            {"items": processed_weapon_properties},
+            ruleset=ruleset,
+            schema_version=read_schema_version("weapon_property"),
+            ruleset_version=ruleset_version,
+        )
+        (dist_data_dir / "weapon_properties.json").write_text(
+            _render_json(weapon_properties_doc),
             encoding="utf-8",
         )
 
@@ -873,6 +957,22 @@ def build(  # noqa: C901
     # Classes come from canonical targets, not PDF extraction
     parsed_classes = parse_classes()
 
+    # Parse ability_scores (v0.20.0)
+    # Ability scores are game constants (6 core abilities: STR, DEX, CON, INT, WIS, CHA)
+    parsed_ability_scores = parse_ability_scores()
+
+    # Parse damage_types (v0.20.0)
+    # Damage types are game constants (13 canonical types from SRD page 97)
+    parsed_damage_types = parse_damage_types()
+
+    # Parse skills (v0.20.0)
+    # Skills are game constants (18 skills from SRD pages 76-79)
+    parsed_skills = parse_skills()
+
+    # Parse weapon_properties (v0.20.0)
+    # Weapon properties are game constants (11 properties from SRD page 147)
+    parsed_weapon_properties = parse_weapon_properties()
+
     # Build prose datasets (v0.10.0+)
     # Generic config-driven approach for conditions, diseases, madness, poisons
     pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
@@ -998,6 +1098,10 @@ def build(  # noqa: C901
         tables=parsed_tables if parsed_tables else None,
         lineages=parsed_lineages if parsed_lineages else None,
         classes=parsed_classes if parsed_classes else None,
+        ability_scores=parsed_ability_scores if parsed_ability_scores else None,
+        damage_types=parsed_damage_types if parsed_damage_types else None,
+        skills=parsed_skills if parsed_skills else None,
+        weapon_properties=parsed_weapon_properties if parsed_weapon_properties else None,
         conditions=conditions_doc if conditions_doc else None,
         diseases=diseases_doc if diseases_doc else None,
         poisons=poisons_doc if poisons_doc else None,

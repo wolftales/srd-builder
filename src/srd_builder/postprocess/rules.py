@@ -97,7 +97,7 @@ def clean_rule_record(rule: dict[str, Any]) -> dict[str, Any]:
     return cleaned_record
 
 
-def main():
+def main() -> int:
     """Command-line entry point for testing."""
     import json
     import sys

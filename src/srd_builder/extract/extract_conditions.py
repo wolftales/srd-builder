@@ -118,7 +118,7 @@ def extract_conditions(pdf_path: Path) -> dict[str, Any]:
 # This reduces duplication and makes the pattern reusable
 
 
-def main():
+def main() -> int:
     """Command-line entry point for testing."""
     import json
     import sys

@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/wolftales/srd-builder/schemas/ability_score.schema.json",
+  "version": "1.0.0",
+  "last_modified": "2025-12-23",
+  "title": "Ability Score",
+  "description": "A core ability score in D&D 5e (STR, DEX, CON, INT, WIS, CHA)",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "abbreviation",
+    "description",
+    "page",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^ability:",
+      "description": "Unique identifier with ability: prefix (e.g., 'ability:strength')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "Machine-readable name (e.g., 'strength')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Strength')"
+    },
+    "abbreviation": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "Three-letter abbreviation (e.g., 'STR')"
+    },
+    "description": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "Array of description paragraphs from SRD"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "SRD page number where this ability score is described"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document (e.g., 'SRD_CC_v5.1')"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^skill:"
+      },
+      "description": "Array of skill IDs associated with this ability score"
+    }
+  }
+}

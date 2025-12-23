@@ -252,7 +252,7 @@ def _is_sentient_rule_header(item: dict[str, Any]) -> bool:
     return False
 
 
-def main():
+def main() -> None:
     """CLI entry point for testing parsing."""
     import json
     import sys

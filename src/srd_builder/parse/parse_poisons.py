@@ -10,7 +10,7 @@ import re
 from typing import Any
 
 from ..extract.extract_prose import clean_text
-from .postprocess import normalize_id
+from ..postprocess.ids import normalize_id
 
 
 def parse_poison_records(raw_poisons: list[dict[str, Any]]) -> list[dict[str, Any]]:

@@ -610,6 +610,119 @@ Rules are indexed by:
 
 ---
 
+## Atomic Reference Schemas (v1.0.0)
+
+**Added in:** v0.20.0 (December 2025)
+
+These schemas define fundamental D&D game constants extracted from prose and tables into standalone, cross-referenceable datasets. They enable validation of type_id cross-references in other datasets.
+
+### Damage Type Schema (v1.0.0)
+
+**Schema File:** `schemas/damage_type.schema.json`
+**Dataset:** `damage_types.json` (13 items)
+**Source:** SRD 5.1 page 97
+
+```json
+{
+  "id": "damage_type:fire",
+  "simple_name": "fire",
+  "name": "Fire",
+  "description": [
+    "Fire damage represents burning, heat, and flames.",
+    "Fire elementals breathe fire, and many spells conjure flames."
+  ],
+  "examples": ["red dragon breath", "flame tongue weapon", "fireball spell"],
+  "page": 97,
+  "source": "SRD 5.1"
+}
+```
+
+**Canonical Types (13):**
+- **Physical:** bludgeoning, piercing, slashing
+- **Elemental:** acid, cold, fire, lightning, thunder
+- **Exotic:** force, necrotic, poison, psychic, radiant
+
+### Ability Score Schema (v1.0.0)
+
+**Schema File:** `schemas/ability_score.schema.json`
+**Dataset:** `ability_scores.json` (6 items)
+**Source:** SRD 5.1 pages 76-77
+
+```json
+{
+  "id": "ability:strength",
+  "simple_name": "strength",
+  "abbreviation": "STR",
+  "name": "Strength",
+  "description": [
+    "Strength measures bodily power, athletic training, and the extent to which you can exert raw physical force."
+  ],
+  "skills": ["skill:athletics"],
+  "page": 76,
+  "source": "SRD 5.1"
+}
+```
+
+**The Six Abilities:**
+- STR (Strength) - Physical power
+- DEX (Dexterity) - Agility and reflexes
+- CON (Constitution) - Endurance and health
+- INT (Intelligence) - Reasoning and memory
+- WIS (Wisdom) - Awareness and insight
+- CHA (Charisma) - Force of personality
+
+### Skill Schema (v1.0.0)
+
+**Schema File:** `schemas/skill.schema.json`
+**Dataset:** `skills.json` (18 items)
+**Source:** SRD 5.1 pages 77-78
+
+```json
+{
+  "id": "skill:athletics",
+  "simple_name": "athletics",
+  "name": "Athletics",
+  "ability": "strength",
+  "ability_id": "ability:strength",
+  "description": [
+    "Your Strength (Athletics) check covers difficult situations you encounter while climbing, jumping, or swimming."
+  ],
+  "page": 77,
+  "source": "SRD 5.1"
+}
+```
+
+**Skill Groups:**
+- **STR:** Athletics
+- **DEX:** Acrobatics, Sleight of Hand, Stealth
+- **INT:** Arcana, History, Investigation, Nature, Religion
+- **WIS:** Animal Handling, Insight, Medicine, Perception, Survival
+- **CHA:** Deception, Intimidation, Performance, Persuasion
+
+### Weapon Property Schema (v1.0.0)
+
+**Schema File:** `schemas/weapon_property.schema.json`
+**Dataset:** `weapon_properties.json` (11 items)
+**Source:** SRD 5.1 page 66
+
+```json
+{
+  "id": "weapon_property:versatile",
+  "simple_name": "versatile",
+  "name": "Versatile",
+  "description": [
+    "This weapon can be used with one or two hands. A damage value in parentheses appears with the property—the damage when the weapon is used with two hands to make a melee attack."
+  ],
+  "page": 66,
+  "source": "SRD 5.1"
+}
+```
+
+**Properties (11):**
+Ammunition, Finesse, Heavy, Light, Loading, Range, Reach, Special, Thrown, Two-Handed, Versatile
+
+---
+
 ## Future Schema Additions
 
 ### Planned (v1.4.0+)
