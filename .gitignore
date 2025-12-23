@@ -23,6 +23,10 @@ rulesets/*/raw/**
 docs/external/
 
 # Archive folder - local reference only
-archive/
+archive/*
+!archive/dist_versions/
+archive/dist_versions/*
+!archive/dist_versions/README.md
+!archive/dist_versions/dist_v*/
 docs/archive
 docs/archive/
