@@ -27,6 +27,6 @@ archive/*
 !archive/dist_versions/
 archive/dist_versions/*
 !archive/dist_versions/README.md
-!archive/dist_versions/dist_v*/
+!archive/dist_versions/srd_*/
 docs/archive
 docs/archive/
