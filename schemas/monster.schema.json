@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
-  "version": "1.5.0",
-  "last_modified": "2025-12-21",
+  "version": "2.0.0",
+  "last_modified": "2025-12-22",
   "title": "Monster",
   "type": "object",
   "additionalProperties": true,
@@ -40,21 +40,32 @@
       "description": "Display name"
     },
     "armor_class": {
-      "description": "Armor class value or breakdown",
-      "oneOf": [
-        {
+      "description": "Armor class structured object",
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "value": {
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "description": "Base AC value"
         },
-        {
+        "type": {
           "type": "string",
-          "minLength": 1
+          "description": "Armor type (natural armor, plate, etc.)"
         },
-        {
-          "type": "object",
-          "additionalProperties": true
+        "type_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "Normalized armor type identifier"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional context (e.g., with shield)"
         }
-      ]
+      },
+      "additionalProperties": false
     },
     "hit_points": {
       "description": "Hit point total or expression",
@@ -99,6 +110,178 @@
       },
       "additionalProperties": true
     },
+    "speed": {
+      "type": "object",
+      "description": "Movement speeds in feet",
+      "properties": {
+        "walk": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Walking speed in feet"
+        },
+        "swim": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Swimming speed in feet"
+        },
+        "fly": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Flying speed in feet"
+        },
+        "burrow": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Burrowing speed in feet"
+        },
+        "climb": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Climbing speed in feet"
+        },
+        "hover": {
+          "type": "boolean",
+          "description": "Whether creature can hover while flying"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional movement notes"
+        }
+      },
+      "additionalProperties": false
+    },
+    "senses": {
+      "type": "object",
+      "description": "Sensory abilities in feet",
+      "properties": {
+        "darkvision": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Darkvision range in feet"
+        },
+        "blindsight": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Blindsight range in feet"
+        },
+        "tremorsense": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Tremorsense range in feet"
+        },
+        "truesight": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Truesight range in feet"
+        },
+        "passive_perception": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Passive Perception score"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional sense notes (blind beyond this radius, etc.)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "damage_resistances": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Damage type (acid, cold, fire, etc.)"
+          },
+          "type_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "description": "Normalized damage type identifier"
+          },
+          "conditions": {
+            "type": "string",
+            "description": "Conditional resistance (nonmagical attacks, etc.)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "damage_immunities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Damage type (poison, psychic, etc.)"
+          },
+          "type_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "description": "Normalized damage type identifier"
+          },
+          "conditions": {
+            "type": "string",
+            "description": "Conditional immunity"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "damage_vulnerabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Damage type"
+          },
+          "type_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$",
+            "description": "Normalized damage type identifier"
+          },
+          "conditions": {
+            "type": "string",
+            "description": "Conditional vulnerability"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "condition_immunities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Condition name (charmed, frightened, etc.)"
+          },
+          "condition_id": {
+            "type": "string",
+            "pattern": "^condition:[a-z0-9_]+$",
+            "description": "Cross-reference to condition dataset"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
     "actions": {
       "type": "array",
       "items": {
@@ -125,6 +308,92 @@
             },
             "minItems": 1,
             "description": "Array of paragraph strings describing the action/trait"
+          },
+          "attack_bonus": {
+            "type": "integer",
+            "description": "Attack bonus for weapon attacks"
+          },
+          "damage": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "damage_dice"
+              ],
+              "properties": {
+                "damage_dice": {
+                  "type": "string",
+                  "pattern": "^\\d+d\\d+(\\+\\d+)?$",
+                  "description": "Damage dice expression (e.g., 2d6+3)"
+                },
+                "damage_type": {
+                  "type": "string",
+                  "description": "Damage type (slashing, fire, etc.)"
+                },
+                "damage_type_id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9_]+$",
+                  "description": "Normalized damage type identifier"
+                }
+              },
+              "additionalProperties": false
+            },
+            "description": "Damage components for this action"
+          },
+          "dc": {
+            "type": "object",
+            "required": [
+              "dc_value"
+            ],
+            "properties": {
+              "dc_value": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Difficulty Class value"
+              },
+              "dc_type": {
+                "type": "string",
+                "description": "Ability score for the saving throw"
+              },
+              "dc_type_id": {
+                "type": "string",
+                "pattern": "^(str|dex|con|int|wis|cha)$",
+                "description": "Normalized ability score identifier"
+              },
+              "success_type": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "half",
+                  "other"
+                ],
+                "description": "Effect on successful save"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Saving throw information"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "reach": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Melee reach in feet"
+              },
+              "range_normal": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Normal range in feet"
+              },
+              "range_long": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Long range in feet"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Attack range information"
           }
         },
         "additionalProperties": true

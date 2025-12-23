@@ -1,0 +1,65 @@
+{
+  "id": "monster:goblin",
+  "simple_name": "goblin",
+  "name": "Goblin",
+  "size": "Small",
+  "type": "humanoid (goblinoid)",
+  "alignment": "neutral evil",
+  "armor_class": {
+    "value": 15,
+    "type": "leather armor, shield",
+    "type_id": "leather_armor"
+  },
+  "hit_points": {
+    "average": 7,
+    "formula": "2d6"
+  },
+  "speed": {
+    "walk": 30,
+    "swim": 0,
+    "fly": 0,
+    "burrow": 0,
+    "climb": 0,
+    "hover": false
+  },
+  "senses": {
+    "darkvision": 60,
+    "blindsight": 0,
+    "tremorsense": 0,
+    "truesight": 0,
+    "passive_perception": 9
+  },
+  "ability_scores": {
+    "strength": 8,
+    "dexterity": 14,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 8,
+    "charisma": 8
+  },
+  "skills": {
+    "stealth": 6
+  },
+  "actions": [
+    {
+      "name": "Scimitar",
+      "simple_name": "scimitar",
+      "description": [
+        "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
+      ],
+      "attack_bonus": 4,
+      "damage": [
+        {
+          "damage_dice": "1d6+2",
+          "damage_type": "slashing",
+          "damage_type_id": "slashing"
+        }
+      ],
+      "range": {
+        "reach": 5
+      }
+    }
+  ],
+  "challenge_rating": 0.25,
+  "languages": "Common, Goblin"
+}
