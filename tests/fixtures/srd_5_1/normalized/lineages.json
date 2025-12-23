@@ -47,7 +47,6 @@
           3
         ],
         "section": "races",
-        "extraction_date": "2025-12-22",
         "extraction_notes": "Dwarf from SRD 5.1"
       },
       "age": "Dwarves mature at the same rate as humans, but they're considered young until they reach the age of 50. On average, they live about 350 years.",
@@ -103,7 +102,6 @@
           5
         ],
         "section": "races",
-        "extraction_date": "2025-12-22",
         "extraction_notes": "Dragonborn from SRD 5.1"
       },
       "age": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10-year-old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
@@ -151,7 +149,6 @@
           7
         ],
         "section": "races",
-        "extraction_date": "2025-12-22",
         "extraction_notes": "Tiefling from SRD 5.1"
       },
       "age": "Tieflings mature at the same rate as humans but live a few years longer.",

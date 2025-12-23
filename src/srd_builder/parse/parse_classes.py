@@ -11,7 +11,6 @@ NOTE: Each class references its progression table (e.g., table:barbarian_progres
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Any
 
 from srd_builder.constants import DATA_SOURCE
@@ -61,7 +60,6 @@ def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
         "extraction_metadata": {
             "source_pages": [data["page"]],
             "section": "classes",
-            "extraction_date": datetime.now().strftime("%Y-%m-%d"),
             "extraction_notes": f"{data['name']} class from SRD 5.1",
         },
     }

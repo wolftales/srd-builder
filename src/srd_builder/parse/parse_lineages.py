@@ -6,7 +6,6 @@ BOUNDARIES: Transforms LINEAGE_DATA → structured records with metadata
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Any
 
 from srd_builder.srd_5_1.lineage_targets import LINEAGE_DATA
@@ -58,7 +57,6 @@ def _build_lineage_record(data: dict[str, Any]) -> dict[str, Any]:
         "extraction_metadata": {
             "source_pages": [data["page"]],
             "section": "races",
-            "extraction_date": datetime.now().strftime("%Y-%m-%d"),
             "extraction_notes": f"{data['name']} from SRD 5.1",
         },
     }
@@ -123,7 +121,6 @@ def _build_subrace_record(
         "extraction_metadata": {
             "source_pages": [parent_data["page"]],
             "section": "races",
-            "extraction_date": datetime.now().strftime("%Y-%m-%d"),
             "extraction_notes": (f"{subrace_data['name']} subrace of {parent_data['name']}"),
         },
     }
