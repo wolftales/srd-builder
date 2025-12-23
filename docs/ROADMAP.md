@@ -61,12 +61,16 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 
 **In Progress:**
 - 🔄 v0.17.0 — Rules Dataset (next milestone)
+- 🔍 **API Structure Research** — Analyzing dnd5eapi.co, 5e-bits, Open5e data models
 
 **Planned:**
 - 📖 v0.18.0 — Modular Refactor (7 datasets to modular pattern) ✅ **COMPLETE**
-- 🛠️ v0.18.1 — Dependency Audit (update all dependencies to latest, verify versions)
-- 🎨 v0.19.0 — Third-Party Review & Feedback (external validation before v1.0)
+- 🛠️ v0.18.1 — Dependency Audit (update all dependencies to latest, verify versions) ✅ **COMPLETE**
+- 🔗 v0.19.0 — Cross-Reference Enhancement (inline references with type_id fields)
+- 📚 v0.20.0 — Atomic Reference Datasets (skills, damage_types, ability_scores)
+- 🎨 v0.21.0 — Third-Party Review & Feedback (external validation before v1.0)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
+- 🏗️ v2.0.0 — Data Model Restructure (field grouping, nested objects, API-first patterns)
 
 ---
 
@@ -93,6 +97,329 @@ This section tracks progress toward the complete SRD 5.1 dataset extraction.
 | `rules.json` | 📋 Planned | TBD | v0.17.0 | Core mechanics, variant rules |
 
 **Progress:** 14/15 datasets complete (93%)
+
+---� **API Structure Research Phase** **[ANALYSIS]** 🔄 IN PROGRESS
+
+**Status:** IN PROGRESS - Collecting data for v2.0 planning
+**Priority:** HIGH (informs v0.19.0-v2.0 architecture decisions)
+**Effort:** Small (~1 day)
+**Consumer Impact:** NONE (research only)
+
+**Goal:** Analyze existing D&D 5e API structures to inform our data model evolution.
+
+### Research Questions
+
+**1. Field Organization**
+- How do they structure ability scores? Flat vs nested vs grouped?
+- Are defenses (resistances/immunities) grouped or scattered?
+- Combat vs roleplay field separation?
+
+**2. Cross-Reference Patterns**
+- String arrays: `["fire", "cold"]`
+- Object arrays: `[{"name": "fire", "url": "/damage-types/fire"}]`
+- ID references: `[{"type": "fire", "type_id": "damage_type:fire"}]`
+
+**3. List vs Detail Shapes**
+- Same structure for both?
+- Lightweight list (index/name) + heavy detail?
+- What fields are in summaries vs full records?
+
+**4. Atomic Datasets**
+- Do they expose skills.json, damage_types.json separately?
+- How granular are reference datasets?
+- Embedded vs linked data?
+
+**5. API Patterns**
+- Pagination structures (count/next/previous/results)
+- Resource identity (index, slug, url)
+- Versioning strategies (/api/2014 vs /api/2024)
+
+### Data Collection
+
+**Sources:**
+1. **dnd5eapi.co** (REST, SRD-only)
+   - `/api/monsters` - List structure
+   - `/api/monsters/aboleth` - Detail structure
+   - `/api/damage-types` - Atomic dataset example
+   - `/api/skills` - Atomic dataset example
+
+2. **5e-bits GraphQL** (REST + GraphQL)
+   - GraphQL schema introspection
+   - Monster query with all fields
+   - Reference object patterns
+
+3. **Open5e** (REST, multi-source)
+   - Pagination/filtering patterns
+   - List vs detail comparison
+   - Source attribution approach
+
+**Output:** Comparative analysis document showing concrete structural patterns
+
+**Next Steps:**
+1. ✅ Fetch sample responses from all three APIs
+2. ⏳ Build structure comparison table
+3. ⏳ Identify best patterns for srd-builder
+4. ⏳ Decide: v0.19.0 enhancement-only vs v2.0 restructure
+
+---
+
+## 🔗 **v0.19.0 — Cross-Reference Enhancement** **[DATA QUALITY]** 📋 PLANNED
+
+**Status:** PLANNED - Awaiting API structure research completion
+**Priority:** HIGH (enables client-side queries without server)
+**Effort:** Medium (~2-3 days)
+**Consumer Impact:** IMPROVED - Better cross-dataset navigation
+
+**Note:** Scope may change based on API research findings. May be combined with v2.0 restructure if grouping changes are recommended.
+**Effort:** Medium (~2-3 days)
+**Consumer Impact:** IMPROVED - Better cross-dataset navigation
+
+**Goal:** Add inline reference IDs alongside display strings to enable client-side cross-dataset queries.
+
+### Problem Statement
+
+**Current State:**
+All references use display strings only:
+```json
+{
+  "damage": [{"type": "fire", "dice": "2d6"}],
+  "saving_throw": {"ability": "dexterity", "dc": 15},
+  "conditions": ["poisoned", "stunned"]
+}
+```
+
+**Limitations:**
+- Clients must fuzzy-match strings to find referenced entities
+- Case sensitivity issues ("Fire" vs "fire")
+- No guarantee string matches actual entity name
+- Server-side query required for cross-dataset navigation
+- Typos break references silently
+
+### Proposed Solution
+
+**Pattern:** Add `type_id` field alongside display strings (Claude report recommendation)
+
+```json
+{
+  "damage": [
+    {
+      "type": "fire",
+      "type_id": "damage_type:fire",
+      "dice": "2d6"
+    }
+  ],
+  "saving_throw": {
+    "ability": "dexterity",
+    "ability_id": "ability:dexterity",
+    "dc": 15
+  },
+  "conditions": [
+    {
+      "name": "poisoned",
+      "id": "condition:poisoned"
+    }
+  ]
+}
+```
+
+**Benefits:**
+- **Exact matching:** ID lookups are precise, not fuzzy
+- **Client-side queries:** No server needed for cross-dataset navigation
+- **Type safety:** IDs encode entity type (damage_type:, ability:, condition:)
+- **Validation:** Can verify referenced IDs exist during build
+- **Backward compatible:** Display strings preserved for human readability
+
+### Implementation Phases
+
+**Phase 1: Damage Types** ✅ PILOT
+- Add `type_id` to damage objects in monsters, spells
+- Reference format: `damage_type:fire`, `damage_type:slashing`
+- Update schemas: monster.schema.json, spell.schema.json
+- Generate validation warnings for unknown damage types
+
+**Phase 2: Abilities**
+- Add `ability_id` to saving throws, skill checks
+- Reference format: `ability:strength`, `ability:dexterity`
+- Update all datasets using ability references
+
+**Phase 3: Conditions**
+- Convert condition arrays from strings to objects with IDs
+- Reference format: `condition:poisoned`, `condition:stunned`
+- Update monster immunities, spell effects
+
+**Phase 4: Cross-References**
+- Spells referencing spells (Wish, etc.)
+- Equipment referencing equipment (packs)
+- Features referencing features (prerequisites)
+
+### Schema Changes
+
+**Breaking Change:** v1.4.0 → v1.5.0 (MINOR bump - additive)
+
+**Before:**
+```json
+"damage": {"type": "string"}
+```
+
+**After:**
+```json
+"damage": {
+  "type": {"type": "string"},
+  "type_id": {"type": "string", "pattern": "^damage_type:"}
+}
+```
+
+### Validation Strategy
+
+**Build-Time Checks:**
+```python
+def validate_references(entity_data, reference_ids):
+    """Verify all type_id references exist in target datasets."""
+    for ref_id in reference_ids:
+        if ref_id not in index['by_id']:
+            warnings.warn(f"Broken reference: {ref_id}")
+```
+
+**Quality Metrics:**
+- 0 broken references (all type_ids must resolve)
+- 100% coverage (every display string has matching type_id)
+- Bidirectional validation (entity exists, reference is valid)
+
+### Testing
+
+**New Tests:**
+- Verify all damage type_ids exist in future damage_types.json
+- Verify all ability_ids match ability_scores.json
+- Verify all condition IDs exist in conditions.json
+- Test cross-dataset queries using IDs
+
+---
+
+## 📚 **v0.20.0 — Atomic Reference Datasets** **[DATA]** 📋 PLANNED
+
+**Status:** PLANNED - Extract reusable game constants
+**Priority:** HIGH (foundation for cross-references)
+**Effort:** Medium (~1 week)
+**Consumer Impact:** NEW - Canonical reference data
+
+**Goal:** Extract small atomic datasets from prose sections to serve as cross-reference targets.
+
+### Scope
+
+**Three New Datasets:**
+
+1. **skills.json** (18 items)
+   - Extract from "Using Ability Scores" prose (pages 76-83)
+   - Fields: `id`, `name`, `ability`, `description`, `page`
+   - Example: `{id: "skill:athletics", name: "Athletics", ability: "strength"}`
+   - Enables: Skill check references, character sheet skills
+
+2. **damage_types.json** (13 items)
+   - Extract from "Damage Types" section (page 97)
+   - Fields: `id`, `name`, `description`, `examples`, `page`
+   - Types: acid, bludgeoning, cold, fire, force, lightning, necrotic, piercing, poison, psychic, radiant, slashing, thunder
+   - Enables: Damage type_id validation, resistance/immunity cross-refs
+
+3. **ability_scores.json** (6 items)
+   - Formalize existing ability score data
+   - Fields: `id`, `name`, `abbreviation`, `description`, `skills`, `page`
+   - Example: `{id: "ability:strength", abbr: "STR", skills: ["athletics"]}`
+   - Enables: Ability cross-references, character creation
+
+### Benefits
+
+**For Consumers:**
+- Single source of truth for game constants
+- Descriptions from authoritative SRD text
+- Cross-reference validation targets
+- Reduced duplication (don't hardcode skill lists)
+
+**For srd-builder:**
+- Validation baseline for type_id references
+- Test that all damage types referenced actually exist
+- Canonical IDs for cross-dataset linking
+
+### Extraction Strategy
+
+**Skills (Prose Extraction):**
+- Similar to conditions extraction (v0.10.0 pattern)
+- Parse "Using Ability Scores" headers and paragraphs
+- Extract skill names, associated abilities, descriptions
+- Build from pages 76-83
+
+**Damage Types (Prose Extraction):**
+- Parse "Damage Types" section on page 97
+- Extract type names and descriptions
+- Associate examples from monster/spell damage
+
+**Ability Scores (Structured Data):**
+- Already have modifier table (page 76)
+- Add skill associations from skills.json
+- Add canonical descriptions from ability score rules
+- ⏳ **Optimized Data Model** (v2.0.0) - Field grouping, nested structures, API-first patterns
+
+**Active Research:**
+- 🔍 Analyzing dnd5eapi.co, 5e-bits, Open5e structural patterns
+- 🔍 Evaluating field grouping options (ability scores, defenses, combat sections)
+- 🔍 Comparing cross-reference strategies (strings vs objects vs IDs)
+- 🔍 Planning v2.0 data model restructure based on proven API patterns
+
+### Schema Design
+
+**skill.schema.json (v1.0.0):**
+```json
+{
+  "id": "skill:athletics",
+  "simple_name": "athletics",
+  "name": "Athletics",
+  "ability": "strength",
+  "ability_id": "ability:strength",
+  "description": ["Your Strength (Athletics) check covers..."],
+  "page": 76
+}
+```
+
+**damage_type.schema.json (v1.0.0):**
+```json
+{
+  "id": "damage_type:fire",
+  "simple_name": "fire",
+  "name": "Fire",
+  "description": ["Fire damage represents..."],
+  "examples": ["red dragon breath", "flame tongue weapon"],
+  "page": 97
+}
+```
+
+### Integration with v0.19.0
+
+**Phase Order:**
+1. ✅ v0.19.0: Add type_id fields (references prepared)
+2. ✅ v0.20.0: Create reference datasets (targets created)
+3. ✅ Validation: Verify all type_ids resolve to real entities
+
+**Example Flow:**
+```python
+# Monster has damage reference
+monster["damage"][0]["type_id"] = "damage_type:fire"
+
+# Validation checks damage_types.json
+assert "damage_type:fire" in damage_types_index["by_id"]
+
+# Consumer can navigate
+damage_info = damage_types_index["by_id"]["damage_type:fire"]
+print(damage_info["description"])  # "Fire damage represents..."
+```
+
+### Quality Metrics
+
+- ✅ 18/18 skills extracted with descriptions
+- ✅ 13/13 damage types with SRD text
+- ✅ 6/6 abilities with skill associations
+- ✅ All referenced type_ids validate against datasets
+- ✅ Zero broken cross-references
+
+---
 
 **What You Can Build Right Now:**
 - ✅ **Character Sheet App** - Full classes, lineages, ability scores, equipment, and spell lists
@@ -3150,7 +3477,103 @@ Created reusable components for future prose sections (diseases, madness, poison
 
 **Post-1.0.0:**
 - v1.x.x - Bug fixes, data quality improvements for SRD 5.1
-- v2.0.0 - SRD 5.2.1 extraction (new ruleset)
+- v2.0.0 - Data model restructure (see below)
+- v2.1.0 - SRD 5.2.1 extraction (new ruleset)
+
+---
+
+## 🏗️ **v2.0.0 — Data Model Restructure** **[ARCHITECTURE]** 📋 RESEARCH
+
+**Status:** RESEARCH PHASE - Gathering API structure patterns
+**Priority:** MEDIUM (post-v1.0 quality improvement)
+**Effort:** High (~2-3 weeks including migration)
+**Consumer Impact:** BREAKING - New data structure
+
+**Goal:** Restructure JSON based on proven API patterns from dnd5eapi.co, 5e-bits, Open5e.
+
+### Research Questions (In Progress)
+
+**Pending API Analysis:**
+1. **Field Grouping**
+   - Current: Flat structure (all fields at root level)
+   - Option A: Group ability scores `{ability_scores: {str: {...}, dex: {...}}}`
+   - Option B: Group defenses `{defenses: {resistances: [], immunities: []}}`
+   - Option C: Group by usage `{combat: {...}, characteristics: {...}}`
+   - **Question:** What groupings do successful APIs use?
+
+2. **Cross-References**
+   - Current: String arrays `["fire", "cold"]`
+   - Option A: Object arrays `[{name: "fire", url: "..."}]`
+   - Option B: Hybrid `{type: "fire", type_id: "damage_type:fire"}`
+   - **Question:** What's the balance between simplicity and richness?
+
+3. **List vs Detail Shapes**
+   - Current: Same structure for all views
+   - Option A: Generate multiple shapes (list/summary/detail)
+   - Option B: Single rich structure, clients filter
+   - **Question:** What performance/UX tradeoffs exist?
+
+4. **Resource Identity**
+   - Current: `{id: "monster:aboleth", simple_name: "aboleth"}`
+   - Target: `{index: "aboleth", url: "/monsters/aboleth", id: "monster:aboleth"}`
+   - **Question:** What's the minimal resource identity contract?
+
+### Proposed Scope (Subject to Change)
+
+**Phase 1: Structure Analysis**
+- ✅ Collect responses from dnd5eapi.co (REST)
+- ⏳ Collect responses from 5e-bits (GraphQL)
+- ⏳ Collect responses from Open5e (Django REST Framework)
+- ⏳ Build comparison table of structural patterns
+- ⏳ Document pros/cons of each approach
+
+**Phase 2: Design Proposal**
+- ⏳ Draft v2.0 monster.json structure (example)
+- ⏳ Draft v2.0 spell.json structure (example)
+- ⏳ Show before/after for each major dataset
+- ⏳ Estimate breaking change impact
+- ⏳ Get consumer feedback (Blackmoor, community)
+
+**Phase 3: Implementation**
+- ⏳ Update all schemas (v1.x → v2.0)
+- ⏳ Migrate parse/postprocess modules
+- ⏳ Generate multiple output shapes if needed
+- ⏳ Update all tests and fixtures
+- ⏳ Migration guide for consumers
+
+**Phase 4: FastAPI Service (Optional)**
+- ⏳ Implement REST endpoints
+- ⏳ Generate OpenAPI spec from schemas
+- ⏳ Add browsable API (Swagger UI)
+- ⏳ Optional GraphQL layer
+
+### Open Questions
+
+**Backward Compatibility:**
+- Ship both v1 and v2 formats during transition?
+- Deprecation timeline for v1 format?
+- Auto-migration tool for consumers?
+
+**Performance:**
+- File size impact of richer structures?
+- Query performance with nested objects?
+- Index size with multiple shapes?
+
+**Consumer Input Needed:**
+- What groupings make most sense for your use cases?
+- List/summary/detail shapes useful, or just full data?
+- REST service needed, or JSON files sufficient?
+
+### Success Criteria
+
+- ✅ Comprehensive API structure analysis documented
+- ✅ v2.0 proposal with concrete before/after examples
+- ✅ Consumer feedback incorporated
+- ✅ Breaking changes justified and documented
+- ✅ Migration path clear and tested
+- ✅ Performance maintained or improved
+
+**Note:** This is a major version bump. Won't ship until v1.0.0 is stable and we have real consumer usage patterns to inform decisions.
 
 ---
 
