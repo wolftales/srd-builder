@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/madness.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-09",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Madness",
   "description": "Madness effects from SRD 5.1 pages 201-202. Madness categories with random effect tables.",
   "type": "object",

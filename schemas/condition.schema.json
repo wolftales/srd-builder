@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/condition.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-09",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Condition",
   "description": "Game conditions from SRD 5.1 Appendix PH-A (pages 358-359). Conditions are special status effects that affect creature capabilities.",
   "type": "object",

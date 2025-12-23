@@ -2,7 +2,7 @@
   "_meta": {
     "source": "SRD_CC_v5.1",
     "ruleset_version": "5.1",
-    "schema_version": "1.4.0",
+    "schema_version": "2.0.0",
     "generated_by": "srd-builder v0.18.1",
     "build_report": "./build_report.json"
   },

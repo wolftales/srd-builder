@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://srd-builder.github.io/schemas/table.schema.json",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "title": "SRD 5.1 Reference Table Schema",
   "description": "Schema for reusable reference tables (experience by CR, spell slots, proficiency bonus, etc.)",
   "type": "object",
@@ -37,10 +37,6 @@
       "type": "string",
       "minLength": 1,
       "description": "Human-readable display name (e.g., 'Experience Points by Challenge Rating')"
-    },
-    "summary": {
-      "type": "string",
-      "description": "Brief description of table purpose and usage"
     },
     "columns": {
       "type": "array",

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/disease.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-09",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Disease",
   "description": "Diseases from SRD 5.1 pages 199-200. Diseases affect creatures with ongoing effects and save mechanics.",
   "type": "object",
@@ -37,10 +37,6 @@
       },
       "uniqueItems": true,
       "description": "Alternative names or search terms"
-    },
-    "summary": {
-      "type": "string",
-      "description": "One-sentence description for tooltips"
     },
     "description": {
       "type": "string",

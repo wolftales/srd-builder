@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/poison.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-09",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Poison",
   "description": "Poisons from SRD 5.1 pages 204-205. Poisons with application methods, effects, and costs.",
   "type": "object",
@@ -37,10 +37,6 @@
       },
       "uniqueItems": true,
       "description": "Alternative names"
-    },
-    "summary": {
-      "type": "string",
-      "description": "One-sentence description"
     },
     "type": {
       "type": "string",
@@ -88,6 +84,11 @@
         "type": {
           "type": "string",
           "description": "Damage type (usually 'poison')"
+        },
+        "type_id": {
+          "type": "string",
+          "pattern": "^damage_type:[a-z]+$",
+          "description": "Cross-reference to damage type (e.g., 'damage_type:poison')"
         },
         "on_save": {
           "type": "string",

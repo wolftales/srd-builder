@@ -73,14 +73,10 @@ def _parse_single_poison(raw: dict[str, Any]) -> dict[str, Any] | None:
     # Extract cost
     cost = _extract_cost(text)
 
-    # Generate summary
-    summary = _generate_summary(text, poison_type)
-
     result = {
         "id": f"poison:{simple_name}",
         "name": name,
         "simple_name": simple_name,
-        "summary": summary,
         "type": poison_type if poison_type else "injury",  # Default to injury
         "description": text,
         "page": page,
@@ -151,9 +147,11 @@ def _extract_damage_info(text: str) -> dict[str, Any] | None:
     damage_pattern = r"(\d+d\d+(?:\s*\+\s*\d+)?)\s+(poison|necrotic|psychic)?\s*damage"
     match = re.search(damage_pattern, text, re.IGNORECASE)
     if match:
+        damage_type = match.group(2).lower() if match.group(2) else "poison"
         return {
             "dice": match.group(1),
-            "type": match.group(2).lower() if match.group(2) else "poison",
+            "type": damage_type,
+            "type_id": f"damage_type:{damage_type}",
         }
     return None
 
@@ -208,27 +206,3 @@ def _extract_cost(text: str) -> dict[str, Any] | None:
             "currency": match.group(2).lower(),
         }
     return None
-
-
-def _generate_summary(text: str, poison_type: str | None) -> str:
-    """Generate a summary for the poison.
-
-    Args:
-        text: Full poison text
-        poison_type: Poison application type
-
-    Returns:
-        Summary string
-    """
-    # Try to get first sentence
-    match = re.match(r"([^.!?]+[.!?])", text)
-    if match:
-        summary = match.group(1).strip()
-        if len(summary) <= 150:
-            return summary
-
-    # Fallback: mention type and truncate
-    type_str = f"{poison_type.capitalize()} poison" if poison_type else "Poison"
-    if len(text) <= 100:
-        return f"{type_str}. {text}"
-    return f"{type_str}. {text[:80]}..."

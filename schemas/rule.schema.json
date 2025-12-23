@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/rule.schema.json",
-  "version": "1.3.0",
-  "last_modified": "2024-12-21",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Rule",
   "description": "Game rules and mechanics from SRD 5.1 core chapters (abilities, combat, spellcasting, adventuring). Rules are prose-first mechanical descriptions with optional tags and cross-references.",
   "type": "object",
