@@ -66,7 +66,7 @@ def test_parse_equipment_weapon_range_and_versatile() -> None:
 
     item = parse_equipment_records([raw_item])[0]
 
-    assert item["damage"] == {"dice": "1d4", "type": "piercing"}
+    assert item["damage"] == {"dice": "1d4", "type": "piercing", "type_id": "piercing"}
     # Properties should be clean (no embedded data)
     assert item["properties"] == [
         "finesse",
@@ -104,7 +104,7 @@ def test_parse_equipment_weapon_versatile_damage() -> None:
 
     item = parse_equipment_records([raw_item])[0]
 
-    assert item["damage"] == {"dice": "1d8", "type": "slashing"}
+    assert item["damage"] == {"dice": "1d8", "type": "slashing", "type_id": "slashing"}
     # Versatile damage extracted from embedded data in properties
     assert item["versatile_damage"] == {"dice": "1d10"}
     # Properties should be clean (no embedded data)

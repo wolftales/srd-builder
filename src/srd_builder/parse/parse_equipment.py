@@ -437,7 +437,12 @@ def _parse_damage(damage_text: str | None) -> dict[str, str] | None:
     damage_text = damage_text.strip()
     match = re.match(r"(\d+d\d+)\s+(\w+)", damage_text)
     if match:
-        return {"dice": match.group(1), "type": match.group(2)}
+        damage_type = match.group(2)
+        return {
+            "dice": match.group(1),
+            "type": damage_type,
+            "type_id": damage_type.lower(),
+        }
 
     return None
 

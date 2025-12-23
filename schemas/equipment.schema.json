@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "version": "1.4.0",
-  "last_modified": "2025-11-03",
+  "version": "2.0.0",
+  "last_modified": "2025-12-23",
   "title": "SRD 5.1 Equipment Item",
   "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",
@@ -37,10 +37,6 @@
       },
       "uniqueItems": true,
       "description": "Alternative names or search terms for this item (e.g., 'flask' and 'tankard' for 'Flask or tankard')"
-    },
-    "summary": {
-      "type": "string",
-      "description": "One-sentence description for tooltips and previews (optional)"
     },
     "description": {
       "type": "string",
@@ -151,7 +147,8 @@
       ],
       "required": [
         "dice",
-        "type"
+        "type",
+        "type_id"
       ],
       "additionalProperties": false,
       "description": "Default weapon damage",
@@ -167,6 +164,11 @@
             "piercing",
             "slashing"
           ]
+        },
+        "type_id": {
+          "type": "string",
+          "pattern": "^[a-z_]+$",
+          "description": "Normalized damage type identifier for cross-referencing"
         }
       }
     },
