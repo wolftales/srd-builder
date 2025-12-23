@@ -9,6 +9,7 @@ from typing import Any
 
 from ..postprocess import normalize_id
 from ..postprocess.text import clean_text
+from . import parse_actions
 
 __all__ = ["normalize_monster", "parse_monster_records", "parse_monster_from_blocks"]
 
@@ -107,68 +108,176 @@ def _normalize_list_of_dicts(entries: list[dict[str, Any]] | None) -> list[dict[
     return [deepcopy(entry) for entry in entries]
 
 
-def _normalize_speed(raw_speed: Any) -> dict[str, int | dict[str, Any]]:
-    """Normalize speed into structured format.
+def _normalize_actions(entries: list[dict[str, Any]] | None) -> list[dict[str, Any]]:
+    """Normalize actions with structured field extraction for v2.0 schema."""
+    if not entries:
+        return []
+    normalized = []
+    for action in entries:
+        action_copy = deepcopy(action)
+        # Apply v2.0 field extraction
+        parsed = parse_actions.parse_action_fields(action_copy)
+        normalized.append(parsed)
+    return normalized
+
+
+def _normalize_speed(raw_speed: Any) -> dict[str, int | bool | str]:
+    """Normalize speed into v2.0 structured format.
+
+    Schema v2.0.0 format: All movement types explicit with integer values (0 for unused).
+    Hover is boolean flag. Notes field for conditions.
 
     Examples:
-        "30 ft." -> {"walk": 30}
-        "walk 30 ft., fly 60 ft." -> {"walk": 30, "fly": 60}
-        "fly 50 ft. (hover)" -> {"fly": {"value": 50, "condition": "hover"}}
-        "0 ft., fly 90 ft. (hover)" -> {"walk": 0, "fly": {"value": 90, "condition": "hover"}}
-
-    Returns dict where values are either int (simple) or dict with value/condition (structured).
-    Only single-word conditions in parentheses are treated as structured (e.g., "hover").
-    Complex parenthetical content is ignored for now.
+        "30 ft." -> {"walk": 30, "swim": 0, "fly": 0, "burrow": 0, "climb": 0, "hover": False}
+        "walk 30 ft., fly 60 ft." -> {"walk": 30, "swim": 0, "fly": 60, "burrow": 0, "climb": 0, "hover": False}
+        "fly 50 ft. (hover)" -> {"walk": 0, "swim": 0, "fly": 50, "burrow": 0, "climb": 0, "hover": True}
+        "30 ft., swim 60 ft." -> {"walk": 30, "swim": 60, "fly": 0, "burrow": 0, "climb": 0, "hover": False}
     """
+    # Initialize v2.0 structure with all movement types
+    speed_obj: dict[str, int | bool | str] = {
+        "walk": 0,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": False,
+    }
+
     if isinstance(raw_speed, str):
-        speed_dict: dict[str, int | dict[str, Any]] = {}
         for match in _SPEED_WITH_CONDITION.finditer(raw_speed):
             mode = match.group("mode") or "walk"
             value = int(match.group("value"))
             condition = match.group("condition")
 
             mode_key = mode.strip().lower().replace(" ", "_")
-            # Only treat single-word conditions as structured (like "hover")
-            # Ignore complex parenthetical content (like alternate forms)
-            if condition and len(condition.split()) == 1:
-                speed_dict[mode_key] = {"value": value, "condition": condition.strip()}
-            else:
-                speed_dict[mode_key] = value
-        return speed_dict
+            if mode_key in speed_obj:
+                speed_obj[mode_key] = value
+
+            # Check for hover condition
+            if condition and "hover" in condition.lower():
+                speed_obj["hover"] = True
+
+        return speed_obj
+
     if not isinstance(raw_speed, dict):
-        return {}
-    normalized: dict[str, int | dict[str, Any]] = {}
+        return speed_obj
+
+    # Process dict input (from existing normalized data)
     for mode, value in raw_speed.items():
-        coerced = _coerce_int(value)
-        if coerced is not None:
-            normalized[str(mode).strip().lower().replace(" ", "_")] = coerced
-    return normalized
+        mode_key = str(mode).strip().lower().replace(" ", "_")
+        if mode_key in ("walk", "swim", "fly", "burrow", "climb"):
+            coerced = _coerce_int(value)
+            if coerced is not None:
+                speed_obj[mode_key] = coerced
+        elif mode_key == "hover":
+            speed_obj["hover"] = bool(value)
+
+    return speed_obj
 
 
 def _normalize_defense_entries(value: Any) -> list[Any]:
-    """Normalize defense entries (resistances, immunities, vulnerabilities).
+    """Normalize defense entries for v2.0 schema (resistances, immunities, vulnerabilities).
 
-    Splits semicolon-separated strings and cleans whitespace.
-    Format: "radiant; bludgeoning, piercing, and slashing from nonmagical attacks"
-    Each semicolon-separated part becomes a separate entry.
+    Schema v2.0.0 format: [{type: str, type_id: str, conditions: str?}, ...]
+
+    Splits semicolon-separated strings and adds type_id.
 
     Example:
-        "fire" -> [{"type": "fire"}]
-        "radiant; bludgeoning, piercing, and slashing" ->
-            [{"type": "radiant"}, {"type": "bludgeoning, piercing, and slashing"}]
+        "fire" -> [{"type": "fire", "type_id": "fire"}]
+        "radiant; bludgeoning, piercing, and slashing from nonmagical attacks" ->
+            [{"type": "radiant", "type_id": "radiant"},
+             {"type": "bludgeoning, piercing, and slashing from nonmagical attacks",
+              "type_id": "bludgeoning", "conditions": "nonmagical"}]
     """
     if not value:
         return []
     if isinstance(value, list | tuple):
-        return [deepcopy(entry) for entry in value]
+        # Already structured - add type_id if missing
+        return [_add_type_id_to_defense(deepcopy(entry)) for entry in value]
 
-    # Split semicolon-separated string and clean each entry
+    # Split semicolon-separated string and create entries
     entries = []
     for part in str(value).split(";"):
         cleaned = " ".join(part.split()).strip()
         if cleaned:
-            entries.append({"type": cleaned})
+            entry = {"type": cleaned}
+            # Extract conditions (e.g., "from nonmagical attacks")
+            if " from " in cleaned.lower():
+                damage_types, condition = cleaned.split(" from ", 1)
+                entry["type"] = damage_types.strip()
+                entry["conditions"] = condition.strip()
+            # Add type_id (first damage type word)
+            entry["type_id"] = _extract_damage_type_id(entry["type"])
+            entries.append(entry)
     return entries
+
+
+def _add_type_id_to_defense(entry: dict[str, Any]) -> dict[str, Any]:
+    """Add type_id to defense entry if missing."""
+    if "type_id" not in entry and "type" in entry:
+        entry["type_id"] = _extract_damage_type_id(entry["type"])
+    return entry
+
+
+def _extract_damage_type_id(damage_type: str) -> str:
+    """Extract normalized damage type ID from type string.
+
+    Examples:
+        "fire" -> "fire"
+        "bludgeoning, piercing, and slashing" -> "bludgeoning"
+        "radiant" -> "radiant"
+    """
+    # Take first word/type from comma-separated list
+    first_type = damage_type.split(",")[0].strip()
+    # Normalize to lowercase snake_case
+    return re.sub(r"[^a-z0-9]+", "_", first_type.lower()).strip("_")
+
+
+def _normalize_condition_immunities(value: Any) -> list[dict[str, str]]:
+    """Normalize condition immunities for v2.0 schema.
+
+    Schema v2.0.0 format: [{name: str, condition_id: str}, ...]
+
+    Example:
+        "charmed, frightened" ->
+            [{"name": "charmed", "condition_id": "condition:charmed"},
+             {"name": "frightened", "condition_id": "condition:frightened"}]
+    """
+    if not value:
+        return []
+
+    # If already structured list of dicts, add condition_id
+    if isinstance(value, list) and value and isinstance(value[0], dict):
+        return [_add_condition_id(deepcopy(entry)) for entry in value]
+
+    # Parse string format (comma-separated)
+    if isinstance(value, str):
+        conditions = []
+        for condition in value.split(","):
+            cleaned = condition.strip()
+            if cleaned:
+                condition_id = re.sub(r"[^a-z0-9]+", "_", cleaned.lower()).strip("_")
+                conditions.append(
+                    {
+                        "name": cleaned,
+                        "condition_id": f"condition:{condition_id}",
+                    }
+                )
+        return conditions
+
+    return []
+
+
+def _add_condition_id(entry: dict[str, Any]) -> dict[str, str]:
+    """Add condition_id to condition entry if missing."""
+    if "condition_id" not in entry and "name" in entry:
+        name = entry["name"]
+        condition_id = re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
+        entry["condition_id"] = f"condition:{condition_id}"
+    # Rename 'type' to 'name' if present (legacy format)
+    if "type" in entry and "name" not in entry:
+        entry["name"] = entry.pop("type")
+    return entry
 
 
 def _add_sense_entry(senses: dict[str, int], entry: str) -> None:
@@ -200,16 +309,42 @@ def _iter_sense_fragments(raw_senses: Any) -> Iterable[str]:
 
 
 def _normalize_senses(raw_senses: Any) -> dict[str, int]:
-    if not raw_senses:
-        return {}
-    if isinstance(raw_senses, dict):
-        return _normalize_sense_mapping(raw_senses)
+    """Normalize senses into v2.0 structured format.
 
-    senses: dict[str, int] = {}
+    Schema v2.0.0 format: All sense types explicit with integer values (0 for unused).
+
+    Examples:
+        "darkvision 60 ft., passive Perception 10" -> {"darkvision": 60, "blindsight": 0, "tremorsense": 0, "truesight": 0, "passive_perception": 10}
+        "blindsight 120 ft." -> {"darkvision": 0, "blindsight": 120, "tremorsense": 0, "truesight": 0, "passive_perception": 0}
+    """
+    # Initialize v2.0 structure with all sense types
+    senses: dict[str, int] = {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 0,
+    }
+
+    if not raw_senses:
+        return senses
+
+    if isinstance(raw_senses, dict):
+        # Process dict input (from existing normalized data)
+        for key, value in raw_senses.items():
+            key_normalized = str(key).strip().lower().replace(" ", "_")
+            if key_normalized in senses:
+                coerced = _coerce_int(value)
+                if coerced is not None:
+                    senses[key_normalized] = coerced
+        return senses
+
+    # Process string input
     for fragment in _iter_sense_fragments(raw_senses):
         text = str(fragment).strip()
         if text:
             _add_sense_entry(senses, text)
+
     return senses
 
 
@@ -238,33 +373,37 @@ def _parse_hit_point_values(raw_hp: Any, raw_dice: Any) -> tuple[int, str]:
     return points, dice_text
 
 
-def _parse_armor_class(raw_ac: Any) -> dict[str, Any] | int:
-    """Parse armor class into structured format.
+def _parse_armor_class(raw_ac: Any) -> dict[str, Any]:
+    """Parse armor class into v2.0 structured format.
+
+    Schema v2.0.0 format: Always return dict with value, type, and type_id.
 
     Examples:
         "17" -> {"value": 17}
-        "17 (natural armor)" -> {"value": 17, "source": "natural armor"}
-        "16 (chain mail, shield)" -> {"value": 16, "source": "chain mail, shield"}
-
-    Returns dict with "value" and optionally "source", or int for simple cases.
+        "17 (natural armor)" -> {"value": 17, "type": "natural armor", "type_id": "natural_armor"}
+        "16 (chain mail, shield)" -> {"value": 16, "type": "chain mail, shield", "type_id": "chain_mail"}
     """
     if raw_ac is None:
-        return 0
+        return {"value": 0}
 
     text = str(raw_ac).strip()
     if not text:
-        return 0
+        return {"value": 0}
 
     # Extract value (number before any parenthesis)
     value = _coerce_int(text) or 0
 
-    # Extract source (text in parentheses)
+    # Extract type (text in parentheses)
     if "(" in text and ")" in text:
-        source = text.split("(", 1)[1].split(")", 1)[0].strip()
-        return {"value": value, "source": source}
+        armor_type = text.split("(", 1)[1].split(")", 1)[0].strip()
+        # Create normalized type_id
+        type_id = re.sub(r"[^a-z0-9]+", "_", armor_type.lower()).strip("_")
+        # Take first word for multi-word types (e.g., "chain mail, shield" -> "chain_mail")
+        type_id = type_id.split(",")[0].strip()
+        return {"value": value, "type": armor_type, "type_id": type_id}
 
-    # Simple numeric AC
-    return value
+    # Simple numeric AC (no armor type)
+    return {"value": value}
 
 
 def _parse_hit_points_structured(raw_hp: Any) -> dict[str, Any] | int:
@@ -410,16 +549,18 @@ def normalize_monster(raw: dict[str, Any]) -> dict[str, Any]:
         "saving_throws": saving_throws,
         "skills": skills,
         "traits": _normalize_list_of_dicts(monster.get("traits")),
-        "actions": _normalize_list_of_dicts(monster.get("actions")),
-        "reactions": _normalize_list_of_dicts(monster.get("reactions")),
-        "legendary_actions": _normalize_list_of_dicts(monster.get("legendary_actions")),
+        "actions": _normalize_actions(monster.get("actions")),
+        "reactions": _normalize_actions(monster.get("reactions")),
+        "legendary_actions": _normalize_actions(monster.get("legendary_actions")),
         "challenge_rating": challenge_value,
         "xp_value": _extract_xp_value(monster),
         "senses": senses,
         "damage_resistances": _normalize_defense_entries(monster.get("damage_resistances")),
         "damage_immunities": _normalize_defense_entries(monster.get("damage_immunities")),
         "damage_vulnerabilities": _normalize_defense_entries(monster.get("damage_vulnerabilities")),
-        "condition_immunities": _normalize_defense_entries(monster.get("condition_immunities")),
+        "condition_immunities": _normalize_condition_immunities(
+            monster.get("condition_immunities")
+        ),
         "languages": monster.get("languages"),
         "page": _coerce_int(monster.get("page")) or 0,
         "src": str(monster.get("src", "")),

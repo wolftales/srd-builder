@@ -1,5 +1,5 @@
 {
-  "source": "api/2014/monsters/owlbear",
+  "source": "api/2014/monsters/owlbear",  # I added these to capture the api path
   "index": "owlbear",
   "name": "Owlbear",
   "size": "Large",

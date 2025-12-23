@@ -27,114 +27,130 @@ _SAVING_THROW = re.compile(
 
 
 def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
-    """Parse structured fields from action text.
+    """Parse structured fields from action text for v2.0 schema.
 
-    Extracts:
-    - attack_type: "melee_weapon", "ranged_weapon", "melee_spell", "ranged_spell"
-    - to_hit: integer bonus
-    - reach: integer (feet)
-    - range: {normal: int, long: int}
-    - damage: {average: int, dice: str, type: str}
-    - saving_throw: {dc: int, ability: str}
+    Extracts (schema v2.0.0 format):
+    - attack_bonus: integer (from "+X to hit")
+    - damage: array of {damage_dice: str, damage_type: str, damage_type_id: str}
+    - dc: {dc_value: int, dc_type: str, dc_type_id: str, success_type: str}
+    - range: {reach: int, range_normal: int, range_long: int}
 
-    Preserves original text field for fallback.
+    Uses description array (not legacy text field).
     """
     patched = {**action}
-    text = action.get("text", "")
+
+    # Get description - support both array and string formats
+    description = action.get("description", [])
+    if isinstance(description, str):
+        text = description
+    elif isinstance(description, list) and description:
+        text = " ".join(description)
+    else:
+        # Fallback to legacy text field
+        text = action.get("text", "")
 
     if not isinstance(text, str):
         return patched
 
-    # Parse attack type
-    attack_match = _ATTACK_HEADER.search(text)
-    if attack_match:
-        attack_category = attack_match.group(1).lower()  # melee or ranged
-        attack_kind = attack_match.group(2).lower()  # weapon or spell
-        patched["attack_type"] = f"{attack_category}_{attack_kind}"
-
-    # Parse to-hit bonus
+    # Parse attack bonus
     to_hit_match = _TO_HIT.search(text)
     if to_hit_match:
         try:
-            patched["to_hit"] = int(to_hit_match.group(1))
+            patched["attack_bonus"] = int(to_hit_match.group(1))
         except ValueError:
             pass
 
-    # Parse reach (for melee attacks)
+    # Parse range object (v2.0 structure)
+    range_obj: dict[str, int] = {}
+
+    # Reach (for melee attacks)
     reach_match = _REACH.search(text)
     if reach_match:
         try:
-            patched["reach"] = int(reach_match.group(1))
+            range_obj["reach"] = int(reach_match.group(1))
         except ValueError:
             pass
 
-    # Parse range (for ranged attacks)
+    # Range (for ranged attacks)
     range_match = _RANGE.search(text)
     if range_match:
         try:
-            patched["range"] = {
-                "normal": int(range_match.group(1)),
-                "long": int(range_match.group(2)),
-            }
+            range_obj["range_normal"] = int(range_match.group(1))
+            range_obj["range_long"] = int(range_match.group(2))
         except ValueError:
             pass
 
-    # Parse damage (can have multiple damage instances)
+    if range_obj:
+        patched["range"] = range_obj
+
+    # Parse damage array (v2.0 structure)
     damage_matches = list(_DAMAGE.finditer(text))
     if damage_matches:
-        # Take first damage as primary
-        first = damage_matches[0]
-        try:
-            damage_dice = first.group(2).strip()
-            # Normalize spacing: "2d6 + 5" or "2d6+5"
-            damage_dice = re.sub(r"\s+", "", damage_dice)
+        damage_array = []
+        for match in damage_matches:
+            try:
+                damage_dice = match.group(2).strip()
+                # Normalize spacing: "2d6 + 5" -> "2d6+5"
+                damage_dice = re.sub(r"\s+", "", damage_dice)
+                damage_type = match.group(3).lower()
 
-            patched["damage"] = {
-                "average": int(first.group(1)),
-                "dice": damage_dice,
-                "type": first.group(3).lower(),
-            }
-        except (ValueError, IndexError):
-            pass
+                damage_array.append(
+                    {
+                        "damage_dice": damage_dice,
+                        "damage_type": damage_type,
+                        "damage_type_id": damage_type.replace(" ", "_"),
+                    }
+                )
+            except (ValueError, IndexError):
+                continue
 
-        # If multiple damage types, store as array
-        if len(damage_matches) > 1:
-            all_damages = []
-            for match in damage_matches:
-                try:
-                    damage_dice = match.group(2).strip()
-                    damage_dice = re.sub(r"\s+", "", damage_dice)
-                    all_damages.append(
-                        {
-                            "average": int(match.group(1)),
-                            "dice": damage_dice,
-                            "type": match.group(3).lower(),
-                        }
-                    )
-                except (ValueError, IndexError):
-                    continue
-            if len(all_damages) > 1:
-                patched["damage_options"] = all_damages
+        if damage_array:
+            patched["damage"] = damage_array
 
-    # Parse saving throw
+    # Parse saving throw (v2.0 dc structure)
     save_match = _SAVING_THROW.search(text)
     if save_match:
         try:
-            ability = save_match.group(2).lower()
-            # Map short forms to full names
-            ability_map = {
-                "str": "strength",
-                "dex": "dexterity",
-                "con": "constitution",
-                "int": "intelligence",
-                "wis": "wisdom",
-                "cha": "charisma",
-            }
-            ability = ability_map.get(ability, ability)
+            ability_full = save_match.group(2).lower()
 
-            patched["saving_throw"] = {
-                "dc": int(save_match.group(1)),
-                "ability": ability,
+            # Map short/full forms to schema IDs
+            ability_id_map = {
+                "str": "str",
+                "strength": "str",
+                "dex": "dex",
+                "dexterity": "dex",
+                "con": "con",
+                "constitution": "con",
+                "int": "int",
+                "intelligence": "int",
+                "wis": "wis",
+                "wisdom": "wis",
+                "cha": "cha",
+                "charisma": "cha",
+            }
+
+            ability_name_map = {
+                "str": "Strength",
+                "dex": "Dexterity",
+                "con": "Constitution",
+                "int": "Intelligence",
+                "wis": "Wisdom",
+                "cha": "Charisma",
+            }
+
+            dc_type_id = ability_id_map.get(ability_full, ability_full[:3])
+            dc_type = ability_name_map.get(dc_type_id, ability_full.capitalize())
+
+            # Determine success_type from context
+            success_type = "none"
+            if "half" in text.lower() or "half as much" in text.lower():
+                success_type = "half"
+
+            patched["dc"] = {
+                "dc_value": int(save_match.group(1)),
+                "dc_type": dc_type,
+                "dc_type_id": dc_type_id,
+                "success_type": success_type,
             }
         except (ValueError, IndexError):
             pass
