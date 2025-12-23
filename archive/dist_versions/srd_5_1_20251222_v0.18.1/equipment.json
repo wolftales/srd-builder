@@ -1,0 +1,5255 @@
+{
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "ruleset_version": "5.1",
+    "schema_version": "1.4.0",
+    "generated_by": "srd-builder v0.18.1",
+    "build_report": "./build_report.json",
+    "equipment_economics": {
+      "resale_rules": {
+        "arms_armor_equipment": "Undamaged weapons, armor, and other equipment fetch half their cost when sold in a market. Weapons and armor used by monsters are rarely in good enough condition to sell.",
+        "magic_items": "Selling magic items is problematic. Finding someone to buy a potion or a scroll isn't too hard, but other items are out of the realm of most but the wealthiest nobles. The value of magic is far beyond simple gold.",
+        "gems_jewelry_art": "These items retain their full value in the marketplace, and you can either trade them in for coin or use them as currency for other transactions.",
+        "trade_goods": "Like gems and art objects, trade goods\u2014bars of iron, bags of salt, livestock, and so on\u2014retain their full value in the marketplace and barter economy."
+      },
+      "default_resale_multiplier": 0.5,
+      "source_page": 62
+    }
+  },
+  "items": [
+    {
+      "id": "item:inn-stay-per-day",
+      "name": "Inn stay (per day)",
+      "simple_name": "inn_stay",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 0
+    },
+    {
+      "id": "item:squalid",
+      "name": "Squalid",
+      "simple_name": "squalid",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 1,
+      "cost": {
+        "amount": 7,
+        "currency": "cp"
+      },
+      "description": "You live in a leaky stable, a mud-floored hut just outside town, or a vermin-infested boarding house in the worst part of town. You have shelter from the elements, but you live in a desperate and often violent environment, in places rife with disease, hunger, and misfortune. You are beneath the notice of most people, and you have few legal protections. Most people at this lifestyle level have suffered some terrible setback. They might be disturbed, marked as exiles, or suffer from disease."
+    },
+    {
+      "id": "item:poor",
+      "name": "Poor",
+      "simple_name": "poor",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 2,
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "description": "A poor lifestyle means going without the comforts available in a stable community. Simple food and lodgings, threadbare clothing, and unpredictable conditions result in a sufficient, though probably unpleasant, experience. Your accommodations might be a room in a flophouse or in the common room above a tavern. You benefit from some legal protections, but you still have to contend with violence, crime, and disease. People at this lifestyle level tend to be unskilled laborers, costermongers, peddlers, thieves, mercenaries, and other disreputable types."
+    },
+    {
+      "id": "item:modest",
+      "name": "Modest",
+      "simple_name": "modest",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 3,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "description": "A modest lifestyle keeps you out of the slums and ensures that you can maintain your equipment. You live in an older part of town, renting a room in a boarding house, inn, or temple. You don't go hungry or thirsty, and your living conditions are clean, if simple. Ordinary people living modest lifestyles include soldiers with families, laborers, students, priests, hedge wizards, and the like."
+    },
+    {
+      "id": "item:comfortable",
+      "name": "Comfortable",
+      "simple_name": "comfortable",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 4,
+      "cost": {
+        "amount": 8,
+        "currency": "sp"
+      },
+      "description": "Choosing a comfortable lifestyle means that you can afford nicer clothing and can easily maintain your equipment. You live in a small cottage in a middle-class neighborhood or in a private room at a fine inn. You associate with merchants, skilled tradespeople, and military officers."
+    },
+    {
+      "id": "item:wealthy",
+      "name": "Wealthy",
+      "simple_name": "wealthy",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 5,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "description": "Choosing a wealthy lifestyle means living a life of luxury, though you might not have achieved the social status associated with the old money of nobility or royalty. You live a lifestyle comparable to that of a highly successful merchant, a favored servant of the royalty, or the owner of a few small businesses. You have respectable lodgings, usually a spacious home in a good part of town or a comfortable suite at a fine inn. You likely have a small staff of servants."
+    },
+    {
+      "id": "item:aristocratic",
+      "name": "Aristocratic",
+      "simple_name": "aristocratic",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 6,
+      "cost": {
+        "amount": 4,
+        "currency": "gp"
+      },
+      "description": "You live a life of plenty and comfort. You move in circles populated by the most powerful people in the community. You have excellent lodgings, perhaps a townhouse in the nicest part of town or rooms in the finest inn. You dine at the best restaurants, retain the most skilled and fashionable tailor, and have servants attending to your every need. You receive invitations to the social gatherings of the rich and powerful, and spend evenings in the company of politicians, guild leaders, high priests, and nobility. You must also contend with the highest levels of deceit and treachery. The wealthier you are, the greater the chance you will be drawn into political intrigue as a pawn or participant."
+    },
+    {
+      "id": "item:meals-per-day",
+      "name": "Meals (per day)",
+      "simple_name": "meals",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 7
+    },
+    {
+      "id": "item:meat-chunk",
+      "name": "Meat, chunk",
+      "simple_name": "meat_chunk",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 14,
+      "cost": {
+        "amount": 3,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:wine",
+      "name": "Wine",
+      "simple_name": "wine",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 15
+    },
+    {
+      "id": "item:common-pitcher",
+      "name": "Common (pitcher)",
+      "simple_name": "common",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 16,
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:fine-bottle",
+      "name": "Fine (bottle)",
+      "simple_name": "fine",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 17,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:ale",
+      "name": "Ale",
+      "simple_name": "ale",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 18
+    },
+    {
+      "id": "item:gallon",
+      "name": "Gallon",
+      "simple_name": "gallon",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 19,
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:mug",
+      "name": "Mug",
+      "simple_name": "mug",
+      "category": "consumable",
+      "page": 158,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "food_drink_lodging",
+      "row_index": 20,
+      "cost": {
+        "amount": 4,
+        "currency": "cp"
+      }
+    },
+    {
+      "id": "item:coach-cab",
+      "name": "Coach cab",
+      "simple_name": "coach_cab",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 0
+    },
+    {
+      "id": "item:between-towns",
+      "name": "Between towns",
+      "simple_name": "between_towns",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 1,
+      "cost": {
+        "amount": 3,
+        "currency": "cp"
+      }
+    },
+    {
+      "id": "item:within-a-city",
+      "name": "Within a city",
+      "simple_name": "within_a_city",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 2,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      }
+    },
+    {
+      "id": "item:hireling",
+      "name": "Hireling",
+      "simple_name": "hireling",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 3
+    },
+    {
+      "id": "item:skilled",
+      "name": "Skilled",
+      "simple_name": "skilled",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 4,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:untrained",
+      "name": "Untrained",
+      "simple_name": "untrained",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 5,
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:messenger",
+      "name": "Messenger",
+      "simple_name": "messenger",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 6,
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      }
+    },
+    {
+      "id": "item:road-or-gate-toll",
+      "name": "Road or gate toll",
+      "simple_name": "road_or_gate_toll",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 7,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      }
+    },
+    {
+      "id": "item:ships-passage",
+      "name": "Ship\u2019s passage",
+      "simple_name": "ships_passage",
+      "category": "service",
+      "page": 159,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "services",
+      "row_index": 8,
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:abacus",
+      "name": "Abacus",
+      "simple_name": "abacus",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 0,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:acid-vial",
+      "name": "Acid (vial)",
+      "simple_name": "acid",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 1,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "As an action, you can splash the contents of this vial onto a creature within 5 feet of you or throw the vial up to 20 feet, shattering it on impact. In either case, make a ranged attack against a creature or object, treating the acid as an improvised weapon. On a hit, the target takes 2d6 acid damage."
+    },
+    {
+      "id": "item:alchemists-fire-flask",
+      "name": "Alchemist\u2019s fire (flask)",
+      "simple_name": "alchemists_fire",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 2,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This sticky, adhesive fluid ignites when exposed to air. As an action, you can throw this flask up to 20 feet, shattering it on impact. Make a ranged attack against a creature or object, treating the alchemist's fire as an improvised weapon. On a hit, the target takes 1d4 fire damage at the start of each of its turns. A creature can end this damage by using its action to make a DC 10 Dexterity check to extinguish the flames."
+    },
+    {
+      "id": "item:ammunition",
+      "name": "Ammunition",
+      "simple_name": "ammunition",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 3
+    },
+    {
+      "id": "item:arrows-20",
+      "name": "Arrows (20)",
+      "simple_name": "arrows",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 4,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:blowgun-needles-50",
+      "name": "Blowgun needles (50)",
+      "simple_name": "blowgun_needles",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 5,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:crossbow-bolts-20",
+      "name": "Crossbow bolts (20)",
+      "simple_name": "crossbow_bolts",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 6,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.5,
+      "weight_raw": "1\u00bd lb."
+    },
+    {
+      "id": "item:sling-bullets-20",
+      "name": "Sling bullets (20)",
+      "simple_name": "sling_bullets",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 7,
+      "cost": {
+        "amount": 4,
+        "currency": "cp"
+      },
+      "weight_lb": 5.5,
+      "weight_raw": "1\u00bd lb."
+    },
+    {
+      "id": "item:antitoxin-vial",
+      "name": "Antitoxin (vial)",
+      "simple_name": "antitoxin",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 8,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014",
+      "description": "A creature that drinks this vial of liquid gains advantage on saving throws against poison for 1 hour. It confers no benefit to undead or constructs."
+    },
+    {
+      "id": "item:arcane-focus",
+      "name": "Arcane focus",
+      "simple_name": "arcane_focus",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 9,
+      "description": "An arcane focus is a special item\u2014an orb, a crystal, a rod, a specially constructed staff, a wand-like length of wood, or some similar item\u2014designed to channel the power of arcane spells. A sorcerer, warlock, or wizard can use such an item as a spellcasting focus."
+    },
+    {
+      "id": "item:crystal",
+      "name": "Crystal",
+      "simple_name": "crystal",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 10,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:orb",
+      "name": "Orb",
+      "simple_name": "orb",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 11,
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:rod",
+      "name": "Rod",
+      "simple_name": "rod",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 12,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:staff",
+      "name": "Staff",
+      "simple_name": "staff",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 13,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:wand",
+      "name": "Wand",
+      "simple_name": "wand",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 14,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:backpack",
+      "name": "Backpack",
+      "simple_name": "backpack",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 15,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:ball-bearings-bag-of-1000",
+      "name": "Ball bearings (bag of 1,000)",
+      "simple_name": "ball_bearings",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 16,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "As an action, you can spill these tiny metal balls from their pouch to cover a level, square area that is 10 feet on a side. A creature moving across the covered area must succeed on a DC 10 Dexterity saving throw or fall prone. A creature moving through the area at half speed doesn't need to make the save."
+    },
+    {
+      "id": "item:barrel",
+      "name": "Barrel",
+      "simple_name": "barrel",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 17,
+      "capacity": "40 gallons liquid, 4 cubic feet solid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 70.0,
+      "weight_raw": "70 lb."
+    },
+    {
+      "id": "item:basket",
+      "name": "Basket",
+      "simple_name": "basket",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 18,
+      "capacity": "2 cubic feet/40 pounds of gear",
+      "sub_category": "container",
+      "cost": {
+        "amount": 4,
+        "currency": "sp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:bedroll",
+      "name": "Bedroll",
+      "simple_name": "bedroll",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 19,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 7.0,
+      "weight_raw": "7 lb."
+    },
+    {
+      "id": "item:bell",
+      "name": "Bell",
+      "simple_name": "bell",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 20,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:blanket",
+      "name": "Blanket",
+      "simple_name": "blanket",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 21,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:block-and-tackle",
+      "name": "Block and tackle",
+      "simple_name": "block_and_tackle",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 22,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb.",
+      "description": "A set of pulleys with a cable threaded through them and a hook to attach to objects, a block and tackle allows you to hoist up to four times the weight you can normally lift."
+    },
+    {
+      "id": "item:book",
+      "name": "Book",
+      "simple_name": "book",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 23,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb.",
+      "description": "A book might contain poetry, historical accounts, information pertaining to a particular field of lore, diagrams and notes on gnomish contraptions, or just about anything else that can be represented using text or pictures. A book of spells is a spellbook."
+    },
+    {
+      "id": "item:bottle-glass",
+      "name": "Bottle, glass",
+      "simple_name": "bottle_glass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 24,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:bucket",
+      "name": "Bucket",
+      "simple_name": "bucket",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 25,
+      "capacity": "3 gallons liquid, 1/2 cubic foot solid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:caltrops-bag-of-20",
+      "name": "Caltrops (bag of 20)",
+      "simple_name": "caltrops",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 26,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "As an action, you can spread a bag of caltrops to cover a square area that is 5 feet on a side. Any creature that enters the area must succeed on a DC 15 Dexterity saving throw or stop moving this turn and take 1 piercing damage. Taking this damage reduces the creature's walking speed by 10 feet until the creature regains at least 1 hit point. A creature moving through the area at half speed doesn't need to make the save."
+    },
+    {
+      "id": "item:candle",
+      "name": "Candle",
+      "simple_name": "candle",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 27,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_raw": "\u2014",
+      "description": "For 1 hour, a candle sheds bright light in a 5-foot radius and dim light for an additional 5 feet."
+    },
+    {
+      "id": "item:case-crossbow-bolt",
+      "name": "Case, crossbow bolt",
+      "simple_name": "case_crossbow_bolt",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 28,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This wooden case can hold up to twenty crossbow bolts."
+    },
+    {
+      "id": "item:case-map-or-scroll",
+      "name": "Case, map or scroll",
+      "simple_name": "case_map_or_scroll",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 29,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This cylindrical leather case can hold up to ten rolled-up sheets of paper or five rolled-up sheets of parchment."
+    },
+    {
+      "id": "item:chain-10-feet",
+      "name": "Chain (10 feet)",
+      "simple_name": "chain",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 30,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb.",
+      "description": "A chain has 10 hit points. It can be burst with a successful DC 20 Strength check."
+    },
+    {
+      "id": "item:chalk-1-piece",
+      "name": "Chalk (1 piece)",
+      "simple_name": "chalk",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 31,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:chest",
+      "name": "Chest",
+      "simple_name": "chest",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 32,
+      "capacity": "12 cubic feet/300 pounds of gear",
+      "sub_category": "container",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb."
+    },
+    {
+      "id": "item:climbers-kit",
+      "name": "Climber\u2019s kit",
+      "simple_name": "climbers_kit",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 33,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 12.0,
+      "weight_raw": "12 lb.",
+      "description": "A climber's kit includes special pitons, boot tips, gloves, and a harness. You can use the climber's kit as an action to anchor yourself; when you do, you can't fall more than 25 feet from the point where you anchored yourself, and you can't climb more than 25 feet away from that point without undoing the anchor."
+    },
+    {
+      "id": "item:clothes-common",
+      "name": "Clothes, common",
+      "simple_name": "clothes_common",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 34,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:clothes-costume",
+      "name": "Clothes, costume",
+      "simple_name": "clothes_costume",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 35,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:clothes-fine",
+      "name": "Clothes, fine",
+      "simple_name": "clothes_fine",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 36,
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:clothes-travelers",
+      "name": "Clothes, traveler\u2019s",
+      "simple_name": "clothes_travelers",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 37,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:component-pouch",
+      "name": "Component pouch",
+      "simple_name": "component_pouch",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 38,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "A component pouch is a small, watertight leather belt pouch that has compartments to hold all the material components and other special items you need to cast your spells, except for those components that have a specific cost (as indicated in a spell's description)."
+    },
+    {
+      "id": "item:crowbar",
+      "name": "Crowbar",
+      "simple_name": "crowbar",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 39,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb.",
+      "description": "Using a crowbar grants advantage to Strength checks where the crowbar's leverage can be applied."
+    },
+    {
+      "id": "item:druidic-focus",
+      "name": "Druidic focus",
+      "simple_name": "druidic_focus",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 40,
+      "description": "A druidic focus might be a sprig of mistletoe or holly, a wand or scepter made of yew or another special wood, a staff drawn whole out of a living tree, or a totem object incorporating feathers, fur, bones, and teeth from sacred animals. A druid can use such an object as a spellcasting focus."
+    },
+    {
+      "id": "item:sprig-of-mistletoe",
+      "name": "Sprig of mistletoe",
+      "simple_name": "sprig_of_mistletoe",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 41,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:totem",
+      "name": "Totem",
+      "simple_name": "totem",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 42,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:wooden-staff",
+      "name": "Wooden staff",
+      "simple_name": "wooden_staff",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 43,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:yew-wand",
+      "name": "Yew wand",
+      "simple_name": "yew_wand",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 44,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:fishing-tackle",
+      "name": "Fishing tackle",
+      "simple_name": "fishing_tackle",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 45,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb.",
+      "description": "This kit includes a wooden rod, silken line, corkwood bobbers, steel hooks, lead sinkers, velvet lures, and narrow netting."
+    },
+    {
+      "id": "item:flask-or-tankard",
+      "name": "Flask or tankard",
+      "simple_name": "flask_or_tankard",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 46,
+      "capacity": "1 pint liquid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:grappling-hook",
+      "name": "Grappling hook",
+      "simple_name": "grappling_hook",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 47,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:hammer",
+      "name": "Hammer",
+      "simple_name": "hammer",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 48,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:hammer-sledge",
+      "name": "Hammer, sledge",
+      "simple_name": "hammer_sledge",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 49,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:healers-kit",
+      "name": "Healer\u2019s kit",
+      "simple_name": "healers_kit",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 50,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb.",
+      "description": "This kit is a leather pouch containing bandages, salves, and splints. The kit has ten uses. As an action, you can expend one use of the kit to stabilize a creature that has 0 hit points, without needing to make a Wisdom (Medicine) check."
+    },
+    {
+      "id": "item:holy-symbol",
+      "name": "Holy symbol",
+      "simple_name": "holy_symbol",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 51,
+      "description": "A holy symbol is a representation of a god or pantheon. It might be an amulet depicting a symbol representing a deity, the same symbol carefully engraved or inlaid as an emblem on a shield, or a tiny box holding a fragment of a sacred relic. A cleric or paladin can use a holy symbol as a spellcasting focus. To use the symbol in this way, the caster must hold it in hand, wear it visibly, or bear it on a shield."
+    },
+    {
+      "id": "item:amulet",
+      "name": "Amulet",
+      "simple_name": "amulet",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 52,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:emblem",
+      "name": "Emblem",
+      "simple_name": "emblem",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 53,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:reliquary",
+      "name": "Reliquary",
+      "simple_name": "reliquary",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 54,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:holy-water-flask",
+      "name": "Holy water (flask)",
+      "simple_name": "holy_water",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 55,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "As an action, you can splash the contents of this flask onto a creature within 5 feet of you or throw it up to 20 feet, shattering it on impact. In either case, make a ranged attack against a target creature, treating the holy water as an improvised weapon. If the target is a fiend or undead, it takes 2d6 radiant damage. A cleric or paladin may create holy water by performing a special ritual. The ritual takes 1 hour to perform, uses 25 gp worth of powdered silver, and requires the caster to expend a 1st-level spell slot."
+    },
+    {
+      "id": "item:hourglass",
+      "name": "Hourglass",
+      "simple_name": "hourglass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 56,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:hunting-trap",
+      "name": "Hunting trap",
+      "simple_name": "hunting_trap",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 57,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb.",
+      "description": "When you use your action to set it, this trap forms a saw-toothed steel ring that snaps shut when a creature steps on a pressure plate in the center. The trap is affixed by a heavy chain to an immobile object, such as a tree or a spike driven into the ground. A creature that steps on the plate must succeed on a DC 13 Dexterity saving throw or take 1d4 piercing damage and stop moving. Thereafter, until the creature breaks free of the trap, its movement is limited by the length of the chain (typically 3 feet long). A creature can use its action to make a DC 13 Strength check, freeing itself or another creature within its reach on a success. Each failed check deals 1 piercing damage to the trapped creature."
+    },
+    {
+      "id": "item:ink-1-ounce-bottle",
+      "name": "Ink (1 ounce bottle)",
+      "simple_name": "ink",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 58,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:ink-pen",
+      "name": "Ink pen",
+      "simple_name": "ink_pen",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 59,
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:jug-or-pitcher",
+      "name": "Jug or pitcher",
+      "simple_name": "jug_or_pitcher",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 60,
+      "capacity": "1 gallon liquid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:ladder-10-foot",
+      "name": "Ladder (10-\u00ad\u2010foot)",
+      "simple_name": "ladder",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 61,
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb."
+    },
+    {
+      "id": "item:lamp",
+      "name": "Lamp",
+      "simple_name": "lamp",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 62,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "A lamp casts bright light in a 15-foot radius and dim light for an additional 30 feet. Once lit, it burns for 6 hours on a flask (1 pint) of oil."
+    },
+    {
+      "id": "item:lantern-bullseye",
+      "name": "Lantern, bullseye",
+      "simple_name": "lantern_bullseye",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 63,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "A bullseye lantern casts bright light in a 60-foot cone and dim light for an additional 60 feet. Once lit, it burns for 6 hours on a flask (1 pint) of oil."
+    },
+    {
+      "id": "item:lantern-hooded",
+      "name": "Lantern, hooded",
+      "simple_name": "lantern_hooded",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 64,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "A hooded lantern casts bright light in a 30-foot radius and dim light for an additional 30 feet. Once lit, it burns for 6 hours on a flask (1 pint) of oil. As an action, you can lower the hood, reducing the light to dim light in a 5-foot radius."
+    },
+    {
+      "id": "item:lock",
+      "name": "Lock",
+      "simple_name": "lock",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 65,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "A key is provided with the lock. Without the key, a creature proficient with thieves' tools can pick this lock with a successful DC 15 Dexterity check. Your GM may decide that better locks are available for higher prices."
+    },
+    {
+      "id": "item:magnifying-glass",
+      "name": "Magnifying glass",
+      "simple_name": "magnifying_glass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 66,
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014",
+      "description": "This lens allows a closer look at small objects. It is also useful as a substitute for flint and steel when starting fires. Lighting a fire with a magnifying glass requires light as bright as sunlight to focus, tinder to ignite, and about 5 minutes for the fire to ignite. A magnifying glass grants advantage on any ability check made to appraise or inspect an item that is small or highly detailed."
+    },
+    {
+      "id": "item:manacles",
+      "name": "Manacles",
+      "simple_name": "manacles",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 67,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb.",
+      "description": "These metal restraints can bind a Small or Medium creature. Escaping the manacles requires a successful DC 20 Dexterity check. Breaking them requires a successful DC 20 Strength check. Each set of manacles comes with one key. Without the key, a creature proficient with thieves' tools can pick the manacles' lock with a successful DC 15 Dexterity check. Manacles have 15 hit points."
+    },
+    {
+      "id": "item:mess-kit",
+      "name": "Mess kit",
+      "simple_name": "mess_kit",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 68,
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This tin box contains a cup and simple cutlery. The box clamps together, and one side can be used as a cooking pan and the other as a plate or shallow bowl."
+    },
+    {
+      "id": "item:mirror-steel",
+      "name": "Mirror, steel",
+      "simple_name": "mirror_steel",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 69,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_raw": "lb."
+    },
+    {
+      "id": "item:oil-flask",
+      "name": "Oil (flask)",
+      "simple_name": "oil",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 70,
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "Oil usually comes in a clay flask that holds 1 pint. As an action, you can splash the oil in this flask onto a creature within 5 feet of you or throw it up to 20 feet, shattering it on impact. Make a ranged attack against a target creature or object, treating the oil as an improvised weapon. On a hit, the target is covered in oil. If the target takes any fire damage before the oil dries (after 1 minute), the target takes an additional 5 fire damage from the burning oil. You can also pour a flask of oil on the ground to cover a 5-foot-square area, provided that the surface is level. If lit, the oil burns for 2 rounds and deals 5 fire damage to any creature that enters the area or ends its turn in the area. A creature can take this damage only once per turn."
+    },
+    {
+      "id": "item:paper-one-sheet",
+      "name": "Paper (one sheet)",
+      "simple_name": "paper",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 71,
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:parchment-one-sheet",
+      "name": "Parchment (one sheet)",
+      "simple_name": "parchment",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 72,
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:perfume-vial",
+      "name": "Perfume (vial)",
+      "simple_name": "perfume",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 73,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:pick-miners",
+      "name": "Pick, miner\u2019s",
+      "simple_name": "pick_miners",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 74,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:piton",
+      "name": "Piton",
+      "simple_name": "piton",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 75,
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_raw": "lb."
+    },
+    {
+      "id": "item:poison-basic-vial",
+      "name": "Poison, basic (vial)",
+      "simple_name": "poison_basic",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 76,
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014",
+      "description": "You can use the poison in this vial to coat one slashing or piercing weapon or up to three pieces of ammunition. Applying the poison takes an action. A creature hit by the poisoned weapon or ammunition must make a DC 10 Constitution saving throw or take 1d4 poison damage. Once applied, the poison retains potency for 1 minute before drying."
+    },
+    {
+      "id": "item:pole-10-foot",
+      "name": "Pole (10-\u00ad\u2010foot)",
+      "simple_name": "pole",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 77,
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_lb": 7.0,
+      "weight_raw": "7 lb."
+    },
+    {
+      "id": "item:pot-iron",
+      "name": "Pot, iron",
+      "simple_name": "pot_iron",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 78,
+      "capacity": "1 gallon liquid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:potion-of-healing",
+      "name": "Potion of healing",
+      "simple_name": "potion_of_healing",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 79,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_raw": "lb.",
+      "description": "A character who drinks the magical red fluid in this vial regains 2d4 + 2 hit points. Drinking or administering a potion takes an action."
+    },
+    {
+      "id": "item:pouch",
+      "name": "Pouch",
+      "simple_name": "pouch",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 80,
+      "capacity": "1/5 cubic foot/6 pounds of gear",
+      "sub_category": "container",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "A cloth or leather pouch can hold up to 20 sling bullets or 50 blowgun needles, among other things. A compartmentalized pouch for holding spell components is called a component pouch."
+    },
+    {
+      "id": "item:quiver",
+      "name": "Quiver",
+      "simple_name": "quiver",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 81,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "A quiver can hold up to 20 arrows."
+    },
+    {
+      "id": "item:ram-portable",
+      "name": "Ram, portable",
+      "simple_name": "ram_portable",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 82,
+      "cost": {
+        "amount": 4,
+        "currency": "gp"
+      },
+      "weight_lb": 35.0,
+      "weight_raw": "35 lb.",
+      "description": "You can use a portable ram to break down doors. When doing so, you gain a +4 bonus on the Strength check. One other character can help you use the ram, giving you advantage on this check."
+    },
+    {
+      "id": "item:rations-1-day",
+      "name": "Rations (1 day)",
+      "simple_name": "rations",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 83,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "Rations consist of dry foods suitable for extended travel, including jerky, dried fruit, hardtack, and nuts."
+    },
+    {
+      "id": "item:robes",
+      "name": "Robes",
+      "simple_name": "robes",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 84,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:rope-hempen-50-feet",
+      "name": "Rope, hempen (50 feet)",
+      "simple_name": "rope_hempen",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 85,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb.",
+      "description": "Rope, whether made of hemp or silk, has 2 hit points and can be burst with a DC 17 Strength check."
+    },
+    {
+      "id": "item:rope-silk-50-feet",
+      "name": "Rope, silk (50 feet)",
+      "simple_name": "rope_silk",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 86,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:sack",
+      "name": "Sack",
+      "simple_name": "sack",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 87,
+      "capacity": "1 cubic foot/30 pounds of gear",
+      "sub_category": "container",
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_raw": "lb."
+    },
+    {
+      "id": "item:scale-merchants",
+      "name": "Scale, merchant\u2019s",
+      "simple_name": "scale_merchants",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 88,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb.",
+      "description": "A scale includes a small balance, pans, and a suitable assortment of weights up to 2 pounds. With it, you can measure the exact weight of small objects, such as raw precious metals or trade goods, to help determine their worth."
+    },
+    {
+      "id": "item:sealing-wax",
+      "name": "Sealing wax",
+      "simple_name": "sealing_wax",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 89,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:shovel",
+      "name": "Shovel",
+      "simple_name": "shovel",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 90,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:signal-whistle",
+      "name": "Signal whistle",
+      "simple_name": "signal_whistle",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 91,
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:signet-ring",
+      "name": "Signet ring",
+      "simple_name": "signet_ring",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 92,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:soap",
+      "name": "Soap",
+      "simple_name": "soap",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 93,
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:spellbook",
+      "name": "Spellbook",
+      "simple_name": "spellbook",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 94,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb.",
+      "description": "Essential for wizards, a spellbook is a leather-bound tome with 100 blank vellum pages suitable for recording spells."
+    },
+    {
+      "id": "item:spikes-iron-10",
+      "name": "Spikes, iron (10)",
+      "simple_name": "spikes_iron",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 95,
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:spyglass",
+      "name": "Spyglass",
+      "simple_name": "spyglass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 96,
+      "cost": {
+        "amount": 1000,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "Objects viewed through a spyglass are magnified to twice their size."
+    },
+    {
+      "id": "item:tent-two-person",
+      "name": "Tent, two-\u00ad\u2010person",
+      "simple_name": "tent_two_person",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 97,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 20.0,
+      "weight_raw": "20 lb."
+    },
+    {
+      "id": "item:tinderbox",
+      "name": "Tinderbox",
+      "simple_name": "tinderbox",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 98,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This small container holds flint, fire steel, and tinder (usually dry cloth soaked in light oil) used to kindle a fire. Using it to light a torch\u2014or anything else with abundant, exposed fuel\u2014takes an action. Lighting any other fire takes 1 minute."
+    },
+    {
+      "id": "item:torch",
+      "name": "Torch",
+      "simple_name": "torch",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 99,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "A torch burns for 1 hour, providing bright light in a 20-foot radius and dim light for an additional 20 feet. If you make a melee attack with a burning torch and hit, it deals 1 fire damage."
+    },
+    {
+      "id": "item:vial",
+      "name": "Vial",
+      "simple_name": "vial",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 100,
+      "capacity": "4 ounces liquid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:waterskin",
+      "name": "Waterskin",
+      "simple_name": "waterskin",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 101,
+      "capacity": "4 pints liquid",
+      "sub_category": "container",
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      }
+    },
+    {
+      "id": "item:whetstone",
+      "name": "Whetstone",
+      "simple_name": "whetstone",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "adventure_gear",
+      "row_index": 102,
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:camel",
+      "name": "Camel",
+      "simple_name": "camel",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 0,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:donkey-or-mule",
+      "name": "Donkey or mule",
+      "simple_name": "donkey_or_mule",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 1,
+      "cost": {
+        "amount": 8,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:elephant",
+      "name": "Elephant",
+      "simple_name": "elephant",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 2,
+      "cost": {
+        "amount": 200,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:horse-draft",
+      "name": "Horse, draft",
+      "simple_name": "horse_draft",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 3,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:horse-riding",
+      "name": "Horse, riding",
+      "simple_name": "horse_riding",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 4,
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:mastiff",
+      "name": "Mastiff",
+      "simple_name": "mastiff",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 5,
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:pony",
+      "name": "Pony",
+      "simple_name": "pony",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 6,
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:warhorse",
+      "name": "Warhorse",
+      "simple_name": "warhorse",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "mounts_and_other_animals",
+      "row_index": 7,
+      "cost": {
+        "amount": 400,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:barding",
+      "name": "Barding",
+      "simple_name": "barding",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 0,
+      "weight_raw": "\u00d72"
+    },
+    {
+      "id": "item:bit-and-bridle",
+      "name": "Bit and bridle",
+      "simple_name": "bit_and_bridle",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 1,
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:carriage",
+      "name": "Carriage",
+      "simple_name": "carriage",
+      "category": "vehicle",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 2,
+      "sub_category": "land",
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_lb": 600.0,
+      "weight_raw": "600 lb."
+    },
+    {
+      "id": "item:cart",
+      "name": "Cart",
+      "simple_name": "cart",
+      "category": "vehicle",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 3,
+      "sub_category": "land",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 200.0,
+      "weight_raw": "200 lb."
+    },
+    {
+      "id": "item:chariot",
+      "name": "Chariot",
+      "simple_name": "chariot",
+      "category": "vehicle",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 4,
+      "sub_category": "land",
+      "cost": {
+        "amount": 250,
+        "currency": "gp"
+      },
+      "weight_lb": 100.0,
+      "weight_raw": "100 lb."
+    },
+    {
+      "id": "item:feed-per-day",
+      "name": "Feed (per day)",
+      "simple_name": "feed",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 5,
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:saddle",
+      "name": "Saddle",
+      "simple_name": "saddle",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 6
+    },
+    {
+      "id": "item:exotic",
+      "name": "Exotic",
+      "simple_name": "exotic",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 7,
+      "cost": {
+        "amount": 60,
+        "currency": "gp"
+      },
+      "weight_lb": 40.0,
+      "weight_raw": "40 lb."
+    },
+    {
+      "id": "item:military",
+      "name": "Military",
+      "simple_name": "military",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 8,
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 30.0,
+      "weight_raw": "30 lb."
+    },
+    {
+      "id": "item:pack",
+      "name": "Pack",
+      "simple_name": "pack",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 9,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 15.0,
+      "weight_raw": "15 lb."
+    },
+    {
+      "id": "item:riding",
+      "name": "Riding",
+      "simple_name": "riding",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 10,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb."
+    },
+    {
+      "id": "item:saddlebags",
+      "name": "Saddlebags",
+      "simple_name": "saddlebags",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 11,
+      "cost": {
+        "amount": 4,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:sled",
+      "name": "Sled",
+      "simple_name": "sled",
+      "category": "vehicle",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 12,
+      "sub_category": "land",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 300.0,
+      "weight_raw": "300 lb."
+    },
+    {
+      "id": "item:stabling-per-day",
+      "name": "Stabling (per day)",
+      "simple_name": "stabling",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tack_harness_vehicles",
+      "row_index": 13,
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:galley",
+      "name": "Galley",
+      "simple_name": "galley",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 0,
+      "cost": {
+        "amount": 30000,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:keelboat",
+      "name": "Keelboat",
+      "simple_name": "keelboat",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 1,
+      "cost": {
+        "amount": 3000,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:longship",
+      "name": "Longship",
+      "simple_name": "longship",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 2,
+      "cost": {
+        "amount": 10000,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:rowboat",
+      "name": "Rowboat",
+      "simple_name": "rowboat",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 3,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:sailing-ship",
+      "name": "Sailing ship",
+      "simple_name": "sailing_ship",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 4,
+      "cost": {
+        "amount": 10000,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:warship",
+      "name": "Warship",
+      "simple_name": "warship",
+      "category": "vehicle",
+      "sub_category": "water",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "waterborne_vehicles",
+      "row_index": 5,
+      "cost": {
+        "amount": 25000,
+        "currency": "gp"
+      }
+    },
+    {
+      "id": "item:artisans-tools",
+      "name": "Artisan\u2019s tools",
+      "simple_name": "artisans_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 0,
+      "sub_category": "other",
+      "description": "These special tools include the items needed to pursue a craft or trade. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+    },
+    {
+      "id": "item:alchemists-supplies",
+      "name": "Alchemist\u2019s supplies",
+      "simple_name": "alchemists_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 1,
+      "sub_category": "other",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:brewers-supplies",
+      "name": "Brewer\u2019s supplies",
+      "simple_name": "brewers_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 2,
+      "sub_category": "other",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 9.0,
+      "weight_raw": "9 lb."
+    },
+    {
+      "id": "item:calligraphers-supplies",
+      "name": "Calligrapher's supplies",
+      "simple_name": "calligraphers_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 3,
+      "sub_category": "other",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:carpenters-tools",
+      "name": "Carpenter\u2019s tools",
+      "simple_name": "carpenters_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 4,
+      "sub_category": "other",
+      "cost": {
+        "amount": 8,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:cartographers-tools",
+      "name": "Cartographer\u2019s tools",
+      "simple_name": "cartographers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 5,
+      "sub_category": "other",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:cobblers-tools",
+      "name": "Cobbler\u2019s tools",
+      "simple_name": "cobblers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 6,
+      "sub_category": "other",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:cooks-utensils",
+      "name": "Cook\u2019s utensils",
+      "simple_name": "cooks_utensils",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 7,
+      "sub_category": "other",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:glassblowers-tools",
+      "name": "Glassblower\u2019s tools",
+      "simple_name": "glassblowers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 8,
+      "sub_category": "other",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:jewelers-tools",
+      "name": "Jeweler\u2019s tools",
+      "simple_name": "jewelers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 9,
+      "sub_category": "other",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:leatherworkers-tools",
+      "name": "Leatherworker\u2019s tools",
+      "simple_name": "leatherworkers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 10,
+      "sub_category": "other",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:masons-tools",
+      "name": "Mason\u2019s tools",
+      "simple_name": "masons_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 11,
+      "sub_category": "other",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:painters-supplies",
+      "name": "Painter\u2019s supplies",
+      "simple_name": "painters_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 12,
+      "sub_category": "other",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:potters-tools",
+      "name": "Potter\u2019s tools",
+      "simple_name": "potters_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 13,
+      "sub_category": "other",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:smiths-tools",
+      "name": "Smith\u2019s tools",
+      "simple_name": "smiths_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 14,
+      "sub_category": "other",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:tinkers-tools",
+      "name": "Tinker\u2019s tools",
+      "simple_name": "tinkers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 15,
+      "sub_category": "other",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:weavers-tools",
+      "name": "Weaver\u2019s tools",
+      "simple_name": "weavers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 16,
+      "sub_category": "other",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:woodcarvers-tools",
+      "name": "Woodcarver\u2019s tools",
+      "simple_name": "woodcarvers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 17,
+      "sub_category": "other",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:disguise-kit",
+      "name": "Disguise kit",
+      "simple_name": "disguise_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 18,
+      "sub_category": "other",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb.",
+      "description": "This pouch of cosmetics, hair dye, and small props lets you create disguises that change your physical appearance. Proficiency with this kit lets you add your proficiency bonus to any ability checks you make to create a visual disguise."
+    },
+    {
+      "id": "item:forgery-kit",
+      "name": "Forgery kit",
+      "simple_name": "forgery_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 19,
+      "sub_category": "other",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb.",
+      "description": "This small box contains a variety of papers and parchments, pens and inks, seals and sealing wax, gold and silver leaf, and other supplies necessary to create convincing forgeries of physical documents. Proficiency with this kit lets you add your proficiency bonus to any ability checks you make to create a physical forgery of a document."
+    },
+    {
+      "id": "item:gaming-set",
+      "name": "Gaming set",
+      "simple_name": "gaming_set",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 20,
+      "sub_category": "other",
+      "description": "This item encompasses a wide range of game pieces, including dice and decks of cards (for games such as Three-Dragon Ante). If you are proficient with a gaming set, you can add your proficiency bonus to ability checks you make to play a game with that set. Each type of gaming set requires a separate proficiency."
+    },
+    {
+      "id": "item:dice-set",
+      "name": "Dice set",
+      "simple_name": "dice_set",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 21,
+      "sub_category": "other",
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:playing-card-set",
+      "name": "Playing card set",
+      "simple_name": "playing_card_set",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 22,
+      "sub_category": "other",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:herbalism-kit",
+      "name": "Herbalism kit",
+      "simple_name": "herbalism_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 23,
+      "sub_category": "other",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb.",
+      "description": "This kit contains a variety of instruments such as clippers, mortar and pestle, and pouches and vials used by herbalists to create remedies and potions. Proficiency with this kit lets you add your proficiency bonus to any ability checks you make to identify or apply herbs. Also, proficiency with this kit is required to create antitoxin and potions of healing."
+    },
+    {
+      "id": "item:musical-instrument",
+      "name": "Musical instrument",
+      "simple_name": "musical_instrument",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 24,
+      "sub_category": "other",
+      "description": "If you have proficiency with a given musical instrument, you can add your proficiency bonus to any ability checks you make to play music with the instrument. A bard can use a musical instrument as a spellcasting focus. Each type of musical instrument requires a separate proficiency."
+    },
+    {
+      "id": "item:bagpipes",
+      "name": "Bagpipes",
+      "simple_name": "bagpipes",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 25,
+      "sub_category": "other",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:drum",
+      "name": "Drum",
+      "simple_name": "drum",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 26,
+      "sub_category": "other",
+      "cost": {
+        "amount": 6,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:dulcimer",
+      "name": "Dulcimer",
+      "simple_name": "dulcimer",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 27,
+      "sub_category": "other",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:flute",
+      "name": "Flute",
+      "simple_name": "flute",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 28,
+      "sub_category": "other",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:lute",
+      "name": "Lute",
+      "simple_name": "lute",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 29,
+      "sub_category": "other",
+      "cost": {
+        "amount": 35,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:lyre",
+      "name": "Lyre",
+      "simple_name": "lyre",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 30,
+      "sub_category": "other",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:horn",
+      "name": "Horn",
+      "simple_name": "horn",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 31,
+      "sub_category": "other",
+      "cost": {
+        "amount": 3,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:pan-flute",
+      "name": "Pan flute",
+      "simple_name": "pan_flute",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 32,
+      "sub_category": "other",
+      "cost": {
+        "amount": 12,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:shawm",
+      "name": "Shawm",
+      "simple_name": "shawm",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 33,
+      "sub_category": "other",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:viol",
+      "name": "Viol",
+      "simple_name": "viol",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 34,
+      "sub_category": "other",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:navigators-tools",
+      "name": "Navigator\u2019s tools",
+      "simple_name": "navigators_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 35,
+      "sub_category": "other",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "This set of instruments is used for navigation at sea. Proficiency with navigator's tools lets you chart a ship's course and follow navigation charts. In addition, these tools allow you to add your proficiency bonus to any ability check you make to avoid getting lost at sea."
+    },
+    {
+      "id": "item:poisoners-kit",
+      "name": "Poisoner\u2019s kit",
+      "simple_name": "poisoners_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 36,
+      "sub_category": "other",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "description": "A poisoner's kit includes the vials, chemicals, and other equipment necessary for the creation of poisons. Proficiency with this kit lets you add your proficiency bonus to any ability checks you make to craft or use poisons."
+    },
+    {
+      "id": "item:thieves-tools",
+      "name": "Thieves\u2019 tools",
+      "simple_name": "thieves_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "tools",
+      "row_index": 37,
+      "sub_category": "other",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "description": "This set of tools includes a small file, a set of lock picks, a small mirror mounted on a metal handle, a set of narrow-bladed scissors, and a pair of pliers. Proficiency with these tools lets you add your proficiency bonus to any ability checks you make to disarm traps or open locks."
+    },
+    {
+      "id": "item:padded",
+      "name": "Padded",
+      "simple_name": "padded",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 1,
+      "sub_category": "light",
+      "armor_class": {
+        "base": 11,
+        "dex_bonus": true
+      },
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb.",
+      "description": "Padded armor consists of quilted layers of cloth and batting."
+    },
+    {
+      "id": "item:leather",
+      "name": "Leather",
+      "simple_name": "leather",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 2,
+      "sub_category": "light",
+      "armor_class": {
+        "base": 11,
+        "dex_bonus": true
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb.",
+      "description": "The breastplate and shoulder protectors of this armor are made of leather that has been stiffened by being boiled in oil. The rest of the armor is made of softer and more flexible materials."
+    },
+    {
+      "id": "item:studded-leather",
+      "name": "Studded leather",
+      "simple_name": "studded_leather",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 3,
+      "sub_category": "light",
+      "armor_class": {
+        "base": 12,
+        "dex_bonus": true
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 45,
+        "currency": "gp"
+      },
+      "weight_lb": 13.0,
+      "weight_raw": "13 lb.",
+      "description": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes."
+    },
+    {
+      "id": "item:hide",
+      "name": "Hide",
+      "simple_name": "hide",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 5,
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 12,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 12.0,
+      "weight_raw": "12 lb.",
+      "description": "This crude armor consists of thick furs and pelts. It is commonly worn by barbarian tribes, evil humanoids, and other folk who lack access to the tools and materials needed to create better armor."
+    },
+    {
+      "id": "item:chain-shirt",
+      "name": "Chain shirt",
+      "simple_name": "chain_shirt",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 6,
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 13,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 20.0,
+      "weight_raw": "20 lb.",
+      "description": "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather. This armor offers modest protection to the wearer's upper body and allows the sound of the rings rubbing against one another to be muffled by outer layers."
+    },
+    {
+      "id": "item:scale-mail",
+      "name": "Scale mail",
+      "simple_name": "scale_mail",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 7,
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 14,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 45.0,
+      "weight_raw": "45 lb.",
+      "description": "This armor consists of a coat and leggings (and perhaps a separate skirt) of leather covered with overlapping pieces of metal, much like the scales of a fish. The suit includes gauntlets."
+    },
+    {
+      "id": "item:breastplate",
+      "name": "Breastplate",
+      "simple_name": "breastplate",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 8,
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 14,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 400,
+        "currency": "gp"
+      },
+      "weight_lb": 20.0,
+      "weight_raw": "20 lb.",
+      "description": "This armor consists of a fitted metal chest piece worn with supple leather. Although it leaves the legs and arms relatively unprotected, this armor provides good protection for the wearer's vital organs while leaving the wearer relatively unencumbered."
+    },
+    {
+      "id": "item:half-plate",
+      "name": "Half plate",
+      "simple_name": "half_plate",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 9,
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 15,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 750,
+        "currency": "gp"
+      },
+      "weight_lb": 40.0,
+      "weight_raw": "40 lb.",
+      "description": "Half plate consists of shaped metal plates that cover most of the wearer's body. It does not include leg protection beyond simple greaves that are attached with leather straps."
+    },
+    {
+      "id": "item:ring-mail",
+      "name": "Ring mail",
+      "simple_name": "ring_mail",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 11,
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 14,
+        "dex_bonus": false
+      },
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 40.0,
+      "weight_raw": "40 lb.",
+      "description": "This armor is leather armor with heavy rings sewn into it. The rings help reinforce the armor against blows from swords and axes. Ring mail is inferior to chain mail, and it's usually worn only by those who can't afford better armor."
+    },
+    {
+      "id": "item:chain-mail",
+      "name": "Chain mail",
+      "simple_name": "chain_mail",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 12,
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 16,
+        "dex_bonus": false
+      },
+      "strength_req": 13,
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      },
+      "weight_lb": 55.0,
+      "weight_raw": "55 lb.",
+      "description": "Made of interlocking metal rings, chain mail includes a layer of quilted fabric worn underneath the mail to prevent chafing and to cushion the impact of blows. The suit includes gauntlets."
+    },
+    {
+      "id": "item:splint",
+      "name": "Splint",
+      "simple_name": "splint",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 13,
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 17,
+        "dex_bonus": false
+      },
+      "strength_req": 15,
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 200,
+        "currency": "gp"
+      },
+      "weight_lb": 60.0,
+      "weight_raw": "60 lb.",
+      "description": "This armor is made of narrow vertical strips of metal riveted to a backing of leather that is worn over cloth padding. Flexible chain mail protects the joints."
+    },
+    {
+      "id": "item:plate",
+      "name": "Plate",
+      "simple_name": "plate",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 14,
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 18,
+        "dex_bonus": false
+      },
+      "strength_req": 15,
+      "stealth_disadvantage": true,
+      "cost": {
+        "amount": 1500,
+        "currency": "gp"
+      },
+      "weight_lb": 65.0,
+      "weight_raw": "65 lb.",
+      "description": "Plate consists of shaped, interlocking metal plates to cover the entire body. A suit of plate includes gauntlets, heavy leather boots, a visored helmet, and thick layers of padding underneath the armor. Buckles and straps distribute the weight over the body."
+    },
+    {
+      "id": "item:shield",
+      "name": "Shield",
+      "simple_name": "shield",
+      "category": "armor",
+      "page": 63,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "armor",
+      "row_index": 16,
+      "sub_category": "shield",
+      "armor_class": {
+        "base": 2,
+        "dex_bonus": false
+      },
+      "stealth_disadvantage": false,
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:club",
+      "name": "Club",
+      "simple_name": "club",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 1,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "properties": [
+        "light"
+      ],
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:dagger",
+      "name": "Dagger",
+      "simple_name": "dagger",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 2,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d4",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "finesse",
+        "light",
+        "thrown"
+      ],
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:greatclub",
+      "name": "Greatclub",
+      "simple_name": "greatclub",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 3,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "properties": [
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:handaxe",
+      "name": "Handaxe",
+      "simple_name": "handaxe",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 4,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "slashing"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:javelin",
+      "name": "Javelin",
+      "simple_name": "javelin",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 5,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 30,
+        "long": 120
+      },
+      "properties": [
+        "thrown"
+      ],
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:light-hammer",
+      "name": "Light hammer",
+      "simple_name": "light_hammer",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 6,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:mace",
+      "name": "Mace",
+      "simple_name": "mace",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 7,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "bludgeoning"
+      },
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:quarterstaff",
+      "name": "Quarterstaff",
+      "simple_name": "quarterstaff",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 8,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "bludgeoning"
+      },
+      "versatile_damage": {
+        "dice": "1d8"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:sickle",
+      "name": "Sickle",
+      "simple_name": "sickle",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 9,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": [
+        "light"
+      ],
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:spear",
+      "name": "Spear",
+      "simple_name": "spear",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 10,
+      "proficiency": "simple",
+      "weapon_type": "melee",
+      "sub_category": "simple-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "versatile_damage": {
+        "dice": "1d8"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "thrown",
+        "versatile"
+      ],
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:crossbow-light",
+      "name": "Crossbow, light",
+      "simple_name": "crossbow_light",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 12,
+      "proficiency": "simple",
+      "weapon_type": "ranged",
+      "sub_category": "simple-ranged",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 80,
+        "long": 320
+      },
+      "properties": [
+        "ammunition",
+        "loading",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:dart",
+      "name": "Dart",
+      "simple_name": "dart",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 13,
+      "proficiency": "simple",
+      "weapon_type": "ranged",
+      "sub_category": "simple-ranged",
+      "damage": {
+        "dice": "1d4",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "finesse",
+        "thrown"
+      ],
+      "cost": {
+        "amount": 5,
+        "currency": "cp"
+      },
+      "weight_lb": 0.25,
+      "weight_raw": "1/4 lb."
+    },
+    {
+      "id": "item:shortbow",
+      "name": "Shortbow",
+      "simple_name": "shortbow",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 14,
+      "proficiency": "simple",
+      "weapon_type": "ranged",
+      "sub_category": "simple-ranged",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 80,
+        "long": 320
+      },
+      "properties": [
+        "ammunition",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:sling",
+      "name": "Sling",
+      "simple_name": "sling",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 15,
+      "proficiency": "simple",
+      "weapon_type": "ranged",
+      "sub_category": "simple-ranged",
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "range": {
+        "normal": 30,
+        "long": 120
+      },
+      "properties": [
+        "ammunition"
+      ],
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_raw": "\u2014"
+    },
+    {
+      "id": "item:battleaxe",
+      "name": "Battleaxe",
+      "simple_name": "battleaxe",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 17,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "versatile_damage": {
+        "dice": "1d10"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:flail",
+      "name": "Flail",
+      "simple_name": "flail",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 18,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:glaive",
+      "name": "Glaive",
+      "simple_name": "glaive",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 19,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "reach",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:greataxe",
+      "name": "Greataxe",
+      "simple_name": "greataxe",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 20,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d12",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 7.0,
+      "weight_raw": "7 lb."
+    },
+    {
+      "id": "item:greatsword",
+      "name": "Greatsword",
+      "simple_name": "greatsword",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 21,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "2d6",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:halberd",
+      "name": "Halberd",
+      "simple_name": "halberd",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 22,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "reach",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:lance",
+      "name": "Lance",
+      "simple_name": "lance",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 23,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d12",
+        "type": "piercing"
+      },
+      "properties": [
+        "reach",
+        "special"
+      ],
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:longsword",
+      "name": "Longsword",
+      "simple_name": "longsword",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 24,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "versatile_damage": {
+        "dice": "1d10"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:maul",
+      "name": "Maul",
+      "simple_name": "maul",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 25,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "2d6",
+        "type": "bludgeoning"
+      },
+      "properties": [
+        "heavy",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:morningstar",
+      "name": "Morningstar",
+      "simple_name": "morningstar",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 26,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:pike",
+      "name": "Pike",
+      "simple_name": "pike",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 27,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d10",
+        "type": "piercing"
+      },
+      "properties": [
+        "heavy",
+        "reach",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 18.0,
+      "weight_raw": "18 lb."
+    },
+    {
+      "id": "item:rapier",
+      "name": "Rapier",
+      "simple_name": "rapier",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 28,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": [
+        "finesse"
+      ],
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:scimitar",
+      "name": "Scimitar",
+      "simple_name": "scimitar",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 29,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "slashing"
+      },
+      "properties": [
+        "finesse",
+        "light"
+      ],
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:shortsword",
+      "name": "Shortsword",
+      "simple_name": "shortsword",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 30,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": [
+        "finesse",
+        "light"
+      ],
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:trident",
+      "name": "Trident",
+      "simple_name": "trident",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 31,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "versatile_damage": {
+        "dice": "1d8"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "thrown",
+        "versatile"
+      ],
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:war-pick",
+      "name": "War pick",
+      "simple_name": "war_pick",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 32,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:warhammer",
+      "name": "Warhammer",
+      "simple_name": "warhammer",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 33,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "versatile_damage": {
+        "dice": "1d10"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:whip",
+      "name": "Whip",
+      "simple_name": "whip",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 34,
+      "proficiency": "martial",
+      "weapon_type": "melee",
+      "sub_category": "martial-melee",
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": [
+        "finesse",
+        "reach"
+      ],
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:blowgun",
+      "name": "Blowgun",
+      "simple_name": "blowgun",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 36,
+      "proficiency": "martial",
+      "weapon_type": "ranged",
+      "sub_category": "martial-ranged",
+      "range": {
+        "normal": 25,
+        "long": 100
+      },
+      "properties": [
+        "ammunition",
+        "loading"
+      ],
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:crossbow-hand",
+      "name": "Crossbow, hand",
+      "simple_name": "crossbow_hand",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 37,
+      "proficiency": "martial",
+      "weapon_type": "ranged",
+      "sub_category": "martial-ranged",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 30,
+        "long": 120
+      },
+      "properties": [
+        "ammunition",
+        "light",
+        "loading"
+      ],
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:crossbow-heavy",
+      "name": "Crossbow, heavy",
+      "simple_name": "crossbow_heavy",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 38,
+      "proficiency": "martial",
+      "weapon_type": "ranged",
+      "sub_category": "martial-ranged",
+      "damage": {
+        "dice": "1d10",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 100,
+        "long": 400
+      },
+      "properties": [
+        "ammunition",
+        "heavy",
+        "loading",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 18.0,
+      "weight_raw": "18 lb."
+    },
+    {
+      "id": "item:longbow",
+      "name": "Longbow",
+      "simple_name": "longbow",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 39,
+      "proficiency": "martial",
+      "weapon_type": "ranged",
+      "sub_category": "martial-ranged",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 150,
+        "long": 600
+      },
+      "properties": [
+        "ammunition",
+        "heavy",
+        "two_handed"
+      ],
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:net",
+      "name": "Net",
+      "simple_name": "net",
+      "category": "weapon",
+      "page": 65,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "source_table": "weapons",
+      "row_index": 40,
+      "proficiency": "martial",
+      "weapon_type": "ranged",
+      "sub_category": "martial-ranged",
+      "range": {
+        "normal": 5,
+        "long": 15
+      },
+      "properties": [
+        "special",
+        "thrown"
+      ],
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:string-10-feet",
+      "name": "String (10 feet)",
+      "simple_name": "string_10_feet",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_lb": 0.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A length of cord used for tying packages, marking paths, or other light-duty purposes. Not suitable for climbing.",
+      "_note": "Extended item - referenced in Burglar's Pack but not in SRD tables. Cost/weight estimated. Cost/weight estimated."
+    },
+    {
+      "id": "item:alms-box",
+      "name": "Alms box",
+      "simple_name": "alms_box",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A small wooden or metal box used by clerics to collect charitable donations.",
+      "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:incense-2-blocks",
+      "name": "Incense (2 blocks)",
+      "simple_name": "incense_2_blocks",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 0.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "Compressed blocks of fragrant resin burned during religious ceremonies. Each block burns for approximately 1 hour.",
+      "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:censer",
+      "name": "Censer",
+      "simple_name": "censer",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A container suspended on chains, used to burn incense during religious rituals. The smoke billows out through perforations.",
+      "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:vestments",
+      "name": "Vestments",
+      "simple_name": "vestments",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "Ceremonial robes worn by priests and clerics during religious services. Often decorated with symbols of the deity.",
+      "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:book-of-lore",
+      "name": "Book of lore",
+      "simple_name": "book_of_lore",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A bound volume containing historical accounts, scholarly research, or collected knowledge on a particular subject. Useful for research and reference.",
+      "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:bag-of-sand-little",
+      "name": "Bag of sand (little)",
+      "simple_name": "bag_of_sand_little",
+      "category": "gear",
+      "sub_category": "adventuring_gear",
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_lb": 0.0,
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A small pouch of fine sand used to blot wet ink on parchment, preventing smudges and speeding drying.",
+      "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:knife-small",
+      "name": "Knife (small)",
+      "simple_name": "knife_small",
+      "category": "weapon",
+      "sub_category": "simple_melee",
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 0.5,
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": [
+        "finesse",
+        "light"
+      ],
+      "page": 70,
+      "source": "SRD 5.1 (extended)",
+      "is_magic": false,
+      "description": "A small utility knife suitable for cutting string, sharpening quills, and other everyday tasks. Can be used as a weapon in a pinch.",
+      "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated."
+    },
+    {
+      "id": "item:burglars_pack",
+      "name": "Burglar's Pack",
+      "simple_name": "burglars_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a bag of 1,000 ball bearings, 10 feet of string, a bell, 5 candles, a crowbar, a hammer, 10 pitons, a hooded lantern, 2 flasks of oil, 5 days rations, a tinderbox, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+      "cost": {
+        "amount": 16,
+        "currency": "gp"
+      },
+      "weight_lb": 40.0,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:ball-bearings-bag-of-1000",
+          "item_name": "Ball bearings (bag of 1,000)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:string-10-feet",
+          "item_name": "String (10 feet)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:bell",
+          "item_name": "Bell",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:candle",
+          "item_name": "Candle",
+          "quantity": 5
+        },
+        {
+          "item_id": "item:crowbar",
+          "item_name": "Crowbar",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:hammer",
+          "item_name": "Hammer",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:piton",
+          "item_name": "Piton",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:lantern-hooded",
+          "item_name": "Lantern, hooded",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:oil-flask",
+          "item_name": "Oil (flask)",
+          "quantity": 2
+        },
+        {
+          "item_id": "item:rations-1-day",
+          "item_name": "Rations (1 day)",
+          "quantity": 5
+        },
+        {
+          "item_id": "item:tinderbox",
+          "item_name": "Tinderbox",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:waterskin",
+          "item_name": "Waterskin",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:rope-hempen-50-feet",
+          "item_name": "Rope, hempen (50 feet)",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:diplomats_pack",
+      "name": "Diplomat's Pack",
+      "simple_name": "diplomats_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a chest, 2 cases for maps and scrolls, a set of fine clothes, a bottle of ink, an ink pen, a lamp, 2 flasks of oil, 5 sheets of paper, a vial of perfume, sealing wax, and soap.",
+      "cost": {
+        "amount": 39,
+        "currency": "gp"
+      },
+      "weight_lb": 36.0,
+      "pack_contents": [
+        {
+          "item_id": "item:chest",
+          "item_name": "Chest",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:case-map-or-scroll",
+          "item_name": "Case, map or scroll",
+          "quantity": 2
+        },
+        {
+          "item_id": "item:clothes-fine",
+          "item_name": "Clothes, fine",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:ink-1-ounce-bottle",
+          "item_name": "Ink (1 ounce bottle)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:ink-pen",
+          "item_name": "Ink pen",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:lamp",
+          "item_name": "Lamp",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:oil-flask",
+          "item_name": "Oil (flask)",
+          "quantity": 2
+        },
+        {
+          "item_id": "item:paper-one-sheet",
+          "item_name": "Paper (one sheet)",
+          "quantity": 5
+        },
+        {
+          "item_id": "item:perfume-vial",
+          "item_name": "Perfume (vial)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:sealing-wax",
+          "item_name": "Sealing wax",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:soap",
+          "item_name": "Soap",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:dungeoneers_pack",
+      "name": "Dungeoneer's Pack",
+      "simple_name": "dungeoneers_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a crowbar, a hammer, 10 pitons, 10 torches, a tinderbox, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+      "cost": {
+        "amount": 12,
+        "currency": "gp"
+      },
+      "weight_lb": 54.0,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:crowbar",
+          "item_name": "Crowbar",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:hammer",
+          "item_name": "Hammer",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:piton",
+          "item_name": "Piton",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:torch",
+          "item_name": "Torch",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:tinderbox",
+          "item_name": "Tinderbox",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:rations-1-day",
+          "item_name": "Rations (1 day)",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:waterskin",
+          "item_name": "Waterskin",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:rope-hempen-50-feet",
+          "item_name": "Rope, hempen (50 feet)",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:entertainers_pack",
+      "name": "Entertainer's Pack",
+      "simple_name": "entertainers_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a bedroll, 2 costumes, 5 candles, 5 days of rations, a waterskin, and a disguise kit.",
+      "cost": {
+        "amount": 40,
+        "currency": "gp"
+      },
+      "weight_lb": 33.0,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:bedroll",
+          "item_name": "Bedroll",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:clothes-costume",
+          "item_name": "Clothes, costume",
+          "quantity": 2
+        },
+        {
+          "item_id": "item:candle",
+          "item_name": "Candle",
+          "quantity": 5
+        },
+        {
+          "item_id": "item:rations-1-day",
+          "item_name": "Rations (1 day)",
+          "quantity": 5
+        },
+        {
+          "item_id": "item:waterskin",
+          "item_name": "Waterskin",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:disguise-kit",
+          "item_name": "Disguise kit",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:explorers_pack",
+      "name": "Explorer's Pack",
+      "simple_name": "explorers_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a bedroll, a mess kit, a tinderbox, 10 torches, 10 days of rations, and a waterskin. The pack also has 50 feet of hempen rope strapped to the side of it.",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 54.0,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:bedroll",
+          "item_name": "Bedroll",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:mess-kit",
+          "item_name": "Mess kit",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:tinderbox",
+          "item_name": "Tinderbox",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:torch",
+          "item_name": "Torch",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:rations-1-day",
+          "item_name": "Rations (1 day)",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:waterskin",
+          "item_name": "Waterskin",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:rope-hempen-50-feet",
+          "item_name": "Rope, hempen (50 feet)",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:priests_pack",
+      "name": "Priest's Pack",
+      "simple_name": "priests_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a blanket, 10 candles, a tinderbox, an alms box, 2 blocks of incense, a censer, vestments, 2 days of rations, and a waterskin.",
+      "cost": {
+        "amount": 19,
+        "currency": "gp"
+      },
+      "weight_lb": 19.0,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:blanket",
+          "item_name": "Blanket",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:candle",
+          "item_name": "Candle",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:tinderbox",
+          "item_name": "Tinderbox",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:alms-box",
+          "item_name": "Alms box",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:incense-2-blocks",
+          "item_name": "Incense (2 blocks)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:censer",
+          "item_name": "Censer",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:vestments",
+          "item_name": "Vestments",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:rations-1-day",
+          "item_name": "Rations (1 day)",
+          "quantity": 2
+        },
+        {
+          "item_id": "item:waterskin",
+          "item_name": "Waterskin",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    },
+    {
+      "id": "item:scholars_pack",
+      "name": "Scholar's Pack",
+      "simple_name": "scholars_pack",
+      "category": "gear",
+      "sub_category": "equipment_pack",
+      "description": "Includes a backpack, a book of lore, a bottle of ink, an ink pen, 10 sheets of parchment, a little bag of sand, and a small knife.",
+      "cost": {
+        "amount": 40,
+        "currency": "gp"
+      },
+      "weight_lb": 8.5,
+      "pack_contents": [
+        {
+          "item_id": "item:backpack",
+          "item_name": "Backpack",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:book-of-lore",
+          "item_name": "Book of lore",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:ink-1-ounce-bottle",
+          "item_name": "Ink (1 ounce bottle)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:ink-pen",
+          "item_name": "Ink pen",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:parchment-one-sheet",
+          "item_name": "Parchment (one sheet)",
+          "quantity": 10
+        },
+        {
+          "item_id": "item:bag-of-sand-little",
+          "item_name": "Bag of sand (little)",
+          "quantity": 1
+        },
+        {
+          "item_id": "item:knife-small",
+          "item_name": "Knife (small)",
+          "quantity": 1
+        }
+      ],
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false
+    }
+  ]
+}

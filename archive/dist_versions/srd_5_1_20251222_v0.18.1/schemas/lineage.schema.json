@@ -1,0 +1,270 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://srd-builder.example.com/schemas/lineage.schema.json",
+  "version": "1.4.0",
+  "title": "D&D 5e SRD Lineage (Race)",
+  "description": "Schema for character lineages (races) from D&D 5e System Reference Document",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "size",
+    "speed",
+    "ability_modifiers",
+    "languages",
+    "traits",
+    "extraction_metadata"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^lineage:[a-z_]+$",
+      "description": "Unique identifier in the format lineage:simple_name"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "Snake_case identifier for programmatic use"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this lineage (e.g., historical 'race' terminology)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the lineage"
+    },
+    "parent_lineage": {
+      "type": "string",
+      "pattern": "^lineage:[a-z_]+$",
+      "description": "Reference to parent lineage for subraces (e.g., 'lineage:elf' for High Elf). Only present for subraces."
+    },
+    "size": {
+      "type": "string",
+      "enum": [
+        "Small",
+        "Medium"
+      ],
+      "description": "Size category (Small or Medium for SRD lineages)"
+    },
+    "speed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Base walking speed in feet"
+    },
+    "ability_modifiers": {
+      "type": "object",
+      "description": "Ability score modifiers granted by this lineage. Positive for bonuses (5e), negative for penalties (3.5e and earlier).",
+      "properties": {
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "constitution": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "wisdom": {
+          "type": "integer"
+        },
+        "charisma": {
+          "type": "integer"
+        },
+        "other": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Points to distribute among abilities (e.g., Half-Elf +1 to two abilities of choice)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ability_modifier_note": {
+      "type": "string",
+      "description": "Optional explanation for flexible ability modifiers (e.g., Half-Elf)"
+    },
+    "age": {
+      "type": "string",
+      "description": "Description of typical maturity and lifespan"
+    },
+    "alignment": {
+      "type": "string",
+      "description": "Typical alignment tendencies for this lineage"
+    },
+    "size_description": {
+      "type": "string",
+      "description": "Detailed description of typical height and build"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "Languages known by this lineage"
+    },
+    "traits": {
+      "type": "array",
+      "description": "Racial traits granted by this lineage",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "text"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the racial trait"
+          },
+          "text": {
+            "type": "string",
+            "description": "Full description of the trait"
+          },
+          "references_table": {
+            "type": "string",
+            "description": "ID of a table referenced by this trait (e.g., draconic_ancestry)"
+          },
+          "references_spells": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Simple names of spells referenced by this trait"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "subraces": {
+      "type": "array",
+      "description": "Optional subraces for this lineage",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "simple_name",
+          "ability_modifiers",
+          "traits"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the subrace"
+          },
+          "simple_name": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Snake_case identifier for the subrace"
+          },
+          "ability_modifiers": {
+            "type": "object",
+            "description": "Additional ability score modifiers from subrace. Positive for bonuses (5e), negative for penalties (3.5e and earlier).",
+            "properties": {
+              "strength": {
+                "type": "integer"
+              },
+              "dexterity": {
+                "type": "integer"
+              },
+              "constitution": {
+                "type": "integer"
+              },
+              "intelligence": {
+                "type": "integer"
+              },
+              "wisdom": {
+                "type": "integer"
+              },
+              "charisma": {
+                "type": "integer"
+              }
+            },
+            "additionalProperties": false
+          },
+          "traits": {
+            "type": "array",
+            "description": "Additional traits from subrace",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "text"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "references_table": {
+                  "type": "string"
+                },
+                "references_spells": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "tables_referenced": {
+      "type": "array",
+      "description": "IDs of tables from tables.json that are relevant to this lineage",
+      "items": {
+        "type": "string",
+        "pattern": "^table:[a-z_]+$"
+      },
+      "uniqueItems": true
+    },
+    "extraction_metadata": {
+      "type": "object",
+      "required": [
+        "source_pages",
+        "section"
+      ],
+      "description": "Metadata about the extraction process for provenance tracking",
+      "properties": {
+        "source_pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1,
+          "description": "PDF page numbers where this lineage appears"
+        },
+        "section": {
+          "type": "string",
+          "description": "TOC section identifier (e.g., 'races')"
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date when data was extracted"
+        },
+        "extraction_notes": {
+          "type": "string",
+          "description": "Any relevant notes about the extraction or data source"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

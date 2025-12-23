@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/condition.schema.json",
+  "version": "1.4.0",
+  "last_modified": "2025-11-09",
+  "title": "SRD 5.1 Condition",
+  "description": "Game conditions from SRD 5.1 Appendix PH-A (pages 358-359). Conditions are special status effects that affect creature capabilities.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "effects",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^condition:[a-z0-9_]+$",
+      "description": "Unique identifier using the condition: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Blinded', 'Charmed')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing and search"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this condition"
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence description for tooltips and previews"
+    },
+    "effects": {
+      "type": "array",
+      "description": "List of mechanical effects imposed by this condition",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "special_rules": {
+      "type": "array",
+      "description": "Additional rules or exceptions for this condition",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "levels": {
+      "type": "array",
+      "description": "For conditions with severity levels (e.g., Exhaustion)",
+      "items": {
+        "type": "object",
+        "required": [
+          "level",
+          "effect"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "effect": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Page number in source PDF"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata (timestamps, notes)"
+    }
+  }
+}
