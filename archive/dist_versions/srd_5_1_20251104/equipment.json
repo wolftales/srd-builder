@@ -1,0 +1,2019 @@
+{
+  "_meta": {
+    "ruleset": "srd_5_1",
+    "schema_version": "1.4.0",
+    "source": "SRD_CC_v5.1",
+    "build_report": "./build_report.json",
+    "generated_by": "srd-builder v0.9.0"
+  },
+  "items": [
+    {
+      "id": "item:leather",
+      "name": "Leather",
+      "simple_name": "leather",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "light",
+      "armor_class": {
+        "base": 11,
+        "dex_bonus": true
+      },
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:chain-shirt",
+      "name": "Chain shirt",
+      "simple_name": "chain_shirt",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 13,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 20.0,
+      "weight_raw": "20 lb."
+    },
+    {
+      "id": "item:breastplate",
+      "name": "Breastplate",
+      "simple_name": "breastplate",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "medium",
+      "armor_class": {
+        "base": 14,
+        "dex_bonus": true,
+        "max_bonus": 2
+      },
+      "cost": {
+        "amount": 400,
+        "currency": "gp"
+      },
+      "weight_lb": 20.0,
+      "weight_raw": "20 lb."
+    },
+    {
+      "id": "item:chain-mail",
+      "name": "Chain mail",
+      "simple_name": "chain_mail",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 16,
+        "dex_bonus": false
+      },
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      },
+      "weight_lb": 55.0,
+      "weight_raw": "55 lb."
+    },
+    {
+      "id": "item:plate",
+      "name": "Plate",
+      "simple_name": "plate",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "heavy",
+      "armor_class": {
+        "base": 18,
+        "dex_bonus": false
+      },
+      "cost": {
+        "amount": 1500,
+        "currency": "gp"
+      },
+      "weight_lb": 65.0,
+      "weight_raw": "65 lb."
+    },
+    {
+      "id": "item:shield",
+      "name": "Shield",
+      "simple_name": "shield",
+      "category": "armor",
+      "page": 64,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "armor:medium",
+      "sub_category": "medium",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:dagger",
+      "name": "Dagger",
+      "simple_name": "dagger",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d4",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "finesse",
+        "light",
+        "thrown"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:handaxe",
+      "name": "Handaxe",
+      "simple_name": "handaxe",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d6",
+        "type": "slashing"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:light-hammer",
+      "name": "Light hammer",
+      "simple_name": "light_hammer",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "light",
+        "thrown"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:quarterstaff",
+      "name": "Quarterstaff",
+      "simple_name": "quarterstaff",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d6",
+        "type": "bludgeoning"
+      },
+      "versatile_damage": {
+        "dice": "1d8"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:spear",
+      "name": "Spear",
+      "simple_name": "spear",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "versatile_damage": {
+        "dice": "1d8"
+      },
+      "range": {
+        "normal": 20,
+        "long": 60
+      },
+      "properties": [
+        "thrown",
+        "versatile"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:crossbow",
+      "name": "Crossbow",
+      "simple_name": "crossbow",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 80,
+        "long": 320
+      },
+      "properties": [
+        "ammunition",
+        "loading",
+        "two_handed"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:shortbow",
+      "name": "Shortbow",
+      "simple_name": "shortbow",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "simple",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "range": {
+        "normal": 80,
+        "long": 320
+      },
+      "properties": [
+        "ammunition",
+        "two_handed"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:flail",
+      "name": "Flail",
+      "simple_name": "flail",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:greataxe",
+      "name": "Greataxe",
+      "simple_name": "greataxe",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d12",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "two_handed"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 7.0,
+      "weight_raw": "7 lb."
+    },
+    {
+      "id": "item:halberd",
+      "name": "Halberd",
+      "simple_name": "halberd",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "properties": [
+        "heavy",
+        "reach",
+        "two_handed"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_raw": "Halberd"
+    },
+    {
+      "id": "item:longsword",
+      "name": "Longsword",
+      "simple_name": "longsword",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "versatile_damage": {
+        "dice": "1d10"
+      },
+      "properties": [
+        "versatile"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:morningstar",
+      "name": "Morningstar",
+      "simple_name": "morningstar",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:rapier",
+      "name": "Rapier",
+      "simple_name": "rapier",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": [
+        "finesse"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:shortsword",
+      "name": "Shortsword",
+      "simple_name": "shortsword",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": [
+        "finesse",
+        "light"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:war-pick",
+      "name": "War pick",
+      "simple_name": "war_pick",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:whip",
+      "name": "Whip",
+      "simple_name": "whip",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": [
+        "finesse",
+        "reach"
+      ],
+      "weapon_type": "melee",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:blowgun",
+      "name": "Blowgun",
+      "simple_name": "blowgun",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "range": {
+        "normal": 25,
+        "long": 100
+      },
+      "properties": [
+        "ammunition",
+        "loading"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:net",
+      "name": "Net",
+      "simple_name": "net",
+      "category": "weapon",
+      "page": 66,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "weapon",
+      "proficiency": "martial",
+      "range": {
+        "normal": 5,
+        "long": 15
+      },
+      "properties": [
+        "special",
+        "thrown"
+      ],
+      "weapon_type": "ranged",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:hourglass",
+      "name": "Hourglass",
+      "simple_name": "hourglass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:ink-1-ounce-bottle",
+      "name": "Ink (1 ounce bottle)",
+      "simple_name": "ink",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_raw": "Ink (1 ounce bottle)"
+    },
+    {
+      "id": "item:alchemists-f",
+      "name": "Alchemist\u2019s f",
+      "simple_name": "alchemists_f",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:jug-or-pitcher",
+      "name": "Jug or pitcher",
+      "simple_name": "jug_or_pitcher",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:arrows-2",
+      "name": "Arrows (2",
+      "simple_name": "arrows_2",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:lamp",
+      "name": "Lamp",
+      "simple_name": "lamp",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:lantern-hooded",
+      "name": "Lantern, hooded",
+      "simple_name": "lantern_hooded",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:antitoxin-vial",
+      "name": "Antitoxin (vial)",
+      "simple_name": "antitoxin",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_raw": "50 gp"
+    },
+    {
+      "id": "item:magnifying-glass",
+      "name": "Magnifying glass",
+      "simple_name": "magnifying_glass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_raw": "100 gp"
+    },
+    {
+      "id": "item:crystal",
+      "name": "Crystal",
+      "simple_name": "crystal",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:mess-kit",
+      "name": "Mess kit",
+      "simple_name": "mess_kit",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:rod",
+      "name": "Rod",
+      "simple_name": "rod",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:oil-flask",
+      "name": "Oil (flask)",
+      "simple_name": "oil",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:wand",
+      "name": "Wand",
+      "simple_name": "wand",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:parchment-one-sheet",
+      "name": "Parchment (one sheet)",
+      "simple_name": "parchment",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "sp"
+      },
+      "weight_raw": "1 sp"
+    },
+    {
+      "id": "item:ball-bearings",
+      "name": "Ball bearings",
+      "simple_name": "ball_bearings",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:pick-miners",
+      "name": "Pick, miner\u2019s",
+      "simple_name": "pick_miners",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:basket",
+      "name": "Basket",
+      "simple_name": "basket",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 4,
+        "currency": "sp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb.",
+      "capacity": "2 cubic feet/40 pounds of gear",
+      "container": true
+    },
+    {
+      "id": "item:poison-basic-vial",
+      "name": "Poison, basic (vial)",
+      "simple_name": "poison_basic",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_raw": "100 gp"
+    },
+    {
+      "id": "item:bell",
+      "name": "Bell",
+      "simple_name": "bell",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "1 gp"
+    },
+    {
+      "id": "item:pot-iron",
+      "name": "Pot, iron",
+      "simple_name": "pot_iron",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb.",
+      "capacity": "1 gallon liquid",
+      "container": true
+    },
+    {
+      "id": "item:block-and-ta",
+      "name": "Block and ta",
+      "simple_name": "block_and_ta",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:pouch",
+      "name": "Pouch",
+      "simple_name": "pouch",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "capacity": "1/5 cubic foot/6 pounds of gear",
+      "container": true
+    },
+    {
+      "id": "item:bottle-glass",
+      "name": "Bottle, glass",
+      "simple_name": "bottle_glass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:ram-portable",
+      "name": "Ram, portable",
+      "simple_name": "ram_portable",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 4,
+        "currency": "gp"
+      },
+      "weight_lb": 35.0,
+      "weight_raw": "35 lb."
+    },
+    {
+      "id": "item:caltrops-ba",
+      "name": "Caltrops (ba",
+      "simple_name": "caltrops_ba",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:robes",
+      "name": "Robes",
+      "simple_name": "robes",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 4.0,
+      "weight_raw": "4 lb."
+    },
+    {
+      "id": "item:case-crossb",
+      "name": "Case, crossb",
+      "simple_name": "case_crossb",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:rope-silk-50-feet",
+      "name": "Rope, silk (50 feet)",
+      "simple_name": "rope_silk",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:chain-10-feet",
+      "name": "Chain (10 feet)",
+      "simple_name": "chain",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 10.0,
+      "weight_raw": "10 lb."
+    },
+    {
+      "id": "item:scale-merchants",
+      "name": "Scale, merchant\u2019s",
+      "simple_name": "scale_merchants",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:chest",
+      "name": "Chest",
+      "simple_name": "chest",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb.",
+      "capacity": "12 cubic feet/300 pounds of gear",
+      "container": true
+    },
+    {
+      "id": "item:shovel",
+      "name": "Shovel",
+      "simple_name": "shovel",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:clothes-common",
+      "name": "Clothes, common",
+      "simple_name": "clothes_common",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:signet-ring",
+      "name": "Signet ring",
+      "simple_name": "signet_ring",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_raw": "5 gp"
+    },
+    {
+      "id": "item:clothes-fine",
+      "name": "Clothes, fine",
+      "simple_name": "clothes_fine",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 15,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:spellbook",
+      "name": "Spellbook",
+      "simple_name": "spellbook",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_raw": "Spellbook"
+    },
+    {
+      "id": "item:component",
+      "name": "Component",
+      "simple_name": "component",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:spyglass",
+      "name": "Spyglass",
+      "simple_name": "spyglass",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1000,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:tinderbox",
+      "name": "Tinderbox",
+      "simple_name": "tinderbox",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:totem",
+      "name": "Totem",
+      "simple_name": "totem",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "1 gp"
+    },
+    {
+      "id": "item:vial",
+      "name": "Vial",
+      "simple_name": "vial",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_raw": "1 gp",
+      "capacity": "4 ounces liquid",
+      "container": true
+    },
+    {
+      "id": "item:yew-wand",
+      "name": "Yew wand",
+      "simple_name": "yew_wand",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:whetstone",
+      "name": "Whetstone",
+      "simple_name": "whetstone",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "cp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:flask-or-tankard",
+      "name": "Flask or tankard",
+      "simple_name": "flask_or_tankard",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "cp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb.",
+      "capacity": "1 pint liquid",
+      "container": true
+    },
+    {
+      "id": "item:hammer",
+      "name": "Hammer",
+      "simple_name": "hammer",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:healers-kit",
+      "name": "Healer\u2019s kit",
+      "simple_name": "healers_kit",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:amulet",
+      "name": "Amulet",
+      "simple_name": "amulet",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:bucket",
+      "name": "Bucket",
+      "simple_name": "bucket",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "weight_raw": "3 gallons liquid, 1/2 cubic foot solid",
+      "capacity": "3 gallons liquid, 1/2 cubic foot solid",
+      "container": true
+    },
+    {
+      "id": "item:reliquary",
+      "name": "Reliquary",
+      "simple_name": "reliquary",
+      "category": "gear",
+      "page": 69,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:waterskin",
+      "name": "Waterskin",
+      "simple_name": "waterskin",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "weight_raw": "4 pints liquid",
+      "capacity": "4 pints liquid",
+      "container": true
+    },
+    {
+      "id": "item:brewers-supplies",
+      "name": "Brewer\u2019s supplies",
+      "simple_name": "brewers_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 9.0,
+      "weight_raw": "9 lb."
+    },
+    {
+      "id": "item:carpenters-tools",
+      "name": "Carpenter\u2019s tools",
+      "simple_name": "carpenters_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 8,
+        "currency": "gp"
+      },
+      "weight_lb": 6.0,
+      "weight_raw": "6 lb."
+    },
+    {
+      "id": "item:cobblers-tools",
+      "name": "Cobbler\u2019s tools",
+      "simple_name": "cobblers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:glassblowers-tools",
+      "name": "Glassblower\u2019s tools",
+      "simple_name": "glassblowers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:leatherworkers-tools",
+      "name": "Leatherworker\u2019s tools",
+      "simple_name": "leatherworkers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:painters-supplies",
+      "name": "Painter\u2019s supplies",
+      "simple_name": "painters_supplies",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:smiths-tools",
+      "name": "Smith\u2019s tools",
+      "simple_name": "smiths_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 8.0,
+      "weight_raw": "8 lb."
+    },
+    {
+      "id": "item:weavers-tools",
+      "name": "Weaver\u2019s tools",
+      "simple_name": "weavers_tools",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 1,
+        "currency": "gp"
+      },
+      "weight_lb": 5.0,
+      "weight_raw": "5 lb."
+    },
+    {
+      "id": "item:disguise-kit",
+      "name": "Disguise kit",
+      "simple_name": "disguise_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 25,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:playing-card-set",
+      "name": "Playing card set",
+      "simple_name": "playing_card_set",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 5,
+        "currency": "sp"
+      },
+      "weight_raw": "5 sp"
+    },
+    {
+      "id": "item:drum",
+      "name": "Drum",
+      "simple_name": "drum",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 6,
+        "currency": "gp"
+      },
+      "weight_lb": 3.0,
+      "weight_raw": "3 lb."
+    },
+    {
+      "id": "item:flute",
+      "name": "Flute",
+      "simple_name": "flute",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 2,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:lyre",
+      "name": "Lyre",
+      "simple_name": "lyre",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:pan-flute",
+      "name": "Pan flute",
+      "simple_name": "pan_flute",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 12,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:viol",
+      "name": "Viol",
+      "simple_name": "viol",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 1.0,
+      "weight_raw": "1 lb."
+    },
+    {
+      "id": "item:poisoners-kit",
+      "name": "Poisoner\u2019s kit",
+      "simple_name": "poisoners_kit",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 2.0,
+      "weight_raw": "2 lb."
+    },
+    {
+      "id": "item:vehicles-land-or-water",
+      "name": "Vehicles (land or water)",
+      "simple_name": "vehicles",
+      "category": "gear",
+      "page": 70,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear"
+    },
+    {
+      "id": "item:camel",
+      "name": "Camel",
+      "simple_name": "camel",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 50,
+        "currency": "gp"
+      },
+      "weight_lb": 480.0,
+      "weight_raw": "480 lb."
+    },
+    {
+      "id": "item:elephant",
+      "name": "Elephant",
+      "simple_name": "elephant",
+      "category": "mount",
+      "page": 71,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 200,
+        "currency": "gp"
+      },
+      "weight_lb": 1320.0,
+      "weight_raw": "1,320 lb."
+    },
+    {
+      "id": "item:horse-riding",
+      "name": "Horse, riding",
+      "simple_name": "horse_riding",
+      "category": "mount",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 75,
+        "currency": "gp"
+      },
+      "weight_lb": 480.0,
+      "weight_raw": "480 lb."
+    },
+    {
+      "id": "item:pony",
+      "name": "Pony",
+      "simple_name": "pony",
+      "category": "mount",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 30,
+        "currency": "gp"
+      },
+      "weight_lb": 225.0,
+      "weight_raw": "225 lb."
+    },
+    {
+      "id": "item:barding",
+      "name": "Barding",
+      "simple_name": "barding",
+      "category": "mount",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "weight_raw": "\u00d74"
+    },
+    {
+      "id": "item:carriage",
+      "name": "Carriage",
+      "simple_name": "carriage",
+      "category": "mount",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 100,
+        "currency": "gp"
+      },
+      "weight_lb": 600.0,
+      "weight_raw": "600 lb."
+    },
+    {
+      "id": "item:chariot",
+      "name": "Chariot",
+      "simple_name": "chariot",
+      "category": "mount",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "mount",
+      "cost": {
+        "amount": 250,
+        "currency": "gp"
+      },
+      "weight_lb": 100.0,
+      "weight_raw": "100 lb."
+    },
+    {
+      "id": "item:military",
+      "name": "Military",
+      "simple_name": "military",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 30.0,
+      "weight_raw": "30 lb."
+    },
+    {
+      "id": "item:riding",
+      "name": "Riding",
+      "simple_name": "riding",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10,
+        "currency": "gp"
+      },
+      "weight_lb": 25.0,
+      "weight_raw": "25 lb."
+    },
+    {
+      "id": "item:sled",
+      "name": "Sled",
+      "simple_name": "sled",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 20,
+        "currency": "gp"
+      },
+      "weight_lb": 300.0,
+      "weight_raw": "300 lb."
+    },
+    {
+      "id": "item:wagon",
+      "name": "Wagon",
+      "simple_name": "wagon",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 35,
+        "currency": "gp"
+      },
+      "weight_lb": 400.0,
+      "weight_raw": "400 lb."
+    },
+    {
+      "id": "item:galley",
+      "name": "Galley",
+      "simple_name": "galley",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 30000,
+        "currency": "gp"
+      },
+      "weight_raw": "30,000 gp"
+    },
+    {
+      "id": "item:longship",
+      "name": "Longship",
+      "simple_name": "longship",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10000,
+        "currency": "gp"
+      },
+      "weight_raw": "10,000 gp"
+    },
+    {
+      "id": "item:sailing-ship",
+      "name": "Sailing ship",
+      "simple_name": "sailing_ship",
+      "category": "gear",
+      "page": 72,
+      "source": "SRD 5.1",
+      "is_magic": false,
+      "row_index": 0,
+      "section": "gear",
+      "cost": {
+        "amount": 10000,
+        "currency": "gp"
+      },
+      "weight_raw": "10,000 gp"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "source": "SRD_CC_v5.1",
+  "ruleset_version": "5.1",
+  "license": {
+    "type": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "attribution": "This work includes material taken from the System Reference Document 5.1 (\"SRD 5.1\") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
+    "conversion_note": "Converted from the original PDF by srd-builder (https://github.com/wolftales/srd-builder) version 0.9.0"
+  },
+  "build": {
+    "extracted_at": "2025-12-23T02:03:43.141476+00:00",
+    "builder_version": "0.9.0",
+    "pdf_hash": "sha256:2504d2a0abb0a4d491a939be4f17910a2dde0312570ab8d208080225ccf0a1f0"
+  },
+  "page_index": {
+    "lineages": {
+      "start": 3,
+      "end": 7,
+      "description": "Character lineages (races)"
+    },
+    "classes": {
+      "start": 8,
+      "end": 55,
+      "description": "Character classes"
+    },
+    "monsters": {
+      "start": 261,
+      "end": 403
+    },
+    "equipment": {
+      "start": 64,
+      "end": 72
+    },
+    "spells": {
+      "start": 114,
+      "end": 193
+    }
+  },
+  "files": {
+    "meta": "meta.json",
+    "build_report": "build_report.json",
+    "index": "index.json",
+    "monsters": "monsters.json",
+    "equipment": "equipment.json",
+    "spells": "spells.json",
+    "tables": "tables.json",
+    "lineages": "lineages.json",
+    "classes": "classes.json"
+  },
+  "terminology": {
+    "aliases": {
+      "race": "lineage",
+      "races": "lineages"
+    }
+  },
+  "extraction_status": {
+    "monsters": "complete",
+    "equipment": "complete",
+    "spells": "complete",
+    "tables": "complete",
+    "lineages": "complete",
+    "classes": "complete"
+  },
+  "$schema_version": "1.4.0"
+}

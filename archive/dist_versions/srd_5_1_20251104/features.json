@@ -1,0 +1,2225 @@
+{
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "ruleset_version": "5.1",
+    "schema_version": "1.4.0",
+    "generated_by": "srd-builder v0.18.1",
+    "build_report": "./build_report.json"
+  },
+  "features": [
+    {
+      "id": "feature:rage",
+      "name": "Rage",
+      "simple_name": "rage",
+      "page": 8,
+      "source": "SRD 5.1",
+      "text": "In battle, you fight with primal ferocity. On your turn, you can enter a rage as a bonus action. While raging, you gain the following benefits if you aren\u2019t wearing heavy armor: \u2022 You have advantage on Strength checks and Strength saving throws. \u2022 When you make a melee weapon attack using Strength, you gain a bonus to the damage roll that increases as you gain levels as a barbarian, as shown in the Rage Damage column of the Barbarian table. \u2022 You have resistance to bludgeoning, piercing, and slashing damage. If you are able to cast spells, you can\u2019t cast them or concentrate on them while raging. Your rage lasts for 1 minute. It ends early if you are knocked unconscious or if your turn ends and you haven\u2019t attacked a hostile creature since your last turn or taken damage since then. You can also end your rage on your turn as a bonus action. Once you have raged the number of times shown for your barbarian level in the Rages column of the Barbarian table, you must finish a long rest before you can rage again.",
+      "summary": "In battle, you fight with primal ferocity."
+    },
+    {
+      "id": "feature:unarmored_defense",
+      "name": "Unarmored Defense",
+      "simple_name": "unarmored_defense",
+      "page": 8,
+      "source": "SRD 5.1",
+      "text": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier. You can use a shield and still gain this benefit.",
+      "summary": "While you are not wearing any armor, your Armor Class equals 10 + your Dexterity modifier + your Constitution modifier."
+    },
+    {
+      "id": "feature:reckless_attack",
+      "name": "Reckless Attack",
+      "simple_name": "reckless_attack",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation. When you make your first attack on your turn, you can decide to attack recklessly. Doing so gives you advantage on melee weapon attack rolls using Strength during this turn, but attack rolls against you have advantage until your next turn.",
+      "summary": "Starting at 2nd level, you can throw aside all concern for defense to attack with fierce desperation."
+    },
+    {
+      "id": "feature:danger_sense",
+      "name": "Danger Sense",
+      "simple_name": "danger_sense",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you gain an uncanny sense of when things nearby aren\u2019t as they should be, giving you an edge when you dodge away from danger. You have advantage on Dexterity saving throws against effects that you can see, such as traps and spells. To gain this benefit, you can\u2019t be blinded, deafened, or incapacitated.",
+      "summary": "At 2nd level, you gain an uncanny sense of when things nearby aren\u2019t as they should be, giving you an edge when you dodge away from danger."
+    },
+    {
+      "id": "feature:primal_path",
+      "name": "Primal Path",
+      "simple_name": "primal_path",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you choose a path that shapes the nature of your rage. Choose the Path of the Berserker or the Path of the Totem Warrior, both detailed at the end of the class description. Your choice grants you features at 3rd level and again at 6th, 10th, and 14th levels.",
+      "summary": "At 3rd level, you choose a path that shapes the nature of your rage."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:extra_attack",
+      "name": "Extra Attack",
+      "simple_name": "extra_attack",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "summary": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "id": "feature:fast_movement",
+      "name": "Fast Movement",
+      "simple_name": "fast_movement",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Starting at 5th level, your speed increases by 10 feet while you aren\u2019t wearing heavy armor.",
+      "summary": "Starting at 5th level, your speed increases by 10 feet while you aren\u2019t wearing heavy armor."
+    },
+    {
+      "id": "feature:feral_instinct",
+      "name": "Feral Instinct",
+      "simple_name": "feral_instinct",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "By 7th level, your instincts are so honed that you have advantage on initiative rolls. Additionally, if you are surprised at the beginning of combat and aren\u2019t incapacitated, you can act normally on your first turn, but only if you enter your rage before doing anything else on that turn.",
+      "summary": "By 7th level, your instincts are so honed that you have advantage on initiative rolls."
+    },
+    {
+      "id": "feature:brutal_critical",
+      "name": "Brutal Critical",
+      "simple_name": "brutal_critical",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack. This increases to two additional dice at 13th level and three additional dice at 17th level.",
+      "summary": "Beginning at 9th level, you can roll one additional weapon damage die when determining the extra damage for a critical hit with a melee attack."
+    },
+    {
+      "id": "feature:relentless_rage",
+      "name": "Relentless Rage",
+      "simple_name": "relentless_rage",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Starting at 11th level, your rage can keep you fighting despite grievous wounds. If you drop to 0 hit points while you\u2019re raging and don\u2019t die outright, you can make a DC 10 Constitution saving throw. If you succeed, you drop to 1 hit point instead. Each time you use this feature after the first, the DC increases by 5. When you finish a short or long rest, the DC resets to 10.",
+      "summary": "Starting at 11th level, your rage can keep you fighting despite grievous wounds."
+    },
+    {
+      "id": "feature:persistent_rage",
+      "name": "Persistent Rage",
+      "simple_name": "persistent_rage",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Beginning at 15th level, your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it.",
+      "summary": "Beginning at 15th level, your rage is so fierce that it ends early only if you fall unconscious or if you choose to end it."
+    },
+    {
+      "id": "feature:indomitable_might",
+      "name": "Indomitable Might",
+      "simple_name": "indomitable_might",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "Beginning at 18th level, if your total for a Strength check is less than your Strength score, you can use that score in place of the total.",
+      "summary": "Beginning at 18th level, if your total for a Strength check is less than your Strength score, you can use that score in place of the total."
+    },
+    {
+      "id": "feature:primal_champion",
+      "name": "Primal Champion",
+      "simple_name": "primal_champion",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you embody the power of the wilds. Your Strength and Constitution scores increase by 4. Your maximum for those scores is now 24.",
+      "summary": "At 20th level, you embody the power of the wilds."
+    },
+    {
+      "id": "feature:path_of_the_berserker",
+      "name": "Path of the Berserker",
+      "simple_name": "path_of_the_berserker",
+      "page": 9,
+      "source": "SRD 5.1",
+      "text": "For some barbarians, rage is a means to an end\u2014 that end being violence. The Path of the Berserker is a path of untrammeled fury, slick with blood. As you enter the berserker\u2019s rage, you thrill in the chaos of battle, heedless of your own health or well- being. Frenzy Starting when you choose this path at 3rd level, you can go into a frenzy when you rage. If you do so, for the duration of your rage you can make a single melee weapon attack as a bonus action on each of your turns after this one. When your rage ends, you suffer one level of exhaustion (as described in appendix PH- A).",
+      "summary": "For some barbarians, rage is a means to an end\u2014 that end being violence."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 11,
+      "source": "SRD 5.1",
+      "text": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music. Your spells are part of your vast repertoire, magic that you can tune to different situations.",
+      "summary": "You have learned to untangle and reshape the fabric of reality in harmony with your wishes and music."
+    },
+    {
+      "id": "feature:bardic_inspiration",
+      "name": "Bardic Inspiration",
+      "simple_name": "bardic_inspiration",
+      "page": 12,
+      "source": "SRD 5.1",
+      "text": "You can inspire others through stirring words or music. To do so, you use a bonus action on your turn to choose one creature other than yourself within 60 feet of you who can hear you. That creature gains one Bardic Inspiration die, a d6. Once within the next 10 minutes, the creature can roll the die and add the number rolled to one ability check, attack roll, or saving throw it makes. The creature can wait until after it rolls the d20 before deciding to use the Bardic Inspiration die, but must decide before the GM says whether the roll succeeds or fails. Once the Bardic Inspiration die is rolled, it is lost. A creature can have only one Bardic Inspiration die at a time. You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain any expended uses when you finish a long rest. Your Bardic Inspiration die changes when you reach certain levels in this class. The die becomes a d8 at 5th level, a d10 at 10th level, and a d12 at 15th level.",
+      "summary": "You can inspire others through stirring words or music."
+    },
+    {
+      "id": "feature:jack_of_all_trades",
+      "name": "Jack of All Trades",
+      "simple_name": "jack_of_all_trades",
+      "page": 12,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, you can add half your proficiency bonus, rounded down, to any ability check you make that doesn\u2019t already include your proficiency bonus.",
+      "summary": "Starting at 2nd level, you can add half your proficiency bonus, rounded down, to any ability chec..."
+    },
+    {
+      "id": "feature:song_of_rest",
+      "name": "Song of Rest",
+      "simple_name": "song_of_rest",
+      "page": 12,
+      "source": "SRD 5.1",
+      "text": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest. If you or any friendly creatures who can hear your performance regain hit points at the end of the short rest by spending one or more Hit Dice, each of those creatures regains an extra 1d6 hit points. The extra hit points increase when you reach certain levels in this class: to 1d8 at 9th level, to 1d10 at 13th level, and to 1d12 at 17th level.",
+      "summary": "Beginning at 2nd level, you can use soothing music or oration to help revitalize your wounded allies during a short rest."
+    },
+    {
+      "id": "feature:bard_college",
+      "name": "Bard College",
+      "simple_name": "bard_college",
+      "page": 12,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you delve into the advanced techniques of a bard college of your choice, such as the College of Lore. Your choice grants you features at 3rd level and again at 6th and 14th level.",
+      "summary": "At 3rd level, you delve into the advanced techniques of a bard college of your choice, such as the College of Lore."
+    },
+    {
+      "id": "feature:expertise",
+      "name": "Expertise",
+      "simple_name": "expertise",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, choose two of your skill proficiencies. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies. At 10th level, you can choose another two skill proficiencies to gain this benefit.",
+      "summary": "At 3rd level, choose two of your skill proficiencies."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:font_of_inspiration",
+      "name": "Font of Inspiration",
+      "simple_name": "font_of_inspiration",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest.",
+      "summary": "Beginning when you reach 5th level, you regain all of your expended uses of Bardic Inspiration when you finish a short or long rest."
+    },
+    {
+      "id": "feature:countercharm",
+      "name": "Countercharm",
+      "simple_name": "countercharm",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "At 6th level, you gain the ability to use musical notes or words of power to disrupt mind- influencing effects. As an action, you can start a performance that lasts until the end of your next turn. During that time, you and any friendly creatures within 30 feet of you have advantage on saving throws against being frightened or charmed. A creature must be able to hear you to gain this benefit. The performance ends early if you are incapacitated or silenced or if you voluntarily end it (no action required).",
+      "summary": "At 6th level, you gain the ability to use musical notes or words of power to disrupt mind- influencing effects."
+    },
+    {
+      "id": "feature:magical_secrets",
+      "name": "Magical Secrets",
+      "simple_name": "magical_secrets",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines. Choose two spells from any class, including this one. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip. The chosen spells count as bard spells for you and are included in the number in the Spells Known column of the Bard table. You learn two additional spells from any class at 14th level and again at 18th level.",
+      "summary": "By 10th level, you have plundered magical knowledge from a wide spectrum of disciplines."
+    },
+    {
+      "id": "feature:superior_inspiration",
+      "name": "Superior Inspiration",
+      "simple_name": "superior_inspiration",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "At 20th level, when you roll initiative and have no uses of Bardic Inspiration left, you regain one use.",
+      "summary": "At 20th level, when you roll initiative and have no uses of Bardic Inspiration left, you regain one use."
+    },
+    {
+      "id": "feature:college_of_lore",
+      "name": "College of Lore",
+      "simple_name": "college_of_lore",
+      "page": 13,
+      "source": "SRD 5.1",
+      "text": "Bards of the College of Lore know something about most things, collecting bits of knowledge from sources as diverse as scholarly tomes and peasant tales. Whether singing folk ballads in taverns or elaborate compositions in royal courts, these bards use their gifts to hold audiences spellbound. When the applause dies down, the audience members might find themselves questioning everything they held to be true, from their faith in the priesthood of the local temple to their loyalty to the king. The loyalty of these bards lies in the pursuit of beauty and truth, not in fealty to a monarch or following the tenets of a deity. A noble who keeps such a bard as a herald or advisor knows that the bard would rather be honest than politic. The college\u2019s members gather in libraries and sometimes in actual colleges, complete with classrooms and dormitories, to share their lore with one another. They also meet at festivals or affairs of state, where they can expose corruption, unravel lies, and poke fun at self- important figures of authority. Bonus Proficiencies When you join the College of Lore at 3rd level, you gain proficiency with three skills of your choice. Cutting Words Also at 3rd level, you learn how to use your wit to distract, confuse, and otherwise sap the confidence and competence of others. When a creature that you can see within 60 feet of you makes an attack roll, an ability check, or a damage roll, you can use your reaction to expend one of your uses of Bardic Inspiration, rolling a Bardic Inspiration die and subtracting the number rolled from the creature\u2019s roll. You can choose to use this feature after the creature makes its roll, but before the GM determines whether the attack roll or ability check succeeds or fails, or before the creature deals its damage. The creature is immune if it can\u2019t hear you or if it\u2019s immune to being charmed. Additional Magical Secrets At 6th level, you learn two spells of your choice from any class. A spell you choose must be of a level you can cast, as shown on the Bard table, or a cantrip. The chosen spells count as bard spells for you but don\u2019t count against the number of bard spells you know.",
+      "summary": "Bards of the College of Lore know something about most things, collecting bits of knowledge from ..."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 15,
+      "source": "SRD 5.1",
+      "text": "As a conduit for divine power, you can cast cleric spells. Cantrips At 1st level, you know three cantrips of your choice from the cleric spell list. You learn additional cleric cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Cleric table.",
+      "summary": "As a conduit for divine power, you can cast cleric spells."
+    },
+    {
+      "id": "feature:divine_domain",
+      "name": "Divine Domain",
+      "simple_name": "divine_domain",
+      "page": 16,
+      "source": "SRD 5.1",
+      "text": "Choose one domain related to your deity, such as Life. Each domain is detailed at the end of the class description, and each one provides examples of gods associated with it. Your choice grants you domain spells and other features when you choose it at 1st level. It also grants you additional ways to use Channel Divinity when you gain that feature at 2nd level, and additional benefits at 6th, 8th, and 17th levels. Domain Spells Each domain has a list of spells\u2014its domain spells\u2014 that you gain at the cleric levels noted in the domain description. Once you gain a domain spell, you always have it prepared, and it doesn\u2019t count against the number of spells you can prepare each day. If you have a domain spell that doesn\u2019t appear on the cleric spell list, the spell is nonetheless a cleric spell for you.",
+      "summary": "Choose one domain related to your deity, such as Life."
+    },
+    {
+      "id": "feature:channel_divinity",
+      "name": "Channel Divinity",
+      "simple_name": "channel_divinity",
+      "page": 16,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects. You start with two such effects: Turn Undead and an effect determined by your domain. Some domains grant you additional effects as you advance in levels, as noted in the domain description. When you use your Channel Divinity, you choose which effect to create. You must then finish a short or long rest to use your Channel Divinity again. Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your cleric spell save DC. Beginning at 6th level, you can use your Channel Divinity twice between rests, and beginning at 18th level, you can use it three times between rests. When you finish a short or long rest, you regain your expended uses. Channel Divinity: Turn Undead As an action, you present your holy symbol and speak a prayer censuring the undead. Each undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes any damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can\u2019t willingly move to a space within 30 feet of you. It also can\u2019t take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there\u2019s nowhere to move, the creature can use the Dodge action.",
+      "summary": "At 2nd level, you gain the ability to channel divine energy directly from your deity, using that energy to fuel magical effects."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 17,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:destroy_undead",
+      "name": "Destroy Undead",
+      "simple_name": "destroy_undead",
+      "page": 17,
+      "source": "SRD 5.1",
+      "text": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, the creature is instantly destroyed if its challenge rating is at or below a certain threshold, as shown in the Destroy Undead table. Destroy Undead Cleric Level Destroys Undead of CR . . . 5th 1/2 or lower 8th 1 or lower 11th 2 or lower 14th 3 or lower 17th 4 or lower",
+      "summary": "Starting at 5th level, when an undead fails its saving throw against your Turn Undead feature, th..."
+    },
+    {
+      "id": "feature:divine_intervention",
+      "name": "Divine Intervention",
+      "simple_name": "divine_intervention",
+      "page": 17,
+      "source": "SRD 5.1",
+      "text": "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great. Imploring your deity\u2019s aid requires you to use your action. Describe the assistance you seek, and roll percentile dice. If you roll a number equal to or lower than your cleric level, your deity intervenes. The GM chooses the nature of the intervention; the effect of any cleric spell or cleric domain spell would be appropriate. If your deity intervenes, you can\u2019t use this feature again for 7 days. Otherwise, you can use it again after you finish a long rest. At 20th level, your call for intervention succeeds automatically, no roll required.",
+      "summary": "Beginning at 10th level, you can call on your deity to intervene on your behalf when your need is great."
+    },
+    {
+      "id": "feature:life_domain",
+      "name": "Life Domain",
+      "simple_name": "life_domain",
+      "page": 17,
+      "source": "SRD 5.1",
+      "text": "The Life domain focuses on the vibrant positive energy\u2014one of the fundamental forces of the universe\u2014that sustains all life. The gods of life promote vitality and health through healing the sick and wounded, caring for those in need, and driving away the forces of death and undeath. Almost any non- evil deity can claim influence over this domain, particularly agricultural deities (such as Chauntea, Arawai, and Demeter), sun gods (such as Lathander, Pelor, and Re- Horakhty), gods of healing or endurance (such as Ilmater, Mishakal, Apollo, and Diancecht), and gods of home and community (such as Hestia, Hathor, and Boldrei). Life Domain Spells Cleric Level Spells 1st bless, cure wounds 3rd lesser restoration, spiritual weapon 5th beacon of hope, revivify 7th death ward, guardian of faith 9th mass cure wounds, raise dead Bonus Proficiency When you choose this domain at 1st level, you gain proficiency with heavy armor. Disciple of Life Also starting at 1st level, your healing spells are more effective. Whenever you use a spell of 1st level or higher to restore hit points to a creature, the creature regains additional hit points equal to 2 + the spell\u2019s level. Channel Divinity: Preserve Life Starting at 2nd level, you can use your Channel Divinity to heal the badly injured. As an action, you present your holy symbol and evoke healing energy that can restore a number of hit points equal to five times your cleric level. Choose any creatures within 30 feet of you, and divide those hit points among them. This feature can restore a creature to no more than half of its hit point maximum. You can\u2019t use this feature on an undead or a construct. Blessed Healer Beginning at 6th level, the healing spells you cast on others heal you as well. When you cast a spell of 1st level or higher that restores hit points to a creature other than you, you regain hit points equal to 2 + the spell\u2019s level. Divine Strike At 8th level, you gain the ability to infuse your weapon strikes with divine energy. Once on each of your turns when you hit a creature with a weapon attack, you can cause the attack to deal an extra 1d8 radiant damage to the target. When you reach 14th level, the extra damage increases to 2d8. Supreme Healing Starting at 17th level, when you would normally roll one or more dice to restore hit points with a spell, you instead use the highest number possible for",
+      "summary": "The Life domain focuses on the vibrant positive energy\u2014one of the fundamental forces of the universe\u2014that sustains all life."
+    },
+    {
+      "id": "feature:druidic",
+      "name": "Druidic",
+      "simple_name": "druidic",
+      "page": 19,
+      "source": "SRD 5.1",
+      "text": "You know Druidic, the secret language of druids. You can speak the language and use it to leave hidden messages. You and others who know this language automatically spot such a message. Others spot the message\u2019s presence with a successful DC 15 Wisdom (Perception) check but can\u2019t decipher it without magic.",
+      "summary": "You know Druidic, the secret language of druids."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 19,
+      "source": "SRD 5.1",
+      "text": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will.",
+      "summary": "Drawing on the divine essence of nature itself, you can cast spells to shape that essence to your will."
+    },
+    {
+      "id": "feature:wild_shape",
+      "name": "Wild Shape",
+      "simple_name": "wild_shape",
+      "page": 20,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before. You can use this feature twice. You regain expended uses when you finish a short or long rest. Your druid level determines the beasts you can transform into, as shown in the Beast Shapes table. At 2nd level, for example, you can transform into any beast that has a challenge rating of 1/4 or lower that doesn\u2019t have a flying or swimming speed. Beast Shapes Level Max. CR Limitations Example 2nd 1/4 No flying or swimming speed Wolf 4th 1/2 No flying speed Crocodile 8th \u2014 Giant eagle You can stay in a beast shape for a number of hours equal to half your druid level (rounded down). You then revert to your normal form unless you expend another use of this feature. You can revert to your normal form earlier by using a bonus action on your turn. You automatically revert if you fall unconscious, drop to 0 hit points, or die. While you are transformed, the following rules apply: \u2022 Your game statistics are replaced by the statistics of the beast, but you retain your alignment, personality, and Intelligence, Wisdom, and Charisma scores. You also retain all of your skill and saving throw proficiencies, in addition to gaining those of the creature. If the creature has the same proficiency as you and the bonus in its stat block is higher than yours, use the creature\u2019s bonus instead of yours. If the creature has any legendary or lair actions, you can\u2019t use them. \u2022 When you transform, you assume the beast\u2019s hit points and Hit Dice. When you revert to your normal form, you return to the number of hit points you had before you transformed. However, if you revert as a result of dropping to 0 hit points, any excess damage carries over to your normal form. For example, if you take 10 damage in animal form and have only 1 hit point left, you",
+      "summary": "Starting at 2nd level, you can use your action to magically assume the shape of a beast that you have seen before."
+    },
+    {
+      "id": "feature:druid_circle",
+      "name": "Druid Circle",
+      "simple_name": "druid_circle",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you choose to identify with a circle of druids, such as the Circle of the Land. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+      "summary": "At 2nd level, you choose to identify with a circle of druids, such as the Circle of the Land."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:timeless_body",
+      "name": "Timeless Body",
+      "simple_name": "timeless_body",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "Starting at 18th level, the primal magic that you wield causes you to age more slowly. For every 10 years that pass, your body ages only 1 year.",
+      "summary": "Starting at 18th level, the primal magic that you wield causes you to age more slowly."
+    },
+    {
+      "id": "feature:beast_spells",
+      "name": "Beast Spells",
+      "simple_name": "beast_spells",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape. You can perform the somatic and verbal components of a druid spell while in a beast shape, but you aren\u2019t able to provide material components.",
+      "summary": "Beginning at 18th level, you can cast many of your druid spells in any shape you assume using Wild Shape."
+    },
+    {
+      "id": "feature:archdruid",
+      "name": "Archdruid",
+      "simple_name": "archdruid",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you can use your Wild Shape an unlimited number of times. Additionally, you can ignore the verbal and somatic components of your druid spells, as well as any material components that lack a cost and aren\u2019t consumed by a spell. You gain this benefit in both your normal shape and your beast shape from Wild Shape.",
+      "summary": "At 20th level, you can use your Wild Shape an unlimited number of times."
+    },
+    {
+      "id": "feature:circle_of_the_land",
+      "name": "Circle of the Land",
+      "simple_name": "circle_of_the_land",
+      "page": 21,
+      "source": "SRD 5.1",
+      "text": "The Circle of the Land is made up of mystics and sages who safeguard ancient knowledge and rites through a vast oral tradition. These druids meet within sacred circles of trees or standing stones to whisper primal secrets in Druidic. The circle\u2019s wisest members preside as the chief priests of communities that hold to the Old Faith and serve as advisors to the rulers of those folk. As a member of this circle, your magic is influenced by the land where you were initiated into the circle\u2019s mysterious rites. Bonus Cantrip When you choose this circle at 2nd level, you learn one additional druid cantrip of your choice. Natural Recovery Starting at 2nd level, you can regain some of your magical energy by sitting in meditation and communing with nature. During a short rest, you choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your druid level (rounded up), and none of the slots can be 6th level or higher. You can\u2019t use this feature again until you finish a long rest. For example, when you are a 4th- level druid, you can recover up to two levels worth of spell slots. You can recover either a 2nd- level slot or two 1st- level slots. Circle Spells Your mystical connection to the land infuses you with the ability to cast certain spells. At 3rd, 5th, 7th, and 9th level you gain access to circle spells connected to the land where you became a druid. Choose that land\u2014arctic, coast, desert, forest, grassland, mountain, or swamp\u2014and consult the associated list of spells.",
+      "summary": "The Circle of the Land is made up of mystics and sages who safeguard ancient knowledge and rites through a vast oral tradition."
+    },
+    {
+      "id": "feature:fighting_style",
+      "name": "Fighting Style",
+      "simple_name": "fighting_style",
+      "page": 24,
+      "source": "SRD 5.1",
+      "text": "You adopt a particular style of fighting as your specialty. Choose one of the following options. You can\u2019t take a Fighting Style option more than once, even if you later get to choose again. Archery You gain a +2 bonus to attack rolls you make with ranged weapons. Defense While you are wearing armor, you gain a +1 bonus to AC. Dueling When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon. Great Weapon Fighting When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll, even if the new roll is a 1 or a 2. The weapon must have the two- handed or versatile property for you to gain this benefit. Protection When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield. Two-Weapon Fighting When you engage in two- weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      "summary": "You adopt a particular style of fighting as your specialty."
+    },
+    {
+      "id": "feature:second_wind",
+      "name": "Second Wind",
+      "simple_name": "second_wind",
+      "page": 24,
+      "source": "SRD 5.1",
+      "text": "You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again.",
+      "summary": "You have a limited well of stamina that you can draw on to protect yourself from harm."
+    },
+    {
+      "id": "feature:action_surge",
+      "name": "Action Surge",
+      "simple_name": "action_surge",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action. Once you use this feature, you must finish a short or long rest before you can use it again. Starting at 17th level, you can use it twice before a rest, but only once on the same turn.",
+      "summary": "Starting at 2nd level, you can push yourself beyond your normal limits for a moment."
+    },
+    {
+      "id": "feature:martial_archetype",
+      "name": "Martial Archetype",
+      "simple_name": "martial_archetype",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion. The archetype you choose grants you features at 3rd level and again at 7th, 10th, 15th, and 18th level.",
+      "summary": "At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques, such as Champion."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 6th, 8th, 12th, 14th, 16th, and 19th level, you can increa..."
+    },
+    {
+      "id": "feature:extra_attack",
+      "name": "Extra Attack",
+      "simple_name": "extra_attack",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn. The number of attacks increases to three when you reach 11th level in this class and to four when you reach 20th level in this class.",
+      "summary": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "id": "feature:indomitable",
+      "name": "Indomitable",
+      "simple_name": "indomitable",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "Beginning at 9th level, you can reroll a saving throw that you fail. If you do so, you must use the new roll, and you can\u2019t use this feature again until you finish a long rest. You can use this feature twice between long rests starting at 13th level and three times between long rests starting at 17th level. Martial Archetypes Different fighters choose different approaches to perfecting their fighting prowess. The martial archetype you choose to emulate reflects your approach.",
+      "summary": "Beginning at 9th level, you can reroll a saving throw that you fail."
+    },
+    {
+      "id": "feature:champion",
+      "name": "Champion",
+      "simple_name": "champion",
+      "page": 25,
+      "source": "SRD 5.1",
+      "text": "The archetypal Champion focuses on the development of raw physical power honed to deadly perfection. Those who model themselves on this archetype combine rigorous training with physical excellence to deal devastating blows. Improved Critical Beginning when you choose this archetype at 3rd level, your weapon attacks score a critical hit on a roll of 19 or 20. Remarkable Athlete Starting at 7th level, you can add half your proficiency bonus (round up) to any Strength, Dexterity, or Constitution check you make that doesn\u2019t already use your proficiency bonus. In addition, when you make a running long jump, the distance you can cover increases by a number of feet equal to your Strength modifier. Additional Fighting Style At 10th level, you can choose a second option from the Fighting Style class feature. Superior Critical Starting at 15th level, your weapon attacks score a critical hit on a roll of 18-20. Survivor At 18th level, you attain the pinnacle of resilience in battle. At the start of each of your turns, you regain hit points equal to 5 + your Constitution modifier if you have no more than half of your hit points left. You don\u2019t gain this benefit if you have 0 hit points.",
+      "summary": "The archetypal Champion focuses on the development of raw physical power honed to deadly perfection."
+    },
+    {
+      "id": "feature:unarmored_defense",
+      "name": "Unarmored Defense",
+      "simple_name": "unarmored_defense",
+      "page": 26,
+      "source": "SRD 5.1",
+      "text": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.",
+      "summary": "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+    },
+    {
+      "id": "feature:martial_arts",
+      "name": "Martial Arts",
+      "simple_name": "martial_arts",
+      "page": 26,
+      "source": "SRD 5.1",
+      "text": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don\u2019t have the two- handed or heavy property. You gain the following benefits while you are unarmed or wielding only monk weapons and you aren\u2019t wearing armor or wielding a shield: \u2022 You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons. \u2022 You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of the Monk table. \u2022 When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can",
+      "summary": "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed s..."
+    },
+    {
+      "id": "feature:unarmored_movement",
+      "name": "Unarmored Movement",
+      "simple_name": "unarmored_movement",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in the Monk table. At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move.",
+      "summary": "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield."
+    },
+    {
+      "id": "feature:monastic_tradition",
+      "name": "Monastic Tradition",
+      "simple_name": "monastic_tradition",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level.",
+      "summary": "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand."
+    },
+    {
+      "id": "feature:deflect_missiles",
+      "name": "Deflect Missiles",
+      "simple_name": "deflect_missiles",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level. If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet.",
+      "summary": "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:slow_fall",
+      "name": "Slow Fall",
+      "simple_name": "slow_fall",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level.",
+      "summary": "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you ..."
+    },
+    {
+      "id": "feature:extra_attack",
+      "name": "Extra Attack",
+      "simple_name": "extra_attack",
+      "page": 27,
+      "source": "SRD 5.1",
+      "text": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "summary": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "id": "feature:stunning_strike",
+      "name": "Stunning Strike",
+      "simple_name": "stunning_strike",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Starting at 5th level, you can interfere with the flow of ki in an opponent\u2019s body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn.",
+      "summary": "Starting at 5th level, you can interfere with the flow of ki in an opponent\u2019s body."
+    },
+    {
+      "id": "feature:kiempowered_strikes",
+      "name": "Ki-Empowered Strikes",
+      "simple_name": "kiempowered_strikes",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+      "summary": "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
+    },
+    {
+      "id": "feature:evasion",
+      "name": "Evasion",
+      "simple_name": "evasion",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon\u2019s lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "summary": "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, suc..."
+    },
+    {
+      "id": "feature:stillness_of_mind",
+      "name": "Stillness of Mind",
+      "simple_name": "stillness_of_mind",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened.",
+      "summary": "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."
+    },
+    {
+      "id": "feature:purity_of_body",
+      "name": "Purity of Body",
+      "simple_name": "purity_of_body",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison.",
+      "summary": "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison."
+    },
+    {
+      "id": "feature:tongue_of_the_sun_and_moon",
+      "name": "Tongue of the Sun and Moon",
+      "simple_name": "tongue_of_the_sun_and_moon",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say.",
+      "summary": "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages."
+    },
+    {
+      "id": "feature:diamond_soul",
+      "name": "Diamond Soul",
+      "simple_name": "diamond_soul",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws. Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result.",
+      "summary": "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws."
+    },
+    {
+      "id": "feature:timeless_body",
+      "name": "Timeless Body",
+      "simple_name": "timeless_body",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can\u2019t be aged magically. You can still die of old age, however. In addition, you no longer need food or water.",
+      "summary": "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can\u2019t be aged magically."
+    },
+    {
+      "id": "feature:empty_body",
+      "name": "Empty Body",
+      "simple_name": "empty_body",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage. Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can\u2019t take any other creatures with you.",
+      "summary": "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute."
+    },
+    {
+      "id": "feature:perfect_self",
+      "name": "Perfect Self",
+      "simple_name": "perfect_self",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points. Monastic Traditions Three traditions of monastic pursuit are common in the monasteries scattered across the multiverse. Most monasteries practice one tradition exclusively, but a few honor the three traditions and instruct each monk according to his or her aptitude and interest. All three traditions rely on the same basic techniques, diverging as the student grows more adept. Thus, a monk need choose a tradition only upon reaching 3rd level.",
+      "summary": "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points."
+    },
+    {
+      "id": "feature:way_of_the_open_hand",
+      "name": "Way of the Open Hand",
+      "simple_name": "way_of_the_open_hand",
+      "page": 28,
+      "source": "SRD 5.1",
+      "text": "Monks of the Way of the Open Hand are the ultimate masters of martial arts combat, whether armed or unarmed. They learn techniques to push and trip their opponents, manipulate ki to heal damage to their bodies, and practice advanced meditation that can protect them from harm. Open Hand Technique Starting when you choose this tradition at 3rd level, you can manipulate your enemy\u2019s ki when you harness your own. Whenever you hit a creature with one of the attacks granted by your Flurry of Blows, you can impose one of the following effects on that target: \u2022 It must succeed on a Dexterity saving throw or be knocked prone. \u2022 It must make a Strength saving throw. If it fails, you can push it up to 15 feet away from you. \u2022 It can\u2019t take reactions until the end of your next turn. Wholeness of Body At 6th level, you gain the ability to heal yourself. As an action, you can regain hit points equal to three",
+      "summary": "Monks of the Way of the Open Hand are the ultimate masters of martial arts combat, whether armed or unarmed."
+    },
+    {
+      "id": "feature:divine_sense",
+      "name": "Divine Sense",
+      "simple_name": "divine_sense",
+      "page": 30,
+      "source": "SRD 5.1",
+      "text": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity (the vampire Count Strahd von Zarovich, for instance). Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell. You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses.",
+      "summary": "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears."
+    },
+    {
+      "id": "feature:lay_on_hands",
+      "name": "Lay on Hands",
+      "simple_name": "lay_on_hands",
+      "page": 31,
+      "source": "SRD 5.1",
+      "text": "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level \u00d7 5. As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool. Alternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one. This feature has no effect on undead and constructs.",
+      "summary": "Your blessed touch can heal wounds."
+    },
+    {
+      "id": "feature:fighting_style",
+      "name": "Fighting Style",
+      "simple_name": "fighting_style",
+      "page": 31,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can\u2019t take a Fighting Style option more than once, even if you later get to choose again. Defense While you are wearing armor, you gain a +1 bonus to AC. Dueling When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon. Great Weapon Fighting When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll. The weapon must have the two- handed or versatile property for you to gain this benefit. Protection When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield.",
+      "summary": "At 2nd level, you adopt a style of fighting as your specialty."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 31,
+      "source": "SRD 5.1",
+      "text": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does. Preparing and Casting Spells The Paladin table shows how many spell slots you have to cast your spells. To cast one of your paladin spells of 1st level or higher, you must expend a slot of the spell\u2019s level or higher. You regain all expended spell slots when you finish a long rest. You prepare the list of paladin spells that are available for you to cast, choosing from the paladin spell list. When you do so, choose a number of paladin spells equal to your Charisma modifier + half your paladin level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots. For example, if you are a 5th- level paladin, you have four 1st- level and two 2nd- level spell slots. With a Charisma of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st- level spell cure wounds, you can cast it using a 1st- level or a 2nd- level slot. Casting the spell doesn\u2019t remove it from your list of prepared spells. You can change your list of prepared spells when you finish a long rest. Preparing a new list of paladin spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list. Spellcasting Ability Charisma is your spellcasting ability for your paladin spells, since their power derives from the strength of your convictions. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a paladin spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier Spellcasting Focus You can use a holy symbol as a spellcasting focus for your paladin spells.",
+      "summary": "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does."
+    },
+    {
+      "id": "feature:divine_smite",
+      "name": "Divine Smite",
+      "simple_name": "divine_smite",
+      "page": 31,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon\u2019s damage. The extra damage is 2d8 for a 1st- level spell slot, plus 1d8 for each spell level",
+      "summary": "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spe..."
+    },
+    {
+      "id": "feature:divine_health",
+      "name": "Divine Health",
+      "simple_name": "divine_health",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "By 3rd level, the divine magic flowing through you makes you immune to disease.",
+      "summary": "By 3rd level, the divine magic flowing through you makes you immune to disease."
+    },
+    {
+      "id": "feature:sacred_oath",
+      "name": "Sacred Oath",
+      "simple_name": "sacred_oath",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion. Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature. Oath Spells Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don\u2019t count against the number of spells you can prepare each day. If you gain an oath spell that doesn\u2019t appear on the paladin spell list, the spell is nonetheless a paladin spell for you. Channel Divinity Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it. When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again. Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC.",
+      "summary": "When you reach 3rd level, you swear the oath that binds you as a paladin forever."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:extra_attack",
+      "name": "Extra Attack",
+      "simple_name": "extra_attack",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "summary": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "id": "feature:aura_of_protection",
+      "name": "Aura of Protection",
+      "simple_name": "aura_of_protection",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus. At 18th level, the range of this aura increases to 30 feet.",
+      "summary": "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a savi..."
+    },
+    {
+      "id": "feature:aura_of_courage",
+      "name": "Aura of Courage",
+      "simple_name": "aura_of_courage",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "Starting at 10th level, you and friendly creatures within 10 feet of you can\u2019t be frightened while you are conscious. At 18th level, the range of this aura increases to 30 feet.",
+      "summary": "Starting at 10th level, you and friendly creatures within 10 feet of you can\u2019t be frightened while you are conscious."
+    },
+    {
+      "id": "feature:improved_divine_smite",
+      "name": "Improved Divine Smite",
+      "simple_name": "improved_divine_smite",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage. If you also use your Divine Smite with an attack, you add this damage to the extra damage of your Divine Smite.",
+      "summary": "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them."
+    },
+    {
+      "id": "feature:cleansing_touch",
+      "name": "Cleansing Touch",
+      "simple_name": "cleansing_touch",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch. You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest. Sacred Oaths Becoming a paladin involves taking vows that commit the paladin to the cause of righteousness, an active path of fighting wickedness. The final oath, taken when he or she reaches 3rd level, is the culmination of all the paladin\u2019s training. Some characters with this class don\u2019t consider themselves true paladins until they have reached 3rd level and made this oath. For others, the actual swearing of the oath is a formality, an official stamp on what has always been true in the paladin\u2019s heart.",
+      "summary": "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch."
+    },
+    {
+      "id": "feature:oath_of_devotion",
+      "name": "Oath of Devotion",
+      "simple_name": "oath_of_devotion",
+      "page": 32,
+      "source": "SRD 5.1",
+      "text": "The Oath of Devotion binds a paladin to the loftiest ideals of justice, virtue, and order. Sometimes called cavaliers, white knights, or holy warriors, these",
+      "summary": "The Oath of Devotion binds a paladin to the loftiest ideals of justice, virtue, and order."
+    },
+    {
+      "id": "feature:honesty",
+      "name": "Honesty",
+      "simple_name": "honesty",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "Don\u2019t lie or cheat. Let your word be your promise.",
+      "summary": "Don\u2019t lie or cheat."
+    },
+    {
+      "id": "feature:courage",
+      "name": "Courage",
+      "simple_name": "courage",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "Never fear to act, though caution is wise.",
+      "summary": "Never fear to act, though caution is wise."
+    },
+    {
+      "id": "feature:compassion",
+      "name": "Compassion",
+      "simple_name": "compassion",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "Aid others, protect the weak, and punish those who threaten them. Show mercy to your foes, but temper it with wisdom.",
+      "summary": "Aid others, protect the weak, and punish those who threaten them."
+    },
+    {
+      "id": "feature:honor",
+      "name": "Honor",
+      "simple_name": "honor",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "Treat others with fairness, and let your honorable deeds be an example to them. Do as much good as possible while causing the least amount of harm.",
+      "summary": "Treat others with fairness, and let your honorable deeds be an example to them."
+    },
+    {
+      "id": "feature:duty",
+      "name": "Duty",
+      "simple_name": "duty",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "Be responsible for your actions and their consequences, protect those entrusted to your care, and obey those who have just authority over you. Oath Spells You gain oath spells at the paladin levels listed. Oath of Devotion Spells Paladin Level Spells 3rd protection from evil and good, sanctuary 5th lesser restoration, zone of truth 9th beacon of hope, dispel magic 13th freedom of movement, guardian of faith 17th commune, flame strike Channel Divinity When you take this oath at 3rd level, you gain the following two Channel Divinity options.",
+      "summary": "Be responsible for your actions and their consequences, protect those entrusted to your care, and obey those who have just authority over you."
+    },
+    {
+      "id": "feature:sacred\t\r_\u00a0weapon",
+      "name": "Sacred\t\r \u00a0Weapon",
+      "simple_name": "sacred\t\r_\u00a0weapon",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity. For 1 minute, you add your Charisma modifier to attack rolls made with that weapon (with a minimum bonus of +1). The weapon also emits bright light in a 20- foot radius and dim light 20 feet beyond that. If the weapon is not already magical, it becomes magical for the duration. You can end this effect on your turn as part of any other action. If you are no longer holding or carrying this weapon, or if you fall unconscious, this effect ends.",
+      "summary": "As an action, you can imbue one weapon that you are holding with positive energy, using your Channel Divinity."
+    },
+    {
+      "id": "feature:turn\t\r_\u00a0the\t\r_\u00a0unholy",
+      "name": "Turn\t\r \u00a0the\t\r \u00a0Unholy",
+      "simple_name": "turn\t\r_\u00a0the\t\r_\u00a0unholy",
+      "page": 33,
+      "source": "SRD 5.1",
+      "text": "As an action, you present your holy symbol and speak a prayer censuring fiends and undead, using your Channel Divinity. Each fiend or undead that can see or hear you within 30 feet of you must make a Wisdom saving throw. If the creature fails its saving throw, it is turned for 1 minute or until it takes damage. A turned creature must spend its turns trying to move as far away from you as it can, and it can\u2019t willingly move to a space within 30 feet of you. It also can\u2019t take reactions. For its action, it can use only the Dash action or try to escape from an effect that prevents it from moving. If there\u2019s nowhere to move, the creature can use the Dodge action. Aura of Devotion Starting at 7th level, you and friendly creatures within 10 feet of you can\u2019t be charmed while you are conscious. At 18th level, the range of this aura increases to 30 feet. Purity of Spirit Beginning at 15th level, you are always under the effects of a protection from evil and good spell. Holy Nimbus At 20th level, as an action, you can emanate an aura of sunlight. For 1 minute, bright light shines from you in a 30- foot radius, and dim light shines 30 feet beyond that. Whenever an enemy creature starts its turn in the bright light, the creature takes 10 radiant damage. In addition, for the duration, you have advantage on saving throws against spells cast by fiends or undead. Once you use this feature, you can\u2019t use it again until you finish a long rest. Breaking Your Oath A paladin tries to hold to the highest standards of conduct, but even the most virtuous paladin is fallible. Sometimes the right path proves too demanding, sometimes a situation calls for the lesser of two evils, and sometimes the heat of emotion causes a paladin to transgress his or her oath. A paladin who has broken a vow typically seeks absolution from a cleric who shares his or her faith or from another paladin of the same order. The paladin might spend an all- night vigil in prayer as a sign of penitence, or undertake a fast",
+      "summary": "As an action, you present your holy symbol and speak a prayer censuring fiends and undead, using your Channel Divinity."
+    },
+    {
+      "id": "feature:favored_enemy",
+      "name": "Favored Enemy",
+      "simple_name": "favored_enemy",
+      "page": 35,
+      "source": "SRD 5.1",
+      "text": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy. Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies. You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them. When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all. You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As",
+      "summary": "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy."
+    },
+    {
+      "id": "feature:natural_explorer",
+      "name": "Natural Explorer",
+      "simple_name": "natural_explorer",
+      "page": 36,
+      "source": "SRD 5.1",
+      "text": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you\u2019re proficient in. While traveling for an hour or more in your favored terrain, you gain the following benefits: \u2022 Difficult terrain doesn\u2019t slow your group\u2019s travel. \u2022 Your group can\u2019t become lost except by magical means. \u2022 Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger. \u2022 If you are traveling alone, you can move stealthily at a normal pace. \u2022 When you forage, you find twice as much food as you normally would. \u2022 While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area. You choose additional favored terrain types at 6th and 10th level.",
+      "summary": "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions."
+    },
+    {
+      "id": "feature:fighting_style",
+      "name": "Fighting Style",
+      "simple_name": "fighting_style",
+      "page": 36,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can\u2019t take a Fighting Style option more than once, even if you later get to choose again. Archery You gain a +2 bonus to attack rolls you make with ranged weapons. Defense While you are wearing armor, you gain a +1 bonus to AC. Dueling When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon. Two-Weapon Fighting When you engage in two- weapon fighting, you can add your ability modifier to the damage of the second attack.",
+      "summary": "At 2nd level, you adopt a particular style of fighting as your specialty."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 36,
+      "source": "SRD 5.1",
+      "text": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does. Spell Slots The Ranger table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell\u2019s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st- level spell animal friendship and have a 1st- level and a 2nd- level spell slot available, you can cast animal friendship using either slot. Spells Known of 1st Level and Higher You know two 1st- level spells of your choice from the ranger spell list. The Spells Known column of the Ranger table shows when you learn more ranger spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 5th level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the ranger spells you know and replace it with another spell from the ranger spell list, which also must be of a level for which you have spell slots. Spellcasting Ability Wisdom is your spellcasting ability for your ranger spells, since your magic draws on your attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a ranger spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Wisdom modifier Spell attack modifier = your proficiency bonus + your Wisdom modifier",
+      "summary": "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does."
+    },
+    {
+      "id": "feature:ranger_archetype",
+      "name": "Ranger Archetype",
+      "simple_name": "ranger_archetype",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level.",
+      "summary": "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter."
+    },
+    {
+      "id": "feature:primeval_awareness",
+      "name": "Primeval Awareness",
+      "simple_name": "primeval_awareness",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn\u2019t reveal the creatures\u2019 location or number.",
+      "summary": "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:extra_attack",
+      "name": "Extra Attack",
+      "simple_name": "extra_attack",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn.",
+      "summary": "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+    },
+    {
+      "id": "feature:lands_stride",
+      "name": "Land\u2019s Stride",
+      "simple_name": "lands_stride",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard. In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell.",
+      "summary": "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement."
+    },
+    {
+      "id": "feature:hide_in_plain_sight",
+      "name": "Hide in Plain Sight",
+      "simple_name": "hide_in_plain_sight",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage. Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit.",
+      "summary": "Starting at 10th level, you can spend 1 minute creating camouflage for yourself."
+    },
+    {
+      "id": "feature:vanish",
+      "name": "Vanish",
+      "simple_name": "vanish",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can\u2019t be tracked by nonmagical means, unless you choose to leave a trail.",
+      "summary": "Starting at 14th level, you can use the Hide action as a bonus action on your turn."
+    },
+    {
+      "id": "feature:feral_senses",
+      "name": "Feral Senses",
+      "simple_name": "feral_senses",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "At 18th level, you gain preternatural senses that help you fight creatures you can\u2019t see. When you attack a creature you can\u2019t see, your inability to see it doesn\u2019t impose disadvantage on your attack rolls against it. You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn\u2019t hidden from you and you aren\u2019t blinded or deafened.",
+      "summary": "At 18th level, you gain preternatural senses that help you fight creatures you can\u2019t see."
+    },
+    {
+      "id": "feature:foe_slayer",
+      "name": "Foe Slayer",
+      "simple_name": "foe_slayer",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied. Ranger Archetypes A classic expression of the ranger ideal is the Hunter.",
+      "summary": "At 20th level, you become an unparalleled hunter of your enemies."
+    },
+    {
+      "id": "feature:hunter",
+      "name": "Hunter",
+      "simple_name": "hunter",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Emulating the Hunter archetype means accepting your place as a bulwark between civilization and the terrors of the wilderness. As you walk the Hunter\u2019s path, you learn specialized techniques for fighting the threats you face, from rampaging ogres and hordes of orcs to towering giants and terrifying dragons. Hunter\u2019s Prey At 3rd level, you gain one of the following features of your choice.",
+      "summary": "Emulating the Hunter archetype means accepting your place as a bulwark between civilization and the terrors of the wilderness."
+    },
+    {
+      "id": "feature:colossus\t\r_\u00a0slayer",
+      "name": "Colossus\t\r \u00a0Slayer",
+      "simple_name": "colossus\t\r_\u00a0slayer",
+      "page": 37,
+      "source": "SRD 5.1",
+      "text": "Your tenacity can wear down the most potent foes. When you hit a creature with a",
+      "summary": "Your tenacity can wear down the most potent foes."
+    },
+    {
+      "id": "feature:giant\t\r_\u00a0killer",
+      "name": "Giant\t\r \u00a0Killer",
+      "simple_name": "giant\t\r_\u00a0killer",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "When a Large or larger creature within 5 feet of you hits or misses you with an attack, you can use your reaction to attack that creature immediately after its attack, provided that you can see the creature.",
+      "summary": "When a Large or larger creature within 5 feet of you hits or misses you with an attack, you can u..."
+    },
+    {
+      "id": "feature:horde\t\r_\u00a0breaker",
+      "name": "Horde\t\r \u00a0Breaker",
+      "simple_name": "horde\t\r_\u00a0breaker",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "Once on each of your turns when you make a weapon attack, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target and within range of your weapon. Defensive Tactics At 7th level, you gain one of the following features of your choice.",
+      "summary": "Once on each of your turns when you make a weapon attack, you can make another attack with the sa..."
+    },
+    {
+      "id": "feature:escape\t\r_\u00a0the\t\r_\u00a0horde",
+      "name": "Escape\t\r \u00a0the\t\r \u00a0Horde",
+      "simple_name": "escape\t\r_\u00a0the\t\r_\u00a0horde",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "Opportunity attacks against you are made with disadvantage.",
+      "summary": "Opportunity attacks against you are made with disadvantage."
+    },
+    {
+      "id": "feature:multiattack\t\r_\u00a0defense",
+      "name": "Multiattack\t\r \u00a0Defense",
+      "simple_name": "multiattack\t\r_\u00a0defense",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "When a creature hits you with an attack, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the turn.",
+      "summary": "When a creature hits you with an attack, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the turn."
+    },
+    {
+      "id": "feature:steel\t\r_\u00a0will",
+      "name": "Steel\t\r \u00a0Will",
+      "simple_name": "steel\t\r_\u00a0will",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "You have advantage on saving throws against being frightened. Multiattack At 11th level, you gain one of the following features of your choice.",
+      "summary": "You have advantage on saving throws against being frightened."
+    },
+    {
+      "id": "feature:volley",
+      "name": "Volley",
+      "simple_name": "volley",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "You can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon\u2019s range. You must have ammunition for each target, as normal, and you make a separate attack roll for each target.",
+      "summary": "You can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon\u2019s range."
+    },
+    {
+      "id": "feature:whirlwind\t\r_\u00a0attack",
+      "name": "Whirlwind\t\r \u00a0Attack",
+      "simple_name": "whirlwind\t\r_\u00a0attack",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "You can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target. Superior Hunter\u2019s Defense At 15th level, you gain one of the following features of your choice.",
+      "summary": "You can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target."
+    },
+    {
+      "id": "feature:evasion",
+      "name": "Evasion",
+      "simple_name": "evasion",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "When you are subjected to an effect, such as a red dragon\u2019s fiery breath or a lightning bolt spell, that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "summary": "When you are subjected to an effect, such as a red dragon\u2019s fiery breath or a lightning bolt spel..."
+    },
+    {
+      "id": "feature:stand\t\r_\u00a0against\t\r_\u00a0the\t\r_\u00a0tide",
+      "name": "Stand\t\r \u00a0Against\t\r \u00a0the\t\r \u00a0Tide",
+      "simple_name": "stand\t\r_\u00a0against\t\r_\u00a0the\t\r_\u00a0tide",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "When a hostile creature misses you with a melee attack, you can use your reaction to force that creature to repeat the same attack against another creature (other than itself) of your choice.",
+      "summary": "When a hostile creature misses you with a melee attack, you can use your reaction to force that c..."
+    },
+    {
+      "id": "feature:uncanny\t\r_\u00a0dodge",
+      "name": "Uncanny\t\r \u00a0Dodge",
+      "simple_name": "uncanny\t\r_\u00a0dodge",
+      "page": 38,
+      "source": "SRD 5.1",
+      "text": "When an attacker that you can see hits you with an attack, you can use your reaction to halve the attack\u2019s damage against you.",
+      "summary": "When an attacker that you can see hits you with an attack, you can use your reaction to halve the attack\u2019s damage against you."
+    },
+    {
+      "id": "feature:expertise",
+      "name": "Expertise",
+      "simple_name": "expertise",
+      "page": 39,
+      "source": "SRD 5.1",
+      "text": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\u2019 tools. Your proficiency bonus is doubled for any ability check you make that uses either of the chosen proficiencies. At 6th level, you can choose two more of your proficiencies (in skills or with thieves\u2019 tools) to gain this benefit.",
+      "summary": "At 1st level, choose two of your skill proficiencies, or one of your skill proficiencies and your proficiency with thieves\u2019 tools."
+    },
+    {
+      "id": "feature:sneak_attack",
+      "name": "Sneak Attack",
+      "simple_name": "sneak_attack",
+      "page": 39,
+      "source": "SRD 5.1",
+      "text": "Beginning at 1st level, you know how to strike subtly and exploit a foe\u2019s distraction. Once per turn, you can deal an extra 1d6 damage to one creature you hit with an attack if you have advantage on the attack roll. The attack must use a finesse or a ranged weapon. You don\u2019t need advantage on the attack roll if another enemy of the target is within 5 feet of it, that enemy isn\u2019t incapacitated, and you don\u2019t have disadvantage on the attack roll. The amount of the extra damage increases as you gain levels in this class, as shown in the Sneak Attack column of the Rogue table.",
+      "summary": "Beginning at 1st level, you know how to strike subtly and exploit a foe\u2019s distraction."
+    },
+    {
+      "id": "feature:thieves_cant",
+      "name": "Thieves\u2019 Cant",
+      "simple_name": "thieves_cant",
+      "page": 39,
+      "source": "SRD 5.1",
+      "text": "During your rogue training you learned thieves\u2019 cant, a secret mix of dialect, jargon, and code that allows you to hide messages in seemingly normal conversation. Only another creature that knows thieves\u2019 cant understands such messages. It takes four times longer to convey such a message than it does to speak the same idea plainly. In addition, you understand a set of secret signs and symbols used to convey short, simple messages,",
+      "summary": "During your rogue training you learned thieves\u2019 cant, a secret mix of dialect, jargon, and code t..."
+    },
+    {
+      "id": "feature:cunning_action",
+      "name": "Cunning Action",
+      "simple_name": "cunning_action",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly. You can take a bonus action on each of your turns in combat. This action can be used only to take the Dash, Disengage, or Hide action.",
+      "summary": "Starting at 2nd level, your quick thinking and agility allow you to move and act quickly."
+    },
+    {
+      "id": "feature:roguish_archetype",
+      "name": "Roguish Archetype",
+      "simple_name": "roguish_archetype",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief. Your archetype choice grants you features at 3rd level and then again at 9th, 13th, and 17th level.",
+      "summary": "At 3rd level, you choose an archetype that you emulate in the exercise of your rogue abilities, such as Thief."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 10th, 12th, 16th, and 19th level, you can increase on..."
+    },
+    {
+      "id": "feature:uncanny_dodge",
+      "name": "Uncanny Dodge",
+      "simple_name": "uncanny_dodge",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack\u2019s damage against you.",
+      "summary": "Starting at 5th level, when an attacker that you can see hits you with an attack, you can use your reaction to halve the attack\u2019s damage against you."
+    },
+    {
+      "id": "feature:evasion",
+      "name": "Evasion",
+      "simple_name": "evasion",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon\u2019s fiery breath or an ice storm spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.",
+      "summary": "Beginning at 7th level, you can nimbly dodge out of the way of certain area effects, such as a red dragon\u2019s fiery breath or an ice storm spell."
+    },
+    {
+      "id": "feature:reliable_talent",
+      "name": "Reliable Talent",
+      "simple_name": "reliable_talent",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "By 11th level, you have refined your chosen skills until they approach perfection. Whenever you make an ability check that lets you add your proficiency bonus, you can treat a d20 roll of 9 or lower as a 10.",
+      "summary": "By 11th level, you have refined your chosen skills until they approach perfection."
+    },
+    {
+      "id": "feature:blindsense",
+      "name": "Blindsense",
+      "simple_name": "blindsense",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you.",
+      "summary": "Starting at 14th level, if you are able to hear, you are aware of the location of any hidden or invisible creature within 10 feet of you."
+    },
+    {
+      "id": "feature:slippery_mind",
+      "name": "Slippery Mind",
+      "simple_name": "slippery_mind",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "By 15th level, you have acquired greater mental strength. You gain proficiency in Wisdom saving throws.",
+      "summary": "By 15th level, you have acquired greater mental strength."
+    },
+    {
+      "id": "feature:elusive",
+      "name": "Elusive",
+      "simple_name": "elusive",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you. No attack roll has advantage against you while you aren\u2019t incapacitated.",
+      "summary": "Beginning at 18th level, you are so evasive that attackers rarely gain the upper hand against you."
+    },
+    {
+      "id": "feature:stroke_of_luck",
+      "name": "Stroke of Luck",
+      "simple_name": "stroke_of_luck",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20. Once you use this feature, you can\u2019t use it again until you finish a short or long rest. Roguish Archetypes Rogues have many features in common, including their emphasis on perfecting their skills, their precise and deadly approach to combat, and their increasingly quick reflexes. But different rogues steer those talents in varying directions, embodied by the rogue archetypes. Your choice of archetype is a reflection of your focus\u2014not necessarily an indication of your chosen profession, but a description of your preferred techniques.",
+      "summary": "At 20th level, you have an uncanny knack for succeeding when you need to."
+    },
+    {
+      "id": "feature:thief",
+      "name": "Thief",
+      "simple_name": "thief",
+      "page": 40,
+      "source": "SRD 5.1",
+      "text": "You hone your skills in the larcenous arts. Burglars, bandits, cutpurses, and other criminals typically follow this archetype, but so do rogues who prefer to think of themselves as professional treasure seekers, explorers, delvers, and investigators. In addition to improving your agility and stealth, you learn skills useful for delving into ancient ruins, reading unfamiliar languages, and using magic items you normally couldn\u2019t employ. Fast Hands Starting at 3rd level, you can use the bonus action granted by your Cunning Action to make a Dexterity",
+      "summary": "You hone your skills in the larcenous arts."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 43,
+      "source": "SRD 5.1",
+      "text": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic. This font of magic, whatever its origin, fuels your spells. Cantrips At 1st level, you know four cantrips of your choice from the sorcerer spell list. You learn additional sorcerer cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Sorcerer table. Spell Slots The Sorcerer table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these sorcerer spells, you must expend a slot of the spell\u2019s level or higher. You regain all expended spell slots when you finish a long rest. For example, if you know the 1st- level spell burning hands and have a 1st- level and a 2nd- level spell slot available, you can cast burning hands using either slot. Spells Known of 1st Level and Higher You know two 1st- level spells of your choice from the sorcerer spell list. The Spells Known column of the Sorcerer table shows when you learn more sorcerer spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 3rd level in this class, you can learn one new spell of 1st or 2nd level. Additionally, when you gain a level in this class, you can choose one of the sorcerer spells you know and replace it with another spell from the sorcerer spell list, which also must be of a level for which you have spell slots. Spellcasting Ability Charisma is your spellcasting ability for your sorcerer spells, since the power of your magic relies on your ability to project your will into the world. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a sorcerer spell you cast and when making an attack roll with one. Spell save DC = 8 + your proficiency bonus + your Charisma modifier Spell attack modifier = your proficiency bonus + your Charisma modifier Spellcasting Focus You can use an arcane focus as a spellcasting focus for your sorcerer spells.",
+      "summary": "An event in your past, or in the life of a parent or ancestor, left an indelible mark on you, infusing you with arcane magic."
+    },
+    {
+      "id": "feature:sorcerous_origin",
+      "name": "Sorcerous Origin",
+      "simple_name": "sorcerous_origin",
+      "page": 43,
+      "source": "SRD 5.1",
+      "text": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline. Your choice grants you features when you choose it at 1st level and again at 6th, 14th, and 18th level.",
+      "summary": "Choose a sorcerous origin, which describes the source of your innate magical power, such as Draconic Bloodline."
+    },
+    {
+      "id": "feature:font_of_magic",
+      "name": "Font of Magic",
+      "simple_name": "font_of_magic",
+      "page": 43,
+      "source": "SRD 5.1",
+      "text": "At 2nd level, you tap into a deep wellspring of magic within yourself. This wellspring is represented by sorcery points, which allow you to create a variety of magical effects. Sorcery Points You have 2 sorcery points, and you gain more as you reach higher levels, as shown in the Sorcery Points column of the Sorcerer table. You can never have more sorcery points than shown on the table for your level. You regain all spent sorcery points when you finish a long rest. Flexible Casting You can use your sorcery points to gain additional spell slots, or sacrifice spell slots to gain additional sorcery points. You learn other ways to use your sorcery points as you reach higher levels.",
+      "summary": "At 2nd level, you tap into a deep wellspring of magic within yourself."
+    },
+    {
+      "id": "feature:creating\t\r_\u00a0spell\t\r_\u00a0slots",
+      "name": "Creating\t\r \u00a0Spell\t\r \u00a0Slots",
+      "simple_name": "creating\t\r_\u00a0spell\t\r_\u00a0slots",
+      "page": 43,
+      "source": "SRD 5.1",
+      "text": "You can transform unexpended sorcery points into one spell slot as a bonus action on your turn. The Creating Spell Slots table shows the cost of creating a spell slot of a given level. You can create spell slots no higher in level than 5th. Any spell slot you create with this feature vanishes when you finish a long rest. Creating Spell Slots Spell Slot Level Sorcery Point Cost 1st 2nd 3rd 4th 5th",
+      "summary": "You can transform unexpended sorcery points into one spell slot as a bonus action on your turn."
+    },
+    {
+      "id": "feature:converting\t\r_\u00a0a\t\r_\u00a0spell\t\r_\u00a0slot\t\r_\u00a0to\t\r_\u00a0sorcery\t\r_\u00a0points",
+      "name": "Converting\t\r \u00a0a\t\r \u00a0Spell\t\r \u00a0Slot\t\r \u00a0to\t\r \u00a0Sorcery\t\r \u00a0Points",
+      "simple_name": "converting\t\r_\u00a0a\t\r_\u00a0spell\t\r_\u00a0slot\t\r_\u00a0to\t\r_\u00a0sorcery\t\r_\u00a0points",
+      "page": 43,
+      "source": "SRD 5.1",
+      "text": "As a bonus action on your turn, you can expend one spell",
+      "summary": "As a bonus action on your turn, you can expend one spell"
+    },
+    {
+      "id": "feature:metamagic",
+      "name": "Metamagic",
+      "simple_name": "metamagic",
+      "page": 44,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, you gain the ability to twist your spells to suit your needs. You gain two of the following Metamagic options of your choice. You gain another one at 10th and 17th level. You can use only one Metamagic option on a spell when you cast it, unless otherwise noted. Careful Spell When you cast a spell that forces other creatures to make a saving throw, you can protect some of those creatures from the spell\u2019s full force. To do so, you spend 1 sorcery point and choose a number of those creatures up to your Charisma modifier (minimum of one creature). A chosen creature automatically succeeds on its saving throw against the spell. Distant Spell When you cast a spell that has a range of 5 feet or greater, you can spend 1 sorcery point to double the range of the spell. When you cast a spell that has a range of touch, you can spend 1 sorcery point to make the range of the spell 30 feet. Empowered Spell When you roll damage for a spell, you can spend 1 sorcery point to reroll a number of the damage dice up to your Charisma modifier (minimum of one). You must use the new rolls. You can use Empowered Spell even if you have already used a different Metamagic option during the casting of the spell. Extended Spell When you cast a spell that has a duration of 1 minute or longer, you can spend 1 sorcery point to double its duration, to a maximum duration of 24 hours. Heightened Spell When you cast a spell that forces a creature to make a saving throw to resist its effects, you can spend 3 sorcery points to give one target of the spell disadvantage on its first saving throw made against the spell. Quickened Spell When you cast a spell that has a casting time of 1 action, you can spend 2 sorcery points to change the casting time to 1 bonus action for this casting. Subtle Spell When you cast a spell, you can spend 1 sorcery point to cast it without any somatic or verbal components. Twinned Spell When you cast a spell that targets only one creature and doesn\u2019t have a range of self, you can spend a number of sorcery points equal to the spell\u2019s level to target a second creature in range with the same spell (1 sorcery point if the spell is a cantrip). To be eligible, a spell must be incapable of targeting more than one creature at the spell\u2019s current level. For example, magic missile and scorching ray aren\u2019t eligible, but ray of frost is.",
+      "summary": "At 3rd level, you gain the ability to twist your spells to suit your needs."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 44,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:sorcerous_restoration",
+      "name": "Sorcerous Restoration",
+      "simple_name": "sorcerous_restoration",
+      "page": 44,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest. Sorcerous Origins Different sorcerers claim different origins for their innate magic, such as a draconic bloodline.",
+      "summary": "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest."
+    },
+    {
+      "id": "feature:draconic_bloodline",
+      "name": "Draconic Bloodline",
+      "simple_name": "draconic_bloodline",
+      "page": 44,
+      "source": "SRD 5.1",
+      "text": "Your innate magic comes from draconic magic that was mingled with your blood or that of your ancestors. Most often, sorcerers with this origin trace their descent back to a mighty sorcerer of ancient times who made a bargain with a dragon or who might even have claimed a dragon parent. Some of these bloodlines are well established in the world, but most are obscure. Any given sorcerer could be the first of a new bloodline, as a result of a pact or some other exceptional circumstance. Dragon Ancestor At 1st level, you choose one type of dragon as your ancestor. The damage type associated with each dragon is used by features you gain later. Draconic Ancestry Dragon Damage Type Black Acid",
+      "summary": "Your innate magic comes from draconic magic that was mingled with your blood or that of your ancestors."
+    },
+    {
+      "id": "feature:otherworldly_patron",
+      "name": "Otherworldly Patron",
+      "simple_name": "otherworldly_patron",
+      "page": 46,
+      "source": "SRD 5.1",
+      "text": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, the Fiend, or the Great Old One, each of which is detailed at the end of the class description. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level.",
+      "summary": "At 1st level, you have struck a bargain with an otherworldly being of your choice: the Archfey, t..."
+    },
+    {
+      "id": "feature:pact_magic",
+      "name": "Pact Magic",
+      "simple_name": "pact_magic",
+      "page": 46,
+      "source": "SRD 5.1",
+      "text": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells. Cantrips You know two cantrips of your choice from the warlock spell list. You learn additional warlock",
+      "summary": "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+    },
+    {
+      "id": "feature:eldritch_invocations",
+      "name": "Eldritch Invocations",
+      "simple_name": "eldritch_invocations",
+      "page": 47,
+      "source": "SRD 5.1",
+      "text": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability. At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table. Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level.",
+      "summary": "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden kno..."
+    },
+    {
+      "id": "feature:pact_boon",
+      "name": "Pact Boon",
+      "simple_name": "pact_boon",
+      "page": 47,
+      "source": "SRD 5.1",
+      "text": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice. Pact of the Chain You learn the find familiar spell and can cast it as a ritual. The spell doesn\u2019t count against your number of spells known. When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite. Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its reaction. Pact of the Blade You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage. Your pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die. You can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can\u2019t affect an artifact or a sentient weapon in this way. The weapon ceases being your",
+      "summary": "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 48,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:mystic_arcanum",
+      "name": "Mystic Arcanum",
+      "simple_name": "mystic_arcanum",
+      "page": 48,
+      "source": "SRD 5.1",
+      "text": "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again. At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th- level spell at 15th level, and one 9th- level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest.",
+      "summary": "At 11th level, your patron bestows upon you a magical secret called an arcanum."
+    },
+    {
+      "id": "feature:eldritch_master",
+      "name": "Eldritch Master",
+      "simple_name": "eldritch_master",
+      "page": 48,
+      "source": "SRD 5.1",
+      "text": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature. Once you regain spell slots with this feature, you must finish a long rest before you can do so again. Eldritch Invocations If an eldritch invocation has prerequisites, you must meet them to learn it. You can learn the invocation at the same time that you meet its prerequisites. A level prerequisite refers to your level in this class. Agonizing Blast Prerequisite: eldritch blast cantrip When you cast eldritch blast , add your Charisma modifier to the damage it deals on a hit. Armor of Shadows You can cast mage armor on yourself at will, without expending a spell slot or material components. Ascendant Step Prerequisite: 9th level You can cast levitate on yourself at will, without expending a spell slot or material components. Beast Speech You can cast speak with animals at will, without expending a spell slot. Beguiling Influence You gain proficiency in the Deception and Persuasion skills. Bewitching Whispers Prerequisite: 7th level You can cast compulsion once using a warlock spell slot. You can\u2019t do so again until you finish a long rest. Book of Ancient Secrets Prerequisite: Pact of the Tome feature You can now inscribe magical rituals in your Book of Shadows. Choose two 1st- level spells that have the ritual tag from any class\u2019s spell list (the two needn\u2019t be from the same list). The spells appear in the book and don\u2019t count against the number of spells you know. With your Book of Shadows in hand, you can cast the chosen spells as rituals. You can\u2019t cast the spells except as rituals, unless you\u2019ve learned them by some other means. You can also cast a warlock spell you know as a ritual if it has the ritual tag. On your adventures, you can add other ritual spells to your Book of Shadows. When you find such a spell, you can add it to the book if the spell\u2019s level is equal to or less than half your warlock level (rounded up) and if you can spare the time to",
+      "summary": "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots."
+    },
+    {
+      "id": "feature:the_fiend",
+      "name": "The Fiend",
+      "simple_name": "the_fiend",
+      "page": 50,
+      "source": "SRD 5.1",
+      "text": "You have made a pact with a fiend from the lower planes of existence, a being whose aims are evil, even if you strive against those aims. Such beings desire the corruption or destruction of all things, ultimately including you. Fiends powerful enough to forge a pact include demon lords such as Demogorgon, Orcus, Fraz\u2019Urb- luu, and Baphomet; archdevils such as Asmodeus, Dispater, Mephistopheles, and Belial; pit fiends and balors that are especially mighty; and ultroloths and other lords of the yugoloths. Expanded Spell List The Fiend lets you choose from an expanded list of spells when you learn a warlock spell. The following spells are added to the warlock spell list for you. Fiend Expanded Spells Spell Level Spells 1st burning hands, command 2nd blindness/deafness, scorching ray 3rd fireball, stinking cloud 4th fire shield, wall of fire 5th flame strike, hallow Dark One\u2019s Blessing Starting at 1st level, when you reduce a hostile creature to 0 hit points, you gain temporary hit points equal to your Charisma modifier + your warlock level (minimum of 1). Dark One\u2019s Own Luck Starting at 6th level, you can call on your patron to alter fate in your favor. When you make an ability check or a saving throw, you can use this feature to",
+      "summary": "You have made a pact with a fiend from the lower planes of existence, a being whose aims are evil, even if you strive against those aims."
+    },
+    {
+      "id": "feature:spellcasting",
+      "name": "Spellcasting",
+      "simple_name": "spellcasting",
+      "page": 52,
+      "source": "SRD 5.1",
+      "text": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power. Cantrips At 1st level, you know three cantrips of your choice from the wizard spell list. You learn additional wizard cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Wizard table. Spellbook At 1st level, you have a spellbook containing six 1st- level wizard spells of your choice. Your spellbook is the repository of the wizard spells you know, except your cantrips, which are fixed in your mind.",
+      "summary": "As a student of arcane magic, you have a spellbook containing spells that show the first glimmerings of your true power."
+    },
+    {
+      "id": "feature:arcane_recovery",
+      "name": "Arcane Recovery",
+      "simple_name": "arcane_recovery",
+      "page": 53,
+      "source": "SRD 5.1",
+      "text": "You have learned to regain some of your magical energy by studying your spellbook. Once per day when you finish a short rest, you can choose expended spell slots to recover. The spell slots can have a combined level that is equal to or less than half your wizard level (rounded up), and none of the slots can be 6th level or higher. For example, if you\u2019re a 4th- level wizard, you can recover up to two levels worth of spell slots. You can recover either a 2nd- level spell slot or two 1st- level spell slots.",
+      "summary": "You have learned to regain some of your magical energy by studying your spellbook."
+    },
+    {
+      "id": "feature:arcane_tradition",
+      "name": "Arcane Tradition",
+      "simple_name": "arcane_tradition",
+      "page": 53,
+      "source": "SRD 5.1",
+      "text": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools, such as Evocation. Your choice grants you features at 2nd level and again at 6th, 10th, and 14th level.",
+      "summary": "When you reach 2nd level, you choose an arcane tradition, shaping your practice of magic through one of eight schools, such as Evocation."
+    },
+    {
+      "id": "feature:ability_score_improvement",
+      "name": "Ability Score Improvement",
+      "simple_name": "ability_score_improvement",
+      "page": 53,
+      "source": "SRD 5.1",
+      "text": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can\u2019t increase an ability score above 20 using this feature.",
+      "summary": "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one abil..."
+    },
+    {
+      "id": "feature:spell_mastery",
+      "name": "Spell Mastery",
+      "simple_name": "spell_mastery",
+      "page": 53,
+      "source": "SRD 5.1",
+      "text": "At 18th level, you have achieved such mastery over certain spells that you can cast them at will. Choose a 1st- level wizard spell and a 2nd- level wizard spell that are in your spellbook. You can cast those spells at their lowest level without expending a spell slot when you have them prepared. If you want to cast either spell at a higher level, you must expend a spell slot as normal. By spending 8 hours in study, you can exchange one or both of the spells you chose for different spells of the same levels.",
+      "summary": "At 18th level, you have achieved such mastery over certain spells that you can cast them at will."
+    },
+    {
+      "id": "feature:signature_spells",
+      "name": "Signature Spells",
+      "simple_name": "signature_spells",
+      "page": 54,
+      "source": "SRD 5.1",
+      "text": "When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort. Choose two 3rd- level wizard spells in your spellbook as your signature spells. You always have these spells prepared, they don\u2019t count against the number of spells you have prepared, and you can cast each of them once at 3rd level without expending a spell slot. When you do so, you can\u2019t do so again until you finish a short or long rest. If you want to cast either spell at a higher level, you must expend a spell slot as normal. Arcane Traditions The study of wizardry is ancient, stretching back to the earliest mortal discoveries of magic. It is firmly established in fantasy gaming worlds, with various traditions dedicated to its complex study. The most common arcane traditions in the multiverse revolve around the schools of magic. Wizards through the ages have cataloged thousands of spells, grouping them into eight categories called schools. In some places, these traditions are literally schools. In other institutions, the schools are more like academic departments, with rival faculties competing for students and funding. Even wizards who train apprentices in the solitude of their own towers use the division of magic into schools as a learning device, since the spells of each school require mastery of different techniques.",
+      "summary": "When you reach 20th level, you gain mastery over two powerful spells and can cast them with little effort."
+    },
+    {
+      "id": "feature:school_of_evocation",
+      "name": "School of Evocation",
+      "simple_name": "school_of_evocation",
+      "page": 54,
+      "source": "SRD 5.1",
+      "text": "You focus your study on magic that creates powerful elemental effects such as bitter cold, searing flame, rolling thunder, crackling lightning, and burning acid. Some evokers find employment in military forces, serving as artillery to blast enemy armies from afar. Others use their spectacular power to protect the weak, while some seek their own gain as bandits, adventurers, or aspiring tyrants. Evocation Savant Beginning when you select this school at 2nd level, the gold and time you must spend to copy an evocation spell into your spellbook is halved. Sculpt Spells Beginning at 2nd level, you can create pockets of relative safety within the effects of your evocation spells. When you cast an evocation spell that affects other creatures that you can see, you can choose a number of them equal to 1 + the spell\u2019s level. The chosen creatures automatically succeed on their saving throws against the spell, and they take no damage if they would normally take half damage on a successful save. Potent Cantrip Starting at 6th level, your damaging cantrips affect even creatures that avoid the brunt of the effect. When a creature succeeds on a saving throw against your cantrip, the creature takes half the cantrip\u2019s damage (if any) but suffers no additional effect from the cantrip. Empowered Evocation Beginning at 10th level, you can add your Intelligence modifier to one damage roll of any wizard evocation spell you cast. Overchannel Starting at 14th level, you can increase the power of your simpler spells. When you cast a wizard spell of 1st through 5th level that deals damage, you can deal maximum damage with that spell. The first time you do so, you suffer no adverse effect. If you use this feature again before you finish a long rest, you take 2d12 necrotic damage for each level of the spell, immediately after you cast it. Each time you use this feature again before finishing a long rest, the necrotic damage per spell level increases by 1d12. This damage ignores resistance and immunity. Your Spellbook The spells that you add to your spellbook as you gain levels reflect the arcane research you conduct on your own, as well as intellectual breakthroughs you have had about the nature of the multiverse. You might find other spells during your adventures. You could discover a spell recorded on a scroll in an evil wizard\u2019s chest, for example, or in a dusty tome in an ancient library. Copying a Spell into the Book. When you find a wizard spell of 1st level or higher, you can add it to your spellbook if it is of a spell level you can prepare and if you can spare the time to decipher and copy it. Copying that spell into your spellbook involves reproducing the basic form of the spell, then deciphering the unique system of notation used by the wizard who wrote it. You must practice the spell until you understand the sounds or gestures required, then transcribe it into your spellbook using your own notation. For each level of the spell, the process takes 2 hours and costs 50 gp. The cost represents material components you",
+      "summary": "You focus your study on magic that creates powerful elemental effects such as bitter cold, searin..."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Your Constitution score increases by 2.",
+      "summary": "Your Constitution score increases by 2."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Dwarves mature at the same rate as humans, but they\u2019re considered young until they reach the age of 50. On average, they live about 350 years.",
+      "summary": "Dwarves mature at the same rate as humans, but they\u2019re considered young until they reach the age of 50."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Most dwarves are lawful, believing firmly in the benefits of a well- ordered society. They tend toward good as well, with a strong sense of fair play and a belief that everyone deserves to share in the benefits of a just order.",
+      "summary": "Most dwarves are lawful, believing firmly in the benefits of a well- ordered society."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds. Your size is Medium.",
+      "summary": "Dwarves stand between 4 and 5 feet tall and average about 150 pounds."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 25 feet. Your speed is not reduced by wearing heavy armor.",
+      "summary": "Your base walking speed is 25 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Accustomed to life underground, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:dwarven\t\r_\u00a0resilience",
+      "name": "Dwarven\t\r \u00a0Resilience",
+      "simple_name": "dwarven\t\r_\u00a0resilience",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "You have advantage on saving throws against poison, and you have resistance against poison damage.",
+      "summary": "You have advantage on saving throws against poison, and you have resistance against poison damage."
+    },
+    {
+      "id": "feature:dwarven\t\r_\u00a0combat\t\r_\u00a0training",
+      "name": "Dwarven\t\r \u00a0Combat\t\r \u00a0Training",
+      "simple_name": "dwarven\t\r_\u00a0combat\t\r_\u00a0training",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer.",
+      "summary": "You have proficiency with the battleaxe, handaxe, light hammer, and warhammer."
+    },
+    {
+      "id": "feature:tool\t\r_\u00a0proficiency",
+      "name": "Tool\t\r \u00a0Proficiency",
+      "simple_name": "tool\t\r_\u00a0proficiency",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "You gain proficiency with the artisan\u2019s tools of your choice: smith\u2019s tools, brewer\u2019s supplies, or mason\u2019s tools.",
+      "summary": "You gain proficiency with the artisan\u2019s tools of your choice: smith\u2019s tools, brewer\u2019s supplies, or mason\u2019s tools."
+    },
+    {
+      "id": "feature:stonecunning",
+      "name": "Stonecunning",
+      "simple_name": "stonecunning",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are considered proficient in the History skill and add double your proficiency bonus to the check, instead of your normal proficiency bonus.",
+      "summary": "Whenever you make an Intelligence (History) check related to the origin of stonework, you are con..."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 3,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Dwarvish. Dwarvish is full of hard consonants and guttural sounds, and those characteristics spill over into whatever other language a dwarf might speak.",
+      "summary": "You can speak, read, and write Common and Dwarvish."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your Wisdom score increases by 1.",
+      "summary": "Your Wisdom score increases by 1."
+    },
+    {
+      "id": "feature:dwarven\t\r_\u00a0toughness",
+      "name": "Dwarven\t\r \u00a0Toughness",
+      "simple_name": "dwarven\t\r_\u00a0toughness",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level. Elf",
+      "summary": "Your hit point maximum increases by 1, and it increases by 1 every time you gain a level."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your Dexterity score increases by 2.",
+      "summary": "Your Dexterity score increases by 2."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Although elves reach physical maturity at about the same age as humans, the elven understanding of adulthood goes beyond physical growth to encompass worldly experience. An elf typically claims adulthood and an adult name around the age of 100 and can live to be 750 years old.",
+      "summary": "Although elves reach physical maturity at about the same age as humans, the elven understanding o..."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Elves love freedom, variety, and self- expression, so they lean strongly toward the gentler aspects of chaos. They value and protect others\u2019 freedom as well as their own, and they are more often good than not.",
+      "summary": "Elves love freedom, variety, and self- expression, so they lean strongly toward the gentler aspects of chaos."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Elves range from under 5 to over 6 feet tall and have slender builds. Your size is Medium.",
+      "summary": "Elves range from under 5 to over 6 feet tall and have slender builds."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet.",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Accustomed to twilit forests and the night sky, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:keen\t\r_\u00a0senses",
+      "name": "Keen\t\r \u00a0Senses",
+      "simple_name": "keen\t\r_\u00a0senses",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You have proficiency in the Perception skill.",
+      "summary": "You have proficiency in the Perception skill."
+    },
+    {
+      "id": "feature:fey\t\r_\u00a0ancestry",
+      "name": "Fey\t\r \u00a0Ancestry",
+      "simple_name": "fey\t\r_\u00a0ancestry",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You have advantage on saving throws against being charmed, and magic can\u2019t put you to sleep.",
+      "summary": "You have advantage on saving throws against being charmed, and magic can\u2019t put you to sleep."
+    },
+    {
+      "id": "feature:trance",
+      "name": "Trance",
+      "simple_name": "trance",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Elves don\u2019t need to sleep. Instead, they meditate deeply, remaining semiconscious, for 4 hours a day. (The Common word for such meditation is \u201ctrance.\u201d) While meditating, you can dream after a fashion; such dreams are actually mental exercises that have become reflexive through years of practice. After resting in this way, you gain the same benefit that a human does from 8 hours of sleep.",
+      "summary": "Elves don\u2019t need to sleep."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Elvish. Elvish is fluid, with subtle intonations and intricate grammar. Elven literature is rich and varied, and their songs and poems are famous among other races. Many bards learn their language so they can add Elvish ballads to their repertoires. High Elf As a high elf, you have a keen mind and a mastery of at least the basics of magic. In many fantasy gaming worlds, there are two kinds of high elves. One type is haughty and reclusive, believing themselves to be superior to non- elves and even other elves. The other type is more common and more friendly, and often encountered among humans and other races.",
+      "summary": "You can speak, read, and write Common and Elvish."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your Intelligence score increases by 1.",
+      "summary": "Your Intelligence score increases by 1."
+    },
+    {
+      "id": "feature:elf\t\r_\u00a0weapon\t\r_\u00a0training",
+      "name": "Elf\t\r \u00a0Weapon\t\r \u00a0Training",
+      "simple_name": "elf\t\r_\u00a0weapon\t\r_\u00a0training",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You have proficiency with the longsword, shortsword, shortbow, and longbow.",
+      "summary": "You have proficiency with the longsword, shortsword, shortbow, and longbow."
+    },
+    {
+      "id": "feature:cantrip",
+      "name": "Cantrip",
+      "simple_name": "cantrip",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You know one cantrip of your choice from the wizard spell list. Intelligence is your spellcasting ability for it.",
+      "summary": "You know one cantrip of your choice from the wizard spell list."
+    },
+    {
+      "id": "feature:extra\t\r_\u00a0language",
+      "name": "Extra\t\r \u00a0Language",
+      "simple_name": "extra\t\r_\u00a0language",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write one extra language of your choice. Halfling",
+      "summary": "You can speak, read, and write one extra language of your choice."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your Dexterity score increases by 2.",
+      "summary": "Your Dexterity score increases by 2."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century.",
+      "summary": "A halfling reaches adulthood at the age of 20 and generally lives into the middle of his or her second century."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Most halflings are lawful good. As a rule, they are good- hearted and kind, hate to see others in pain, and have no tolerance for oppression. They are also very orderly and traditional, leaning heavily on the support of their community and the comfort of their old ways.",
+      "summary": "Most halflings are lawful good."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Halflings average about 3 feet tall and weigh about 40 pounds. Your size is Small.",
+      "summary": "Halflings average about 3 feet tall and weigh about 40 pounds."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 25 feet.",
+      "summary": "Your base walking speed is 25 feet."
+    },
+    {
+      "id": "feature:lucky",
+      "name": "Lucky",
+      "simple_name": "lucky",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll.",
+      "summary": "When you roll a 1 on the d20 for an attack roll, ability check, or saving throw, you can reroll the die and must use the new roll."
+    },
+    {
+      "id": "feature:brave",
+      "name": "Brave",
+      "simple_name": "brave",
+      "page": 4,
+      "source": "SRD 5.1",
+      "text": "You have advantage on saving throws against being frightened.",
+      "summary": "You have advantage on saving throws against being frightened."
+    },
+    {
+      "id": "feature:halfling\t\r_\u00a0nimbleness",
+      "name": "Halfling\t\r \u00a0Nimbleness",
+      "simple_name": "halfling\t\r_\u00a0nimbleness",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You can move through the space of any creature that is of a size larger than yours.",
+      "summary": "You can move through the space of any creature that is of a size larger than yours."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Halfling. The Halfling language isn\u2019t secret, but halflings are loath to share it with others. They write very little, so they don\u2019t have a rich body of literature. Their oral tradition, however, is very strong. Almost all halflings speak Common to converse with the people in whose lands they dwell or through which they are traveling. Lightfoot As a lightfoot halfling, you can easily hide from notice, even using other people as cover. You\u2019re inclined to be affable and get along well with others. Lightfoots are more prone to wanderlust than other halflings, and often dwell alongside other races or take up a nomadic life.",
+      "summary": "You can speak, read, and write Common and Halfling."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Your Charisma score increases by 1.",
+      "summary": "Your Charisma score increases by 1."
+    },
+    {
+      "id": "feature:naturally\t\r_\u00a0stealthy",
+      "name": "Naturally\t\r \u00a0Stealthy",
+      "simple_name": "naturally\t\r_\u00a0stealthy",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you. Human",
+      "summary": "You can attempt to hide even when you are obscured only by a creature that is at least one size larger than you."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Your ability scores each increase by 1.",
+      "summary": "Your ability scores each increase by 1."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Humans reach adulthood in their late teens and live less than a century.",
+      "summary": "Humans reach adulthood in their late teens and live less than a century."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Humans tend toward no particular alignment. The best and the worst are found among them.",
+      "summary": "Humans tend toward no particular alignment."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall. Regardless of your position in that range, your size is Medium.",
+      "summary": "Humans vary widely in height and build, from barely 5 feet to well over 6 feet tall."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet.",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and one extra language of your choice. Humans typically learn the languages of other peoples they deal with, including obscure dialects. They are fond of sprinkling their speech with words borrowed from other tongues: Orc curses, Elvish musical expressions, Dwarvish military phrases, and so on. Dragonborn",
+      "summary": "You can speak, read, and write Common and one extra language of your choice."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Your Strength score increases by 2, and your Charisma score increases by 1.",
+      "summary": "Your Strength score increases by 2, and your Charisma score increases by 1."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Young dragonborn grow quickly. They walk hours after hatching, attain the size and development of a 10- year- old human child by the age of 3, and reach adulthood by 15. They live to be around 80.",
+      "summary": "Young dragonborn grow quickly."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Dragonborn tend to extremes, making a conscious choice for one side or the other in the cosmic war between good and evil. Most dragonborn are good, but those who side with evil can be terrible villains.",
+      "summary": "Dragonborn tend to extremes, making a conscious choice for one side or the other in the cosmic war between good and evil."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds. Your size is Medium.",
+      "summary": "Dragonborn are taller and heavier than humans, standing well over 6 feet tall and averaging almost 250 pounds."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet. Draconic Ancestry Dragon Damage Type Breath Weapon Black Acid 5 by 30 ft. line (Dex. save) Blue Lightning 5 by 30 ft. line (Dex. save) Brass Fire 5 by 30 ft. line (Dex. save) Bronze Lightning 5 by 30 ft. line (Dex. save) Copper Acid 5 by 30 ft. line (Dex. save) Gold Fire 15 ft. cone (Dex. save) Green Poison 15 ft. cone (Con. save) Red Fire 15 ft. cone (Dex. save) Silver Cold 15 ft. cone (Con. save) White Cold 15 ft. cone (Con. save)",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:draconic\t\r_\u00a0ancestry",
+      "name": "Draconic\t\r \u00a0Ancestry",
+      "simple_name": "draconic\t\r_\u00a0ancestry",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You have draconic ancestry. Choose one type of dragon from the Draconic Ancestry table. Your breath weapon and damage resistance are determined by the dragon type, as shown in the table.",
+      "summary": "You have draconic ancestry."
+    },
+    {
+      "id": "feature:breath\t\r_\u00a0weapon",
+      "name": "Breath\t\r \u00a0Weapon",
+      "simple_name": "breath\t\r_\u00a0weapon",
+      "page": 5,
+      "source": "SRD 5.1",
+      "text": "You can use your action to exhale destructive energy. Your draconic ancestry determines the size, shape, and damage type of the exhalation. When you use your breath weapon, each creature in the area of the exhalation must make a saving throw, the type of which is determined by your draconic ancestry. The DC for this saving throw equals 8 + your Constitution modifier + your proficiency bonus. A creature takes 2d6 damage on a failed save, and half as much damage on a successful",
+      "summary": "You can use your action to exhale destructive energy."
+    },
+    {
+      "id": "feature:damage\t\r_\u00a0resistance",
+      "name": "Damage\t\r \u00a0Resistance",
+      "simple_name": "damage\t\r_\u00a0resistance",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "You have resistance to the damage type associated with your draconic ancestry.",
+      "summary": "You have resistance to the damage type associated with your draconic ancestry."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Draconic. Draconic is thought to be one of the oldest languages and is often used in the study of magic. The language sounds harsh to most other creatures and includes numerous hard consonants and sibilants. Gnome",
+      "summary": "You can speak, read, and write Common and Draconic."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Your Intelligence score increases by 2.",
+      "summary": "Your Intelligence score increases by 2."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40. They can live 350 to almost 500 years.",
+      "summary": "Gnomes mature at the same rate humans do, and most are expected to settle down into an adult life by around age 40."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Gnomes are most often good. Those who tend toward law are sages, engineers, researchers, scholars, investigators, or inventors. Those who tend toward chaos are minstrels, tricksters, wanderers, or fanciful jewelers. Gnomes are good- hearted, and even the tricksters among them are more playful than vicious.",
+      "summary": "Gnomes are most often good."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Gnomes are between 3 and 4 feet tall and average about 40 pounds. Your size is Small.",
+      "summary": "Gnomes are between 3 and 4 feet tall and average about 40 pounds."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 25 feet.",
+      "summary": "Your base walking speed is 25 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Accustomed to life underground, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Accustomed to life underground, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:gnome\t\r_\u00a0cunning",
+      "name": "Gnome\t\r \u00a0Cunning",
+      "simple_name": "gnome\t\r_\u00a0cunning",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic.",
+      "summary": "You have advantage on all Intelligence, Wisdom, and Charisma saving throws against magic."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Gnomish. The Gnomish language, which uses the Dwarvish script, is renowned for its technical treatises and its catalogs of knowledge about the natural world. Rock Gnome As a rock gnome, you have a natural inventiveness and hardiness beyond that of other gnomes.",
+      "summary": "You can speak, read, and write Common and Gnomish."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Your Constitution score increases by 1.",
+      "summary": "Your Constitution score increases by 1."
+    },
+    {
+      "id": "feature:artificers\t\r_\u00a0lore",
+      "name": "Artificer\u2019s\t\r \u00a0Lore",
+      "simple_name": "artificers\t\r_\u00a0lore",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or technological devices, you can add twice your proficiency bonus, instead of any proficiency bonus you normally apply.",
+      "summary": "Whenever you make an Intelligence (History) check related to magic items, alchemical objects, or ..."
+    },
+    {
+      "id": "feature:tinker",
+      "name": "Tinker",
+      "simple_name": "tinker",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "You have proficiency with artisan\u2019s tools (tinker\u2019s tools). Using those tools, you can spend 1 hour and 10 gp worth of materials to construct a Tiny clockwork device (AC 5, 1 hp). The device ceases to function after 24 hours (unless you spend 1 hour repairing it to keep the device functioning), or when you use your action to dismantle it; at that time, you can reclaim the materials used to create it. You can have up to three such devices active at a time. When you create a device, choose one of the following options: Clockwork Toy. This toy is a clockwork animal, monster, or person, such as a frog, mouse, bird, dragon, or soldier. When placed on the ground, the toy moves 5 feet across the ground on each of your turns in a random direction. It makes noises as appropriate to the creature it represents. Fire Starter. The device produces a miniature flame, which you can use to light a candle, torch, or campfire. Using the device requires your action. Music Box. When opened, this music box plays a single song at a moderate volume. The box stops playing when it reaches the song\u2019s end or when it is closed. Half-Elf",
+      "summary": "You have proficiency with artisan\u2019s tools (tinker\u2019s tools)."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1.",
+      "summary": "Your Charisma score increases by 2, and two other ability scores of your choice increase by 1."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Half- elves mature at the same rate humans do and reach adulthood around the age of 20. They live much longer than humans, however, often exceeding 180 years.",
+      "summary": "Half- elves mature at the same rate humans do and reach adulthood around the age of 20."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 6,
+      "source": "SRD 5.1",
+      "text": "Half- elves share the chaotic bent of their elven heritage. They value both personal freedom and creative expression, demonstrating neither love of leaders nor desire for followers. They chafe at rules, resent others\u2019 demands, and",
+      "summary": "Half- elves share the chaotic bent of their elven heritage."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Half- elves are about the same size as humans, ranging from 5 to 6 feet tall. Your size is Medium.",
+      "summary": "Half- elves are about the same size as humans, ranging from 5 to 6 feet tall."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet.",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Thanks to your elf blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Thanks to your elf blood, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:fey\t\r_\u00a0ancestry",
+      "name": "Fey\t\r \u00a0Ancestry",
+      "simple_name": "fey\t\r_\u00a0ancestry",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You have advantage on saving throws against being charmed, and magic can\u2019t put you to sleep.",
+      "summary": "You have advantage on saving throws against being charmed, and magic can\u2019t put you to sleep."
+    },
+    {
+      "id": "feature:skill\t\r_\u00a0versatility",
+      "name": "Skill\t\r \u00a0Versatility",
+      "simple_name": "skill\t\r_\u00a0versatility",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You gain proficiency in two skills of your choice.",
+      "summary": "You gain proficiency in two skills of your choice."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common, Elvish, and one extra language of your choice. Half-Orc",
+      "summary": "You can speak, read, and write Common, Elvish, and one extra language of your choice."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Your Strength score increases by 2, and your Constitution score increases by 1.",
+      "summary": "Your Strength score increases by 2, and your Constitution score increases by 1."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Half- orcs mature a little faster than humans, reaching adulthood around age 14. They age noticeably faster and rarely live longer than 75 years.",
+      "summary": "Half- orcs mature a little faster than humans, reaching adulthood around age 14."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Half- orcs inherit a tendency toward chaos from their orc parents and are not strongly inclined toward good. Half- orcs raised among orcs and willing to live out their lives among them are usually evil.",
+      "summary": "Half- orcs inherit a tendency toward chaos from their orc parents and are not strongly inclined toward good."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Half- orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall. Your size is Medium.",
+      "summary": "Half- orcs are somewhat larger and bulkier than humans, and they range from 5 to well over 6 feet tall."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet.",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Thanks to your orc blood, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Thanks to your orc blood, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:menacing",
+      "name": "Menacing",
+      "simple_name": "menacing",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You gain proficiency in the Intimidation skill.",
+      "summary": "You gain proficiency in the Intimidation skill."
+    },
+    {
+      "id": "feature:relentless\t\r_\u00a0endurance",
+      "name": "Relentless\t\r \u00a0Endurance",
+      "simple_name": "relentless\t\r_\u00a0endurance",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead. You can\u2019t use this feature again until you finish a long rest.",
+      "summary": "When you are reduced to 0 hit points but not killed outright, you can drop to 1 hit point instead."
+    },
+    {
+      "id": "feature:savage\t\r_\u00a0attacks",
+      "name": "Savage\t\r \u00a0Attacks",
+      "simple_name": "savage\t\r_\u00a0attacks",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "When you score a critical hit with a melee weapon attack, you can roll one of the weapon\u2019s damage dice one additional time and add it to the extra damage of the critical hit.",
+      "summary": "When you score a critical hit with a melee weapon attack, you can roll one of the weapon\u2019s damage..."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Orc. Orc is a harsh, grating language with hard consonants. It has no script of its own but is written in the Dwarvish script. Tiefling",
+      "summary": "You can speak, read, and write Common and Orc."
+    },
+    {
+      "id": "feature:ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "name": "Ability\t\r \u00a0Score\t\r \u00a0Increase",
+      "simple_name": "ability\t\r_\u00a0score\t\r_\u00a0increase",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Your Intelligence score increases by 1, and your Charisma score increases by 2.",
+      "summary": "Your Intelligence score increases by 1, and your Charisma score increases by 2."
+    },
+    {
+      "id": "feature:age",
+      "name": "Age",
+      "simple_name": "age",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Tieflings mature at the same rate as humans but live a few years longer.",
+      "summary": "Tieflings mature at the same rate as humans but live a few years longer."
+    },
+    {
+      "id": "feature:alignment",
+      "name": "Alignment",
+      "simple_name": "alignment",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Tieflings might not have an innate tendency toward evil, but many of them end up there. Evil or not, an independent nature inclines many tieflings toward a chaotic alignment.",
+      "summary": "Tieflings might not have an innate tendency toward evil, but many of them end up there."
+    },
+    {
+      "id": "feature:size",
+      "name": "Size",
+      "simple_name": "size",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Tieflings are about the same size and build as humans. Your size is Medium.",
+      "summary": "Tieflings are about the same size and build as humans."
+    },
+    {
+      "id": "feature:speed",
+      "name": "Speed",
+      "simple_name": "speed",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Your base walking speed is 30 feet.",
+      "summary": "Your base walking speed is 30 feet."
+    },
+    {
+      "id": "feature:darkvision",
+      "name": "Darkvision",
+      "simple_name": "darkvision",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions. You can see in dim light within 60 feet of you as if it were bright light, and in darkness as if it were dim light. You can\u2019t discern color in darkness, only shades of gray.",
+      "summary": "Thanks to your infernal heritage, you have superior vision in dark and dim conditions."
+    },
+    {
+      "id": "feature:hellish\t\r_\u00a0resistance",
+      "name": "Hellish\t\r \u00a0Resistance",
+      "simple_name": "hellish\t\r_\u00a0resistance",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You have resistance to fire damage.",
+      "summary": "You have resistance to fire damage."
+    },
+    {
+      "id": "feature:infernal\t\r_\u00a0legacy",
+      "name": "Infernal\t\r \u00a0Legacy",
+      "simple_name": "infernal\t\r_\u00a0legacy",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You know the thaumaturgy cantrip. When you reach 3rd level, you can cast the hellish rebuke spell as a 2nd- level spell once with this trait and regain the ability to do so when you finish a long rest. When you reach 5th level, you can cast the darkness spell once with this trait and regain the ability to do so when you finish a long rest. Charisma is your spellcasting ability for these spells.",
+      "summary": "You know the thaumaturgy cantrip."
+    },
+    {
+      "id": "feature:languages",
+      "name": "Languages",
+      "simple_name": "languages",
+      "page": 7,
+      "source": "SRD 5.1",
+      "text": "You can speak, read, and write Common and Infernal.",
+      "summary": "You can speak, read, and write Common and Infernal."
+    }
+  ]
+}

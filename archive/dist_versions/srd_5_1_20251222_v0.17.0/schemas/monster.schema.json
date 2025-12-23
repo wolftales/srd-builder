@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
+  "version": "1.5.0",
+  "last_modified": "2025-12-21",
+  "title": "Monster",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "armor_class",
+    "hit_points",
+    "ability_scores",
+    "actions"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(monster|creature|npc):[a-z0-9_]+$",
+      "description": "Stable identifier for the monster entry (monster:, creature:, or npc: prefix)"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Normalized identifier without the entity prefix"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this monster"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name"
+    },
+    "armor_class": {
+      "description": "Armor class value or breakdown",
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    },
+    "hit_points": {
+      "description": "Hit point total or expression",
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    },
+    "ability_scores": {
+      "type": "object",
+      "description": "Ability score block keyed by ability name",
+      "minProperties": 1,
+      "properties": {
+        "strength": {
+          "type": "integer"
+        },
+        "dexterity": {
+          "type": "integer"
+        },
+        "constitution": {
+          "type": "integer"
+        },
+        "intelligence": {
+          "type": "integer"
+        },
+        "wisdom": {
+          "type": "integer"
+        },
+        "charisma": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "simple_name",
+          "description"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "simple_name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "description": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "description": "Array of paragraph strings describing the action/trait"
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

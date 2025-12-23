@@ -1,0 +1,208 @@
+{
+  "source": "SRD_CC_v5.1",
+  "ruleset_version": "5.1",
+  "builder_version": "0.16.0",
+  "schemas": {
+    "monster": "1.5.0",
+    "spell": "1.5.0",
+    "equipment": "1.4.0",
+    "class": "1.4.0",
+    "lineage": "1.4.0",
+    "table": "1.4.0",
+    "condition": "1.4.0",
+    "disease": "1.4.0",
+    "poison": "1.4.0",
+    "features": "1.4.0",
+    "magic_item": "1.1.0"
+  },
+  "license": {
+    "type": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "attribution": "This work includes material taken from the System Reference Document 5.1 (\"SRD 5.1\") by Wizards of the Coast LLC and available at https://dnd.wizards.com/resources/systems-reference-document. The SRD 5.1 is licensed under the Creative Commons Attribution 4.0 International License available at https://creativecommons.org/licenses/by/4.0/legalcode.",
+    "conversion_note": "Converted from the original PDF by srd-builder (https://github.com/wolftales/srd-builder) version 0.16.0"
+  },
+  "build": {
+    "pdf_hash": "sha256:2504d2a0abb0a4d491a939be4f17910a2dde0312570ab8d208080225ccf0a1f0"
+  },
+  "page_index": {
+    "legal": {
+      "start": 1,
+      "end": 1,
+      "description": "Legal information, license (CC-BY-4.0), attribution"
+    },
+    "lineages": {
+      "start": 3,
+      "end": 7,
+      "description": "Character lineages (races): Dwarf, Elf, Halfling, Human, etc.",
+      "dataset": "lineages"
+    },
+    "classes": {
+      "start": 8,
+      "end": 55,
+      "description": "Character classes: Barbarian through Wizard (12 classes)",
+      "dataset": "classes"
+    },
+    "beyond_1st_level": {
+      "start": 56,
+      "end": 61,
+      "description": "Advancement: XP, leveling, multiclassing"
+    },
+    "equipment": {
+      "start": 62,
+      "end": 74,
+      "description": "Equipment tables: armor, weapons, gear, services, costs",
+      "dataset": "equipment"
+    },
+    "feats": {
+      "start": 75,
+      "end": 75,
+      "description": "Optional feat: Grappler"
+    },
+    "using_ability_scores": {
+      "start": 76,
+      "end": 83,
+      "description": "Ability checks, saving throws, skills, modifiers"
+    },
+    "time": {
+      "start": 84,
+      "end": 84,
+      "description": "Time in D&D: rounds, minutes, hours, days"
+    },
+    "movement": {
+      "start": 84,
+      "end": 85,
+      "description": "Movement rules: speed, difficult terrain, climbing, swimming"
+    },
+    "environment": {
+      "start": 86,
+      "end": 87,
+      "description": "Environmental hazards: falling, suffocating, vision"
+    },
+    "between_adventures": {
+      "start": 88,
+      "end": 89,
+      "description": "Downtime activities: resting, lifestyle expenses"
+    },
+    "combat": {
+      "start": 90,
+      "end": 99,
+      "description": "Combat rules: initiative, actions, attacks, damage, conditions"
+    },
+    "spellcasting": {
+      "start": 100,
+      "end": 104,
+      "description": "Spellcasting rules: components, concentration, spell slots"
+    },
+    "spell_lists": {
+      "start": 105,
+      "end": 113,
+      "description": "Spell lists by class (Bard, Cleric, Druid, etc.)"
+    },
+    "spell_descriptions": {
+      "start": 114,
+      "end": 194,
+      "description": "Spell descriptions: 319 spells from Acid Splash to Wish",
+      "dataset": "spells"
+    },
+    "traps": {
+      "start": 195,
+      "end": 198,
+      "description": "Traps: sample traps, detection, effects"
+    },
+    "diseases": {
+      "start": 199,
+      "end": 200,
+      "description": "Diseases: Cackle Fever, Sewer Plague, Sight Rot"
+    },
+    "madness": {
+      "start": 201,
+      "end": 202,
+      "description": "Madness: short-term, long-term, indefinite"
+    },
+    "objects": {
+      "start": 203,
+      "end": 203,
+      "description": "Objects: AC, hit points, breaking objects"
+    },
+    "poisons": {
+      "start": 204,
+      "end": 205,
+      "description": "Poisons: types, application, effects, costs"
+    },
+    "magic_items": {
+      "start": 206,
+      "end": 253,
+      "description": "Magic items: rarity, tables, A-Z descriptions, sentient items, artifacts",
+      "dataset": "magic_items"
+    },
+    "monsters": {
+      "start": 254,
+      "end": 357,
+      "description": "Monster stat blocks: creatures before appendices",
+      "dataset": "monsters"
+    },
+    "appendix_ph_a_conditions": {
+      "start": 358,
+      "end": 359,
+      "description": "Appendix PH-A: Conditions (Blinded, Charmed, Deafened, etc.)",
+      "dataset": "conditions"
+    },
+    "appendix_ph_b_pantheons": {
+      "start": 360,
+      "end": 362,
+      "description": "Appendix PH-B: Fantasy-Historical Pantheons"
+    },
+    "appendix_ph_c_planes": {
+      "start": 363,
+      "end": 365,
+      "description": "Appendix PH-C: The Planes of Existence"
+    },
+    "appendix_mm_a_creatures": {
+      "start": 366,
+      "end": 394,
+      "description": "Appendix MM-A: Miscellaneous Creatures",
+      "dataset": "monsters"
+    },
+    "appendix_mm_b_npcs": {
+      "start": 395,
+      "end": 403,
+      "description": "Appendix MM-B: Nonplayer Characters (NPCs)"
+    }
+  },
+  "files": {
+    "meta": "meta.json",
+    "build_report": "build_report.json",
+    "index": "index.json",
+    "monsters": "monsters.json",
+    "equipment": "equipment.json",
+    "spells": "spells.json",
+    "tables": "tables.json",
+    "lineages": "lineages.json",
+    "classes": "classes.json",
+    "conditions": "conditions.json",
+    "diseases": "diseases.json",
+    "poisons": "poisons.json",
+    "features": "features.json",
+    "magic_items": "magic_items.json"
+  },
+  "terminology": {
+    "aliases": {
+      "race": "lineage",
+      "races": "lineages"
+    }
+  },
+  "extraction_status": {
+    "classes": "complete",
+    "conditions": "complete",
+    "diseases": "complete",
+    "equipment": "complete",
+    "features": "complete",
+    "lineages": "complete",
+    "magic_items": "complete",
+    "monsters": "complete",
+    "poisons": "complete",
+    "rules": "complete",
+    "spells": "complete",
+    "tables": "complete"
+  }
+}

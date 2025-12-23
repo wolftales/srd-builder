@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/wolftales/srd-builder/schemas/features.schema.json",
+  "version": "1.4.0",
+  "title": "Feature",
+  "description": "Class feature or lineage trait from SRD 5.1",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "page",
+    "source",
+    "text"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^feature:[a-z0-9_]+$",
+      "description": "Unique identifier: feature:{simple_name}"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Rage', 'Darkvision')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Lowercase underscored name for indexing"
+    },
+    "page": {
+      "type": "integer",
+      "description": "PDF page number where feature is described"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief summary (first sentence or ~100 chars)"
+    },
+    "text": {
+      "type": "string",
+      "description": "Full feature description text"
+    },
+    "source_class": {
+      "type": "string",
+      "pattern": "^class:[a-z_]+$",
+      "description": "Parent class ID if class feature"
+    },
+    "source_lineage": {
+      "type": "string",
+      "pattern": "^lineage:[a-z_]+$",
+      "description": "Parent lineage ID if lineage trait"
+    },
+    "level_acquired": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "Level when feature is acquired (class features only)"
+    }
+  },
+  "additionalProperties": false
+}

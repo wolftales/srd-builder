@@ -1,0 +1,287 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/class.schema.json",
+  "version": "1.4.0",
+  "last_modified": "2025-11-03",
+  "title": "D&D 5e SRD Class",
+  "description": "Schema for character classes from D&D 5e System Reference Document",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "hit_die",
+    "primary_abilities",
+    "saving_throw_proficiencies",
+    "proficiencies",
+    "features",
+    "progression",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^class:[a-z_]+$",
+      "description": "Unique identifier in the format class:simple_name"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "Snake_case identifier for programmatic use"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names or search terms for this class"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name of the class"
+    },
+    "hit_die": {
+      "type": "string",
+      "pattern": "^d(6|8|10|12)$",
+      "description": "Hit die used for this class (d6, d8, d10, or d12)"
+    },
+    "primary_abilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "strength",
+          "dexterity",
+          "constitution",
+          "intelligence",
+          "wisdom",
+          "charisma"
+        ]
+      },
+      "minItems": 1,
+      "description": "Primary abilities for multiclassing prerequisites"
+    },
+    "saving_throw_proficiencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "strength",
+          "dexterity",
+          "constitution",
+          "intelligence",
+          "wisdom",
+          "charisma"
+        ]
+      },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "Saving throw proficiencies granted by this class (always exactly 2)"
+    },
+    "proficiencies": {
+      "type": "object",
+      "required": [
+        "armor",
+        "weapons",
+        "tools"
+      ],
+      "description": "Starting proficiencies for this class",
+      "properties": {
+        "armor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Armor proficiencies (e.g., 'light', 'medium', 'heavy', 'shields', 'all')"
+        },
+        "weapons": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Weapon proficiencies (e.g., 'simple', 'martial', specific weapon names)"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tool proficiencies (empty array if none)"
+        },
+        "skills": {
+          "type": "object",
+          "description": "Skill selection rules",
+          "properties": {
+            "choose": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of skills to choose"
+            },
+            "from": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of skills to choose from"
+            }
+          },
+          "required": [
+            "choose",
+            "from"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "equipment": {
+      "type": "object",
+      "description": "Starting equipment choices",
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Equipment choice descriptions"
+        }
+      },
+      "additionalProperties": false
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of feature IDs (format: feature:simple_name) gained by this class"
+    },
+    "subclasses": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^subclass:[a-z_]+$"
+      },
+      "description": "Array of subclass IDs available to this class"
+    },
+    "progression": {
+      "type": "array",
+      "description": "Level-by-level feature progression",
+      "items": {
+        "type": "object",
+        "required": [
+          "level"
+        ],
+        "properties": {
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "description": "Character level"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Features gained at this level (feature IDs or names)"
+          },
+          "proficiency_bonus": {
+            "type": "integer",
+            "minimum": 2,
+            "description": "Proficiency bonus at this level (references proficiency_bonus table)"
+          },
+          "class_specific": {
+            "type": "object",
+            "description": "Class-specific progression values (rage damage, martial arts die, spell slots, etc.)",
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "spellcasting": {
+      "type": "object",
+      "description": "Spellcasting information if class has spellcasting",
+      "properties": {
+        "ability": {
+          "type": "string",
+          "enum": [
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ],
+          "description": "Spellcasting ability"
+        },
+        "spell_list": {
+          "type": "string",
+          "description": "Reference to spell list (e.g., 'wizard', 'cleric')"
+        },
+        "cantrips_known": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Number of cantrips known by level (index 0 = level 1)"
+        },
+        "spells_known": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "description": "Number of spells known by level (for classes that know spells)"
+        }
+      },
+      "additionalProperties": false
+    },
+    "tables_referenced": {
+      "type": "array",
+      "description": "IDs of tables from tables.json that are relevant to this class (e.g., proficiency_bonus, spell slots)",
+      "items": {
+        "type": "string",
+        "pattern": "^table:[a-z_]+$"
+      },
+      "uniqueItems": true
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD_CC_v5.1')"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Primary page number in source PDF where this class begins"
+    },
+    "extraction_metadata": {
+      "type": "object",
+      "description": "Metadata about the extraction process for provenance tracking",
+      "properties": {
+        "source_pages": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1,
+          "description": "All PDF page numbers where this class appears"
+        },
+        "section": {
+          "type": "string",
+          "description": "TOC section identifier (e.g., 'classes')"
+        },
+        "extraction_date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date when data was extracted"
+        },
+        "extraction_notes": {
+          "type": "string",
+          "description": "Any relevant notes about the extraction or data source"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

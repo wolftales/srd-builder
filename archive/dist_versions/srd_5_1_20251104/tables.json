@@ -1,0 +1,6399 @@
+{
+  "_meta": {
+    "ruleset": "srd_5_1",
+    "schema_version": "1.4.0",
+    "source": "SRD_CC_v5.1",
+    "build_report": "./build_report.json",
+    "generated_by": "srd-builder v0.9.0"
+  },
+  "items": [
+    {
+      "id": "table:ability_scores_and_modifiers",
+      "simple_name": "ability_scores_and_modifiers",
+      "name": "Ability Scores and Modifiers",
+      "columns": [
+        {
+          "name": "Score",
+          "type": "string"
+        },
+        {
+          "name": "Modifier",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1",
+          "\u22125"
+        ],
+        [
+          "2\u20133",
+          "\u22124"
+        ],
+        [
+          "4\u20135",
+          "\u22123"
+        ],
+        [
+          "6\u20137",
+          "\u22122"
+        ],
+        [
+          "8\u20139",
+          "\u22121"
+        ],
+        [
+          "10\u201311",
+          "+0"
+        ],
+        [
+          "12\u201313",
+          "+1"
+        ],
+        [
+          "14\u201315",
+          "+2"
+        ],
+        [
+          "16\u201317",
+          "+3"
+        ],
+        [
+          "18\u201319",
+          "+4"
+        ],
+        [
+          "20\u201321",
+          "+5"
+        ],
+        [
+          "22\u201323",
+          "+6"
+        ],
+        [
+          "24\u201325",
+          "+7"
+        ],
+        [
+          "26\u201327",
+          "+8"
+        ],
+        [
+          "28\u201329",
+          "+9"
+        ],
+        [
+          "30",
+          "+10"
+        ]
+      ],
+      "page": 7,
+      "category": "character_creation",
+      "section": "Chapter 1: Characters",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Core mechanic: ability score to modifier conversion"
+    },
+    {
+      "id": "table:barbarian_progression",
+      "simple_name": "barbarian_progression",
+      "name": "The Barbarian",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Rages",
+          "type": "string"
+        },
+        {
+          "name": "Rage Damage",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Rage, Unarmored Defense",
+          "2",
+          "+2"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Reckless Attack, Danger Sense",
+          "2",
+          "+2"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Primal Path",
+          "3",
+          "+2"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "3",
+          "+2"
+        ],
+        [
+          "5th",
+          "+3",
+          "Extra Attack, Fast Movement",
+          "3",
+          "+2"
+        ],
+        [
+          "6th",
+          "+3",
+          "Path feature",
+          "4",
+          "+2"
+        ],
+        [
+          "7th",
+          "+3",
+          "Feral Instinct",
+          "4",
+          "+2"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement",
+          "4",
+          "+2"
+        ],
+        [
+          "9th",
+          "+4",
+          "Brutal Critical (1 die)",
+          "4",
+          "+3"
+        ],
+        [
+          "10th",
+          "+4",
+          "Path feature",
+          "4",
+          "+3"
+        ],
+        [
+          "11th",
+          "+4",
+          "Relentless",
+          "4",
+          "+3"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "5",
+          "+3"
+        ],
+        [
+          "13th",
+          "+5",
+          "Brutal Critical (2 dice)",
+          "5",
+          "+3"
+        ],
+        [
+          "14th",
+          "+5",
+          "Path feature",
+          "5",
+          "+3"
+        ],
+        [
+          "15th",
+          "+5",
+          "Persistent Rage",
+          "5",
+          "+3"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "5",
+          "+4"
+        ],
+        [
+          "17th",
+          "+6",
+          "Brutal Critical (3 dice)",
+          "6",
+          "+4"
+        ],
+        [
+          "18th",
+          "+6",
+          "Indomitable Might",
+          "6",
+          "+4"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "6",
+          "+4"
+        ],
+        [
+          "20th",
+          "+6",
+          "Primal Champion",
+          "Unlimited",
+          "+4"
+        ]
+      ],
+      "page": 8,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Barbarian",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: rages, rage damage, features"
+    },
+    {
+      "id": "table:bard_progression",
+      "simple_name": "bard_progression",
+      "name": "The Bard",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "Spells Known",
+          "type": "integer"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        },
+        {
+          "name": "6th",
+          "type": "string"
+        },
+        {
+          "name": "7th",
+          "type": "string"
+        },
+        {
+          "name": "8th",
+          "type": "string"
+        },
+        {
+          "name": "9th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Spellcasting, Bardic Inspiration (d6)",
+          "2",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Jack of All Trades, Song of Rest (d6)",
+          "2",
+          "5",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Bard College, Expertise",
+          "2",
+          "6",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "3",
+          "7",
+          "4",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "Bardic Inspiration (d8), Font of Inspiration",
+          "3",
+          "8",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Countercharm, Bard College feature",
+          "3",
+          "9",
+          "4",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          " \u0336",
+          "3",
+          "10",
+          "4",
+          "3",
+          "3",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement",
+          "3",
+          "11",
+          "4",
+          "3",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          "Song of Rest (d8)",
+          "3",
+          "12",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Bardic Inspiration (d10), Expertise, Magical Secrets",
+          "4",
+          "14",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          " \u0336",
+          "4",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "4",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          "Song of Rest (d10)",
+          "4",
+          "16",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "Magical Secrets, Bard College feature",
+          "4",
+          "18",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          "Bardic Inspiration (d12)",
+          "4",
+          "19",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          " \u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "4",
+          "19",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          "Song of Rest (d12)",
+          "4",
+          "20",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "Magical Secrets",
+          "4",
+          "22",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "4",
+          "22",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "20th",
+          "+6",
+          "Superior Inspiration",
+          "4",
+          "22",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "2",
+          "1",
+          "1"
+        ]
+      ],
+      "page": 11,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Bard",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spells known, spell slots, bardic inspiration"
+    },
+    {
+      "id": "table:cleric_progression",
+      "simple_name": "cleric_progression",
+      "name": "The Cleric",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        },
+        {
+          "name": "6th",
+          "type": "string"
+        },
+        {
+          "name": "7th",
+          "type": "string"
+        },
+        {
+          "name": "8th",
+          "type": "string"
+        },
+        {
+          "name": "9th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Spellcasting, Divine Domain",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Channel Divinity (1/rest), Divine Domain feature",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          " \u0336",
+          "3",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "Destroy Undead (CR 1/2)",
+          "4",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Channel Divinity (2/rest), Divine Domain feature",
+          "4",
+          "4",
+          "3",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement, Destroy Undead (CR 1), Divine Domain feature",
+          "4",
+          "4",
+          "3",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          "\u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Divine Intervention",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          "Destroy Undead (CR 2)",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          " \u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "Destroy Undead (CR 3)",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          "\u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          "Destroy Undead (CR 4), Divine Domain feature",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "Channel Divinity (3/rest)",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "20th",
+          "+6",
+          "Divine Intervention improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "2",
+          "1",
+          "1"
+        ]
+      ],
+      "page": 16,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Cleric",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spell slots, features"
+    },
+    {
+      "id": "table:druid_progression",
+      "simple_name": "druid_progression",
+      "name": "The Druid",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        },
+        {
+          "name": "6th",
+          "type": "string"
+        },
+        {
+          "name": "7th",
+          "type": "string"
+        },
+        {
+          "name": "8th",
+          "type": "string"
+        },
+        {
+          "name": "9th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Druidic, Spellcasting",
+          "2",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Wild Shape, Druid Circle",
+          "2",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          " \u0336",
+          "2",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Wild Shape improvement, Ability Score Improvement",
+          "3",
+          "4",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          " \u0336",
+          "3",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Druid Circle feature",
+          "3",
+          "4",
+          "3",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          "\u0336",
+          "3",
+          "4",
+          "3",
+          "3",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "Wild Shape improvement, Ability Score Improvement",
+          "3",
+          "4",
+          "3",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          " \u0336",
+          "3",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Druid Circle feature",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "Druid Circle feature",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          "\u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "Timeless Body, Beast Spells",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "20th",
+          "+6",
+          "Archdruid",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "2",
+          "1",
+          "1"
+        ]
+      ],
+      "page": 25,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Druid",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spell slots, wild shape"
+    },
+    {
+      "id": "table:fighter_progression",
+      "simple_name": "fighter_progression",
+      "name": "The Fighter",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Fighting Style, Second Wind"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Action Surge (one use)"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Martial Archetype"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement"
+        ],
+        [
+          "5th",
+          "+3",
+          "Extra Attack"
+        ],
+        [
+          "6th",
+          "+3",
+          "Ability Score Improvement"
+        ],
+        [
+          "7th",
+          "+3",
+          "Martial Archetype feature"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement"
+        ],
+        [
+          "9th",
+          "+4",
+          "Indomitable (one use)"
+        ],
+        [
+          "10th",
+          "+4",
+          "Martial Archetype feature"
+        ],
+        [
+          "11th",
+          "+4",
+          "Extra Attack (2)"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement"
+        ],
+        [
+          "13th",
+          "+5",
+          "Indomitable (two uses)"
+        ],
+        [
+          "14th",
+          "+5",
+          "Ability Score Improvement"
+        ],
+        [
+          "15th",
+          "+5",
+          "Martial Archetype feature"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement"
+        ],
+        [
+          "17th",
+          "+6",
+          "Action Surge (two uses), Indomitable (three uses)"
+        ],
+        [
+          "18th",
+          "+6",
+          "Martial Archetype feature"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement"
+        ],
+        [
+          "20th",
+          "+6",
+          "Extra Attack (3)"
+        ]
+      ],
+      "page": 26,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Fighter",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: features by level"
+    },
+    {
+      "id": "table:monk_progression",
+      "simple_name": "monk_progression",
+      "name": "The Monk",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Martial Arts",
+          "type": "dice"
+        },
+        {
+          "name": "Ki Points",
+          "type": "string"
+        },
+        {
+          "name": "Unarmored Movement",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "1d4",
+          "\u2014",
+          "\u2014",
+          "Unarmored Defense, Martial Arts"
+        ],
+        [
+          "2nd",
+          "+2",
+          "1d4",
+          "2",
+          "+10 ft.",
+          "Ki, Unarmored Movement"
+        ],
+        [
+          "3rd",
+          "+2",
+          "1d4",
+          "3",
+          "+10 ft.",
+          "Monastic Tradition, Deflect Missiles"
+        ],
+        [
+          "4th",
+          "+2",
+          "1d4",
+          "4",
+          "+10 ft.",
+          "Ability Score Improvement, Slow Fall"
+        ],
+        [
+          "5th",
+          "+3",
+          "1d6",
+          "5",
+          "+10 ft.",
+          "Extra Attack, Stunning Strike"
+        ],
+        [
+          "6th",
+          "+3",
+          "1d6",
+          "6",
+          "+15 ft.",
+          "Ki-\u00ad\u2010Empowered Strikes, Monastic Tradition feature"
+        ],
+        [
+          "7th",
+          "+3",
+          "1d6",
+          "7",
+          "+15 ft.",
+          "Evasion, Stillness of Mind"
+        ],
+        [
+          "8th",
+          "+3",
+          "1d6",
+          "8",
+          "+15 ft.",
+          "Ability Score Improvement"
+        ],
+        [
+          "9th",
+          "+4",
+          "1d6",
+          "9",
+          "+15 ft.",
+          "Unarmored Movement improvement"
+        ],
+        [
+          "10th",
+          "+4",
+          "1d6",
+          "10",
+          "+20 ft.",
+          "Purity of Body"
+        ],
+        [
+          "11th",
+          "+4",
+          "1d8",
+          "11",
+          "+20 ft.",
+          "Monastic Tradition feature"
+        ],
+        [
+          "12th",
+          "+4",
+          "1d8",
+          "12",
+          "+20 ft.",
+          "Ability Score Improvement"
+        ],
+        [
+          "13th",
+          "+5",
+          "1d8",
+          "13",
+          "+20 ft.",
+          "Tongue of the Sun and Moon"
+        ],
+        [
+          "14th",
+          "+5",
+          "1d8",
+          "14",
+          "+25 ft.",
+          "Diamond Soul"
+        ],
+        [
+          "15th",
+          "+5",
+          "1d8",
+          "15",
+          "+25 ft.",
+          "Timeless Body"
+        ],
+        [
+          "16th",
+          "+5",
+          "1d8",
+          "16",
+          "+25 ft.",
+          "Ability Score Improvement"
+        ],
+        [
+          "17th",
+          "+6",
+          "1d10",
+          "17",
+          "+25 ft.",
+          "Monastic Tradition feature"
+        ],
+        [
+          "18th",
+          "+6",
+          "1d10",
+          "18",
+          "+30 ft.",
+          "Empty Body"
+        ],
+        [
+          "19th",
+          "+6",
+          "1d10",
+          "19",
+          "+30 ft.",
+          "Ability Score Improvement"
+        ],
+        [
+          "20th",
+          "+6",
+          "1d10",
+          "20",
+          "+30 ft.",
+          "Perfect Self"
+        ]
+      ],
+      "page": 28,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Monk",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: martial arts, ki points, unarmored movement"
+    },
+    {
+      "id": "table:paladin_progression",
+      "simple_name": "paladin_progression",
+      "name": "The Paladin",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "1st",
+          "type": "string"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Divine Sense, Lay on Hands",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Fighting Style, Spellcasting,",
+          "Divine Smite 2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Divine Health, Sacred Oath",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "Extra Attack",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Aura of Protection",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          "Sacred Oath feature",
+          "4",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement",
+          "4",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          " \u0336",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Aura of Courage",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          "Improved Divine Smite",
+          "4",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "4",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          "\u0336",
+          "4",
+          "3",
+          "3",
+          "1",
+          "\u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "Cleansing Touch",
+          "4",
+          "3",
+          "3",
+          "1",
+          "\u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          "Sacred Oath feature",
+          "4",
+          "3",
+          "3",
+          "2",
+          " \u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "4",
+          "3",
+          "3",
+          "2",
+          " \u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          " \u0336",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "Aura improvements",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2"
+        ],
+        [
+          "20th",
+          "+6",
+          "Sacred Oath feature",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2"
+        ]
+      ],
+      "page": 31,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Paladin",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: spell slots (half caster)"
+    },
+    {
+      "id": "table:ranger_progression",
+      "simple_name": "ranger_progression",
+      "name": "The Ranger",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Spells Known",
+          "type": "string"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Favored Enemy, Natural Explorer",
+          " \u0336",
+          "",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Fighting Style, Spellcasting",
+          "",
+          "2",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Ranger Archetype, Primeval Awareness",
+          "",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "Extra Attack",
+          "",
+          "4",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Favored Enemy and Natural Explorer",
+          "improvements",
+          "4",
+          "4",
+          "2",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          "Ranger Archetype feature",
+          "",
+          "5",
+          "4",
+          "3",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          " Ability Score Improvement, Land\u2019s",
+          " Stride",
+          "5",
+          "4",
+          "3",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          " \u0336",
+          "",
+          "6",
+          "4",
+          "3",
+          "2",
+          " \u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Natural Explorer improvement,",
+          "Hide in Plain Sight",
+          "6",
+          "4",
+          "3",
+          "2",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          "Ranger Archetype feature",
+          "",
+          "7",
+          "4",
+          "3",
+          "3",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "",
+          "7",
+          "4",
+          "3",
+          "3",
+          "\u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          "\u0336",
+          "",
+          "8",
+          "4",
+          "3",
+          "3",
+          "1"
+        ],
+        [
+          "14th",
+          "+5",
+          "Favored Enemy improvement, Vanish",
+          "",
+          "8",
+          "4",
+          "3",
+          "3",
+          "1"
+        ],
+        [
+          "15th",
+          "+5",
+          "Ranger Archetype feature",
+          "",
+          "9",
+          "4",
+          "3",
+          "3",
+          "2"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "",
+          "9",
+          "4",
+          "3",
+          "3",
+          "2"
+        ],
+        [
+          "17th",
+          "+6",
+          " \u0336",
+          "10",
+          "",
+          "4",
+          "3",
+          "3",
+          "3"
+        ],
+        [
+          "18th",
+          "+6",
+          "Feral Senses",
+          "10",
+          "",
+          "4",
+          "3",
+          "3",
+          "3"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "11",
+          "",
+          "4",
+          "3",
+          "3",
+          "3"
+        ],
+        [
+          "20th",
+          "+6",
+          "Foe Slayer",
+          "11",
+          "",
+          "4",
+          "3",
+          "3",
+          "3"
+        ]
+      ],
+      "page": 37,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Ranger",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: spell slots (half caster), favored enemies"
+    },
+    {
+      "id": "table:rogue_progression",
+      "simple_name": "rogue_progression",
+      "name": "The Rogue",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Sneak Attack",
+          "type": "dice"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "1d6",
+          "Expertise, Sneak Attack, Thieves\u2019 Cant"
+        ],
+        [
+          "2nd",
+          "+2",
+          "1d6",
+          "Cunning Action"
+        ],
+        [
+          "3rd",
+          "+2",
+          "2d6",
+          "Roguish Archetype"
+        ],
+        [
+          "4th",
+          "+2",
+          "2d6",
+          "Ability Score Improvement"
+        ],
+        [
+          "5th",
+          "+3",
+          "3d6",
+          "Uncanny Dodge"
+        ],
+        [
+          "6th",
+          "+3",
+          "3d6",
+          "Expertise"
+        ],
+        [
+          "7th",
+          "+3",
+          "4d6",
+          "Evasion"
+        ],
+        [
+          "8th",
+          "+3",
+          "4d6",
+          "Ability Score Improvement"
+        ],
+        [
+          "9th",
+          "+4",
+          "5d6",
+          "Roguish Archetype feature"
+        ],
+        [
+          "10th",
+          "+4",
+          "5d6",
+          "Ability Score"
+        ],
+        [
+          "11th",
+          "+4",
+          "6d6",
+          "Reliable Talent"
+        ],
+        [
+          "12th",
+          "+4",
+          "6d6",
+          "Ability Score Improvement"
+        ],
+        [
+          "13th",
+          "+5",
+          "7d6",
+          "Roguish Archetype feature"
+        ],
+        [
+          "14th",
+          "+5",
+          "7d6",
+          "Blindsense"
+        ],
+        [
+          "15th",
+          "+5",
+          "8d6",
+          "Slippery Mind"
+        ],
+        [
+          "16th",
+          "+5",
+          "8d6",
+          "Ability Score Improvement"
+        ],
+        [
+          "17th",
+          "+6",
+          "9d6",
+          "Roguish Archetype feature"
+        ],
+        [
+          "18th",
+          "+6",
+          "9d6",
+          "Elusive"
+        ],
+        [
+          "19th",
+          "+6",
+          "10d6",
+          "Ability Score Improvement"
+        ],
+        [
+          "20th",
+          "+6",
+          "10d6",
+          "Stroke of Luck"
+        ]
+      ],
+      "page": 39,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Rogue",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: sneak attack damage"
+    },
+    {
+      "id": "table:sorcerer_progression",
+      "simple_name": "sorcerer_progression",
+      "name": "The Sorcerer",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Sorcery Points",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "Spells Known",
+          "type": "integer"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        },
+        {
+          "name": "6th",
+          "type": "string"
+        },
+        {
+          "name": "7th",
+          "type": "string"
+        },
+        {
+          "name": "8th",
+          "type": "string"
+        },
+        {
+          "name": "9th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          " \u0336",
+          "Spellcasting, Sorcerous Origin",
+          "4",
+          "2",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "2",
+          "Font of Magic",
+          "4",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          "3",
+          "Metamagic",
+          "4",
+          "4",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "4",
+          "Ability Score Improvement",
+          "5",
+          "5",
+          "4",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "5",
+          " \u0336",
+          "5",
+          "6",
+          "4",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "6",
+          "Sorcerous Origin feature",
+          "5",
+          "7",
+          "4",
+          "3",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          "7",
+          "\u0336",
+          "5",
+          "8",
+          "4",
+          "3",
+          "3",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "8",
+          "Ability Score Improvement",
+          "5",
+          "9",
+          "4",
+          "3",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          "9",
+          "\u0336",
+          "5",
+          "10",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "10",
+          "Metamagic",
+          "6",
+          "11",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          "11",
+          " \u0336",
+          "6",
+          "12",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "12",
+          "Ability Score Improvement",
+          "6",
+          "12",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          "13",
+          " \u0336",
+          "6",
+          "13",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "14",
+          "Sorcerous Origin feature",
+          "6",
+          "13",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          "15",
+          " \u0336",
+          "6",
+          "14",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          " \u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "16",
+          "Ability Score Improvement",
+          "6",
+          "14",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "\u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          "17",
+          "Metamagic",
+          "6",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "18",
+          "Sorcerous Origin feature",
+          "6",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "19",
+          "Ability Score Improvement",
+          "6",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "20th",
+          "+6",
+          "20",
+          "Sorcerous Restoration",
+          "6",
+          "15",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "2",
+          "1",
+          "1"
+        ]
+      ],
+      "page": 42,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Sorcerer",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spells known, spell slots, sorcery points"
+    },
+    {
+      "id": "table:warlock_progression",
+      "simple_name": "warlock_progression",
+      "name": "The Warlock",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "Invocations Known",
+          "type": "integer"
+        },
+        {
+          "name": "Spell Slots",
+          "type": "integer"
+        },
+        {
+          "name": "Slot Level",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Otherworldly Patron, Pact Magic",
+          "2",
+          "2",
+          "1",
+          "1st"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Eldritch Invocations",
+          "2",
+          "3",
+          "2",
+          "1st"
+        ],
+        [
+          "3rd",
+          "+2",
+          "Pact Boon",
+          "2",
+          "4",
+          "2",
+          "2nd"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "3",
+          "5",
+          "2",
+          "2nd"
+        ],
+        [
+          "5th",
+          "+3",
+          " \u0336",
+          "3",
+          "6",
+          "2",
+          "3rd"
+        ],
+        [
+          "6th",
+          "+3",
+          "Otherworldly Patron feature",
+          "3",
+          "7",
+          "2",
+          "3rd"
+        ],
+        [
+          "7th",
+          "+3",
+          " \u0336",
+          "3",
+          "8",
+          "2",
+          "4th"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement",
+          "3",
+          "9",
+          "2",
+          "4th"
+        ],
+        [
+          "9th",
+          "+4",
+          "\u0336",
+          "3",
+          "10",
+          "2",
+          "5th"
+        ],
+        [
+          "10th",
+          "+4",
+          "Otherworldly Patron feature",
+          "4",
+          "10",
+          "2",
+          "5th"
+        ],
+        [
+          "11th",
+          "+4",
+          "Mystic Arcanum (6th level)",
+          "4",
+          "11",
+          "3",
+          "5th"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "4",
+          "11",
+          "3",
+          "5th"
+        ],
+        [
+          "13th",
+          "+5",
+          "Mystic Arcanum (7th level)",
+          "4",
+          "12",
+          "3",
+          "5th"
+        ],
+        [
+          "14th",
+          "+5",
+          "Otherworldly Patron feature",
+          "4",
+          "12",
+          "3",
+          "5th"
+        ],
+        [
+          "15th",
+          "+5",
+          "Mystic Arcanum (8th level)",
+          "4",
+          "13",
+          "3",
+          "5th"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "4",
+          "13",
+          "3",
+          "5th"
+        ],
+        [
+          "17th",
+          "+6",
+          "Mystic Arcanum (9th level)",
+          "4",
+          "14",
+          "4",
+          "5th"
+        ],
+        [
+          "18th",
+          "+6",
+          "\u0336",
+          "4",
+          "14",
+          "4",
+          "5th"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "4",
+          "15",
+          "4",
+          "5th"
+        ],
+        [
+          "20th",
+          "+6",
+          "Eldritch Master",
+          "4",
+          "15",
+          "4",
+          "5th"
+        ]
+      ],
+      "page": 44,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Warlock",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spells known, spell slots (pact magic), invocations"
+    },
+    {
+      "id": "table:wizard_progression",
+      "simple_name": "wizard_progression",
+      "name": "The Wizard",
+      "columns": [
+        {
+          "name": "Level",
+          "type": "string"
+        },
+        {
+          "name": "Proficiency Bonus",
+          "type": "string"
+        },
+        {
+          "name": "Features",
+          "type": "string"
+        },
+        {
+          "name": "Cantrips Known",
+          "type": "integer"
+        },
+        {
+          "name": "1st",
+          "type": "integer"
+        },
+        {
+          "name": "2nd",
+          "type": "string"
+        },
+        {
+          "name": "3rd",
+          "type": "string"
+        },
+        {
+          "name": "4th",
+          "type": "string"
+        },
+        {
+          "name": "5th",
+          "type": "string"
+        },
+        {
+          "name": "6th",
+          "type": "string"
+        },
+        {
+          "name": "7th",
+          "type": "string"
+        },
+        {
+          "name": "8th",
+          "type": "string"
+        },
+        {
+          "name": "9th",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1st",
+          "+2",
+          "Spellcasting, Arcane Recovery",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "2nd",
+          "+2",
+          "Arcane Tradition",
+          "3",
+          "3",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "3rd",
+          "+2",
+          " \u0336",
+          "3",
+          "4",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "4th",
+          "+2",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "5th",
+          "+3",
+          "\u0336",
+          "4",
+          "4",
+          "3",
+          "2",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "6th",
+          "+3",
+          "Arcane Tradition feature",
+          "4",
+          "4",
+          "3",
+          "3",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "7th",
+          "+3",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "8th",
+          "+3",
+          "Ability Score Improvement",
+          "4",
+          "4",
+          "3",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "9th",
+          "+4",
+          " \u0336",
+          "4",
+          "4",
+          "3",
+          "3",
+          "3",
+          "1",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "10th",
+          "+4",
+          "Arcane Tradition feature",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          " \u0336",
+          " \u0336",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "11th",
+          "+4",
+          "\u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "12th",
+          "+4",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "\u0336",
+          "\u0336",
+          "\u0336"
+        ],
+        [
+          "13th",
+          "+5",
+          " \u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "14th",
+          "+5",
+          "Arcane Tradition feature",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          " \u0336",
+          " \u0336"
+        ],
+        [
+          "15th",
+          "+5",
+          " \u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          " \u0336"
+        ],
+        [
+          "16th",
+          "+5",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          " \u0336"
+        ],
+        [
+          "17th",
+          "+6",
+          " \u0336",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "18th",
+          "+6",
+          "Spell Mastery",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "1",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "19th",
+          "+6",
+          "Ability Score Improvement",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "1",
+          "1",
+          "1"
+        ],
+        [
+          "20th",
+          "+6",
+          "Signature Spell",
+          "5",
+          "4",
+          "3",
+          "3",
+          "3",
+          "3",
+          "2",
+          "2",
+          "1",
+          "1"
+        ]
+      ],
+      "page": 46,
+      "category": "class_progression",
+      "section": "Chapter 3: Classes - Wizard",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Level progression: cantrips, spell slots"
+    },
+    {
+      "id": "table:experience_by_cr",
+      "simple_name": "experience_by_cr",
+      "name": "Experience Points by Challenge Rating",
+      "columns": [
+        {
+          "name": "Challenge Rating",
+          "type": "string"
+        },
+        {
+          "name": "XP",
+          "type": "integer"
+        }
+      ],
+      "rows": [
+        [
+          "0",
+          0
+        ],
+        [
+          "1/8",
+          25
+        ],
+        [
+          "1/4",
+          50
+        ],
+        [
+          "1/2",
+          100
+        ],
+        [
+          "1",
+          200
+        ],
+        [
+          "2",
+          450
+        ],
+        [
+          "3",
+          700
+        ],
+        [
+          "4",
+          1100
+        ],
+        [
+          "5",
+          1800
+        ],
+        [
+          "6",
+          2300
+        ],
+        [
+          "7",
+          2900
+        ],
+        [
+          "8",
+          3900
+        ],
+        [
+          "9",
+          5000
+        ],
+        [
+          "10",
+          5900
+        ],
+        [
+          "11",
+          7200
+        ],
+        [
+          "12",
+          8400
+        ],
+        [
+          "13",
+          10000
+        ],
+        [
+          "14",
+          11500
+        ],
+        [
+          "15",
+          13000
+        ],
+        [
+          "16",
+          15000
+        ],
+        [
+          "17",
+          18000
+        ],
+        [
+          "18",
+          20000
+        ],
+        [
+          "19",
+          22000
+        ],
+        [
+          "20",
+          25000
+        ],
+        [
+          "21",
+          33000
+        ],
+        [
+          "22",
+          41000
+        ],
+        [
+          "23",
+          50000
+        ],
+        [
+          "24",
+          62000
+        ],
+        [
+          "25",
+          75000
+        ],
+        [
+          "26",
+          90000
+        ],
+        [
+          "27",
+          105000
+        ],
+        [
+          "28",
+          120000
+        ],
+        [
+          "29",
+          135000
+        ],
+        [
+          "30",
+          155000
+        ]
+      ],
+      "page": 57,
+      "category": "combat",
+      "section": "Chapter 9: Combat",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "XP calculation for encounters"
+    },
+    {
+      "id": "table:travel_pace",
+      "simple_name": "travel_pace",
+      "name": "Travel Pace",
+      "columns": [
+        {
+          "name": "Pace",
+          "type": "string"
+        },
+        {
+          "name": "Distance per Minute",
+          "type": "string"
+        },
+        {
+          "name": "Distance per Hour",
+          "type": "string"
+        },
+        {
+          "name": "Distance per Day",
+          "type": "string"
+        },
+        {
+          "name": "Effect",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Fast",
+          "400 feet",
+          "4 miles",
+          "30 miles",
+          "\u22125 penalty to passive Wisdom (Perception) scores"
+        ],
+        [
+          "Normal",
+          "300 feet",
+          "3 miles",
+          "24 miles",
+          "\u2014"
+        ],
+        [
+          "Slow",
+          "200 feet",
+          "2 miles",
+          "18 miles",
+          "Able to use stealth"
+        ]
+      ],
+      "page": 84,
+      "category": "exploration",
+      "section": "Chapter 8: Adventuring",
+      "summary": "Distance per hour/day at different paces"
+    },
+    {
+      "id": "table:food_drink_lodging",
+      "simple_name": "food_drink_lodging",
+      "name": "Food, Drink, and Lodging",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Inn stay (per day)",
+          ""
+        ],
+        [
+          "Squalid",
+          "7 cp"
+        ],
+        [
+          "Poor",
+          "1 sp"
+        ],
+        [
+          "Modest",
+          "5 sp"
+        ],
+        [
+          "Comfortable",
+          "8 sp"
+        ],
+        [
+          "Wealthy",
+          "2 gp"
+        ],
+        [
+          "Aristocratic",
+          "4 gp"
+        ],
+        [
+          "Meals (per day)",
+          ""
+        ],
+        [
+          "Squalid",
+          "3 cp"
+        ],
+        [
+          "Poor",
+          "6 cp"
+        ],
+        [
+          "Modest",
+          "3 sp"
+        ],
+        [
+          "Comfortable",
+          "5 sp"
+        ],
+        [
+          "Wealthy",
+          "8 sp"
+        ],
+        [
+          "Aristocratic",
+          "2 gp"
+        ],
+        [
+          "Meat, chunk",
+          "3 sp"
+        ],
+        [
+          "Wine",
+          ""
+        ],
+        [
+          "Common (pitcher)",
+          "2 sp"
+        ],
+        [
+          "Fine (bottle)",
+          "10 gp"
+        ],
+        [
+          "Ale",
+          ""
+        ],
+        [
+          "Gallon",
+          "2 sp"
+        ],
+        [
+          "Mug",
+          "4 cp"
+        ]
+      ],
+      "page": 158,
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Service costs for inns/taverns"
+    },
+    {
+      "id": "table:services",
+      "simple_name": "services",
+      "name": "Services",
+      "columns": [
+        {
+          "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Coach cab",
+          ""
+        ],
+        [
+          "Between towns",
+          "3 cp per mile"
+        ],
+        [
+          "Within a city",
+          "1 cp"
+        ],
+        [
+          "Hireling",
+          ""
+        ],
+        [
+          "Skilled",
+          "2 gp per day"
+        ],
+        [
+          "Untrained",
+          "2 sp per day"
+        ],
+        [
+          "Messenger",
+          "2 cp per mile"
+        ],
+        [
+          "Road or gate toll",
+          "1 cp"
+        ],
+        [
+          "Ship\u2019s passage",
+          "1 sp per mile"
+        ]
+      ],
+      "page": 159,
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Hireling and service costs"
+    },
+    {
+      "id": "table:size_categories",
+      "simple_name": "size_categories",
+      "name": "Size Categories",
+      "columns": [
+        {
+          "name": "Size",
+          "type": "string"
+        },
+        {
+          "name": "Space",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Tiny",
+          "2\u00bd by 2\u00bd ft."
+        ],
+        [
+          "Small",
+          "5 by 5 ft."
+        ],
+        [
+          "Medium",
+          "5 by 5 ft."
+        ],
+        [
+          "Large",
+          "10 by 10 ft."
+        ],
+        [
+          "Huge",
+          "15 by 15 ft."
+        ],
+        [
+          "Gargantuan",
+          "20 by 20 ft. or larger"
+        ]
+      ],
+      "page": 92,
+      "category": "reference"
+    },
+    {
+      "id": "table:lifestyle_expenses",
+      "simple_name": "lifestyle_expenses",
+      "name": "Lifestyle Expenses",
+      "columns": [
+        {
+          "name": "Lifestyle",
+          "type": "string"
+        },
+        {
+          "name": "Price/Day",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Wretched",
+          "\u2014"
+        ],
+        [
+          "Squalid",
+          "1 sp"
+        ],
+        [
+          "Poor",
+          "2 sp"
+        ],
+        [
+          "Modest",
+          "1 gp"
+        ],
+        [
+          "Comfortable",
+          "2 gp"
+        ],
+        [
+          "Wealthy",
+          "4 gp"
+        ],
+        [
+          "Aristocratic",
+          "10 gp minimum"
+        ]
+      ],
+      "page": 157,
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Daily living costs (wretched to aristocratic)"
+    },
+    {
+      "id": "table:exchange_rates",
+      "simple_name": "exchange_rates",
+      "name": "Standard Exchange Rates",
+      "columns": [
+        {
+          "name": "Coin",
+          "type": "string"
+        },
+        {
+          "name": "CP",
+          "type": "string"
+        },
+        {
+          "name": "SP",
+          "type": "string"
+        },
+        {
+          "name": "EP",
+          "type": "string"
+        },
+        {
+          "name": "GP",
+          "type": "string"
+        },
+        {
+          "name": "PP",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Copper (cp)",
+          "1",
+          "1/10",
+          "1/50",
+          "1/100",
+          "1/1,000"
+        ],
+        [
+          "Silver (sp)",
+          "10",
+          "1",
+          "1/5",
+          "1/10",
+          "1/100"
+        ],
+        [
+          "Electrum (ep)",
+          "50",
+          "5",
+          "1",
+          "1/2",
+          "1/20"
+        ],
+        [
+          "Gold (gp)",
+          "100",
+          "10",
+          "2",
+          "1",
+          "1/10"
+        ],
+        [
+          "Platinum (pp)",
+          "1,000",
+          "100",
+          "20",
+          "10",
+          "1"
+        ]
+      ],
+      "page": [
+        62
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Currency conversion rates (CP/SP/EP/GP/PP)"
+    },
+    {
+      "id": "table:adventure_gear",
+      "simple_name": "adventure_gear",
+      "name": "Adventure Gear",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Abacus",
+          "2 gp",
+          "2 lb."
+        ],
+        [
+          "Acid (vial)",
+          "25 gp",
+          "1 lb."
+        ],
+        [
+          "Alchemist\u2019s fire (flask)",
+          "50 gp",
+          "1 lb."
+        ],
+        [
+          "Ammunition",
+          "",
+          ""
+        ],
+        [
+          "Arrows (20)",
+          "1 gp",
+          "1 lb."
+        ],
+        [
+          "Blowgun needles (50)",
+          "1 gp",
+          "1 lb."
+        ],
+        [
+          "Crossbow bolts (20)",
+          "1 gp",
+          "1\u00bd lb."
+        ],
+        [
+          "Sling bullets (20)",
+          "4 cp",
+          "1\u00bd lb."
+        ],
+        [
+          "Antitoxin (vial)",
+          "50 gp",
+          "\u2014"
+        ],
+        [
+          "Arcane focus",
+          "",
+          ""
+        ],
+        [
+          "Crystal",
+          "10 gp",
+          "1 lb."
+        ],
+        [
+          "Orb",
+          "20 gp",
+          "3 lb."
+        ],
+        [
+          "Rod",
+          "10 gp",
+          "2 lb."
+        ],
+        [
+          "Staff",
+          "5 gp",
+          "4 lb."
+        ],
+        [
+          "Wand",
+          "10 gp",
+          "1 lb."
+        ],
+        [
+          "Backpack",
+          "2 gp",
+          "5 lb."
+        ],
+        [
+          "Ball bearings (bag of 1,000)",
+          "1 gp",
+          "2 lb."
+        ],
+        [
+          "Barrel",
+          "2 gp",
+          "70 lb."
+        ],
+        [
+          "Basket",
+          "4 sp",
+          "2 lb."
+        ],
+        [
+          "Bedroll",
+          "1 gp",
+          "7 lb."
+        ],
+        [
+          "Bell",
+          "1 gp",
+          "\u2014"
+        ],
+        [
+          "Blanket",
+          "5 sp",
+          "3 lb."
+        ],
+        [
+          "Block and tackle",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Book",
+          "25 gp",
+          "5 lb."
+        ],
+        [
+          "Bottle, glass",
+          "2 gp",
+          "2 lb."
+        ],
+        [
+          "Bucket",
+          "5 cp",
+          "2 lb."
+        ],
+        [
+          "Caltrops (bag of 20)",
+          "1 gp",
+          "2 lb."
+        ],
+        [
+          "Candle",
+          "1 cp",
+          "\u2014"
+        ],
+        [
+          "Case, crossbow bolt",
+          "1 gp",
+          "1 lb."
+        ],
+        [
+          "Case, map or scroll",
+          "1 gp",
+          "1 lb."
+        ],
+        [
+          "Chain (10 feet)",
+          "5 gp",
+          "10 lb."
+        ],
+        [
+          "Chalk (1 piece)",
+          "1 cp",
+          "\u2014"
+        ],
+        [
+          "Chest",
+          "5 gp",
+          "25 lb."
+        ],
+        [
+          "Climber\u2019s kit",
+          "25 gp",
+          "12 lb."
+        ],
+        [
+          "Clothes, common",
+          "5 sp",
+          "3 lb."
+        ],
+        [
+          "Clothes, costume",
+          "5 gp",
+          "4 lb."
+        ],
+        [
+          "Clothes, fine",
+          "15 gp",
+          "6 lb."
+        ],
+        [
+          "Clothes, traveler\u2019s",
+          "2 gp",
+          "4 lb."
+        ],
+        [
+          "Component pouch",
+          "25 gp",
+          "2 lb."
+        ],
+        [
+          "Crowbar",
+          "2 gp",
+          "5 lb."
+        ],
+        [
+          "Druidic focus",
+          "",
+          ""
+        ],
+        [
+          "Sprig of mistletoe",
+          "1 gp",
+          "\u2014"
+        ],
+        [
+          "Totem",
+          "1 gp",
+          "\u2014"
+        ],
+        [
+          "Wooden staff",
+          "5 gp",
+          "4 lb."
+        ],
+        [
+          "Yew wand",
+          "10 gp",
+          "1 lb."
+        ],
+        [
+          "Fishing tackle",
+          "1 gp",
+          "4 lb."
+        ],
+        [
+          "Flask or tankard",
+          "2 cp",
+          "1 lb."
+        ],
+        [
+          "Grappling hook",
+          "2 gp",
+          "4 lb."
+        ],
+        [
+          "Hammer",
+          "1 gp",
+          "3 lb."
+        ],
+        [
+          "Hammer, sledge",
+          "2 gp",
+          "10 lb."
+        ],
+        [
+          "Healer\u2019s kit",
+          "5 gp",
+          "3 lb."
+        ],
+        [
+          "Holy symbol",
+          "",
+          ""
+        ],
+        [
+          "Amulet",
+          "5 gp",
+          "1 lb."
+        ],
+        [
+          "Emblem",
+          "5 gp",
+          "\u2014"
+        ],
+        [
+          "Reliquary",
+          "5 gp",
+          "2 lb."
+        ],
+        [
+          "Holy water (flask)",
+          "25 gp",
+          "1 lb."
+        ],
+        [
+          "Hourglass",
+          "25 gp",
+          "1 lb."
+        ],
+        [
+          "Hunting trap",
+          "5 gp",
+          "25 lb."
+        ],
+        [
+          "Ink (1 ounce bottle)",
+          "10 gp",
+          "\u2014"
+        ],
+        [
+          "Ink pen",
+          "2 cp",
+          "\u2014"
+        ],
+        [
+          "Jug or pitcher",
+          "2 cp",
+          "4 lb."
+        ],
+        [
+          "Ladder (10-\u00ad\u2010foot)",
+          "1 sp",
+          "25 lb."
+        ],
+        [
+          "Lamp",
+          "5 sp",
+          "1 lb."
+        ],
+        [
+          "Lantern, bullseye",
+          "10 gp",
+          "2 lb."
+        ],
+        [
+          "Lantern, hooded",
+          "5 gp",
+          "2 lb."
+        ],
+        [
+          "Lock",
+          "10 gp",
+          "1 lb."
+        ],
+        [
+          "Magnifying glass",
+          "100 gp",
+          "\u2014"
+        ],
+        [
+          "Manacles",
+          "2 gp",
+          "6 lb."
+        ],
+        [
+          "Mess kit",
+          "2 sp",
+          "1 lb."
+        ],
+        [
+          "Mirror, steel",
+          "5 gp 1/2",
+          "lb."
+        ],
+        [
+          "Oil (flask)",
+          "1 sp",
+          "1 lb."
+        ],
+        [
+          "Paper (one sheet)",
+          "2 sp",
+          "\u2014"
+        ],
+        [
+          "Parchment (one sheet)",
+          "1 sp",
+          "\u2014"
+        ],
+        [
+          "Perfume (vial)",
+          "5 gp",
+          "\u2014"
+        ],
+        [
+          "Pick, miner\u2019s",
+          "2 gp",
+          "10 lb."
+        ],
+        [
+          "Piton",
+          "5 cp 1/4",
+          "lb."
+        ],
+        [
+          "Poison, basic (vial)",
+          "100 gp",
+          "\u2014"
+        ],
+        [
+          "Pole (10-\u00ad\u2010foot)",
+          "5 cp",
+          "7 lb."
+        ],
+        [
+          "Pot, iron",
+          "2 gp",
+          "10 lb."
+        ],
+        [
+          "Potion of healing",
+          "50 gp 1/2",
+          "lb."
+        ],
+        [
+          "Pouch",
+          "5 sp",
+          "1 lb."
+        ],
+        [
+          "Quiver",
+          "1 gp",
+          "1 lb."
+        ],
+        [
+          "Ram, portable",
+          "4 gp",
+          "35 lb."
+        ],
+        [
+          "Rations (1 day)",
+          "5 sp",
+          "2 lb."
+        ],
+        [
+          "Robes",
+          "1 gp",
+          "4 lb."
+        ],
+        [
+          "Rope, hempen (50 feet)",
+          "1 gp",
+          "10 lb."
+        ],
+        [
+          "Rope, silk (50 feet)",
+          "10 gp",
+          "5 lb."
+        ],
+        [
+          "Sack",
+          "1 cp 1/2",
+          "lb."
+        ],
+        [
+          "Scale, merchant\u2019s",
+          "5 gp",
+          "3 lb."
+        ],
+        [
+          "Sealing wax",
+          "5 sp",
+          "\u2014"
+        ],
+        [
+          "Shovel",
+          "2 gp",
+          "5 lb."
+        ],
+        [
+          "Signal whistle",
+          "5 cp",
+          "\u2014"
+        ],
+        [
+          "Signet ring",
+          "5 gp",
+          "\u2014"
+        ],
+        [
+          "Soap",
+          "2 cp",
+          "\u2014"
+        ],
+        [
+          "Spellbook",
+          "50 gp",
+          "3 lb."
+        ],
+        [
+          "Spikes, iron (10)",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Spyglass",
+          "1,000 gp",
+          "1 lb."
+        ],
+        [
+          "Tent, two-\u00ad\u2010person",
+          "2 gp",
+          "20 lb."
+        ],
+        [
+          "Tinderbox",
+          "5 sp",
+          "1 lb."
+        ],
+        [
+          "Torch",
+          "1 cp",
+          "1 lb."
+        ],
+        [
+          "Vial",
+          "1 gp",
+          "\u2014"
+        ],
+        [
+          "Waterskin",
+          "2 sp 5 lb.",
+          "(full)"
+        ],
+        [
+          "Whetstone",
+          "1 cp",
+          "1 lb."
+        ]
+      ],
+      "page": [
+        69
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:container_capacity",
+      "simple_name": "container_capacity",
+      "name": "Container Capacity",
+      "columns": [
+        {
+          "name": "Container",
+          "type": "string"
+        },
+        {
+          "name": "Capacity",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Backpack*",
+          "1 cubic foot/30 pounds of gear"
+        ],
+        [
+          "Barrel",
+          "40 gallons liquid, 4 cubic feet solid"
+        ],
+        [
+          "Basket",
+          "2 cubic feet/40 pounds of gear"
+        ],
+        [
+          "Bottle",
+          "1\u00bd pints liquid"
+        ],
+        [
+          "Bucket",
+          "3 gallons liquid, 1/2 cubic foot solid"
+        ],
+        [
+          "Chest",
+          "12 cubic feet/300 pounds of gear"
+        ],
+        [
+          "Flask or tankard",
+          "1 pint liquid"
+        ],
+        [
+          "Jug or pitcher",
+          "1 gallon liquid"
+        ],
+        [
+          "Pot, iron",
+          "1 gallon liquid"
+        ],
+        [
+          "Pouch",
+          "1/5 cubic foot/6 pounds of gear"
+        ],
+        [
+          "Sack",
+          "1 cubic foot/30 pounds of gear"
+        ],
+        [
+          "Vial",
+          "4 ounces liquid"
+        ],
+        [
+          "Waterskin",
+          "4 pints liquid"
+        ]
+      ],
+      "page": [
+        69,
+        70
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:donning_doffing_armor",
+      "simple_name": "donning_doffing_armor",
+      "name": "Donning Doffing Armor",
+      "columns": [
+        {
+          "name": "Category",
+          "type": "string"
+        },
+        {
+          "name": "Don",
+          "type": "string"
+        },
+        {
+          "name": "Doff",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Light Armor",
+          "1 minute",
+          "1 minute"
+        ],
+        [
+          "Medium Armor",
+          "5 minutes",
+          "1 minute"
+        ],
+        [
+          "Heavy Armor",
+          "10 minutes",
+          "5 minutes"
+        ],
+        [
+          "Shield",
+          "1 action",
+          "1 action"
+        ]
+      ],
+      "page": [
+        64
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:mounts_and_other_animals",
+      "simple_name": "mounts_and_other_animals",
+      "name": "Mounts And Other Animals",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Speed",
+          "type": "string"
+        },
+        {
+          "name": "Carrying Capacity",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Camel",
+          "50 gp",
+          "50 ft.",
+          "480 lb."
+        ],
+        [
+          "Donkey or mule",
+          "8 gp",
+          "40 ft.",
+          "420 lb."
+        ],
+        [
+          "Elephant",
+          "200 gp",
+          "40 ft.",
+          "1,320 lb."
+        ],
+        [
+          "Horse, draft",
+          "50 gp",
+          "40 ft.",
+          "540 lb."
+        ],
+        [
+          "Horse, riding",
+          "75 gp",
+          "60 ft.",
+          "480 lb."
+        ],
+        [
+          "Mastiff",
+          "25 gp",
+          "40 ft.",
+          "195 lb."
+        ],
+        [
+          "Pony",
+          "30 gp",
+          "40 ft.",
+          "225 lb."
+        ],
+        [
+          "Warhorse",
+          "400 gp",
+          "60 ft.",
+          "540 lb."
+        ]
+      ],
+      "page": [
+        71,
+        72
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:tack_harness_vehicles",
+      "simple_name": "tack_harness_vehicles",
+      "name": "Tack Harness Vehicles",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Barding",
+          "\u00d74",
+          "\u00d72"
+        ],
+        [
+          "Bit and bridle",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Carriage",
+          "100 gp",
+          "600 lb."
+        ],
+        [
+          "Cart",
+          "15 gp",
+          "200 lb."
+        ],
+        [
+          "Chariot",
+          "250 gp",
+          "100 lb."
+        ],
+        [
+          "Feed (per day)",
+          "5 cp",
+          "10 lb."
+        ],
+        [
+          "Saddle",
+          "",
+          ""
+        ],
+        [
+          "Exotic",
+          "60 gp",
+          "40 lb."
+        ],
+        [
+          "Military",
+          "20 gp",
+          "30 lb."
+        ],
+        [
+          "Pack",
+          "5 gp",
+          "15 lb."
+        ],
+        [
+          "Riding",
+          "10 gp",
+          "25 lb."
+        ],
+        [
+          "Saddlebags",
+          "4 gp",
+          "8 lb."
+        ],
+        [
+          "Sled",
+          "20 gp",
+          "300 lb."
+        ],
+        [
+          "Stabling (per day)",
+          "5 sp",
+          "\u2014"
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:waterborne_vehicles",
+      "simple_name": "waterborne_vehicles",
+      "name": "Waterborne Vehicles",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Speed",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Galley",
+          "30,000 gp",
+          "4 mph"
+        ],
+        [
+          "Keelboat",
+          "3,000 gp",
+          "1 mph"
+        ],
+        [
+          "Longship",
+          "10,000 gp",
+          "3 mph"
+        ],
+        [
+          "Rowboat",
+          "50 gp",
+          "1\u00bd mph"
+        ],
+        [
+          "Sailing ship",
+          "10,000 gp",
+          "2 mph"
+        ],
+        [
+          "Warship",
+          "25,000 gp",
+          "2\u00bd mph"
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:trade_goods",
+      "simple_name": "trade_goods",
+      "name": "Trade Goods",
+      "columns": [
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Goods",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "1 cp",
+          "1 lb. of wheat"
+        ],
+        [
+          "2 cp",
+          "1 lb. of flour or one chicken"
+        ],
+        [
+          "5 cp",
+          "1 lb. of salt"
+        ],
+        [
+          "1 sp",
+          "1 lb. of iron or 1 sq. yd. of canvas"
+        ],
+        [
+          "5 sp",
+          "1 lb. of copper or 1 sq. yd. of cotton cloth"
+        ],
+        [
+          "1 gp",
+          "1 lb. of ginger or one goat"
+        ],
+        [
+          "2 gp",
+          "1 lb. of cinnamon or pepper, or one sheep"
+        ],
+        [
+          "3 gp",
+          "1 lb. of cloves or one pig"
+        ],
+        [
+          "5 gp",
+          "1 lb. of silver or 1 sq. yd. of linen"
+        ],
+        [
+          "10 gp",
+          "1 sq. yd. of silk or one cow"
+        ],
+        [
+          "15 gp",
+          "1 lb. of saffron or one ox"
+        ],
+        [
+          "50 gp",
+          "1 lb. of gold"
+        ],
+        [
+          "500 gp",
+          "1 lb. of platinum"
+        ]
+      ],
+      "page": [
+        72
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:lifestyle_expenses",
+      "simple_name": "lifestyle_expenses",
+      "name": "Lifestyle Expenses",
+      "columns": [
+        {
+          "name": "Lifestyle",
+          "type": "string"
+        },
+        {
+          "name": "Price/Day",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Wretched",
+          "\u2014"
+        ],
+        [
+          "Squalid",
+          "1 sp"
+        ],
+        [
+          "Poor",
+          "2 sp"
+        ],
+        [
+          "Modest",
+          "1 gp"
+        ],
+        [
+          "Comfortable",
+          "2 gp"
+        ],
+        [
+          "Wealthy",
+          "4 gp"
+        ],
+        [
+          "Aristocratic",
+          "10 gp minimum"
+        ]
+      ],
+      "page": [
+        72,
+        73
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Daily living costs (wretched to aristocratic)"
+    },
+    {
+      "id": "table:food_drink_lodging",
+      "simple_name": "food_drink_lodging",
+      "name": "Food, Drink, and Lodging",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Inn stay (per day)",
+          ""
+        ],
+        [
+          "Squalid",
+          "7 cp"
+        ],
+        [
+          "Poor",
+          "1 sp"
+        ],
+        [
+          "Modest",
+          "5 sp"
+        ],
+        [
+          "Comfortable",
+          "8 sp"
+        ],
+        [
+          "Wealthy",
+          "2 gp"
+        ],
+        [
+          "Aristocratic",
+          "4 gp"
+        ],
+        [
+          "Meals (per day)",
+          ""
+        ],
+        [
+          "Squalid",
+          "3 cp"
+        ],
+        [
+          "Poor",
+          "6 cp"
+        ],
+        [
+          "Modest",
+          "3 sp"
+        ],
+        [
+          "Comfortable",
+          "5 sp"
+        ],
+        [
+          "Wealthy",
+          "8 sp"
+        ],
+        [
+          "Aristocratic",
+          "2 gp"
+        ],
+        [
+          "Meat, chunk",
+          "3 sp"
+        ],
+        [
+          "Wine",
+          ""
+        ],
+        [
+          "Common (pitcher)",
+          "2 sp"
+        ],
+        [
+          "Fine (bottle)",
+          "10 gp"
+        ],
+        [
+          "Ale",
+          ""
+        ],
+        [
+          "Gallon",
+          "2 sp"
+        ],
+        [
+          "Mug",
+          "4 cp"
+        ]
+      ],
+      "page": [
+        73,
+        74
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Service costs for inns/taverns"
+    },
+    {
+      "id": "table:services",
+      "simple_name": "services",
+      "name": "Services",
+      "columns": [
+        {
+          "name": "Service",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Coach cab",
+          ""
+        ],
+        [
+          "Between towns",
+          "3 cp per mile"
+        ],
+        [
+          "Within a city",
+          "1 cp"
+        ],
+        [
+          "Hireling",
+          ""
+        ],
+        [
+          "Skilled",
+          "2 gp per day"
+        ],
+        [
+          "Untrained",
+          "2 sp per day"
+        ],
+        [
+          "Messenger",
+          "2 cp per mile"
+        ],
+        [
+          "Road or gate toll",
+          "1 cp"
+        ],
+        [
+          "Ship\u2019s passage",
+          "1 sp per mile"
+        ]
+      ],
+      "page": [
+        74
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Hireling and service costs"
+    },
+    {
+      "id": "table:tools",
+      "simple_name": "tools",
+      "name": "Tools",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Artisan\u2019s tools",
+          "",
+          ""
+        ],
+        [
+          "Alchemist\u2019s supplies",
+          "50 gp",
+          "8 lb."
+        ],
+        [
+          "Brewer\u2019s supplies",
+          "20 gp",
+          "9 lb."
+        ],
+        [
+          "Calligrapher's supplies",
+          "10 gp",
+          "5 lb."
+        ],
+        [
+          "Carpenter\u2019s tools",
+          "8 gp",
+          "6 lb."
+        ],
+        [
+          "Cartographer\u2019s tools",
+          "15 gp",
+          "6 lb."
+        ],
+        [
+          "Cobbler\u2019s tools",
+          "5 gp",
+          "5 lb."
+        ],
+        [
+          "Cook\u2019s utensils",
+          "1 gp",
+          "8 lb."
+        ],
+        [
+          "Glassblower\u2019s tools",
+          "30 gp",
+          "5 lb."
+        ],
+        [
+          "Jeweler\u2019s tools",
+          "25 gp",
+          "2 lb."
+        ],
+        [
+          "Leatherworker\u2019s tools",
+          "5 gp",
+          "5 lb."
+        ],
+        [
+          "Mason\u2019s tools",
+          "10 gp",
+          "8 lb."
+        ],
+        [
+          "Painter\u2019s supplies",
+          "10 gp",
+          "5 lb."
+        ],
+        [
+          "Potter\u2019s tools",
+          "10 gp",
+          "3 lb."
+        ],
+        [
+          "Smith\u2019s tools",
+          "20 gp",
+          "8 lb."
+        ],
+        [
+          "Tinker\u2019s tools",
+          "50 gp",
+          "10 lb."
+        ],
+        [
+          "Weaver\u2019s tools",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Woodcarver\u2019s tools",
+          "1 gp",
+          "5 lb."
+        ],
+        [
+          "Disguise kit",
+          "25 gp",
+          "3 lb."
+        ],
+        [
+          "Forgery kit",
+          "15 gp",
+          "5 lb."
+        ],
+        [
+          "Gaming set",
+          "",
+          ""
+        ],
+        [
+          "Dice set",
+          "1 sp",
+          "\u2014"
+        ],
+        [
+          "Playing card set",
+          "5 sp",
+          "\u2014"
+        ],
+        [
+          "Herbalism kit",
+          "5 gp",
+          "3 lb."
+        ],
+        [
+          "Musical instrument",
+          "",
+          ""
+        ],
+        [
+          "Bagpipes",
+          "30 gp",
+          "6 lb."
+        ],
+        [
+          "Drum",
+          "6 gp",
+          "3 lb."
+        ],
+        [
+          "Dulcimer",
+          "25 gp",
+          "10 lb."
+        ],
+        [
+          "Flute",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Lute",
+          "35 gp",
+          "2 lb."
+        ],
+        [
+          "Lyre",
+          "30 gp",
+          "2 lb."
+        ],
+        [
+          "Horn",
+          "3 gp",
+          "2 lb."
+        ],
+        [
+          "Pan flute",
+          "12 gp",
+          "2 lb."
+        ],
+        [
+          "Shawm",
+          "2 gp",
+          "1 lb."
+        ],
+        [
+          "Viol",
+          "30 gp",
+          "1 lb."
+        ],
+        [
+          "Navigator\u2019s tools",
+          "25 gp",
+          "2 lb."
+        ],
+        [
+          "Poisoner\u2019s kit",
+          "50 gp",
+          "2 lb."
+        ],
+        [
+          "Thieves\u2019 tools",
+          "25 gp",
+          "1 lb."
+        ]
+      ],
+      "page": [
+        70
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:armor",
+      "simple_name": "armor",
+      "name": "Armor",
+      "columns": [
+        {
+          "name": "Armor",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Armor Class (AC)",
+          "type": "string"
+        },
+        {
+          "name": "Strength",
+          "type": "string"
+        },
+        {
+          "name": "Stealth",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Light Armor",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Padded",
+          "5 gp",
+          "11 + Dex modifier",
+          "\u2014",
+          "Disadvantage",
+          "8 lb."
+        ],
+        [
+          "Leather",
+          "10 gp",
+          "11 + Dex modifier",
+          "\u2014",
+          "\u2014",
+          "10 lb."
+        ],
+        [
+          "Studded leather",
+          "45 gp",
+          "12 + Dex modifier",
+          "\u2014",
+          "\u2014",
+          "13 lb."
+        ],
+        [
+          "Medium Armor",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Hide",
+          "10 gp",
+          "12 + Dex modifier (max 2)",
+          "\u2014",
+          "\u2014",
+          "12 lb."
+        ],
+        [
+          "Chain shirt",
+          "50 gp",
+          "13 + Dex modifier (max 2)",
+          "\u2014",
+          "\u2014",
+          "20 lb."
+        ],
+        [
+          "Scale mail",
+          "50 gp",
+          "14 + Dex modifier (max 2)",
+          "\u2014",
+          "Disadvantage",
+          "45 lb."
+        ],
+        [
+          "Breastplate",
+          "400 gp",
+          "14 + Dex modifier (max 2)",
+          "\u2014",
+          "\u2014",
+          "20 lb."
+        ],
+        [
+          "Half plate",
+          "750 gp",
+          "15 + Dex modifier (max 2)",
+          "\u2014",
+          "Disadvantage",
+          "40 lb."
+        ],
+        [
+          "Heavy Armor",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Ring mail",
+          "30 gp",
+          "14",
+          "\u2014",
+          "Disadvantage",
+          "40 lb."
+        ],
+        [
+          "Chain mail",
+          "75 gp",
+          "16",
+          "Str 13",
+          "Disadvantage",
+          "55 lb."
+        ],
+        [
+          "Splint",
+          "200 gp",
+          "17",
+          "Str 15",
+          "Disadvantage",
+          "60 lb."
+        ],
+        [
+          "Plate",
+          "1,500 gp",
+          "18",
+          "Str 15",
+          "Disadvantage",
+          "65 lb."
+        ],
+        [
+          "Shield",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Shield",
+          "10 gp",
+          "+2",
+          "\u2014",
+          "\u2014",
+          "6 lb."
+        ]
+      ],
+      "page": [
+        63,
+        64
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Extracted via text_parser from PDF pages 63-64"
+    },
+    {
+      "id": "table:weapons",
+      "simple_name": "weapons",
+      "name": "Weapons",
+      "columns": [
+        {
+          "name": "Name",
+          "type": "string"
+        },
+        {
+          "name": "Cost",
+          "type": "string"
+        },
+        {
+          "name": "Damage",
+          "type": "string"
+        },
+        {
+          "name": "Weight",
+          "type": "string"
+        },
+        {
+          "name": "Properties",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Simple Melee Weapons",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Club",
+          "1 sp",
+          "1d4 bludgeoning",
+          "2 lb.",
+          "Light"
+        ],
+        [
+          "Dagger",
+          "2 gp",
+          "1d4 piercing",
+          "1 lb.",
+          "Finesse, light, thrown (range 20/60)"
+        ],
+        [
+          "Greatclub",
+          "2 sp",
+          "1d8 bludgeoning",
+          "10 lb.",
+          "Two-\u00ad\u2010handed"
+        ],
+        [
+          "Handaxe",
+          "5 gp",
+          "1d6 slashing",
+          "2 lb.",
+          "Light, thrown (range 20/60)"
+        ],
+        [
+          "Javelin",
+          "5 sp",
+          "1d6 piercing",
+          "2 lb.",
+          "Thrown (range 30/120)"
+        ],
+        [
+          "Light hammer",
+          "2 gp",
+          "1d4 bludgeoning",
+          "2 lb.",
+          "Light, thrown (range 20/60)"
+        ],
+        [
+          "Mace",
+          "5 gp",
+          "1d6 bludgeoning",
+          "4 lb.",
+          "\u2014"
+        ],
+        [
+          "Quarterstaff",
+          "2 sp",
+          "1d6 bludgeoning",
+          "4 lb.",
+          "Versatile (1d8)"
+        ],
+        [
+          "Sickle",
+          "1 gp",
+          "1d4 slashing",
+          "2 lb.",
+          "Light"
+        ],
+        [
+          "Spear",
+          "1 gp",
+          "1d6 piercing",
+          "3 lb.",
+          "Thrown (range 20/60), versatile (1d8)"
+        ],
+        [
+          "Simple Ranged Weapons",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Crossbow, light",
+          "25 gp",
+          "1d8 piercing",
+          "5 lb.",
+          "Ammunition (range 80/320), loading, two-\u00ad\u2010handed"
+        ],
+        [
+          "Dart",
+          "5 cp",
+          "1d4 piercing",
+          "1/4 lb.",
+          "Finesse, thrown (range 20/60)"
+        ],
+        [
+          "Shortbow",
+          "25 gp",
+          "1d6 piercing",
+          "2 lb.",
+          "Ammunition (range 80/320), two-\u00ad\u2010handed"
+        ],
+        [
+          "Sling",
+          "1 sp",
+          "1d4 bludgeoning",
+          "\u2014",
+          "Ammunition (range 30/120)"
+        ],
+        [
+          "Martial Melee Weapons",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Battleaxe",
+          "10 gp",
+          "1d8 slashing",
+          "4 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Flail",
+          "10 gp",
+          "1d8 bludgeoning",
+          "2 lb.",
+          "\u2014"
+        ],
+        [
+          "Glaive",
+          "20 gp",
+          "1d10 slashing",
+          "6 lb.",
+          "Heavy, reach, two-\u00ad\u2010handed"
+        ],
+        [
+          "Greataxe",
+          "30 gp",
+          "1d12 slashing",
+          "7 lb.",
+          "Heavy, two-\u00ad\u2010handed"
+        ],
+        [
+          "Greatsword",
+          "50 gp",
+          "2d6 slashing",
+          "6 lb.",
+          "Heavy, two-\u00ad\u2010handed"
+        ],
+        [
+          "Halberd",
+          "20 gp",
+          "1d10 slashing",
+          "6 lb.",
+          "Heavy, reach, two-\u00ad\u2010handed"
+        ],
+        [
+          "Lance",
+          "10 gp",
+          "1d12 piercing",
+          "6 lb.",
+          "Reach, special"
+        ],
+        [
+          "Longsword",
+          "15 gp",
+          "1d8 slashing",
+          "3 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Maul",
+          "10 gp",
+          "2d6 bludgeoning",
+          "10 lb.",
+          "Heavy, two-\u00ad\u2010handed"
+        ],
+        [
+          "Morningstar",
+          "15 gp",
+          "1d8 piercing",
+          "4 lb.",
+          "\u2014"
+        ],
+        [
+          "Pike",
+          "5 gp",
+          "1d10 piercing",
+          "18 lb.",
+          "Heavy, reach, two-\u00ad\u2010handed"
+        ],
+        [
+          "Rapier",
+          "25 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "Finesse"
+        ],
+        [
+          "Scimitar",
+          "25 gp",
+          "1d6 slashing",
+          "3 lb.",
+          "Finesse, light"
+        ],
+        [
+          "Shortsword",
+          "10 gp",
+          "1d6 piercing",
+          "2 lb.",
+          "Finesse, light"
+        ],
+        [
+          "Trident",
+          "5 gp",
+          "1d6 piercing",
+          "4 lb.",
+          "Thrown (range 20/60), versatile (1d8)"
+        ],
+        [
+          "War pick",
+          "5 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "\u2014"
+        ],
+        [
+          "Warhammer",
+          "15 gp",
+          "1d8 bludgeoning",
+          "2 lb.",
+          "Versatile (1d10)"
+        ],
+        [
+          "Whip",
+          "2 gp",
+          "1d4 slashing",
+          "3 lb.",
+          "Finesse, reach"
+        ],
+        [
+          "Martial Ranged Weapons",
+          "",
+          "",
+          "",
+          ""
+        ],
+        [
+          "Blowgun",
+          "10 gp",
+          "1 piercing",
+          "1 lb.",
+          "Ammunition (range 25/100), loading"
+        ],
+        [
+          "Crossbow, hand",
+          "75 gp",
+          "1d6 piercing",
+          "3 lb.",
+          "Ammunition (range 30/120), light, loading"
+        ],
+        [
+          "Crossbow, heavy",
+          "50 gp",
+          "1d10 piercing",
+          "18 lb.",
+          "Ammunition (range 100/400), heavy, loading, two-\u00ad\u2010handed"
+        ],
+        [
+          "Longbow",
+          "50 gp",
+          "1d8 piercing",
+          "2 lb.",
+          "Ammunition (range 150/600), heavy, two-\u00ad\u2010handed"
+        ],
+        [
+          "Net",
+          "1 gp",
+          "\u2014",
+          "3 lb.",
+          "Special, thrown (range 5/15)"
+        ]
+      ],
+      "page": [
+        65,
+        66
+      ],
+      "category": "equipment",
+      "section": "Chapter 5: Equipment",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]",
+      "summary": "Extracted via text_parser from PDF pages 65-66"
+    },
+    {
+      "id": "table:poisons",
+      "simple_name": "poisons",
+      "name": "Poisons",
+      "columns": [
+        {
+          "name": "Item",
+          "type": "string"
+        },
+        {
+          "name": "Type",
+          "type": "string"
+        },
+        {
+          "name": "Price per Dose",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "Item",
+          "Type Price",
+          "per Dose"
+        ],
+        [
+          "Assassin\u2019s blood",
+          "Ingested",
+          "150 gp"
+        ],
+        [
+          "Burnt othur fumes",
+          "Inhaled",
+          "500 gp"
+        ],
+        [
+          "Crawler mucus",
+          "Contact",
+          "200 gp"
+        ],
+        [
+          "Drow poison",
+          "Injury",
+          "200 gp"
+        ],
+        [
+          "Essence of ether",
+          "Inhaled",
+          "300 gp"
+        ],
+        [
+          "Malice",
+          "Inhaled",
+          "250 gp"
+        ],
+        [
+          "Midnight tears",
+          "Ingested",
+          "1,500 gp"
+        ],
+        [
+          "Oil of taggit",
+          "Contact",
+          "400 gp"
+        ],
+        [
+          "Pale tincture",
+          "Ingested",
+          "250 gp"
+        ],
+        [
+          "Purple worm poison",
+          "Injury",
+          "2,000 gp"
+        ],
+        [
+          "Serpent venom",
+          "Injury",
+          "200 gp"
+        ],
+        [
+          "Torpor",
+          "Ingested",
+          "600 gp"
+        ],
+        [
+          "Truth serum",
+          "Ingested",
+          "150 gp"
+        ],
+        [
+          "Wyvern poison",
+          "Injury",
+          "1,200 gp"
+        ]
+      ],
+      "page": [
+        204
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:short_term_madness",
+      "simple_name": "short_term_madness",
+      "name": "Short Term Madness",
+      "columns": [
+        {
+          "name": "d100",
+          "type": "string"
+        },
+        {
+          "name": "Effect (lasts 1d10 minutes)",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "d100 Effect (lasts",
+          "1d10 minutes)"
+        ],
+        [
+          "01\u201320 The character",
+          "retreats into his or her mind and"
+        ],
+        [
+          "becomes paralyzed.",
+          "The effect ends if the"
+        ],
+        [
+          "character takes",
+          "any damage."
+        ],
+        [
+          "21\u201330 The character",
+          "becomes incapacitated and"
+        ],
+        [
+          "spends the duration",
+          "screaming, laughing, or"
+        ],
+        [
+          "weeping.",
+          ""
+        ],
+        [
+          "31\u201340 The character",
+          "becomes frightened and must"
+        ],
+        [
+          "use his or her",
+          "action and movement each"
+        ],
+        [
+          "round to flee",
+          "from the source of the fear."
+        ],
+        [
+          "41\u201350 The character",
+          "begins babbling and is incapable"
+        ],
+        [
+          "of normal speech",
+          "or spellcasting."
+        ],
+        [
+          "51\u201360 The character must use his or her action each",
+          ""
+        ],
+        [
+          "round to attack the nearest creature.",
+          ""
+        ],
+        [
+          "61\u201370 The character experiences vivid hallucinations",
+          ""
+        ],
+        [
+          "and has disadvantage on ability checks.",
+          ""
+        ],
+        [
+          "71\u201375 The character does whatever anyone tells him",
+          ""
+        ],
+        [
+          "or her to do that isn\u2019t obviously self-\u00ad\u2010",
+          ""
+        ],
+        [
+          "destructive.",
+          ""
+        ],
+        [
+          "76\u201380 The character experiences an overpowering",
+          ""
+        ],
+        [
+          "urge to eat something strange such as dirt,",
+          ""
+        ],
+        [
+          "slime, or offal.",
+          ""
+        ],
+        [
+          "81\u201390 The character is stunned.",
+          ""
+        ],
+        [
+          "91\u2013100 The character falls unconscious.",
+          ""
+        ]
+      ],
+      "page": [
+        201
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:short_term_madness_part2",
+      "simple_name": "short_term_madness_part2",
+      "name": "Short Term Madness Part2",
+      "columns": [
+        {
+          "name": "01\u201320",
+          "type": "string"
+        },
+        {
+          "name": "The character retreats i\nbecomes paralyzed. The\ncharacter takes any dam",
+          "type": "string"
+        },
+        {
+          "name": "nto his or her mind and",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "",
+          "",
+          "effect ends if the"
+        ],
+        [
+          "",
+          "",
+          "age."
+        ]
+      ],
+      "page": [
+        201
+      ],
+      "category": "reference",
+      "notes": "Short-term madness part 2 (right column, entries 51-100)"
+    },
+    {
+      "id": "table:long_term_madness",
+      "simple_name": "long_term_madness",
+      "name": "Long Term Madness",
+      "columns": [
+        {
+          "name": "d100",
+          "type": "string"
+        },
+        {
+          "name": "Effect (lasts 1d10 \u00d7 10 hours)",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "d100 Effect (lasts 1d10 \u00d7 10 hours)",
+          ""
+        ],
+        [
+          "01\u201310 The character feels compelled to repeat a",
+          ""
+        ],
+        [
+          "specific activity over and over, such as washing",
+          ""
+        ],
+        [
+          "hands, touching things, praying, or counting",
+          ""
+        ],
+        [
+          "coins.",
+          ""
+        ],
+        [
+          "11\u201320 The character experiences vivid hallucinations",
+          ""
+        ],
+        [
+          "and has disadvantage on ability checks.",
+          ""
+        ],
+        [
+          "21\u201330 The character suffers extreme paranoia. The",
+          ""
+        ],
+        [
+          "character has disadvantage on Wisdom and",
+          ""
+        ],
+        [
+          "Charisma checks.",
+          ""
+        ],
+        [
+          "31\u201340 The character regards something (usually the",
+          ""
+        ],
+        [
+          "source of madness) with intense revulsion, as if",
+          ""
+        ],
+        [
+          "affected by the antipathy effect of the",
+          ""
+        ],
+        [
+          "antipathy/sympathy spell.",
+          ""
+        ],
+        [
+          "41\u201345 The character experiences a powerful delusion.",
+          ""
+        ],
+        [
+          "Choose a potion. The character imagines that",
+          ""
+        ],
+        [
+          "he or she is under its effects.",
+          ""
+        ],
+        [
+          "46\u201355 The character becomes attached to a \u201clucky",
+          ""
+        ],
+        [
+          "charm,\u201d such as a person or an object, and has",
+          ""
+        ],
+        [
+          "disadvantage on attack rolls, ability checks, and",
+          ""
+        ],
+        [
+          "saving throws while more than 30 feet from it.",
+          ""
+        ],
+        [
+          "56\u201365 The character is blinded (25%) or deafened",
+          ""
+        ],
+        [
+          "(75%).",
+          ""
+        ],
+        [
+          "66\u201375 The character experiences uncontrollable",
+          ""
+        ],
+        [
+          "tremors or tics, which impose disadvantage on",
+          ""
+        ],
+        [
+          "attack rolls, ability checks, and saving throws",
+          ""
+        ],
+        [
+          "that involve Strength or Dexterity.",
+          ""
+        ],
+        [
+          "76\u201385 The character suffers from partial amnesia. The",
+          ""
+        ],
+        [
+          "character knows who he or she is and retains",
+          ""
+        ],
+        [
+          "racial traits and class features, but doesn\u2019t",
+          ""
+        ],
+        [
+          "recognize other people or remember anything",
+          ""
+        ],
+        [
+          "that happened before the madness took effect.",
+          ""
+        ],
+        [
+          "86\u201390 Whenever the character takes damage, he or",
+          ""
+        ],
+        [
+          "she must succeed on a DC 15 Wisdom saving",
+          ""
+        ],
+        [
+          "throw or be affected as though he or she failed",
+          ""
+        ],
+        [
+          "a saving throw against the confusion spell. The",
+          ""
+        ],
+        [
+          "confusion effect lasts for 1 minute.",
+          ""
+        ],
+        [
+          "91\u201395 The character loses the ability to speak.",
+          ""
+        ],
+        [
+          "96\u2013100 The character falls unconscious. No amount of",
+          ""
+        ],
+        [
+          "jostling or damage can wake the character.",
+          ""
+        ]
+      ],
+      "page": [
+        201
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    },
+    {
+      "id": "table:indefinite_madness",
+      "simple_name": "indefinite_madness",
+      "name": "Indefinite Madness",
+      "columns": [
+        {
+          "name": "d100",
+          "type": "string"
+        },
+        {
+          "name": "Flaw (lasts until cured)",
+          "type": "string"
+        }
+      ],
+      "rows": [
+        [
+          "d100 Flaw (lasts until",
+          "cured)"
+        ],
+        [
+          "01\u201315 \u201cBeing drunk",
+          "keeps me sane.\u201d"
+        ],
+        [
+          "16\u201325 \u201cI keep whatever",
+          "I find.\u201d"
+        ],
+        [
+          "26\u201330 \u201cI try to become",
+          "more like someone else I"
+        ],
+        [
+          "know\u2014adopting",
+          "his or her style of dress,"
+        ],
+        [
+          "mannerisms,",
+          "and name.\u201d"
+        ],
+        [
+          "31\u201335 \u201cI must bend",
+          "the truth, exaggerate, or outright"
+        ],
+        [
+          "lie to be interesting",
+          "to other people.\u201d"
+        ],
+        [
+          "36\u201345 \u201cAchieving my",
+          "goal is the only thing of interest"
+        ],
+        [
+          "to me, and I\u2019ll",
+          "ignore everything else to pursue"
+        ],
+        [
+          "it.\u201d",
+          ""
+        ],
+        [
+          "46\u201350 \u201cI find it hard",
+          "to care about anything that goes"
+        ],
+        [
+          "on around me.\u201d",
+          ""
+        ],
+        [
+          "51\u201355 \u201cI don\u2019t like",
+          "the way people judge me all the"
+        ],
+        [
+          "time.\u201d",
+          ""
+        ],
+        [
+          "56\u201370 \u201cI am the smartest,",
+          "wisest, strongest, fastest,"
+        ],
+        [
+          "and most beautiful",
+          "person I know.\u201d"
+        ],
+        [
+          "71\u201380 \u201cI am convinced",
+          "that powerful enemies are"
+        ],
+        [
+          "hunting me,",
+          "and their agents are everywhere I"
+        ],
+        [
+          "go. I am sure",
+          "they\u2019re watching me all the time.\u201d"
+        ],
+        [
+          "81\u201385 \u201cThere\u2019s only",
+          "one person I can trust. And only I"
+        ],
+        [
+          "can see this",
+          "special friend.\u201d"
+        ],
+        [
+          "86\u201395 \u201cI can\u2019t take",
+          "anything seriously. The more"
+        ],
+        [
+          "serious the situation,",
+          "the funnier I find it.\u201d"
+        ],
+        [
+          "96\u2013100 \u201cI\u2019ve discovered",
+          "that I really like killing people.\u201d"
+        ]
+      ],
+      "page": [
+        202
+      ],
+      "category": "reference",
+      "notes": "Extracted from PDF using split_column pattern [source: srd]"
+    }
+  ]
+}
