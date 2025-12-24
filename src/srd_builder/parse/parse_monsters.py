@@ -235,14 +235,15 @@ def _extract_damage_type_id(damage_type: str) -> str:
     """Extract normalized damage type ID from type string.
 
     Examples:
-        "fire" -> "fire"
-        "bludgeoning, piercing, and slashing" -> "bludgeoning"
-        "radiant" -> "radiant"
+        "fire" -> "damage:fire"
+        "bludgeoning, piercing, and slashing" -> "damage:bludgeoning"
+        "radiant" -> "damage:radiant"
     """
     # Take first word/type from comma-separated list
     first_type = damage_type.split(",")[0].strip()
     # Normalize to lowercase snake_case
-    return re.sub(r"[^a-z0-9]+", "_", first_type.lower()).strip("_")
+    normalized = re.sub(r"[^a-z0-9]+", "_", first_type.lower()).strip("_")
+    return f"damage:{normalized}"
 
 
 def _normalize_condition_immunities(value: Any) -> list[dict[str, str]]:

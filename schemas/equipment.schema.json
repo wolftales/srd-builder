@@ -167,7 +167,7 @@
         },
         "type_id": {
           "type": "string",
-          "pattern": "^[a-z_]+$",
+          "pattern": "^[a-z_:]+$",
           "description": "Normalized damage type identifier for cross-referencing"
         }
       }

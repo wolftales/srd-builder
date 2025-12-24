@@ -15,7 +15,7 @@ POISON_DESCRIPTIONS = {
             "average": 6,
             "formula": "1d12",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "burnt_othur_fumes": {
@@ -25,7 +25,7 @@ POISON_DESCRIPTIONS = {
             "average": 10,
             "formula": "3d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "crawler_mucus": {
@@ -51,7 +51,7 @@ POISON_DESCRIPTIONS = {
             "average": 31,
             "formula": "9d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "oil_of_taggit": {
@@ -65,7 +65,7 @@ POISON_DESCRIPTIONS = {
             "average": 3,
             "formula": "1d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "purple_worm_poison": {
@@ -75,7 +75,7 @@ POISON_DESCRIPTIONS = {
             "average": 42,
             "formula": "12d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "serpent_venom": {
@@ -85,7 +85,7 @@ POISON_DESCRIPTIONS = {
             "average": 10,
             "formula": "3d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
     "torpor": {
@@ -103,7 +103,7 @@ POISON_DESCRIPTIONS = {
             "average": 24,
             "formula": "7d6",
             "type": "poison",
-            "type_id": "damage_type:poison",
+            "type_id": "damage:poison",
         },
     },
 }

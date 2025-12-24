@@ -280,7 +280,7 @@
             },
             "type_id": {
               "type": "string",
-              "pattern": "^[a-z_]+$",
+              "pattern": "^[a-z_:]+$",
               "description": "Normalized damage type identifier for cross-referencing"
             }
           },
@@ -349,6 +349,11 @@
                 "charisma"
               ],
               "description": "Ability score for saving throw"
+            },
+            "ability_id": {
+              "type": "string",
+              "pattern": "^ability:[a-z]+$",
+              "description": "Ability score ID for cross-referencing"
             },
             "on_success": {
               "type": "string",
@@ -420,7 +425,7 @@
           "type": "array",
           "items": {
             "type": "string",
-            "pattern": "^[a-z_]+$"
+            "pattern": "^[a-z_:]+$"
           },
           "description": "Status conditions applied by the spell"
         }

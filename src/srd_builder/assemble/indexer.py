@@ -17,6 +17,7 @@ __all__ = [
     "build_condition_index",
     "build_rule_index",
     "build_indexes",
+    "build_cross_reference_indexes",
 ]
 
 
@@ -448,6 +449,148 @@ def _build_simple_entity_index(
     return index
 
 
+def _sorted_xref_dict(index: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Sort cross-reference dict by keys, with sorted value lists."""
+    return {k: sorted(v) for k, v in sorted(index.items())}
+
+
+def build_cross_reference_indexes(
+    *,
+    monsters: list[dict[str, Any]] | None = None,
+    spells: list[dict[str, Any]] | None = None,
+    equipment: list[dict[str, Any]] | None = None,
+    magic_items: list[dict[str, Any]] | None = None,
+    damage_types: list[dict[str, Any]] | None = None,
+    conditions: list[dict[str, Any]] | None = None,
+    skills: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Build cross-reference indexes for efficient lookups.
+
+    These indexes enable reverse lookups and relationship queries without
+    requiring clients to iterate through all entities.
+
+    Examples:
+        - Which spells deal fire damage?
+        - Which monsters are immune to poison?
+        - Which spells can cause the blinded condition?
+
+    Note: Expects normalized data with full ID prefixes (e.g., "damage:fire").
+    """
+    xref: dict[str, Any] = {}
+
+    # Damage type cross-references
+    if damage_types is not None and (monsters is not None or spells is not None):
+        damage_type_ids = {fallback_id(dt) for dt in damage_types if "id" in dt}
+
+        # Spells by damage type
+        if spells is not None:
+            spells_by_damage: defaultdict[str, list[str]] = defaultdict(list)
+            for spell in spells:
+                spell_id = fallback_id(spell)
+                effects = spell.get("effects", {})
+                if isinstance(effects, dict):
+                    damage = effects.get("damage", {})
+                    if isinstance(damage, dict) and "type_id" in damage:
+                        type_id = damage["type_id"]
+                        if type_id in damage_type_ids:
+                            spells_by_damage[type_id].append(spell_id)
+
+            xref["spells_by_damage_type"] = _sorted_xref_dict(spells_by_damage)
+
+        # Monsters by damage vulnerabilities/resistances/immunities
+        if monsters is not None:
+            monsters_vulnerable: defaultdict[str, list[str]] = defaultdict(list)
+            monsters_resistant: defaultdict[str, list[str]] = defaultdict(list)
+            monsters_immune: defaultdict[str, list[str]] = defaultdict(list)
+
+            for monster in monsters:
+                monster_id = fallback_id(monster)
+
+                for vuln in monster.get("damage_vulnerabilities", []):
+                    if isinstance(vuln, dict) and "type_id" in vuln:
+                        type_id = vuln["type_id"]
+                        if type_id in damage_type_ids:
+                            monsters_vulnerable[type_id].append(monster_id)
+
+                for resist in monster.get("damage_resistances", []):
+                    if isinstance(resist, dict) and "type_id" in resist:
+                        type_id = resist["type_id"]
+                        if type_id in damage_type_ids:
+                            monsters_resistant[type_id].append(monster_id)
+
+                for immune in monster.get("damage_immunities", []):
+                    if isinstance(immune, dict) and "type_id" in immune:
+                        type_id = immune["type_id"]
+                        if type_id in damage_type_ids:
+                            monsters_immune[type_id].append(monster_id)
+
+            xref["monsters_vulnerable_to_damage_type"] = _sorted_xref_dict(monsters_vulnerable)
+            xref["monsters_resistant_to_damage_type"] = _sorted_xref_dict(monsters_resistant)
+            xref["monsters_immune_to_damage_type"] = _sorted_xref_dict(monsters_immune)
+
+    # Condition cross-references
+    if conditions is not None and (monsters is not None or spells is not None):
+        condition_ids = {fallback_id(c) for c in conditions if "id" in c}
+
+        # Spells that inflict conditions
+        if spells is not None:
+            spells_by_condition: defaultdict[str, list[str]] = defaultdict(list)
+            for spell in spells:
+                spell_id = fallback_id(spell)
+                inflicts = spell.get("inflicts_conditions", [])
+                if isinstance(inflicts, list):
+                    for item in inflicts:
+                        condition_id = item.get("condition_id") if isinstance(item, dict) else item
+                        if condition_id and condition_id in condition_ids:
+                            spells_by_condition[condition_id].append(spell_id)
+
+            xref["spells_by_condition"] = _sorted_xref_dict(spells_by_condition)
+
+        # Monsters immune to conditions
+        if monsters is not None:
+            monsters_immune_condition: defaultdict[str, list[str]] = defaultdict(list)
+            for monster in monsters:
+                monster_id = fallback_id(monster)
+                immunities = monster.get("condition_immunities", [])
+                if isinstance(immunities, list):
+                    for item in immunities:
+                        condition_id = item.get("condition_id") if isinstance(item, dict) else item
+                        if condition_id and condition_id in condition_ids:
+                            monsters_immune_condition[condition_id].append(monster_id)
+
+            xref["monsters_immune_to_condition"] = _sorted_xref_dict(monsters_immune_condition)
+
+    # Skill cross-references
+    if skills is not None and equipment is not None:
+        skill_ids = {fallback_id(s) for s in skills if "id" in s}
+
+        equipment_by_skill: defaultdict[str, list[str]] = defaultdict(list)
+        for item in equipment:
+            item_id = fallback_id(item)
+            grants_skill = item.get("grants_skill_proficiency")
+            if grants_skill and grants_skill in skill_ids:
+                equipment_by_skill[grants_skill].append(item_id)
+
+        xref["equipment_by_skill_proficiency"] = _sorted_xref_dict(equipment_by_skill)
+
+    # Magic item to spell cross-references
+    if magic_items is not None and spells is not None:
+        spell_ids = {fallback_id(s) for s in spells if "id" in s}
+
+        magic_items_by_spell: defaultdict[str, list[str]] = defaultdict(list)
+        for item in magic_items:
+            item_id = fallback_id(item)
+            grants = item.get("grants_spells", [])
+            if isinstance(grants, list):
+                for spell_ref in grants:
+                    if spell_ref in spell_ids:
+                        magic_items_by_spell[spell_ref].append(item_id)
+
+        xref["magic_items_by_granted_spell"] = _sorted_xref_dict(magic_items_by_spell)
+
+    return xref
+
+
 def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical feature lookup tables."""
 
@@ -503,7 +646,7 @@ def build_rule_index(rules: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def build_indexes(  # noqa: C901, PLR0913, PLR0915
+def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
     monsters: list[dict[str, Any]],
     spells: list[dict[str, Any]] | None = None,
     equipment: list[dict[str, Any]] | None = None,
@@ -516,10 +659,13 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
     poisons: list[dict[str, Any]] | None = None,
     features: list[dict[str, Any]] | None = None,
     rules: list[dict[str, Any]] | None = None,
+    damage_types: list[dict[str, Any]] | None = None,
+    ability_scores: list[dict[str, Any]] | None = None,
+    skills: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, rule, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, rule, damage type, ability, skill, and entity indexes for dataset output."""
 
     # Split into monsters, creatures (MM-A), and NPCs (MM-B) based on ID prefix
     actual_monsters = [m for m in monsters if fallback_id(m).startswith("monster:")]
@@ -761,8 +907,47 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
         entities["rules"] = rule_entity_index
         payload["stats"]["total_rules"] = len(rules)
 
+    # Add damage_types to entities index if provided
+    damage_type_entity_index: dict[str, Any] = {}
+    if damage_types is not None:
+        damage_type_entity_index = _build_simple_entity_index(
+            damage_types, "damage", "damage_types.json"
+        )
+        by_name, _ = _build_by_name_map(damage_types)
+        payload["damage_types"] = {"by_name": by_name}
+        entities["damage_types"] = damage_type_entity_index
+        payload["stats"]["total_damage_types"] = len(damage_types)
+
+    # Add ability_scores to entities index if provided
+    ability_score_entity_index: dict[str, Any] = {}
+    if ability_scores is not None:
+        ability_score_entity_index = _build_simple_entity_index(
+            ability_scores, "ability", "ability_scores.json"
+        )
+        by_name, _ = _build_by_name_map(ability_scores)
+        payload["ability_scores"] = {"by_name": by_name}
+        entities["ability_scores"] = ability_score_entity_index
+        payload["stats"]["total_ability_scores"] = len(ability_scores)
+
+    # Add skills to entities index if provided
+    skill_entity_index: dict[str, Any] = {}
+    if skills is not None:
+        skill_entity_index = _build_simple_entity_index(skills, "skill", "skills.json")
+        by_name, _ = _build_by_name_map(skills)
+        payload["skills"] = {"by_name": by_name}
+        entities["skills"] = skill_entity_index
+        payload["stats"]["total_skills"] = len(skills)
+
     # Recalculate total entities to include new datasets
-    if diseases is not None or poisons is not None or features is not None or rules is not None:
+    if (
+        diseases is not None
+        or poisons is not None
+        or features is not None
+        or rules is not None
+        or damage_types is not None
+        or ability_scores is not None
+        or skills is not None
+    ):
         total = len(monster_entity_index)
         if spells is not None:
             total += len(spell_entity_index)
@@ -786,6 +971,12 @@ def build_indexes(  # noqa: C901, PLR0913, PLR0915
             total += len(feature_entity_index)
         if rules is not None:
             total += len(rule_entity_index)
+        if damage_types is not None:
+            total += len(damage_type_entity_index)
+        if ability_scores is not None:
+            total += len(ability_score_entity_index)
+        if skills is not None:
+            total += len(skill_entity_index)
         payload["stats"]["total_entities"] = total
 
     if name_conflicts:

@@ -68,7 +68,7 @@
         "average": 31,
         "formula": "9d6",
         "type": "poison",
-        "type_id": "damage_type:poison"
+        "type_id": "damage:poison"
       }
     },
     {
@@ -95,7 +95,7 @@
         "average": 42,
         "formula": "12d6",
         "type": "poison",
-        "type_id": "damage_type:poison"
+        "type_id": "damage:poison"
       }
     },
     {
@@ -122,7 +122,7 @@
         "average": 24,
         "formula": "7d6",
         "type": "poison",
-        "type_id": "damage_type:poison"
+        "type_id": "damage:poison"
       }
     }
   ]

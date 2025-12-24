@@ -98,7 +98,7 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
                     {
                         "dice": damage_dice,
                         "type": damage_type,
-                        "type_id": damage_type.replace(" ", "_"),
+                        "type_id": f"damage:{damage_type.replace(' ', '_')}",
                     }
                 )
             except (ValueError, IndexError):
@@ -113,32 +113,32 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
         try:
             ability_full = save_match.group(2).lower()
 
-            # Map short/full forms to schema IDs
+            # Map short/full forms to schema IDs (full prefixed format)
             ability_id_map = {
-                "str": "str",
-                "strength": "str",
-                "dex": "dex",
-                "dexterity": "dex",
-                "con": "con",
-                "constitution": "con",
-                "int": "int",
-                "intelligence": "int",
-                "wis": "wis",
-                "wisdom": "wis",
-                "cha": "cha",
-                "charisma": "cha",
+                "str": "ability:strength",
+                "strength": "ability:strength",
+                "dex": "ability:dexterity",
+                "dexterity": "ability:dexterity",
+                "con": "ability:constitution",
+                "constitution": "ability:constitution",
+                "int": "ability:intelligence",
+                "intelligence": "ability:intelligence",
+                "wis": "ability:wisdom",
+                "wisdom": "ability:wisdom",
+                "cha": "ability:charisma",
+                "charisma": "ability:charisma",
             }
 
             ability_name_map = {
-                "str": "Strength",
-                "dex": "Dexterity",
-                "con": "Constitution",
-                "int": "Intelligence",
-                "wis": "Wisdom",
-                "cha": "Charisma",
+                "ability:strength": "Strength",
+                "ability:dexterity": "Dexterity",
+                "ability:constitution": "Constitution",
+                "ability:intelligence": "Intelligence",
+                "ability:wisdom": "Wisdom",
+                "ability:charisma": "Charisma",
             }
 
-            dc_type_id = ability_id_map.get(ability_full, ability_full[:3])
+            dc_type_id = ability_id_map.get(ability_full, f"ability:{ability_full[:3]}")
             dc_type = ability_name_map.get(dc_type_id, ability_full.capitalize())
 
             # Determine success_type from context

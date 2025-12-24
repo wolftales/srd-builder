@@ -72,7 +72,7 @@ def test_damage_types_have_required_fields() -> None:
         assert "source" in dt
 
         # Verify ID format
-        assert dt["id"].startswith("damage_type:")
+        assert dt["id"].startswith("damage:")
 
         # Verify page number (all from SRD page 97)
         assert dt["page"] == 97

@@ -8,7 +8,7 @@
   },
   "items": [
     {
-      "id": "damage_type:acid",
+      "id": "damage:acid",
       "simple_name": "acid",
       "name": "Acid",
       "description": [
@@ -22,7 +22,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:bludgeoning",
+      "id": "damage:bludgeoning",
       "simple_name": "bludgeoning",
       "name": "Bludgeoning",
       "description": [
@@ -37,7 +37,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:cold",
+      "id": "damage:cold",
       "simple_name": "cold",
       "name": "Cold",
       "description": [
@@ -51,7 +51,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:fire",
+      "id": "damage:fire",
       "simple_name": "fire",
       "name": "Fire",
       "description": [
@@ -66,7 +66,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:force",
+      "id": "damage:force",
       "simple_name": "force",
       "name": "Force",
       "description": [
@@ -80,7 +80,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:lightning",
+      "id": "damage:lightning",
       "simple_name": "lightning",
       "name": "Lightning",
       "description": [
@@ -94,7 +94,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:necrotic",
+      "id": "damage:necrotic",
       "simple_name": "necrotic",
       "name": "Necrotic",
       "description": [
@@ -108,7 +108,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:piercing",
+      "id": "damage:piercing",
       "simple_name": "piercing",
       "name": "Piercing",
       "description": [
@@ -123,7 +123,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:poison",
+      "id": "damage:poison",
       "simple_name": "poison",
       "name": "Poison",
       "description": [
@@ -138,7 +138,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:psychic",
+      "id": "damage:psychic",
       "simple_name": "psychic",
       "name": "Psychic",
       "description": [
@@ -152,7 +152,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:radiant",
+      "id": "damage:radiant",
       "simple_name": "radiant",
       "name": "Radiant",
       "description": [
@@ -167,7 +167,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:slashing",
+      "id": "damage:slashing",
       "simple_name": "slashing",
       "name": "Slashing",
       "description": [
@@ -182,7 +182,7 @@
       "source": "SRD_CC_v5.1"
     },
     {
-      "id": "damage_type:thunder",
+      "id": "damage:thunder",
       "simple_name": "thunder",
       "name": "Thunder",
       "description": [

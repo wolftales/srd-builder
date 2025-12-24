@@ -15,7 +15,7 @@ def clean_damage_type_record(record: dict) -> dict:
     Returns:
         Cleaned damage type record
     """
-    # The ID is already in "damage_type:simple_name" format from parse layer
+    # The ID is already in "damage:simple_name" format from parse layer
     # We normalize to ensure consistent format
     if ":" in record["id"]:
         prefix, name = record["id"].split(":", 1)

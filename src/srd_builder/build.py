@@ -65,6 +65,7 @@ from .postprocess import (
 )
 from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
 from .utils.table_indexer import TableIndexer
+from .validate_references import validate_references
 
 
 def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:
@@ -416,7 +417,28 @@ def _write_datasets(  # noqa: PLR0913
         processed_poisons,
         processed_features,
         processed_rules,
+        processed_damage_types,
+        processed_ability_scores,
+        processed_skills,
     )
+
+    # Build cross-reference indexes (v0.21.0 - Phase 2)
+    # These enable reverse lookups: "which spells deal fire damage?"
+    from srd_builder.assemble.indexer import build_cross_reference_indexes
+
+    cross_references = build_cross_reference_indexes(
+        monsters=processed_monsters,
+        spells=processed_spells,
+        equipment=processed_equipment,
+        magic_items=processed_magic_items,
+        damage_types=processed_damage_types,
+        conditions=processed_conditions,
+        skills=processed_skills,
+    )
+
+    if cross_references:
+        index_payload["cross_references"] = cross_references
+
     # Index doesn't have a formal schema yet - use generic version
     index_doc = wrap_with_meta(
         index_payload,
@@ -428,6 +450,41 @@ def _write_datasets(  # noqa: PLR0913
         _render_json(index_doc),
         encoding="utf-8",
     )
+
+    # Validate cross-references AFTER writing all datasets (v0.21.0)
+    # Read back the written JSON files to validate actual output
+    print("\n🔍 Validating cross-references...")
+
+    def _load_json(filename: str) -> dict[str, Any]:
+        path = dist_data_dir / filename
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
+        return {"items": []}
+
+    datasets_for_validation = {
+        "monsters": _load_json("monsters.json"),
+        "equipment": _load_json("equipment.json"),
+        "spells": _load_json("spells.json"),
+        "magic_items": _load_json("magic_items.json"),
+        "tables": _load_json("tables.json"),
+        "lineages": _load_json("lineages.json"),
+        "classes": _load_json("classes.json"),
+        "ability_scores": _load_json("ability_scores.json"),
+        "damage_types": _load_json("damage_types.json"),
+        "skills": _load_json("skills.json"),
+        "weapon_properties": _load_json("weapon_properties.json"),
+        "conditions": _load_json("conditions.json"),
+        "diseases": _load_json("diseases.json"),
+        "poisons": _load_json("poisons.json"),
+        "features": _load_json("features.json"),
+        "rules": _load_json("rules.json"),
+    }
+
+    if validate_references(datasets_for_validation):
+        print("✅ All cross-references valid\n")
+    else:
+        print("\n⚠️  Cross-reference validation found issues.")
+        print("    (Validation is informational only in v0.21.0)\n")
 
 
 @dataclass

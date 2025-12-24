@@ -148,6 +148,19 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "description": "A small utility knife suitable for cutting string, sharpening quills, and other everyday tasks. Can be used as a weapon in a pinch.",
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
     },
+    {
+        "id": "item:natural-armor",
+        "name": "Natural armor",
+        "simple_name": "natural_armor",
+        "category": "armor",
+        "sub_category": "natural",
+        "cost": {"amount": 0, "currency": "gp"},  # Not purchasable
+        "page": 63,  # Armor section
+        "source": "SRD 5.1 (extended)",
+        "is_magic": False,
+        "description": "Some creatures have natural armor from tough hide, scales, thick fur, or similar innate protection. Natural armor provides a base AC that may be modified by Dexterity, depending on the creature.",
+        "_note": "Extended item - referenced in monster stat blocks but not in SRD armor tables. Included for cross-reference completeness.",
+    },
 ]
 
 

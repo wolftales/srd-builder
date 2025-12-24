@@ -122,7 +122,7 @@ def parse_damage_types() -> list[dict]:
 
     for dtype in DAMAGE_TYPES_DATA:
         damage_type = {
-            "id": f"damage_type:{dtype['simple_name']}",
+            "id": f"damage:{dtype['simple_name']}",
             "simple_name": dtype["simple_name"],
             "name": dtype["name"],
             "description": dtype["description"],

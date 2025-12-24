@@ -173,7 +173,7 @@ def test_extract_damage_info_basic():
     assert result == {
         "dice": "3d6",
         "type": "poison",
-        "type_id": "damage_type:poison",
+        "type_id": "damage:poison",
     }
 
 

@@ -151,7 +151,7 @@ def _extract_damage_info(text: str) -> dict[str, Any] | None:
         return {
             "dice": match.group(1),
             "type": damage_type,
-            "type_id": f"damage_type:{damage_type}",
+            "type_id": f"damage:{damage_type}",
         }
     return None
 

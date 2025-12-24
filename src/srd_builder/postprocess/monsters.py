@@ -191,7 +191,12 @@ def structure_defenses(monster: dict[str, Any]) -> dict[str, Any]:
         structured: list[dict[str, str]] = []
         for entry in value:
             if isinstance(entry, dict):
-                normalized = {k: v for k, v in entry.items() if k in {"type", "qualifier"}}
+                # Preserve type_id from parser (v0.20.0+)
+                normalized = {
+                    k: v
+                    for k, v in entry.items()
+                    if k in {"type", "type_id", "qualifier", "conditions"}
+                }
                 if "type" in normalized and isinstance(normalized["type"], str):
                     normalized["type"] = normalized["type"].lower()
                     structured.append(normalized)

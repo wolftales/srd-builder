@@ -388,7 +388,7 @@ def _extract_damage(description: str) -> dict[str, str] | None:
         return {
             "dice": damage_match.group(1),
             "type": damage_type,
-            "type_id": damage_type,
+            "type_id": f"damage:{damage_type}",
         }
     return None
 
@@ -410,6 +410,7 @@ def _extract_save(description: str) -> dict[str, str] | None:
     save_match = re.search(save_pattern, description, re.IGNORECASE)
     if save_match:
         ability = save_match.group(1).lower()
+        ability_id = f"ability:{ability}"
         # Determine success behavior (schema values: 'none', 'half', 'negates', 'other')
         on_success = "half"
         if "half as much damage" in description.lower():
@@ -417,7 +418,7 @@ def _extract_save(description: str) -> dict[str, str] | None:
         elif "negates" in description.lower():
             on_success = "negates"
 
-        return {"ability": ability, "on_success": on_success}
+        return {"ability": ability, "ability_id": ability_id, "on_success": on_success}
     return None
 
 

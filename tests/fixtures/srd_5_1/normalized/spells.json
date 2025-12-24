@@ -40,10 +40,11 @@
         "damage": {
           "dice": "8d6",
           "type": "fire",
-          "type_id": "fire"
+          "type_id": "damage:fire"
         },
         "save": {
           "ability": "dexterity",
+          "ability_id": "ability:dexterity",
           "on_success": "half"
         },
         "area": {

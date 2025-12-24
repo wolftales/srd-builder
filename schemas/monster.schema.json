@@ -23,7 +23,7 @@
     },
     "simple_name": {
       "type": "string",
-      "pattern": "^[a-z0-9_]+$",
+      "pattern": "^[a-z0-9_:]+$",
       "description": "Normalized identifier without the entity prefix"
     },
     "aliases": {
@@ -57,7 +57,7 @@
         },
         "type_id": {
           "type": "string",
-          "pattern": "^[a-z0-9_]+$",
+          "pattern": "^[a-z0-9_:]+$",
           "description": "Normalized armor type identifier"
         },
         "notes": {
@@ -305,7 +305,7 @@
           },
           "type_id": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$",
+            "pattern": "^[a-z0-9_:]+$",
             "description": "Normalized damage type identifier"
           },
           "conditions": {
@@ -330,7 +330,7 @@
           },
           "type_id": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$",
+            "pattern": "^[a-z0-9_:]+$",
             "description": "Normalized damage type identifier"
           },
           "conditions": {
@@ -355,7 +355,7 @@
           },
           "type_id": {
             "type": "string",
-            "pattern": "^[a-z0-9_]+$",
+            "pattern": "^[a-z0-9_:]+$",
             "description": "Normalized damage type identifier"
           },
           "conditions": {
@@ -437,7 +437,7 @@
                 },
                 "type_id": {
                   "type": "string",
-                  "pattern": "^[a-z0-9_]+$",
+                  "pattern": "^[a-z0-9_:]+$",
                   "description": "Normalized damage type identifier"
                 }
               },
@@ -462,8 +462,8 @@
               },
               "dc_type_id": {
                 "type": "string",
-                "pattern": "^(str|dex|con|int|wis|cha)$",
-                "description": "Normalized ability score identifier"
+                "pattern": "^ability:[a-z]+$",
+                "description": "Ability score ID for cross-referencing"
               },
               "success_type": {
                 "type": "string",

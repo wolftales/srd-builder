@@ -26,7 +26,7 @@ def test_parse_melee_weapon_attack():
         {
             "dice": "2d12+4",
             "type": "slashing",
-            "type_id": "slashing",
+            "type_id": "damage:slashing",
         }
     ]
     assert result["description"] == action["description"]  # Preserved
@@ -51,7 +51,7 @@ def test_parse_ranged_weapon_attack():
         {
             "dice": "1d8+2",
             "type": "piercing",
-            "type_id": "piercing",
+            "type_id": "damage:piercing",
         }
     ]
     assert "reach" not in result
@@ -74,14 +74,14 @@ def test_parse_action_with_saving_throw():
     assert result["dc"] == {
         "dc_value": 21,
         "dc_type": "Dexterity",
-        "dc_type_id": "dex",
+        "dc_type_id": "ability:dexterity",
         "success_type": "half",
     }
     assert result["damage"] == [
         {
             "dice": "18d6",
             "type": "fire",
-            "type_id": "fire",
+            "type_id": "damage:fire",
         }
     ]
 
@@ -105,12 +105,12 @@ def test_parse_action_multiple_damage_types():
     assert result["damage"][0] == {
         "dice": "2d6+10",
         "type": "slashing",
-        "type_id": "slashing",
+        "type_id": "damage:slashing",
     }
     assert result["damage"][1] == {
         "dice": "1d6",
         "type": "fire",
-        "type_id": "fire",
+        "type_id": "damage:fire",
     }
 
 
@@ -133,7 +133,7 @@ def test_parse_melee_spell_attack():
         {
             "dice": "2d8",
             "type": "lightning",
-            "type_id": "lightning",
+            "type_id": "damage:lightning",
         }
     ]
 
@@ -157,7 +157,7 @@ def test_parse_ranged_spell_attack():
         {
             "dice": "3d10",
             "type": "fire",
-            "type_id": "fire",
+            "type_id": "damage:fire",
         }
     ]
 
@@ -328,7 +328,7 @@ def test_parse_constitution_saving_throw():
     assert result["dc"] == {
         "dc_value": 12,
         "dc_type": "Constitution",
-        "dc_type_id": "con",
+        "dc_type_id": "ability:constitution",
         "success_type": "none",
     }
 
