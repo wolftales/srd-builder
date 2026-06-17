@@ -9,7 +9,7 @@ properties. The output serves three independent purposes:
 3. Schema round-trip smoke test — every schema must validate its own exemplar.
 
 Usage:
-    python scripts/generate_exemplars.py                # writes exemplars/*.json
+    python scripts/generate_exemplars.py                # writes schemas/exemplars/*.json
     python scripts/generate_exemplars.py --check        # validate-only, no write
 """
 
@@ -26,7 +26,7 @@ from jsonschema import Draft202012Validator
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCHEMAS_DIR = REPO_ROOT / "schemas"
-EXEMPLARS_DIR = REPO_ROOT / "exemplars"
+EXEMPLARS_DIR = REPO_ROOT / "schemas" / "exemplars"
 
 # Patterns we explicitly recognise; everything else falls through to a
 # small set of generic heuristics below.

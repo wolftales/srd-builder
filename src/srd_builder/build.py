@@ -718,7 +718,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     For production releases, this assembles the full package with:
     - README.md (generated dynamically from meta.json)
     - schemas/ directory (every dataset schema)
-    - exemplars/ directory (one valid instance per schema)
+    - schemas/exemplars/ directory (one valid instance per schema)
     - docs/ directory (SCHEMAS.md, DATA_DICTIONARY.md)
     """
     repo_root = Path(__file__).resolve().parents[2]
@@ -742,15 +742,15 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     print(f"  ✓ Copied schemas/ ({len(schema_names)} schemas)")
 
     # Copy generated exemplars (one minimal valid instance per schema).
-    exemplars_src = repo_root / "exemplars"
+    exemplars_src = repo_root / "schemas" / "exemplars"
     if exemplars_src.exists():
-        exemplars_dst = target_dir / "exemplars"
+        exemplars_dst = schemas_dst / "exemplars"
         exemplars_dst.mkdir(exist_ok=True)
         count = 0
         for src in sorted(exemplars_src.glob("*.exemplar.json")):
             (exemplars_dst / src.name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
             count += 1
-        print(f"  ✓ Copied exemplars/ ({count} exemplars)")
+        print(f"  ✓ Copied schemas/exemplars/ ({count} exemplars)")
 
     # Copy docs
     docs_src = repo_root / "docs"
