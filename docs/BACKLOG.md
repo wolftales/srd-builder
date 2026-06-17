@@ -158,6 +158,18 @@ distinguish the two.
   and have IDs synthesized at assembly time.
 - `extract_equipment.py` `EQUIPMENT_START_PAGE` / `_END_PAGE` constants
   should be replaced with TOC lookup once `verify_pdf_sections.py` lands.
+- **`docs/templates/` is incomplete and hand-maintained.** Only 5
+  templates exist (equipment, lineage, monster, spell, table) vs. 16
+  schemas in `schemas/`. The header comment says they're for "extraction
+  scripts" but they're really homebrew authoring exemplars. Two issues:
+  (a) they duplicate information already in the schemas, drifting silently
+  (e.g. spell template still says `v1.3.0`); (b) the missing 11 templates
+  mean homebrew authors have no exemplar for ability_score, class,
+  condition, damage_type, disease, features, magic_item, poison, rule,
+  skill, weapon_property. **Fix: generate templates from schemas at build
+  time** (`scripts/generate_templates.py`), drop the hand-written
+  versions, ship the generated set in the bundle next to `schemas/`.
+  Single source of truth = schema; template is a derived view.
 
 ### Re-extraction candidates (remove the crutch, don't just declare it)
 
