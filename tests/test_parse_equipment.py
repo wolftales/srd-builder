@@ -26,7 +26,7 @@ def test_parse_equipment_armor_uses_headers() -> None:
         "row_index": 1,
     }
 
-    item = parse_equipment_records([raw_item])[0]
+    item = parse_equipment_records([raw_item], "srd_5_1")[0]
 
     assert item["sub_category"] == "medium"
     assert item["armor_class"] == {
@@ -39,7 +39,7 @@ def test_parse_equipment_armor_uses_headers() -> None:
     assert item["weight_lb"] == 40.0
     assert item["weight_raw"] == "40 lb."
     assert item["cost"] == {"amount": 50, "currency": "gp"}
-    assert item["source"] == "SRD 5.1"
+    assert item["source"] == "SRD_CC_v5.1"
     assert item["table_header"] == raw_item["table_headers"]
     assert item["row_index"] == 1
 
@@ -64,7 +64,7 @@ def test_parse_equipment_weapon_range_and_versatile() -> None:
         "page": 66,
     }
 
-    item = parse_equipment_records([raw_item])[0]
+    item = parse_equipment_records([raw_item], "srd_5_1")[0]
 
     assert item["damage"] == {"dice": "1d4", "type": "piercing", "type_id": "piercing"}
     # Properties should be clean (no embedded data)
@@ -102,7 +102,7 @@ def test_parse_equipment_weapon_versatile_damage() -> None:
         "page": 66,
     }
 
-    item = parse_equipment_records([raw_item])[0]
+    item = parse_equipment_records([raw_item], "srd_5_1")[0]
 
     assert item["damage"] == {"dice": "1d8", "type": "slashing", "type_id": "slashing"}
     # Versatile damage extracted from embedded data in properties
@@ -124,7 +124,7 @@ def test_parse_equipment_fractional_weight() -> None:
         "page": 153,
     }
 
-    item = parse_equipment_records([raw_item])[0]
+    item = parse_equipment_records([raw_item], "srd_5_1")[0]
 
     assert item["weight_lb"] == 0.5
     assert item["weight_raw"] == "1/2 lb."

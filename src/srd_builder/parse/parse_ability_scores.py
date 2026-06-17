@@ -8,6 +8,8 @@ Source: SRD pages 76-78 (ability score descriptions)
 
 from __future__ import annotations
 
+from srd_builder.utils.metadata import stamp_source
+
 __all__ = ["parse_ability_scores"]
 
 # The 6 core D&D 5e ability scores from SRD pages 76-78
@@ -22,7 +24,6 @@ ABILITY_SCORES_DATA = [
         ],
         "skills": ["skill:athletics"],
         "page": 76,
-        "source": "SRD_CC_v5.1",
     },
     {
         "id": "ability:dexterity",
@@ -32,7 +33,6 @@ ABILITY_SCORES_DATA = [
         "description": ["Dexterity measures agility, reflexes, and balance."],
         "skills": ["skill:acrobatics", "skill:sleight_of_hand", "skill:stealth"],
         "page": 77,
-        "source": "SRD_CC_v5.1",
     },
     {
         "id": "ability:constitution",
@@ -42,7 +42,6 @@ ABILITY_SCORES_DATA = [
         "description": ["Constitution measures health, stamina, and vital force."],
         "skills": [],
         "page": 77,
-        "source": "SRD_CC_v5.1",
     },
     {
         "id": "ability:intelligence",
@@ -60,7 +59,6 @@ ABILITY_SCORES_DATA = [
             "skill:religion",
         ],
         "page": 78,
-        "source": "SRD_CC_v5.1",
     },
     {
         "id": "ability:wisdom",
@@ -78,7 +76,6 @@ ABILITY_SCORES_DATA = [
             "skill:survival",
         ],
         "page": 78,
-        "source": "SRD_CC_v5.1",
     },
     {
         "id": "ability:charisma",
@@ -95,13 +92,16 @@ ABILITY_SCORES_DATA = [
             "skill:persuasion",
         ],
         "page": 78,
-        "source": "SRD_CC_v5.1",
     },
 ]
 
 
-def parse_ability_scores() -> list[dict]:
+def parse_ability_scores(ruleset: str) -> list[dict]:
     """Parse ability scores dataset.
+
+    Args:
+        ruleset: Ruleset identifier used to stamp the canonical source_id
+            on each record.
 
     Returns:
         List of 6 ability score records (STR, DEX, CON, INT, WIS, CHA)
@@ -110,5 +110,4 @@ def parse_ability_scores() -> list[dict]:
         This returns static data - the 6 core ability scores are game constants.
         Descriptions are from SRD "Using Ability Scores" chapter (pages 76-78).
     """
-    # Return a copy to prevent mutation
-    return [dict(ability) for ability in ABILITY_SCORES_DATA]
+    return stamp_source(ABILITY_SCORES_DATA, ruleset)

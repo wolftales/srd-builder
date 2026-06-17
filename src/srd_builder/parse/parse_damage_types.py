@@ -6,6 +6,8 @@ that don't require extraction from PDF - they're defined in the SRD on page 97.
 
 from __future__ import annotations
 
+from ..constants import RULESETS
+
 DAMAGE_TYPES_DATA = [
     {
         "simple_name": "acid",
@@ -110,14 +112,18 @@ DAMAGE_TYPES_DATA = [
 ]
 
 
-def parse_damage_types() -> list[dict]:
+def parse_damage_types(ruleset: str) -> list[dict]:
     """Parse damage type dataset.
 
     Returns canonical 13 D&D 5e damage types with descriptions.
 
+    Args:
+        ruleset: Ruleset identifier used to stamp source_id on each record.
+
     Returns:
         List of damage type records matching damage_type.schema.json
     """
+    source = RULESETS[ruleset]["source_id"]
     damage_types = []
 
     for dtype in DAMAGE_TYPES_DATA:
@@ -128,7 +134,7 @@ def parse_damage_types() -> list[dict]:
             "description": dtype["description"],
             "examples": dtype.get("examples", []),
             "page": 97,  # All damage types described on page 97
-            "source": "SRD_CC_v5.1",
+            "source": source,
         }
         damage_types.append(damage_type)
 

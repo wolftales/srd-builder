@@ -56,6 +56,27 @@ We currently ship a single `terminology.aliases` entry (`race → lineage`).
 Re-evaluate the API shape once we have multiple rulesets (5.2.1, ORC material,
 Pathfinder) where naming actually diverges.
 
+### Source Derivation Marker / Homebrew & Extensions
+
+**Date raised:** 2026-06-17 · **Status:** Idea — defer until a real consumer asks
+
+A handful of synthesized records (today: `assemble/equipment_extended.py`)
+ship with a `"source": "<source_id> (extended)"` suffix to flag that they
+were derived from SRD rules tables rather than lifted directly from a
+catalog page. This conflates *upstream identity* with *derivation
+provenance* in one string.
+
+When we tackle homebrew / third-party packs / multi-source bundles, the
+clean shape is probably:
+
+- `"source": "SRD_CC_v5.1"` — upstream identity (registry-driven, unchanged).
+- `"source_derivation": "extended"` (or `"synthesized"`, `"homebrew"`, …)
+  — separate per-record provenance field.
+
+Out of scope for v0.26.x. The recommendation for consumers who want to
+mix sources is to keep datasets separate and merge at load time —
+combining at build time is an ingest concern, not ours.
+
 ---
 
 ## Data Quality
@@ -113,6 +134,27 @@ Several parser functions exceed Ruff's complexity / argument-count thresholds
 and carry suppression comments. Worth a focused refactor pass before v1.0 —
 particularly around `build()` in [build.py](../src/srd_builder/build.py) and
 the larger parsers.
+
+### Static-List Parser Boilerplate
+
+**Date raised:** 2026-06-17 · **Status:** DRY opportunity — defer to v0.27+
+
+After the v0.26.2 ruleset-threading sweep,
+[parse_skills.py](../src/srd_builder/parse/parse_skills.py),
+[parse_ability_scores.py](../src/srd_builder/parse/parse_ability_scores.py),
+and [parse_weapon_properties.py](../src/srd_builder/parse/parse_weapon_properties.py)
+all converged on an identical body:
+
+```python
+def parse_X(ruleset: str) -> list[dict]:
+    source = RULESETS[ruleset]["source_id"]
+    return [{**rec, "source": source} for rec in _DATA]
+```
+
+Only the module's `_DATA` constant varies. A `make_static_parser(data)`
+factory in `utils/` would dry this up — the same shape we already adopted
+for prose extraction in Phase D. Defer until the threading sweep is fully
+landed and we have a stable target to abstract against.
 
 ### Ruff Configuration Migration
 

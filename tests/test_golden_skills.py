@@ -16,7 +16,7 @@ def test_skills_dataset_golden() -> None:
     """
     expected_path = Path("tests/fixtures/srd_5_1/normalized/skills.json")
 
-    parsed = parse_skills()
+    parsed = parse_skills("srd_5_1")
     processed = [clean_skill_record(s) for s in parsed]
 
     document = {
@@ -31,7 +31,7 @@ def test_skills_dataset_golden() -> None:
 
 def test_skills_count() -> None:
     """Verify we have exactly 18 D&D 5e skills."""
-    parsed = parse_skills()
+    parsed = parse_skills("srd_5_1")
     assert len(parsed) == 18
 
 
@@ -58,7 +58,7 @@ def test_skills_canonical_list() -> None:
         "survival",
     }
 
-    parsed = parse_skills()
+    parsed = parse_skills("srd_5_1")
     actual_skills = {s["simple_name"] for s in parsed}
 
     assert actual_skills == expected_skills
@@ -80,7 +80,7 @@ def test_skills_ability_associations() -> None:
         "charisma": ["deception", "intimidation", "performance", "persuasion"],
     }
 
-    parsed = parse_skills()
+    parsed = parse_skills("srd_5_1")
 
     for ability, expected_skills in expected_by_ability.items():
         actual_skills = sorted(s["simple_name"] for s in parsed if s["ability"] == ability)
@@ -89,7 +89,7 @@ def test_skills_ability_associations() -> None:
 
 def test_skills_have_required_fields() -> None:
     """Verify all skills have required schema fields."""
-    parsed = parse_skills()
+    parsed = parse_skills("srd_5_1")
 
     for skill in parsed:
         assert "id" in skill

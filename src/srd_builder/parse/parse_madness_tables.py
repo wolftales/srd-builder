@@ -10,16 +10,20 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..constants import RULESETS
 
-def parse_madness_tables(tables_data: dict[str, Any]) -> list[dict[str, Any]]:
+
+def parse_madness_tables(tables_data: dict[str, Any], ruleset: str) -> list[dict[str, Any]]:
     """Parse raw madness tables into 3 structured table records.
 
     Args:
         tables_data: Dict with table data keyed by simple_name
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of 3 madness table records (short-term, long-term, indefinite)
     """
+    source = RULESETS[ruleset]["source_id"]
     madness_tables = []
 
     # 1. Short-Term Madness (merge parts 1 and 2)
@@ -37,7 +41,7 @@ def parse_madness_tables(tables_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "name": "Short-Term Madness",
                 "simple_name": "short_term_madness",
                 "page": short_term_part1.get("page", 201),
-                "source": "SRD 5.1",
+                "source": source,
                 "duration": "1d10 minutes",
                 "columns": [
                     {"name": "d100", "type": "string"},
@@ -58,7 +62,7 @@ def parse_madness_tables(tables_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "name": "Long-Term Madness",
                 "simple_name": "long_term_madness",
                 "page": long_term_table.get("page", 201),
-                "source": "SRD 5.1",
+                "source": source,
                 "duration": "1d10 × 10 hours",
                 "columns": [
                     {"name": "d100", "type": "string"},
@@ -79,7 +83,7 @@ def parse_madness_tables(tables_data: dict[str, Any]) -> list[dict[str, Any]]:
                 "name": "Indefinite Madness",
                 "simple_name": "indefinite_madness",
                 "page": indefinite_table.get("page", 202),
-                "source": "SRD 5.1",
+                "source": source,
                 "duration": "until cured",
                 "columns": [
                     {"name": "d100", "type": "string"},

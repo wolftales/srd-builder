@@ -10,7 +10,7 @@
     {
       "name": "Ability Scores and Modifiers",
       "page": 7,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "headers": [],
       "rows": [
         [
@@ -86,7 +86,7 @@
       "page": [
         69
       ],
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "headers": [],
       "rows": [
         [
@@ -613,7 +613,7 @@
       "page": [
         202
       ],
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "headers": [],
       "rows": [
         [

@@ -44,7 +44,6 @@ def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
     pdf.close()
 
     return {
-        "source": "SRD 5.1",
         "source_pages": f"{min(pages)}-{max(pages)}",
         "features": all_features,
         "extraction_warnings": warnings,

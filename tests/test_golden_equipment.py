@@ -13,7 +13,7 @@ def test_equipment_dataset_matches_normalized_fixture() -> None:
     expected_path = Path("tests/fixtures/srd_5_1/normalized/equipment.json")
 
     equipment_raw = json.loads(raw_path.read_text(encoding="utf-8"))
-    parsed = parse_equipment_records(equipment_raw)
+    parsed = parse_equipment_records(equipment_raw, "srd_5_1")
     processed = [clean_equipment_record(item) for item in parsed]
 
     document = {

@@ -6,6 +6,7 @@ import re
 from fractions import Fraction
 from typing import Any
 
+from ..constants import RULESETS
 from .column_mapper import ColumnMapper
 
 # Container capacity data from SRD 5.1 Container Capacity table (pages 69-70)
@@ -27,7 +28,9 @@ CONTAINER_CAPACITIES = {
 }
 
 
-def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, Any]]:  # noqa: C901
+def parse_equipment_records(  # noqa: C901
+    raw_items: list[dict[str, Any]], ruleset: str
+) -> list[dict[str, Any]]:
     """Parse raw equipment items into structured records."""
 
     parsed: list[dict[str, Any]] = []
@@ -35,7 +38,7 @@ def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, A
 
     for raw_item in raw_items:
         try:
-            parsed_item = _parse_single_item(raw_item)
+            parsed_item = _parse_single_item(raw_item, ruleset)
         except Exception as exc:  # pragma: no cover - defensive fallback
             name = raw_item.get("table_row", ["unknown"])[0]
             print(f"Warning: Failed to parse {name}: {exc}")
@@ -101,7 +104,7 @@ def parse_equipment_records(raw_items: list[dict[str, Any]]) -> list[dict[str, A
     return parsed
 
 
-def _parse_single_item(raw_item: dict[str, Any]) -> dict[str, Any] | None:
+def _parse_single_item(raw_item: dict[str, Any], ruleset: str) -> dict[str, Any] | None:
     table_row = raw_item.get("table_row", [])
     if not table_row:
         return None
@@ -121,7 +124,7 @@ def _parse_single_item(raw_item: dict[str, Any]) -> dict[str, Any] | None:
         "simple_name": _generate_simple_name(name),
         "category": category,
         "page": raw_item.get("page", 0),
-        "source": "SRD 5.1",
+        "source": RULESETS[ruleset]["source_id"],
         "is_magic": False,
     }
 

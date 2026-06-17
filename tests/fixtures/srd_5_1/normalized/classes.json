@@ -17,7 +17,7 @@
         "constitution"
       ],
       "page": 8,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "simple_name": "barbarian",
       "id": "class:barbarian"
     },
@@ -31,7 +31,7 @@
         "charisma"
       ],
       "page": 31,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "simple_name": "paladin",
       "id": "class:paladin"
     },
@@ -45,7 +45,7 @@
         "wisdom"
       ],
       "page": 46,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "simple_name": "wizard",
       "id": "class:wizard"
     }

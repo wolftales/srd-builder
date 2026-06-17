@@ -64,7 +64,7 @@ def clean_rule_record(rule: dict[str, Any]) -> dict[str, Any]:
         "simple_name": simple_name,
         "category": clean_text(category),
         "page": rule.get("page", 0),
-        "source": rule.get("source", "SRD 5.1"),
+        "source": rule["source"],
         "text": polished_text,
     }
 

@@ -9,15 +9,17 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..constants import RULESETS
 from ..postprocess.ids import normalize_id
 from ..utils.prose import clean_text
 
 
-def parse_poison_records(raw_poisons: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_poison_records(raw_poisons: list[dict[str, Any]], ruleset: str) -> list[dict[str, Any]]:
     """Parse raw poison extractions into structured records.
 
     Args:
         raw_poisons: List of raw poison dictionaries from extract_poisons
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of parsed poison dictionaries matching the schema
@@ -25,14 +27,14 @@ def parse_poison_records(raw_poisons: list[dict[str, Any]]) -> list[dict[str, An
     parsed = []
 
     for raw in raw_poisons:
-        poison = _parse_single_poison(raw)
+        poison = _parse_single_poison(raw, ruleset)
         if poison:
             parsed.append(poison)
 
     return parsed
 
 
-def _parse_single_poison(raw: dict[str, Any]) -> dict[str, Any] | None:
+def _parse_single_poison(raw: dict[str, Any], ruleset: str) -> dict[str, Any] | None:
     """Parse a single raw poison into structured format.
 
     Args:
@@ -80,7 +82,7 @@ def _parse_single_poison(raw: dict[str, Any]) -> dict[str, Any] | None:
         "type": poison_type if poison_type else "injury",  # Default to injury
         "description": text,
         "page": page,
-        "source": "SRD 5.1",
+        "source": RULESETS[ruleset]["source_id"],
     }
 
     # Add optional fields if present

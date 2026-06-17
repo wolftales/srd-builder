@@ -19,7 +19,7 @@ def test_condition_dataset_matches_normalized_fixture() -> None:
     sections = raw_data["sections"]
 
     # Parse: sections → unnormalized dicts
-    parsed = parse_condition_records(sections)
+    parsed = parse_condition_records(sections, "srd_5_1")
 
     # Postprocess: normalize IDs and polish text
     processed = [clean_condition_record(c) for c in parsed]

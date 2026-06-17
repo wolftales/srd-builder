@@ -15,6 +15,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..constants import RULESETS
+
 # Font pattern constants (discovered from PDF analysis of combat/spellcasting chapters)
 CHAPTER_HEADER_SIZE = 25.0  # Large headers like "Using Ability Scores" (25.9pt)
 SECTION_HEADER_SIZE = 17.0  # Section headers (18.0pt)
@@ -23,7 +25,7 @@ BODY_TEXT_SIZE = 9.8  # Normal paragraph text
 FONT_SIZE_TOLERANCE = 1.5  # Tolerance for font size matching
 
 
-def parse_rules(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
+def parse_rules(raw_data: dict[str, Any], ruleset: str) -> list[dict[str, Any]]:
     """Parse raw rules text blocks into structured rule entities.
 
     PARSE STAGE: Structure extraction only (NO normalization, NO IDs).
@@ -33,6 +35,7 @@ def parse_rules(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
 
     Args:
         raw_data: Dictionary with text_blocks and sections from extract_rules()
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of rule dicts WITHOUT id/simple_name (structure only):
@@ -41,7 +44,7 @@ def parse_rules(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
             - subcategory: str | None (section name)
             - text: list[str] (paragraphs)
             - page: int (first page)
-            - source: str (always "SRD 5.1")
+            - source: str (canonical source_id from RULESETS[ruleset])
     """
     text_blocks = raw_data.get("text_blocks", [])
     sections = raw_data.get("sections", [])
@@ -57,7 +60,7 @@ def parse_rules(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
     grouped = _group_paragraphs_under_headers(text_blocks, headers)
 
     # Build flat rule list with hierarchy metadata
-    rules = _build_rule_list(grouped, section_map)
+    rules = _build_rule_list(grouped, section_map, ruleset)
 
     return rules
 
@@ -212,17 +215,19 @@ def _build_outline_tree(grouped_blocks: list[dict[str, Any]]) -> list[dict[str, 
 
 
 def _build_rule_list(
-    grouped: list[dict[str, Any]], section_map: dict[str, str]
+    grouped: list[dict[str, Any]], section_map: dict[str, str], ruleset: str
 ) -> list[dict[str, Any]]:
     """Build flat list of rules with hierarchy metadata.
 
     Args:
         grouped: Grouped headers with paragraphs
         section_map: Mapping of section names to descriptions
+        ruleset: Ruleset identifier for source_id stamping.
 
     Returns:
         List of rule dicts with category, subcategory, page, text
     """
+    source = RULESETS[ruleset]["source_id"]
     rules = []
     current_chapter = None
     current_section = None
@@ -250,7 +255,7 @@ def _build_rule_list(
                 "name": name,
                 "category": current_chapter or "General Rules",
                 "page": page,
-                "source": "SRD 5.1",
+                "source": source,
                 "text": text,
             }
 
@@ -277,7 +282,7 @@ def main() -> int:
     raw_path = pathlib.Path(sys.argv[1])
     raw_data = json.loads(raw_path.read_text(encoding="utf-8"))
 
-    parsed = parse_rules(raw_data)
+    parsed = parse_rules(raw_data, "srd_5_1")
 
     # Write to stdout
     print(json.dumps(parsed, indent=2, ensure_ascii=False))

@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from srd_builder.constants import RULESETS
 from srd_builder.postprocess.ids import normalize_id
 from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
 from srd_builder.rulesets.srd_5_1.lineage_targets import LINEAGE_DATA
@@ -17,17 +18,19 @@ _WHITESPACE_RE = re.compile(r"\s+")
 
 
 def parse_features(
-    raw_features: dict[str, Any], source_type: str = "class"
+    raw_features: dict[str, Any], source_type: str = "class", *, ruleset: str
 ) -> list[dict[str, Any]]:
     """Parse raw feature data into structured feature records.
 
     Args:
         raw_features: Raw features from extract_features()
         source_type: "class" or "lineage" for appropriate ID prefix
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of structured feature dicts matching feature schema
     """
+    source = RULESETS[ruleset]["source_id"]
     accepted: list[dict[str, Any]] = []
     for raw in raw_features.get("features", []):
         name = _WHITESPACE_RE.sub(" ", raw["name"]).strip()
@@ -57,7 +60,7 @@ def parse_features(
             "simple_name": entry["simple_name"],
             "owner_id": f"{owner_kind}:{owner_simple}",
             "page": entry["page"],
-            "source": raw_features.get("source", "SRD 5.1"),
+            "source": source,
             "text": entry["text"],
         }
         summary = _extract_summary(entry["text"])

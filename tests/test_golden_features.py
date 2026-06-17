@@ -37,7 +37,7 @@ def test_feature_dataset_matches_normalized_fixture() -> None:
                 "simple_name": simple_name,
                 "owner_id": f"{owner_kind}:{owner_simple}",
                 "page": rf["page"],
-                "source": "SRD 5.1",
+                "source": "SRD_CC_v5.1",
                 "summary": rf["summary"],
                 "text": rf["text"],
             }

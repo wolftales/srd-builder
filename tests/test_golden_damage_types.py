@@ -16,7 +16,7 @@ def test_damage_types_dataset_golden() -> None:
     """
     expected_path = Path("tests/fixtures/srd_5_1/normalized/damage_types.json")
 
-    parsed = parse_damage_types()
+    parsed = parse_damage_types("srd_5_1")
     processed = [clean_damage_type_record(dt) for dt in parsed]
 
     document = {
@@ -31,7 +31,7 @@ def test_damage_types_dataset_golden() -> None:
 
 def test_damage_types_count() -> None:
     """Verify we have exactly 13 canonical D&D 5e damage types."""
-    parsed = parse_damage_types()
+    parsed = parse_damage_types("srd_5_1")
     assert len(parsed) == 13
 
 
@@ -53,7 +53,7 @@ def test_damage_types_canonical_list() -> None:
         "thunder",
     }
 
-    parsed = parse_damage_types()
+    parsed = parse_damage_types("srd_5_1")
     actual_types = {dt["simple_name"] for dt in parsed}
 
     assert actual_types == expected_types
@@ -61,7 +61,7 @@ def test_damage_types_canonical_list() -> None:
 
 def test_damage_types_have_required_fields() -> None:
     """Verify all damage types have required schema fields."""
-    parsed = parse_damage_types()
+    parsed = parse_damage_types("srd_5_1")
 
     for dt in parsed:
         assert "id" in dt

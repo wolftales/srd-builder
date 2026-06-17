@@ -16,24 +16,26 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-from .. import __version__
 from ..extract.extraction_metadata import TABLES
 from ..postprocess import clean_condition_record, clean_disease_record
+from ..utils.metadata import meta_block
 from ..utils.prose import ProseExtractor
 
 
 def assemble_prose_dataset(
     dataset_name: str,
     pdf_path: Path,
-    parser_func: Callable[[list], list[dict[str, Any]]],
+    parser_func: Callable[[list, str], list[dict[str, Any]]],
+    ruleset: str,
 ) -> dict[str, Any]:
     """Assemble any prose dataset using configuration.
 
     Args:
         dataset_name: Name from extraction_metadata TABLES (e.g., "conditions", "diseases")
         pdf_path: Path to SRD PDF
-        parser_func: Function to parse raw sections into structured records
-                     Signature: (list[dict]) -> list[dict]
+        parser_func: Function to parse raw sections into structured records.
+                     Signature: (list[dict], ruleset) -> list[dict]
+        ruleset: Ruleset identifier for source_id stamping and metadata.
 
     Returns:
         Complete dataset document with metadata
@@ -62,7 +64,7 @@ def assemble_prose_dataset(
     raw_data = _extract_raw_sections(pdf_path, config)
 
     # Parse into structured records using provided parser
-    parsed_records = parser_func(raw_data["sections"])
+    parsed_records = parser_func(raw_data["sections"], ruleset)
 
     # Postprocess: normalize IDs and polish text
     if dataset_name == "conditions":
@@ -79,15 +81,9 @@ def assemble_prose_dataset(
     end_page = pages[-1]
     output_key = config["output_key"]
 
-    # Standard _meta fields (ordered)
-    doc = {
+    doc: dict[str, Any] = {
         "_meta": {
-            "source": "SRD 5.1",
-            "ruleset_version": "5.1",
-            "schema_version": config["schema_version"],
-            "generated_by": f"srd-builder v{__version__}",
-            "build_report": "./build_report.json",
-            # Dataset-specific metadata
+            **meta_block(ruleset, config["schema_version"]),
             "dataset": dataset_name,
             "source_pages": f"{start_page}-{end_page}",
             "description": config["description"],

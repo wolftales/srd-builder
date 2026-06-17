@@ -28,7 +28,7 @@ def test_class_dataset_matches_normalized_fixture() -> None:
                 "primary_ability": rc["primary_ability"],
                 "saving_throw_proficiencies": rc["saving_throw_proficiencies"],
                 "page": rc["page"],
-                "source": "SRD 5.1",
+                "source": "SRD_CC_v5.1",
             }
         )
 

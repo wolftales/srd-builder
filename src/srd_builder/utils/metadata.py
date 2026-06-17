@@ -21,6 +21,7 @@ __all__ = [
     "generate_meta_json",
     "meta_block",
     "read_schema_version",
+    "stamp_source",
     "wrap_with_meta",
 ]
 
@@ -170,6 +171,24 @@ def build_inventory(dist_dir: Path) -> dict[str, int]:
             items = data.get(name)
         inventory[name] = len(items) if isinstance(items, list) else 0
     return inventory
+
+
+def stamp_source(records: list[dict], ruleset: str) -> list[dict]:
+    """Return shallow copies of records with the canonical "source" field stamped.
+
+    Used by static-data parsers (skills, ability scores, weapon properties, …)
+    to inject the per-ruleset source_id from the RULESETS registry without
+    each parser repeating the lookup-and-comprehension boilerplate.
+
+    Args:
+        records: Game-data records, typically a module-level constant. Not mutated.
+        ruleset: Ruleset identifier (e.g. 'srd_5_1').
+
+    Returns:
+        A new list of new dicts, each carrying "source": RULESETS[ruleset]["source_id"].
+    """
+    source = RULESETS[ruleset]["source_id"]
+    return [{**rec, "source": source} for rec in records]
 
 
 def meta_block(ruleset: str, schema_version: str) -> dict[str, str]:

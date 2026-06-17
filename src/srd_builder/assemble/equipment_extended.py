@@ -21,7 +21,6 @@ class ExtendedItem(TypedDict):
     sub_category: str
     cost: dict[str, Any]
     page: int
-    source: str
     is_magic: bool
     _note: str
     weight_lb: NotRequired[float]  # Optional field
@@ -42,7 +41,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 1, "currency": "sp"},  # Estimated: cheaper than rope
         "weight_lb": 0.0,  # Negligible
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A length of cord used for tying packages, marking paths, or other light-duty purposes. Not suitable for climbing.",
         "_note": "Extended item - referenced in Burglar's Pack but not in SRD tables. Cost/weight estimated. Cost/weight estimated.",
@@ -56,7 +54,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 5, "currency": "gp"},  # Estimated: religious item
         "weight_lb": 1.0,
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A small wooden or metal box used by clerics to collect charitable donations.",
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
@@ -70,7 +67,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 1, "currency": "gp"},  # Estimated: consumable
         "weight_lb": 0.0,  # Negligible
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "Compressed blocks of fragrant resin burned during religious ceremonies. Each block burns for approximately 1 hour.",
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
@@ -84,7 +80,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 5, "currency": "gp"},  # Estimated: religious item
         "weight_lb": 1.0,
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A container suspended on chains, used to burn incense during religious rituals. The smoke billows out through perforations.",
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
@@ -98,7 +93,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 15, "currency": "gp"},  # Estimated: similar to fine clothes
         "weight_lb": 4.0,
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "Ceremonial robes worn by priests and clerics during religious services. Often decorated with symbols of the deity.",
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
@@ -112,7 +106,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 25, "currency": "gp"},  # Estimated: valuable book
         "weight_lb": 3.0,
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A bound volume containing historical accounts, scholarly research, or collected knowledge on a particular subject. Useful for research and reference.",
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
@@ -126,7 +119,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "cost": {"amount": 1, "currency": "cp"},  # Estimated: very cheap
         "weight_lb": 0.0,  # Negligible
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A small pouch of fine sand used to blot wet ink on parchment, preventing smudges and speeding drying.",
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
@@ -143,7 +135,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "damage": {"dice": "1d4", "type": "slashing"},
         "properties": ["finesse", "light"],
         "page": 70,
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "A small utility knife suitable for cutting string, sharpening quills, and other everyday tasks. Can be used as a weapon in a pinch.",
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
@@ -156,7 +147,6 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "sub_category": "natural",
         "cost": {"amount": 0, "currency": "gp"},  # Not purchasable
         "page": 63,  # Armor section
-        "source": "SRD 5.1 (extended)",
         "is_magic": False,
         "description": "Some creatures have natural armor from tough hide, scales, thick fur, or similar innate protection. Natural armor provides a base AC that may be modified by Dexterity, depending on the creature.",
         "_note": "Extended item - referenced in monster stat blocks but not in SRD armor tables. Included for cross-reference completeness.",
@@ -164,10 +154,14 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
 ]
 
 
-def get_extended_equipment() -> list[dict[str, Any]]:
+def get_extended_equipment(source: str) -> list[dict[str, Any]]:
     """Get list of extended equipment items.
+
+    Args:
+        source: Base source_id; stamped on each item with an ``(extended)`` suffix.
 
     Returns:
         List of extended item dictionaries
     """
-    return [dict(item) for item in EXTENDED_EQUIPMENT]
+    extended_source = f"{source} (extended)"
+    return [dict(item, source=extended_source) for item in EXTENDED_EQUIPMENT]

@@ -13,11 +13,16 @@ from ..postprocess import normalize_id
 from ..utils.prose import clean_text
 
 
-def parse_poison_description_records(raw_sections: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_poison_description_records(
+    raw_sections: list[dict[str, Any]],
+    ruleset: str,  # noqa: ARG001 - kept for prose-parser interface uniformity
+) -> list[dict[str, Any]]:
     """Parse raw poison description sections.
 
     Args:
         raw_sections: List of raw section dicts from prose extraction
+        ruleset: Accepted for prose-parser interface uniformity; descriptions are
+            merged into poison records that get their source stamped elsewhere.
 
     Returns:
         List of parsed description records (for build_prose_dataset)

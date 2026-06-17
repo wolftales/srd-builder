@@ -13,7 +13,7 @@
       "simple_name": "ability_scores_and_modifiers",
       "category": "Using Ability Scores",
       "page": 76,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "Each of a creature’s abilities has a score, a number",
         "that defines the magnitude of that ability. An ability",
@@ -39,7 +39,7 @@
       "simple_name": "ability_checks",
       "category": "Using Ability Scores",
       "page": 77,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "An ability check tests a character’s or monster’s",
         "innate talent and training in an effort to overcome a",
@@ -61,7 +61,7 @@
       "simple_name": "contests",
       "category": "Using Ability Scores",
       "page": 77,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "Sometimes one character’s or monster’s efforts are",
         "directly opposed to another’s. This can occur when",
@@ -99,7 +99,7 @@
       "simple_name": "speed",
       "category": "Using Ability Scores",
       "page": 84,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "Every character and monster has a speed, which is",
         "the distance in feet that the character or monster can",
@@ -117,7 +117,7 @@
       "simple_name": "falling",
       "category": "Using Ability Scores",
       "page": 86,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "A fall from a great height is one of the most common",
         "hazards facing an adventurer. At the end of a fall, a",
@@ -133,7 +133,7 @@
       "simple_name": "bonus_actions",
       "category": "Using Ability Scores",
       "page": 90,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "Various class features, spells, and other abilities let",
         "you take an additional action on your turn called a",
@@ -160,7 +160,7 @@
       "simple_name": "attack_rolls",
       "category": "Using Ability Scores",
       "page": 94,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "When you make an attack, your attack roll",
         "determines whether the attack hits or misses. To",
@@ -179,7 +179,7 @@
       "simple_name": "casting_time",
       "category": "Spellcasting",
       "page": 101,
-      "source": "SRD 5.1",
+      "source": "SRD_CC_v5.1",
       "text": [
         "Most spells require a single action to cast, but some",
         "spells require a bonus action, a reaction, or much",

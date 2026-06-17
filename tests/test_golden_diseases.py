@@ -19,7 +19,7 @@ def test_disease_dataset_matches_normalized_fixture() -> None:
     sections = raw_data["sections"]
 
     # Parse: sections → unnormalized dicts
-    parsed = parse_disease_records(sections)
+    parsed = parse_disease_records(sections, "srd_5_1")
 
     # Postprocess: normalize IDs and polish text
     processed = [clean_disease_record(d) for d in parsed]

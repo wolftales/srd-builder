@@ -9,15 +9,19 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..constants import RULESETS
 from ..postprocess import normalize_id
 from ..utils.prose import clean_text, extract_bullet_points
 
 
-def parse_condition_records(raw_conditions: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_condition_records(
+    raw_conditions: list[dict[str, Any]], ruleset: str
+) -> list[dict[str, Any]]:
     """Parse raw condition extractions into structured records.
 
     Args:
         raw_conditions: List of raw condition dictionaries from extract_conditions
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of parsed condition dictionaries matching the schema
@@ -25,14 +29,14 @@ def parse_condition_records(raw_conditions: list[dict[str, Any]]) -> list[dict[s
     parsed = []
 
     for raw in raw_conditions:
-        condition = _parse_single_condition(raw)
+        condition = _parse_single_condition(raw, ruleset)
         if condition:
             parsed.append(condition)
 
     return parsed
 
 
-def _parse_single_condition(raw: dict[str, Any]) -> dict[str, Any] | None:
+def _parse_single_condition(raw: dict[str, Any], ruleset: str) -> dict[str, Any] | None:
     """Parse a single raw condition into structured format.
 
     Args:
@@ -55,13 +59,13 @@ def _parse_single_condition(raw: dict[str, Any]) -> dict[str, Any] | None:
 
     # Parse based on condition type
     if name == "Exhaustion":
-        return _parse_exhaustion(name, simple_name, text, pages)
+        return _parse_exhaustion(name, simple_name, text, pages, ruleset)
     else:
-        return _parse_standard_condition(name, simple_name, text, pages)
+        return _parse_standard_condition(name, simple_name, text, pages, ruleset)
 
 
 def _parse_standard_condition(
-    name: str, simple_name: str, text: str, pages: list[int]
+    name: str, simple_name: str, text: str, pages: list[int], ruleset: str
 ) -> dict[str, Any]:
     """Parse a standard (non-Exhaustion) condition.
 
@@ -89,12 +93,14 @@ def _parse_standard_condition(
         "name": name,
         "simple_name": simple_name,
         "page": page,
-        "source": "SRD 5.1",
+        "source": RULESETS[ruleset]["source_id"],
         "effects": effects,
     }
 
 
-def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) -> dict[str, Any]:
+def _parse_exhaustion(
+    name: str, simple_name: str, text: str, pages: list[int], ruleset: str
+) -> dict[str, Any]:
     """Parse the Exhaustion condition with its special level structure.
 
     Args:
@@ -159,7 +165,7 @@ def _parse_exhaustion(name: str, simple_name: str, text: str, pages: list[int]) 
         "name": name,
         "simple_name": simple_name,
         "page": page,
-        "source": "SRD 5.1",
+        "source": RULESETS[ruleset]["source_id"],
         "effects": effects,
         "levels": levels,
     }

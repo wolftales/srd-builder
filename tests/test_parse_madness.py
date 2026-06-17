@@ -11,7 +11,7 @@ from srd_builder.parse.parse_madness import (
 
 def test_parse_madness_records_empty():
     """Test parsing empty madness list."""
-    result = parse_madness_records([])
+    result = parse_madness_records([], "srd_5_1")
     assert result == []
 
 
@@ -30,7 +30,7 @@ def test_parse_madness_records_multiple():
         },
     ]
 
-    result = parse_madness_records(raw_categories)
+    result = parse_madness_records(raw_categories, "srd_5_1")
 
     assert len(result) == 2
     assert result[0]["simple_name"] == "short_term_madness"
@@ -45,7 +45,7 @@ def test_parse_single_madness_complete():
         "page": 201,
     }
 
-    result = _parse_single_madness(raw)
+    result = _parse_single_madness(raw, "srd_5_1")
 
     assert result is not None
     assert result["id"] == "madness:short_term_madness"
@@ -53,7 +53,7 @@ def test_parse_single_madness_complete():
     assert result["simple_name"] == "short_term_madness"
     assert result["duration"] == "1d10 minutes"
     assert result["page"] == 201
-    assert result["source"] == "SRD 5.1"
+    assert result["source"] == "SRD_CC_v5.1"
     assert "summary" in result
     assert len(result["effects"]) == 2
 
@@ -66,7 +66,7 @@ def test_parse_single_madness_long_term():
         "page": 201,
     }
 
-    result = _parse_single_madness(raw)
+    result = _parse_single_madness(raw, "srd_5_1")
 
     assert result is not None
     assert result["duration"] == "1d10 × 10 hours"
@@ -80,7 +80,7 @@ def test_parse_single_madness_indefinite():
         "page": 201,
     }
 
-    result = _parse_single_madness(raw)
+    result = _parse_single_madness(raw, "srd_5_1")
 
     assert result is not None
     assert result["duration"] == "until cured"
@@ -90,7 +90,7 @@ def test_parse_single_madness_missing_name():
     """Test parsing fails gracefully with missing name."""
     raw = {"name": "", "raw_text": "Some text", "page": 201}
 
-    result = _parse_single_madness(raw)
+    result = _parse_single_madness(raw, "srd_5_1")
 
     assert result is None
 
@@ -99,7 +99,7 @@ def test_parse_single_madness_missing_text():
     """Test parsing fails gracefully with missing text."""
     raw = {"name": "Some Madness", "raw_text": "", "page": 201}
 
-    result = _parse_single_madness(raw)
+    result = _parse_single_madness(raw, "srd_5_1")
 
     assert result is None
 
@@ -166,7 +166,7 @@ def test_parse_madness_records_filters_none():
         {"name": "Another Valid", "raw_text": "1-10 Another effect.", "page": 201},
     ]
 
-    result = parse_madness_records(raw_categories)
+    result = parse_madness_records(raw_categories, "srd_5_1")
 
     # Should only have 2 valid records
     assert len(result) == 2

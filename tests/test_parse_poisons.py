@@ -15,7 +15,7 @@ from srd_builder.parse.parse_poisons import (
 
 def test_parse_poison_records_empty():
     """Test parsing empty poison list."""
-    result = parse_poison_records([])
+    result = parse_poison_records([], "srd_5_1")
     assert result == []
 
 
@@ -34,7 +34,7 @@ def test_parse_poison_records_multiple():
         },
     ]
 
-    result = parse_poison_records(raw_poisons)
+    result = parse_poison_records(raw_poisons, "srd_5_1")
 
     assert len(result) == 2
     assert result[0]["simple_name"] == "serpent_venom"
@@ -49,7 +49,7 @@ def test_parse_single_poison_complete():
         "page": 204,
     }
 
-    result = parse_poison_records([raw])
+    result = parse_poison_records([raw], "srd_5_1")
 
     assert len(result) == 1
     poison = result[0]
@@ -58,7 +58,7 @@ def test_parse_single_poison_complete():
     assert poison["simple_name"] == "serpent_venom"
     assert poison["type"] == "injury"
     assert poison["page"] == 204
-    assert poison["source"] == "SRD 5.1"
+    assert poison["source"] == "SRD_CC_v5.1"
     assert "description" in poison
 
 
@@ -70,7 +70,7 @@ def test_parse_single_poison_minimal():
         "page": 204,
     }
 
-    result = parse_poison_records([raw])
+    result = parse_poison_records([raw], "srd_5_1")
 
     assert len(result) == 1
     poison = result[0]
@@ -86,7 +86,7 @@ def test_parse_single_poison_missing_name():
         "page": 204,
     }
 
-    result = parse_poison_records([raw])
+    result = parse_poison_records([raw], "srd_5_1")
     assert result == []
 
 
@@ -97,7 +97,7 @@ def test_parse_single_poison_missing_text():
         "page": 204,
     }
 
-    result = parse_poison_records([raw])
+    result = parse_poison_records([raw], "srd_5_1")
     assert result == []
 
 

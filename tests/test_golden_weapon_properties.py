@@ -16,7 +16,7 @@ def test_weapon_properties_dataset_golden() -> None:
     """
     expected_path = Path("tests/fixtures/srd_5_1/normalized/weapon_properties.json")
 
-    parsed = parse_weapon_properties()
+    parsed = parse_weapon_properties("srd_5_1")
     processed = [clean_weapon_property_record(wp) for wp in parsed]
 
     document = {
@@ -31,7 +31,7 @@ def test_weapon_properties_dataset_golden() -> None:
 
 def test_weapon_properties_count() -> None:
     """Verify we have exactly 11 D&D 5e weapon properties."""
-    parsed = parse_weapon_properties()
+    parsed = parse_weapon_properties("srd_5_1")
     assert len(parsed) == 11
 
 
@@ -51,7 +51,7 @@ def test_weapon_properties_canonical_list() -> None:
         "versatile",
     }
 
-    parsed = parse_weapon_properties()
+    parsed = parse_weapon_properties("srd_5_1")
     actual_properties = {wp["simple_name"] for wp in parsed}
 
     assert actual_properties == expected_properties
@@ -59,7 +59,7 @@ def test_weapon_properties_canonical_list() -> None:
 
 def test_weapon_properties_have_required_fields() -> None:
     """Verify all weapon properties have required schema fields."""
-    parsed = parse_weapon_properties()
+    parsed = parse_weapon_properties("srd_5_1")
 
     for prop in parsed:
         assert "id" in prop

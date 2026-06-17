@@ -11,7 +11,7 @@ from srd_builder.parse.parse_madness_tables import (
 
 def test_parse_madness_tables_empty():
     """Test parsing empty tables data."""
-    result = parse_madness_tables({})
+    result = parse_madness_tables({}, "srd_5_1")
     assert result == []
 
 
@@ -48,7 +48,7 @@ def test_parse_madness_tables_complete():
         },
     }
 
-    result = parse_madness_tables(tables_data)
+    result = parse_madness_tables(tables_data, "srd_5_1")
 
     assert len(result) == 3
 
@@ -92,7 +92,7 @@ def test_parse_madness_tables_missing_part2():
         },
     }
 
-    result = parse_madness_tables(tables_data)
+    result = parse_madness_tables(tables_data, "srd_5_1")
 
     assert len(result) == 1
     assert result[0]["simple_name"] == "short_term_madness"
@@ -107,7 +107,7 @@ def test_parse_madness_tables_empty_rows():
         "indefinite_madness": {"page": 202, "rows": []},
     }
 
-    result = parse_madness_tables(tables_data)
+    result = parse_madness_tables(tables_data, "srd_5_1")
     assert result == []
 
 
@@ -193,7 +193,7 @@ def test_parse_madness_tables_preserves_page_numbers():
         },
     }
 
-    result = parse_madness_tables(tables_data)
+    result = parse_madness_tables(tables_data, "srd_5_1")
 
     assert len(result) == 1
     assert result[0]["page"] == 999

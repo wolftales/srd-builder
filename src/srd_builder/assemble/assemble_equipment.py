@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from ..constants import RULESETS
 from ..parse.parse_equipment import (
     _generate_id,
     _generate_simple_name,
@@ -57,17 +58,21 @@ EQUIPMENT_TABLES = [
 ]
 
 
-def assemble_equipment_from_tables(tables: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def assemble_equipment_from_tables(
+    tables: list[dict[str, Any]], ruleset: str
+) -> list[dict[str, Any]]:
     """Assemble equipment items from normalized tables.
 
     Args:
         tables: List of table dictionaries from tables.json
+        ruleset: Ruleset identifier used to stamp source_id on each item.
 
     Returns:
         List of equipment item dictionaries
     """
     logger.info("Assembling equipment from tables...")
 
+    source = RULESETS[ruleset]["source_id"]
     equipment_items: list[dict[str, Any]] = []
     items_by_id: dict[str, dict[str, Any]] = {}
 
@@ -84,26 +89,26 @@ def assemble_equipment_from_tables(tables: list[dict[str, Any]]) -> list[dict[st
 
         # Route to appropriate assembler
         if simple_name == "armor":
-            items = _assemble_armor(table)
+            items = _assemble_armor(table, source)
         elif simple_name == "weapons":
-            items = _assemble_weapons(table)
+            items = _assemble_weapons(table, source)
         elif simple_name == "tools":
-            items = _assemble_tools(table)
+            items = _assemble_tools(table, source)
         elif simple_name == "adventure_gear":
-            items = _assemble_adventure_gear(table, container_capacities)
+            items = _assemble_adventure_gear(table, container_capacities, source)
         elif simple_name == "container_capacity":
             # Already processed for cross-reference, skip item creation
             continue
         elif simple_name == "mounts_and_other_animals":
-            items = _assemble_mounts(table)
+            items = _assemble_mounts(table, source)
         elif simple_name == "food_drink_lodging":
-            items = _assemble_food_drink_lodging(table)
+            items = _assemble_food_drink_lodging(table, source)
         elif simple_name == "services":
-            items = _assemble_services(table)
+            items = _assemble_services(table, source)
         elif simple_name == "tack_harness_vehicles":
-            items = _assemble_tack_vehicles(table)
+            items = _assemble_tack_vehicles(table, source)
         elif simple_name == "waterborne_vehicles":
-            items = _assemble_waterborne_vehicles(table)
+            items = _assemble_waterborne_vehicles(table, source)
         else:
             logger.warning(f"Unknown equipment table: {simple_name}")
             continue
@@ -126,11 +131,11 @@ def assemble_equipment_from_tables(tables: list[dict[str, Any]]) -> list[dict[st
     equipment_items = list(items_by_id.values())
 
     # Add extended items (items referenced but not in SRD tables)
-    extended_items = _add_extended_equipment(items_by_id)
+    extended_items = _add_extended_equipment(items_by_id, source)
     equipment_items.extend(extended_items)
 
     # Add equipment packs (from prose extraction, not tables)
-    pack_items = _assemble_equipment_packs(items_by_id)
+    pack_items = _assemble_equipment_packs(items_by_id, source)
     equipment_items.extend(pack_items)
 
     # Add descriptions to items (from prose sections)
@@ -183,7 +188,7 @@ def _build_container_capacity_map(tables: list[dict[str, Any]]) -> dict[str, str
     return capacity_map
 
 
-def _assemble_armor(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_armor(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble armor items from armor table.
 
     Table columns: Armor | Cost | Armor Class (AC) | Strength | Stealth | Weight
@@ -234,7 +239,7 @@ def _assemble_armor(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "armor",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "armor",
             "row_index": row_index,
@@ -308,7 +313,7 @@ def _assemble_armor(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_weapons(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_weapons(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble weapon items from weapons table.
 
     Table columns: Name | Cost | Damage | Weight | Properties
@@ -360,7 +365,7 @@ def _assemble_weapons(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "weapon",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "weapons",
             "row_index": row_index,
@@ -430,7 +435,7 @@ def _assemble_weapons(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_tools(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_tools(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble tool items from tools table.
 
     Table columns: Item | Cost | Weight
@@ -463,7 +468,7 @@ def _assemble_tools(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "gear",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "tools",
             "row_index": row_index,
@@ -496,7 +501,9 @@ def _assemble_tools(table: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _assemble_adventure_gear(
-    table: dict[str, Any], container_capacities: dict[str, str]
+    table: dict[str, Any],
+    container_capacities: dict[str, str],
+    source: str,
 ) -> list[dict[str, Any]]:
     """Assemble adventure gear items.
 
@@ -530,7 +537,7 @@ def _assemble_adventure_gear(
             "simple_name": _generate_simple_name(name),
             "category": "gear",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "adventure_gear",
             "row_index": row_index,
@@ -570,7 +577,7 @@ def _assemble_adventure_gear(
     return items
 
 
-def _assemble_mounts(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_mounts(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble mount/animal items.
 
     Table columns: Item | Cost | Speed | Carrying Capacity
@@ -598,7 +605,7 @@ def _assemble_mounts(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "mount",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "mounts_and_other_animals",
             "row_index": row_index,
@@ -620,7 +627,7 @@ def _assemble_mounts(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_food_drink_lodging(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_food_drink_lodging(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble food/drink/lodging items.
 
     Table columns: Item | Cost
@@ -648,7 +655,7 @@ def _assemble_food_drink_lodging(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "consumable",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "food_drink_lodging",
             "row_index": row_index,
@@ -667,7 +674,7 @@ def _assemble_food_drink_lodging(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_services(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_services(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble service items.
 
     Table columns: Service | Cost
@@ -695,7 +702,7 @@ def _assemble_services(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": "service",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "services",
             "row_index": row_index,
@@ -714,7 +721,7 @@ def _assemble_services(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_tack_vehicles(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_tack_vehicles(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble tack/harness/vehicle items.
 
     Table columns: Item | Cost | Weight
@@ -749,7 +756,7 @@ def _assemble_tack_vehicles(table: dict[str, Any]) -> list[dict[str, Any]]:
             "simple_name": _generate_simple_name(name),
             "category": category,
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "tack_harness_vehicles",
             "row_index": row_index,
@@ -779,7 +786,7 @@ def _assemble_tack_vehicles(table: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _assemble_waterborne_vehicles(table: dict[str, Any]) -> list[dict[str, Any]]:
+def _assemble_waterborne_vehicles(table: dict[str, Any], source: str) -> list[dict[str, Any]]:
     """Assemble waterborne vehicle items.
 
     Table columns: Item | Cost | Speed
@@ -808,7 +815,7 @@ def _assemble_waterborne_vehicles(table: dict[str, Any]) -> list[dict[str, Any]]
             "category": "vehicle",
             "sub_category": "water",
             "page": page,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
             "source_table": "waterborne_vehicles",
             "row_index": row_index,
@@ -1003,7 +1010,9 @@ def _infer_gear_subcategories(name: str, categories: dict[str, Any], row_index: 
     return sub_categories
 
 
-def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def _assemble_equipment_packs(
+    items_by_id: dict[str, dict[str, Any]], source: str
+) -> list[dict[str, Any]]:
     """Assemble equipment pack items from prose data.
 
     Equipment packs are described in prose on page 70, not in tables.
@@ -1053,7 +1062,7 @@ def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[di
             "weight_lb": total_weight,
             "pack_contents": pack_data["contents"],
             "page": 70,
-            "source": "SRD 5.1",
+            "source": source,
             "is_magic": False,
         }
 
@@ -1063,7 +1072,9 @@ def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[di
     return pack_items
 
 
-def _add_extended_equipment(items_by_id: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+def _add_extended_equipment(
+    items_by_id: dict[str, dict[str, Any]], source: str
+) -> list[dict[str, Any]]:
     """Add extended equipment items (referenced but not in SRD tables).
 
     These are items like "String" or "Alms box" that are referenced in equipment
@@ -1078,7 +1089,7 @@ def _add_extended_equipment(items_by_id: dict[str, dict[str, Any]]) -> list[dict
     """
     from .equipment_extended import get_extended_equipment
 
-    extended = get_extended_equipment()
+    extended = get_extended_equipment(source)
     added_items = []
 
     for item in extended:

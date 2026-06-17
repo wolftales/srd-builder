@@ -20,7 +20,7 @@ def test_poison_dataset_matches_normalized_fixture() -> None:
     poison_descriptions = raw_data["poison_descriptions"]
 
     # Parse: table + descriptions → unnormalized dicts
-    parsed = parse_poisons_table(poisons_table, descriptions=poison_descriptions)
+    parsed = parse_poisons_table(poisons_table, "srd_5_1", descriptions=poison_descriptions)
 
     # Postprocess: normalize IDs and polish text
     processed = [clean_poison_record(p) for p in parsed]

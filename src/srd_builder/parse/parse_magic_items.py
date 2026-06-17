@@ -9,6 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..constants import RULESETS
+
 # Rarity keywords (in order of precedence)
 RARITY_KEYWORDS = [
     "artifact",
@@ -34,11 +36,12 @@ ITEM_TYPES = [
 ]
 
 
-def parse_magic_items(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
+def parse_magic_items(raw_data: dict[str, Any], ruleset: str) -> list[dict[str, Any]]:
     """Parse raw magic item data into structured records.
 
     Args:
         raw_data: Dict with 'items' list from extract_magic_items
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of parsed magic item dictionaries
@@ -47,7 +50,7 @@ def parse_magic_items(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
 
     for raw_item in raw_data.get("items", []):
         try:
-            parsed = _parse_single_item(raw_item)
+            parsed = _parse_single_item(raw_item, ruleset)
 
             # Filter out sentient magic item rule headers (page 251)
             # These are section headers like "Abilities", "Communication", etc.
@@ -64,7 +67,7 @@ def parse_magic_items(raw_data: dict[str, Any]) -> list[dict[str, Any]]:
     return items
 
 
-def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
+def _parse_single_item(raw: dict[str, Any], ruleset: str) -> dict[str, Any]:
     """Parse a single raw magic item.
 
     Args:
@@ -97,7 +100,7 @@ def _parse_single_item(raw: dict[str, Any]) -> dict[str, Any]:
         "requires_attunement": requires_attunement,
         "description": description,
         "page": page,
-        "source": "SRD_CC_v5.1",
+        "source": RULESETS[ruleset]["source_id"],
     }
 
     # Optional fields
@@ -265,7 +268,7 @@ def main() -> None:
     raw_path = Path(sys.argv[1])
     raw_data = json.loads(raw_path.read_text())
 
-    items = parse_magic_items(raw_data)
+    items = parse_magic_items(raw_data, "srd_5_1")
 
     print(f"Parsed {len(items)} magic items")
 

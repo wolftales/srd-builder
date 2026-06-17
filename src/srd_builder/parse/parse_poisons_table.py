@@ -12,17 +12,21 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..constants import RULESETS
 from ..postprocess import normalize_id
 from ..rulesets.srd_5_1.poison_descriptions import POISON_DESCRIPTIONS
 
 
 def parse_poisons_table(
-    table: dict[str, Any], descriptions: dict[str, dict[str, Any]] | None = None
+    table: dict[str, Any],
+    ruleset: str,
+    descriptions: dict[str, dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Parse poison table into list of individual poison item records.
 
     Args:
         table: Raw poison table from table extraction with rows [[name, type, price], ...]
+        ruleset: Ruleset identifier used to stamp source_id on each record.
         descriptions: Optional dict mapping simple_name to {description, save, damage}
 
     Returns:
@@ -30,6 +34,7 @@ def parse_poisons_table(
     """
     rows = table.get("rows", [])
     page = table.get("page", 204)
+    source = RULESETS[ruleset]["source_id"]
 
     # Filter out header rows
     data_rows = _filter_header_rows(rows)
@@ -55,7 +60,7 @@ def parse_poisons_table(
                 "name": name,
                 "simple_name": simple_name,
                 "page": page,
-                "source": "SRD 5.1",
+                "source": source,
                 "source_table": "poisons",
                 "row_index": idx,
                 "poison_type": poison_type.lower(),  # ingested, inhaled, injury, contact

@@ -9,15 +9,17 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from ..constants import RULESETS
 from ..postprocess import normalize_id
 from ..utils.prose import clean_text, extract_bullet_points
 
 
-def parse_disease_records(raw_diseases: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def parse_disease_records(raw_diseases: list[dict[str, Any]], ruleset: str) -> list[dict[str, Any]]:
     """Parse raw disease extractions into structured records.
 
     Args:
         raw_diseases: List of raw disease dictionaries from extract_diseases
+        ruleset: Ruleset identifier used to stamp source_id on each record.
 
     Returns:
         List of parsed disease dictionaries matching the schema
@@ -25,14 +27,14 @@ def parse_disease_records(raw_diseases: list[dict[str, Any]]) -> list[dict[str, 
     parsed = []
 
     for raw in raw_diseases:
-        disease = _parse_single_disease(raw)
+        disease = _parse_single_disease(raw, ruleset)
         if disease:
             parsed.append(disease)
 
     return parsed
 
 
-def _parse_single_disease(raw: dict[str, Any]) -> dict[str, Any] | None:
+def _parse_single_disease(raw: dict[str, Any], ruleset: str) -> dict[str, Any] | None:
     """Parse a single raw disease into structured format.
 
     Args:
@@ -87,7 +89,7 @@ def _parse_single_disease(raw: dict[str, Any]) -> dict[str, Any] | None:
         "name": name,
         "simple_name": simple_name,
         "page": page,
-        "source": "SRD 5.1",
+        "source": RULESETS[ruleset]["source_id"],
         "description": description,
     }
 

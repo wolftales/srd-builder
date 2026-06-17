@@ -21,7 +21,7 @@ def test_magic_items_dataset_matches_normalized_fixture() -> None:
 
     magic_items_raw = json.loads(raw_path.read_text(encoding="utf-8"))
     # parse_magic_items extracts structure, returns dicts without IDs/normalization
-    parsed = parse_magic_items({"items": magic_items_raw})
+    parsed = parse_magic_items({"items": magic_items_raw}, "srd_5_1")
     # clean_magic_item_record applies normalization (IDs, text polish)
     processed = [clean_magic_item_record(item) for item in parsed]
 

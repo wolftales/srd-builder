@@ -24,7 +24,7 @@ def test_table_dataset_matches_normalized_fixture() -> None:
             {
                 "name": rt["name"],
                 "page": rt["page"],
-                "source": "SRD 5.1",
+                "source": "SRD_CC_v5.1",
                 "headers": rt["headers"],
                 "rows": rt["rows"],
             }

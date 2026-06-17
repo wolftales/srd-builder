@@ -1099,11 +1099,13 @@ def build(  # noqa: C901
     if "equipment" not in skip_datasets:
         if parsed_tables:
             # New table-based assembly (v0.9.9 Part 2)
-            parsed_equipment = assemble_equipment_from_tables(parsed_tables)
+            parsed_equipment = assemble_equipment_from_tables(parsed_tables, ruleset)
         else:
             # Fallback to old PyMuPDF extraction if no tables available
             raw_equipment = _load_raw_equipment(layout["raw"])
-            parsed_equipment = parse_equipment_records(raw_equipment) if raw_equipment else []
+            parsed_equipment = (
+                parse_equipment_records(raw_equipment, ruleset) if raw_equipment else []
+            )
 
     raw_spells = _load_raw_spells(layout["raw"]) if "spells" not in skip_datasets else []
     parsed_spells = parse_spell_records(raw_spells) if raw_spells else []
@@ -1113,11 +1115,13 @@ def build(  # noqa: C901
         _load_raw_magic_items(layout["raw"]) if "magic_items" not in skip_datasets else []
     )
     # parse_magic_items expects a dict with 'items' key (like extract output)
-    parsed_magic_items = parse_magic_items({"items": raw_magic_items}) if raw_magic_items else []
+    parsed_magic_items = (
+        parse_magic_items({"items": raw_magic_items}, ruleset) if raw_magic_items else []
+    )
 
     # Parse rules (v0.17.0)
     raw_rules = _load_raw_rules(layout["raw"]) if "rules" not in skip_datasets else {}
-    parsed_rules = parse_rules(raw_rules) if raw_rules else []
+    parsed_rules = parse_rules(raw_rules, ruleset) if raw_rules else []
 
     # Parse lineages (v0.8.0)
     # Lineages come from canonical targets, not PDF extraction
@@ -1129,19 +1133,19 @@ def build(  # noqa: C901
 
     # Parse ability_scores (v0.20.0)
     # Ability scores are game constants (6 core abilities: STR, DEX, CON, INT, WIS, CHA)
-    parsed_ability_scores = parse_ability_scores()
+    parsed_ability_scores = parse_ability_scores(ruleset)
 
     # Parse damage_types (v0.20.0)
     # Damage types are game constants (13 canonical types from SRD page 97)
-    parsed_damage_types = parse_damage_types()
+    parsed_damage_types = parse_damage_types(ruleset)
 
     # Parse skills (v0.20.0)
     # Skills are game constants (18 skills from SRD pages 76-79)
-    parsed_skills = parse_skills()
+    parsed_skills = parse_skills(ruleset)
 
     # Parse weapon_properties (v0.20.0)
     # Weapon properties are game constants (11 properties from SRD page 147)
-    parsed_weapon_properties = parse_weapon_properties()
+    parsed_weapon_properties = parse_weapon_properties(ruleset)
 
     # Build prose datasets (v0.10.0+)
     # Generic config-driven approach for conditions, diseases, madness, poisons
@@ -1154,10 +1158,10 @@ def build(  # noqa: C901
         try:
             print(f"Extracting features from {pdf_files[0].name}...")
             raw_class_features = extract_class_features(pdf_files[0])
-            class_features = parse_features(raw_class_features, "class")
+            class_features = parse_features(raw_class_features, "class", ruleset=ruleset)
 
             raw_lineage_traits = extract_lineage_traits(pdf_files[0])
-            lineage_traits = parse_features(raw_lineage_traits, "lineage")
+            lineage_traits = parse_features(raw_lineage_traits, "lineage", ruleset=ruleset)
 
             all_features = class_features + lineage_traits
             print(
@@ -1188,7 +1192,7 @@ def build(  # noqa: C901
     if pdf_files:
         for dataset_name, parser_func in prose_parsers.items():
             try:
-                doc = assemble_prose_dataset(dataset_name, pdf_files[0], parser_func)
+                doc = assemble_prose_dataset(dataset_name, pdf_files[0], parser_func, ruleset)
                 # Assign to appropriate variable
                 if dataset_name == "conditions":
                     conditions_doc = doc
@@ -1227,7 +1231,7 @@ def build(  # noqa: C901
             try:
                 # Parse poison table into individual item records (equipment-style)
                 parsed_poisons = parse_poisons_table(
-                    poisons_table, descriptions=poison_descriptions_by_name
+                    poisons_table, ruleset, descriptions=poison_descriptions_by_name
                 )
 
                 # Postprocess: normalize IDs and polish text

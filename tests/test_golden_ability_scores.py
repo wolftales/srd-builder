@@ -16,7 +16,7 @@ def test_ability_scores_dataset_golden() -> None:
     """
     expected_path = Path("tests/fixtures/srd_5_1/normalized/ability_scores.json")
 
-    parsed = parse_ability_scores()
+    parsed = parse_ability_scores("srd_5_1")
     processed = [clean_ability_score_record(a) for a in parsed]
 
     document = {
@@ -31,7 +31,7 @@ def test_ability_scores_dataset_golden() -> None:
 
 def test_ability_scores_count() -> None:
     """Verify we have exactly 6 core D&D 5e ability scores."""
-    parsed = parse_ability_scores()
+    parsed = parse_ability_scores("srd_5_1")
     assert len(parsed) == 6
 
 
@@ -46,7 +46,7 @@ def test_ability_scores_canonical_list() -> None:
         "charisma",
     }
 
-    parsed = parse_ability_scores()
+    parsed = parse_ability_scores("srd_5_1")
     actual_abilities = {a["simple_name"] for a in parsed}
 
     assert actual_abilities == expected_abilities
@@ -63,7 +63,7 @@ def test_ability_scores_abbreviations() -> None:
         "charisma": "CHA",
     }
 
-    parsed = parse_ability_scores()
+    parsed = parse_ability_scores("srd_5_1")
 
     for ability in parsed:
         assert ability["abbreviation"] == expected_abbrev[ability["simple_name"]]
@@ -71,7 +71,7 @@ def test_ability_scores_abbreviations() -> None:
 
 def test_ability_scores_have_required_fields() -> None:
     """Verify all ability scores have required schema fields."""
-    parsed = parse_ability_scores()
+    parsed = parse_ability_scores("srd_5_1")
 
     for ability in parsed:
         assert "id" in ability

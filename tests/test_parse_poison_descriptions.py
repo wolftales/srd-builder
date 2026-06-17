@@ -10,7 +10,7 @@ from srd_builder.parse.parse_poison_descriptions import (
 
 def test_parse_poison_description_records_empty():
     """Test parsing empty poison descriptions list."""
-    result = parse_poison_description_records([])
+    result = parse_poison_description_records([], "srd_5_1")
     assert result == []
 
 
@@ -29,7 +29,7 @@ def test_parse_poison_description_records_multiple():
         },
     ]
 
-    result = parse_poison_description_records(raw_sections)
+    result = parse_poison_description_records(raw_sections, "srd_5_1")
 
     assert len(result) == 2
     assert result[0]["simple_name"] == "assassins_blood"
@@ -167,7 +167,7 @@ def test_parse_poison_description_records_filters_none():
         },
     ]
 
-    result = parse_poison_description_records(raw_sections)
+    result = parse_poison_description_records(raw_sections, "srd_5_1")
 
     # Should only have 2 valid records
     assert len(result) == 2
