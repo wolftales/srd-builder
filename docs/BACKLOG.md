@@ -216,6 +216,32 @@ probe. None of these are bugs; all are organizational debt that makes the
 codebase harder to navigate and extend. **Defer until after v0.26.1 ships
 so the probe work doesn't get tangled with rename noise.**
 
+### Important framing: this is attempt #3 at standardization
+
+Two prior efforts at "configurable input model → shared parser engine"
+left artifacts in the codebase:
+
+- **Attempt 1** — false start, scrubbed before producing live code. Some
+  schema design choices (the 2.0.0 versioning round) carry its
+  fingerprints, but no live source code remains.
+- **Attempt 2** — produced the surviving `src/srd_builder/extraction/`
+  table engine (`extractor.py` + `patterns.py` + `extraction_metadata.py`)
+  and the postprocess engine (`postprocess/engine.py` + `configs.py`).
+  Real, working, but only finished for *tables* and *record cleanup*. The
+  per-dataset body extractors (`extract/extract_*.py`) never made the
+  jump.
+- **Attempt 3** — **this is what v0.26.2 + v0.27.0 are.** The
+  `utils/pdf_probe.py` shared primitive (landed v0.26.1) is the first
+  rail. The structural moves below consolidate the existing artifacts
+  rather than design a new system from scratch.
+
+> **Operational consequence.** v0.26.2 is *not* greenfield. The job is
+> to finish what attempt #2 started: get the existing engine patterns
+> consistently named and wired, and move every per-dataset body
+> extractor onto them as feature work allows. The risk this attempt
+> repeats the prior pattern is real \u2014 capturing it here so the scope
+> stays bounded and we ship the consolidation, not a fresh redesign.
+
 ### Naming inconsistency: `extract/` vs `extraction/`
 
 Two sibling directories at the same pipeline layer with confusingly similar
