@@ -62,14 +62,14 @@ def _segment_paragraphs_from_blocks(description_blocks: list[dict[str, Any]]) ->
 
         # Start new paragraph if needed
         if paragraph_break and current_paragraph:
-            paragraphs.append(" ".join(current_paragraph))
+            paragraphs.append(clean_text(" ".join(current_paragraph)))
             current_paragraph = []
 
         current_paragraph.append(text)
 
     # Don't forget last paragraph
     if current_paragraph:
-        paragraphs.append(" ".join(current_paragraph))
+        paragraphs.append(clean_text(" ".join(current_paragraph)))
 
     return paragraphs if paragraphs else []
 

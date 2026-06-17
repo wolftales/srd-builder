@@ -34,6 +34,11 @@ def clean_text(text: str) -> str:
     # This must happen before other replacements to prevent corruption
     text = re.sub(r"[\t\r\n\u00ad\u2010\u2011\u00a0]+", " ", text)
 
+    # Strip the PDF page footer ("System Reference Document 5.1" + optional
+    # page number). Appears mid-prose on cross-page extractions and trailing
+    # on single-page ones; both cases collapse to a single space.
+    text = re.sub(r"System Reference Document\s+[\d.]+(?:\s+\d+)?", " ", text)
+
     # Fix common PDF encoding issues
     text = text.replace("­‐‑", "-")  # Replace garbled dashes (soft hyphen + hyphens)
     text = text.replace("­‐", "-")
@@ -61,6 +66,11 @@ def polish_text(text: str | None) -> str | None:
     cleaned = text
     for pattern in _LEGENDARY_SENTENCES:
         cleaned = pattern.sub("", cleaned)
+
+    # Strip the PDF page footer (mirrors clean_text). Monster trait/action
+    # descriptions flow through polish_text rather than clean_text, so the
+    # strip has to live here as well.
+    cleaned = re.sub(r"System Reference Document\s+[\d.]+(?:\s+\d+)?", " ", cleaned)
 
     cleaned = cleaned.replace("\u2013", "—").replace("\u2014", "—")
     cleaned = re.sub(r"--+", "—", cleaned)

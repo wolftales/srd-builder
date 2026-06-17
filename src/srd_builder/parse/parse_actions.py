@@ -21,7 +21,8 @@ _DAMAGE = re.compile(
     re.IGNORECASE,
 )
 _SAVING_THROW = re.compile(
-    r"DC\s+(\d+)\s+([A-Za-z]+)(?:\s+saving\s+throw)?",
+    r"DC\s+(\d+)\s+(Strength|Str|Dexterity|Dex|Constitution|Con|"
+    r"Intelligence|Int|Wisdom|Wis|Charisma|Cha)\b(?:\s+saving\s+throw)?",
     re.IGNORECASE,
 )
 
