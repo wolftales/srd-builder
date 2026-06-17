@@ -17,7 +17,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from .extract_prose import clean_text
+from srd_builder.utils.prose import clean_text
 
 
 def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:

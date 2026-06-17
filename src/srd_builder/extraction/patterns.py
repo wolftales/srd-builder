@@ -808,7 +808,7 @@ def _extract_prose_section(
     """
     from pathlib import Path
 
-    from ..extract.extract_prose import ProseExtractor
+    from ..utils.prose import ProseExtractor
 
     # Get page range
     if isinstance(page, list):

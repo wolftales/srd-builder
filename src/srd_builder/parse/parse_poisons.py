@@ -9,8 +9,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from ..extract.extract_prose import clean_text
 from ..postprocess.ids import normalize_id
+from ..utils.prose import clean_text
 
 
 def parse_poison_records(raw_poisons: list[dict[str, Any]]) -> list[dict[str, Any]]:
