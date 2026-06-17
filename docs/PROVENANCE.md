@@ -9,6 +9,12 @@ This registry is the operational form of the inventory captured in
 [docs/BACKLOG.md](BACKLOG.md). The BACKLOG describes the *aspiration*;
 this file is the *current state*.
 
+> **Operational lesson (v0.26.0 → v0.26.1).** Two of the eight
+> registered claims have already been disproved by mechanical probes
+> ([tests/test_pdf_provenance.py](../tests/test_pdf_provenance.py)).
+> Treat any future "PDF corrupted" rationale as a hypothesis until a
+> reproducer test fails. See `AGENTS.md` § *PDF extraction discipline*.
+
 ## Reason codes
 
 | Code | Meaning | Removal trigger |

@@ -46,6 +46,37 @@ For software architecture and design patterns, see [docs/ARCHITECTURE.md](docs/A
 - Check file sizes and structure match expected values
 - Schema validation catches 90% of parsing bugs early
 
+### PDF extraction discipline (no magic wands)
+
+Historically, several hand-curated data files in this repo were created
+with a vague "PDF text is corrupted" justification, and two of them
+(lineages, spell-class lists) have already been mechanically disproved
+by reproducer tests — the text was never corrupted, just not
+whitespace-normalized. Treat "corruption" as a hypothesis, never a
+conclusion.
+
+Before declaring any PDF region "corrupted," "unreadable," or
+"unextractable":
+
+1. Add a reproducer test in [tests/test_pdf_provenance.py](tests/test_pdf_provenance.py)
+   using [src/srd_builder/utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py).
+   The test must assert what specifically is *not* extractable (which
+   page index, which call, what bytes came back).
+2. If you cannot write a reproducer that fails on real PDF behavior,
+   the region is not corrupted — it is just unparsed. Write the parser.
+3. Hand-curated overrides (`*_targets.py`, `*_manual.py`) are a last
+   resort, not a default. Each requires an entry in
+   [docs/PROVENANCE.md](docs/PROVENANCE.md) with a `reason_code`, and
+   any `pdf_corruption` entry must link a passing reproducer.
+4. New page-text extraction MUST consume `utils.pdf_probe` and
+   [src/srd_builder/utils/page_index.py](src/srd_builder/utils/page_index.py)
+   rather than introducing fresh `fitz.open()` calls or hardcoded page
+   constants.
+
+This rule exists because the prior path — declare corrupted, transcribe
+by hand, move on — quietly accumulated ~2,000 lines of hand-curated
+data across the codebase, most of which now appears to be needless.
+
 ### Version Control
 - **Commit granularity:** One logical change per commit
 - **Commit messages:** Follow conventional commits (FEAT:, FIX:, REFACTOR:, DOC:)
