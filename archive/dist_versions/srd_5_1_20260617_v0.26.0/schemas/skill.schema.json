@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/wolftales/srd-builder/schemas/skill.schema.json",
+  "version": "1.0.0",
+  "last_modified": "2025-12-23",
+  "title": "Skill",
+  "description": "A skill in D&D 5e associated with an ability score",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "ability",
+    "ability_id",
+    "description",
+    "page",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^skill:",
+      "description": "Unique identifier with skill: prefix (e.g., 'skill:athletics')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "Machine-readable name (e.g., 'athletics')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Athletics')"
+    },
+    "ability": {
+      "type": "string",
+      "enum": [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma"
+      ],
+      "description": "Associated ability score name"
+    },
+    "ability_id": {
+      "type": "string",
+      "pattern": "^ability:",
+      "description": "Reference to ability score (e.g., 'ability:strength')"
+    },
+    "description": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "Array of description paragraphs from SRD"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "SRD page number where this skill is described"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document (e.g., 'SRD_CC_v5.1')"
+    }
+  }
+}

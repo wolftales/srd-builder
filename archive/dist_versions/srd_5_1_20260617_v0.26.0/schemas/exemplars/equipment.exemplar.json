@@ -1,0 +1,8 @@
+{
+  "id": "item:example",
+  "name": "example name",
+  "simple_name": "example",
+  "category": "weapon",
+  "source": "example source",
+  "page": 1
+}
