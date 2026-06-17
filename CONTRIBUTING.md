@@ -15,6 +15,11 @@ can iterate on the extraction pipeline safely. A few friendly guardrails:
 ```bash
 git clone https://github.com/wolftales/srd-builder.git
 cd srd-builder
+
+# create and activate virtual environment (Python 3.14+)
+python3.14 -m venv .venv
+source .venv/bin/activate  # on Windows: .venv\Scripts\activate
+
 pip install -e ".[dev]"
 pre-commit install
 ```

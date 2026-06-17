@@ -15,91 +15,116 @@ scaffolding here is hardened.
 ## Getting started
 
 ```bash
-# clone
+# Clone repository
 git clone https://github.com/wolftales/srd-builder.git
 cd srd-builder
 
-# install developer tooling
-pip install -e ".[dev]"
-pre-commit install
+# Create and activate virtual environment (Python 3.14+)
+python3.14 -m venv .venv
+source .venv/bin/activate  # on Windows: .venv\Scripts\activate
 
-# run checks
-make pre-commit
-make test
+# Install project
+pip install -e .
+
+# Build SRD 5.1 JSON data files
+make output
+
+# Output is ready in dist/srd_5_1/
+ls -lh dist/srd_5_1/
+cat dist/srd_5_1/build_report.json
 ```
 
-### Build pipeline (v0.18.1)
+Done! You now have a complete SRD 5.1 dataset with 13 JSON files. Load and use it:
+
+```python
+import json
+from pathlib import Path
+
+# Load any dataset
+data = json.loads(Path("dist/srd_5_1/monsters.json").read_text())
+print(f"Loaded {len(data['items'])} monsters")
+```
+
+**For production use** (distribution, publishing), build a complete bundle instead:
+
+```bash
+make bundle  # Includes schemas + docs + README
+```
+
+See "Building datasets" below for all available build options.
+
+### Build pipeline (v0.22.0)
 
 The build pipeline extracts monster, equipment, spell, magic item, rule, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **317 creatures**, **106 equipment items**, **319 spells**, **264 magic items**, **172 rules**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
-**Development workflow (fast iteration, data only):**
-```bash
-# Build JSON data files only - NO schemas or docs copied
-# Output: 13 JSON files in dist/srd_5_1/
-make output
+## Building datasets
 
-# Verify data integrity
-./scripts/verify_build.sh srd_5_1 dist dev
-```
+Build SRD 5.1 JSON output for Blackmoor:
 
-**Production workflow (complete bundle for distribution):**
+**With make (recommended):**
 ```bash
-# Build complete bundle: data + schemas + docs
-# Output: 24 files (13 JSON + 8 schemas + 2 docs + README)
+# Build complete bundle: data + schemas + docs + README
+# Output: 13 JSON files + 8 schemas + 2 docs + README in dist/srd_5_1/
 make bundle
-
-# Verify complete bundle structure
-./scripts/verify_build.sh srd_5_1 dist bundle
 ```
 
-**Key difference:**
-- `make output` → Fast (data only), use for development/testing
-- `make bundle` → Complete (adds schemas/, docs/, README.md), use for releases/packaging
-
-**Validation:**
+**Without make (direct command):**
 ```bash
-python -m srd_builder.validate --ruleset srd_5_1
+PYTHONPATH=src python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
 ```
 
-**Development output:**
+**Post-build validation:**
+```bash
+# Verify data integrity and schema compliance
+PYTHONPATH=src python -m srd_builder.validate --ruleset srd_5_1
+
+# Quick sanity check (item counts)
+./scripts/smoke.sh srd_5_1 dist bundle
+```
+
+**Critical difference between build types:**
+
+| | Data only | Complete bundle |
+|---|---|---|
+| **Data files** | ✅ 13 JSON files | ✅ 13 JSON files |
+| **Schemas** | ❌ None | ✅ 8 schema files |
+| **Documentation** | ❌ None | ✅ SCHEMAS.md, DATA_DICTIONARY.md |
+| **README** | ❌ None | ✅ Consumer-facing README.md |
+| **Speed** | ⚡ Fast | 🐢 Slightly slower |
+| **Use case** | Development, testing, quick iteration | Releases, distribution, sharing |
+
+**Output structure (with `make bundle`):**
 ```
 dist/srd_5_1/
 ├── monsters.json          # 317 creature stat blocks
 ├── equipment.json         # 106 items
 ├── spells.json            # 319 spells
 ├── magic_items.json       # 264 magic items
-├── rules.json             # 172 rules ✨ NEW in v0.17.0
-├── tables.json            # 37 reference tables (12 class progression + 25 equipment/reference)
-├── lineages.json          # 13 character lineages (9 base + 4 subraces)
-├── classes.json           # 12 character classes
-├── index.json             # Lookup indexes (all datasets)
-├── meta.json              # Dataset metadata (license, provenance)
-└── build_report.json      # Build metadata (version, timestamp)
-```
-
-**Production bundle output:**
-```
-dist/srd_5_1/
-├── monsters.json          # 296 creature stat blocks
-├── equipment.json         # 106 items
-├── spells.json            # 319 spells
-├── magic_items.json       # 264 magic items
+├── rules.json             # 172 rules
 ├── tables.json            # 37 reference tables
 ├── lineages.json          # 13 character lineages
 ├── classes.json           # 12 character classes
 ├── index.json             # Lookup indexes (all datasets)
 ├── meta.json              # Dataset metadata (license, provenance)
-├── README.md              # Consumer documentation
 ├── build_report.json      # Build metadata (version, timestamp)
-├── schemas/
+├── README.md              # Consumer documentation
+├── schemas/               # JSON schemas for all datasets
 │   ├── monster.schema.json
 │   ├── equipment.schema.json
 │   ├── spell.schema.json
 │   ├── magic_item.schema.json
-│   ├── table.schema.json
+│   ├── class.schema.json
 │   ├── lineage.schema.json
-│   └── class.schema.json
-└── docs/
+│   ├── table.schema.json
+│   ├── condition.schema.json
+│   ├── disease.schema.json
+│   ├── poison.schema.json
+│   ├── features.schema.json
+│   ├── damage_type.schema.json
+│   ├── skill.schema.json
+│   ├── ability_score.schema.json
+│   └── weapon_property.schema.json
+└── docs/                  # Consumer documentation
     ├── SCHEMAS.md
     └── DATA_DICTIONARY.md
 ```
@@ -116,16 +141,34 @@ dist/srd_5_1/
 
 ### Consume the dataset (Python)
 
+After building, load and use the JSON data:
+
 ```python
-import json, pathlib
-p = pathlib.Path("dist/srd_5_1/monsters.json")
-data = json.loads(p.read_text(encoding="utf-8"))
-print(f"Schema: {data['_meta']['schema_version']}, Monsters: {len(data['items'])}")
+import json
+from pathlib import Path
+
+# Load monsters dataset
+monsters_file = Path("dist/srd_5_1/monsters.json")
+monsters_data = json.loads(monsters_file.read_text(encoding="utf-8"))
+
+print(f"Schema: {monsters_data['_meta']['schema_version']}")
+print(f"Total monsters: {len(monsters_data['items'])}")
 
 # Example: Find CR 10 monsters
-cr10 = [m for m in data["items"] if m["challenge_rating"] == "10"]
+cr10 = [m for m in monsters_data["items"] if m["challenge_rating"] == "10"]
 for monster in cr10:
     print(f"{monster['name']}: {monster['xp_value']} XP - {monster['summary']}")
+
+# Load spells
+spells_file = Path("dist/srd_5_1/spells.json")
+spells_data = json.loads(spells_file.read_text(encoding="utf-8"))
+print(f"\nTotal spells: {len(spells_data['items'])}")
+
+# Load classes with progression tables
+classes_file = Path("dist/srd_5_1/classes.json")
+classes_data = json.loads(classes_file.read_text(encoding="utf-8"))
+for cls in classes_data["items"]:
+    print(f"Class: {cls['name']} - {len(cls['hit_dice'])} hit dice")
 ```
 
 ### Determinism
@@ -138,43 +181,76 @@ Every monster and nested entry exposes both an `id` and `simple_name`. Identifie
 
 ### Development workflow
 
+**With make (recommended):**
 ```bash
 # Local checks before committing
 make pre-commit    # Run all pre-commit hooks
-make lint          # Ruff + Black formatting checks
+make lint          # Ruff formatting + linting checks
 make test          # Run pytest
 make ci            # Full CI simulation (lint + test)
-
-# Verification (quick sanity checks)
-make smoke              # Dev build validation (item counts only)
-make smoke MODE=bundle  # Bundle build validation (+ structure checks)
-make release-check      # Determinism + item count validation
-
-# Version bump (automates __init__.py, fixtures, README, tests, commit)
-python scripts/bump_version.py 0.6.5
-python scripts/bump_version.py 0.7.0 --no-commit  # Preview changes without committing
 ```
 
-### Validation
+**Without make (direct commands):**
+```bash
+# Format and lint
+ruff format .
+ruff check . --fix
+
+# Run tests
+pytest -q
+
+# Type checking
+mypy src
+
+# Pre-commit hooks (all at once)
+pre-commit run --all-files
+```
+
+### Verification
 
 Validation uses JSON Schema to ensure output quality:
 
+**With make:**
 ```bash
-python -m srd_builder.utils.validate --ruleset srd_5_1  # Full schema validation
-make smoke              # Quick item count check (dev builds)
-make smoke MODE=bundle  # Bundle structure validation (README, schemas/, docs/)
-make release-check      # Deterministic build + item counts (for releases)
+make smoke              # Dev build validation (item counts only)
+make smoke MODE=bundle  # Bundle build validation (+ structure checks)
+make release-check      # Determinism + item count validation
 ```
 
-The validator checks `dist/srd_5_1/monsters.json` against
-`schemas/monster.schema.json` and reports any schema violations.
+**Without make (direct commands):**
+```bash
+# Full schema validation
+PYTHONPATH=src python -m srd_builder.validate --ruleset srd_5_1
 
-**Verification targets:**
+# Quick sanity check (item counts)
+./scripts/smoke.sh srd_5_1 dist
+
+# Bundle structure validation
+./scripts/smoke.sh srd_5_1 dist bundle
+
+# Determinism verification (hash comparison + counts)
+./scripts/release_check.sh srd_5_1 dist
+```
+
+See [docs/VERIFICATION_CHECKLIST.md](docs/VERIFICATION_CHECKLIST.md) for details on validation targets:
 - `smoke`: Fast sanity check for development (item counts)
 - `smoke MODE=bundle`: Bundle structure validation
 - `release-check`: Full determinism verification (hash comparison + counts)
 
-See [docs/VERIFICATION_CHECKLIST.md](docs/VERIFICATION_CHECKLIST.md) for details.
+### Version Management
+
+Version is automatically read from `pyproject.toml` at runtime via `importlib.metadata`:
+
+```bash
+# Bump version in pyproject.toml (handles docs/commits/tags automatically)
+python scripts/bump_version.py 0.22.1
+
+# Preview version changes without committing
+python scripts/bump_version.py 0.23.0 --no-commit
+
+# Verify current version
+python -c "import srd_builder; print(srd_builder.__version__)"
+```
 
 ## Repository layout
 
