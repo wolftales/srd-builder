@@ -170,6 +170,14 @@ distinguish the two.
   time** (`scripts/generate_templates.py`), drop the hand-written
   versions, ship the generated set in the bundle next to `schemas/`.
   Single source of truth = schema; template is a derived view.
+  - **Three-for-one win.** One generated exemplar per schema serves three
+    independent needs at once: (1) homebrew authoring template; (2) the
+    `tests/fixtures/known_truths.json` baseline mentioned under "Data
+    integrity / extraction confidence" above — exemplars *are* the known
+    patterns; (3) schema smoke test — every schema must round-trip
+    through its own exemplar via `jsonschema.validate`. Build once,
+    consume thrice. Plan v0.26.0 work so these three threads land
+    together, not separately.
 
 ### Re-extraction candidates (remove the crutch, don't just declare it)
 
