@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "version": "2.0.0",
-  "last_modified": "2025-12-23",
+  "version": "2.1.0",
+  "last_modified": "2026-06-17",
   "title": "SRD 5.1 Equipment Item",
   "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",
@@ -18,7 +18,7 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^item:[a-z0-9_-]+$",
+      "pattern": "^item:[a-z0-9_]+$",
       "description": "Unique identifier using the item: namespace"
     },
     "name": {
@@ -56,7 +56,7 @@
         "properties": {
           "item_id": {
             "type": "string",
-            "pattern": "^item:[a-z0-9_-]+$",
+            "pattern": "^item:[a-z0-9_]+$",
             "description": "Reference to item in equipment dataset"
           },
           "item_name": {
@@ -283,7 +283,7 @@
         "string",
         "null"
       ],
-      "pattern": "^item:[a-z0-9_-]+$",
+      "pattern": "^item:[a-z0-9_]+$",
       "description": "FUTURE: Base item this entry is derived from"
     },
     "is_magic": {

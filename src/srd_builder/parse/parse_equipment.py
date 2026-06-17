@@ -519,11 +519,9 @@ def _stringify_section(section: dict[str, Any]) -> str | None:
 
 
 def _generate_id(name: str) -> str:
-    identifier = name.lower()
-    identifier = re.sub(r"[^\w\s-]", "", identifier)
-    identifier = re.sub(r"[\s_]+", "-", identifier)
-    identifier = re.sub(r"-+", "-", identifier).strip("-")
-    return f"item:{identifier}"
+    from srd_builder.postprocess.ids import normalize_id
+
+    return f"item:{normalize_id(name)}"
 
 
 def _generate_simple_name(name: str) -> str:

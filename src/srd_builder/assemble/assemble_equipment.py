@@ -1037,7 +1037,9 @@ def _assemble_equipment_packs(items_by_id: dict[str, dict[str, Any]]) -> list[di
                 logger.debug(f"  Missing: {missing}")
 
         # Create pack item
-        simple_name = pack_data["name"].lower().replace("'", "").replace(" ", "_")
+        from srd_builder.postprocess.ids import normalize_id
+
+        simple_name = normalize_id(pack_data["name"])
         item_id = f"item:{simple_name}"
 
         pack_item = {

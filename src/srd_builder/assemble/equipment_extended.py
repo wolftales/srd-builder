@@ -34,9 +34,9 @@ class ExtendedItem(TypedDict):
 # Extended equipment items - not in SRD tables but logically needed
 EXTENDED_EQUIPMENT: list[ExtendedItem] = [
     {
-        "id": "item:string-10-feet",
+        "id": "item:string_10_feet",
         "name": "String (10 feet)",
-        "simple_name": "string-10-feet",
+        "simple_name": "string_10_feet",
         "category": "gear",
         "sub_category": "adventuring_gear",
         "cost": {"amount": 1, "currency": "sp"},  # Estimated: cheaper than rope
@@ -48,9 +48,9 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Burglar's Pack but not in SRD tables. Cost/weight estimated. Cost/weight estimated.",
     },
     {
-        "id": "item:alms-box",
+        "id": "item:alms_box",
         "name": "Alms box",
-        "simple_name": "alms-box",
+        "simple_name": "alms_box",
         "category": "gear",
         "sub_category": "adventuring_gear",
         "cost": {"amount": 5, "currency": "gp"},  # Estimated: religious item
@@ -62,9 +62,9 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
     },
     {
-        "id": "item:incense-2-blocks",
+        "id": "item:incense_2_blocks",
         "name": "Incense (2 blocks)",
-        "simple_name": "incense-2-blocks",
+        "simple_name": "incense_2_blocks",
         "category": "gear",
         "sub_category": "adventuring_gear",
         "cost": {"amount": 1, "currency": "gp"},  # Estimated: consumable
@@ -104,9 +104,9 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Priest's Pack but not in SRD tables. Cost/weight estimated.",
     },
     {
-        "id": "item:book-of-lore",
+        "id": "item:book_of_lore",
         "name": "Book of lore",
-        "simple_name": "book-of-lore",
+        "simple_name": "book_of_lore",
         "category": "gear",
         "sub_category": "adventuring_gear",
         "cost": {"amount": 25, "currency": "gp"},  # Estimated: valuable book
@@ -118,9 +118,9 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
     },
     {
-        "id": "item:bag-of-sand-little",
+        "id": "item:bag_of_sand_little",
         "name": "Bag of sand (little)",
-        "simple_name": "bag-of-sand-little",
+        "simple_name": "bag_of_sand_little",
         "category": "gear",
         "sub_category": "adventuring_gear",
         "cost": {"amount": 1, "currency": "cp"},  # Estimated: very cheap
@@ -132,9 +132,9 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
     },
     {
-        "id": "item:knife-small",
+        "id": "item:knife_small",
         "name": "Knife (small)",
-        "simple_name": "knife-small",
+        "simple_name": "knife_small",
         "category": "weapon",
         "sub_category": "simple_melee",
         "weapon_type": "melee",
@@ -149,7 +149,7 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "_note": "Extended item - referenced in Scholar's Pack but not in SRD tables. Cost/weight estimated.",
     },
     {
-        "id": "item:natural-armor",
+        "id": "item:natural_armor",
         "name": "Natural armor",
         "simple_name": "natural_armor",
         "category": "armor",
