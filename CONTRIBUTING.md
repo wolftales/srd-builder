@@ -20,7 +20,8 @@ cd srd-builder
 python3.14 -m venv .venv
 source .venv/bin/activate  # on Windows: .venv\Scripts\activate
 
-pip install -e ".[dev]"
+# Install in editable compat mode (required for Python 3.14)
+pip install -e ".[dev]" --config-settings editable_mode=compat
 pre-commit install
 ```
 

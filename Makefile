@@ -1,7 +1,8 @@
 .PHONY: init lint test format pre-commit ci verify-ci output bundle smoke release-check tables monsters equipment spells bump-version
 
 init:
-	pip install -e ".[dev]"
+	pip install -e . --config-settings editable_mode=compat
+	pip install -e ".[dev]" --config-settings editable_mode=compat
 	pre-commit install
 
 lint:

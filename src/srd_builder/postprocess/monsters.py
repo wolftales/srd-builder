@@ -224,7 +224,7 @@ def _normalize_challenge(value: Any) -> Any:
             num, denom = value.split("/", 1)
             try:
                 return float(num) / float(denom)
-            except (ValueError, ZeroDivisionError):
+            except ValueError, ZeroDivisionError:
                 return value
         try:
             as_float = float(value)

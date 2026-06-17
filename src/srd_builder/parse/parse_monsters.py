@@ -240,7 +240,7 @@ def _extract_damage_type_id(damage_type: str) -> str:
         "radiant" -> "damage:radiant"
     """
     # Take first word/type from comma-separated list
-    first_type = damage_type.split(",")[0].strip()
+    first_type = damage_type.split(",", maxsplit=1)[0].strip()
     # Normalize to lowercase snake_case
     normalized = re.sub(r"[^a-z0-9]+", "_", first_type.lower()).strip("_")
     return f"damage:{normalized}"

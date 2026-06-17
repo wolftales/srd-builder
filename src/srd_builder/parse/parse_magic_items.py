@@ -174,7 +174,7 @@ def _extract_type(metadata: str) -> str:
         return paren_match.group(1).capitalize()
 
     # Fallback: first word
-    first_word = metadata.split()[0] if metadata else "Item"
+    first_word = metadata.split(maxsplit=1)[0] if metadata else "Item"
     return first_word.capitalize()
 
 

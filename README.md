@@ -23,18 +23,21 @@ cd srd-builder
 python3.14 -m venv .venv
 source .venv/bin/activate  # on Windows: .venv\Scripts\activate
 
-# Install project
-pip install -e .
+# Install project (editable mode, Python 3.14 compatible)
+pip install -e . --config-settings editable_mode=compat
 
-# Build SRD 5.1 JSON data files
-make output
+# Add SRD PDF to enable full extraction (gitignored)
+# Place your CC-BY licensed SRD_CC_v5.1.pdf in: rulesets/srd_5_1/
+
+# Build complete bundle (data + schemas + docs)
+make bundle
 
 # Output is ready in dist/srd_5_1/
 ls -lh dist/srd_5_1/
 cat dist/srd_5_1/build_report.json
 ```
 
-Done! You now have a complete SRD 5.1 dataset with 13 JSON files. Load and use it:
+Done! You now have a complete SRD 5.1 bundle ready to share. Load and use it:
 
 ```python
 import json
@@ -45,15 +48,14 @@ data = json.loads(Path("dist/srd_5_1/monsters.json").read_text())
 print(f"Loaded {len(data['items'])} monsters")
 ```
 
-**For production use** (distribution, publishing), build a complete bundle instead:
-
-```bash
-make bundle  # Includes schemas + docs + README
-```
+> **Note:** Without the SRD PDF in `rulesets/srd_5_1/`, PDF-extracted datasets
+> (monsters, spells, equipment, magic_items) will be empty. Static datasets
+> (classes, lineages, conditions, etc.) still build correctly. The `raw/`
+> subdirectory is for build-generated `*_raw.json` intermediates, not the PDF.
 
 See "Building datasets" below for all available build options.
 
-### Build pipeline (v0.22.0)
+### Build pipeline (v0.22.1)
 
 The build pipeline extracts monster, equipment, spell, magic item, rule, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **317 creatures**, **106 equipment items**, **319 spells**, **264 magic items**, **172 rules**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
 
@@ -264,7 +266,8 @@ srd-builder/
 │   └── indexer.py           # Build lookup indexes
 ├── rulesets/
 │   └── srd_5_1/
-│       └── raw/             # (gitignored) Local PDFs and fixtures
+│       ├── SRD_CC_v5.1.pdf  # (gitignored) Local source PDF
+│       └── raw/             # (gitignored) Build-generated *_raw.json intermediates
 ├── dist/                     # Build output (gitignored)
 │   └── srd_5_1/
 │       ├── build_report.json

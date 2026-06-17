@@ -101,7 +101,7 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
                         "type_id": f"damage:{damage_type.replace(' ', '_')}",
                     }
                 )
-            except (ValueError, IndexError):
+            except ValueError, IndexError:
                 continue
 
         if damage_array:
@@ -152,7 +152,7 @@ def parse_action_fields(action: dict[str, Any]) -> dict[str, Any]:  # noqa: C901
                 "dc_type_id": dc_type_id,
                 "success_type": success_type,
             }
-        except (ValueError, IndexError):
+        except ValueError, IndexError:
             pass
 
     return patched

@@ -69,6 +69,8 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 🔗 v0.19.0 — Cross-Reference Enhancement (inline references with type_id fields)
 - 📚 v0.20.0 — Atomic Reference Datasets (skills, damage_types, ability_scores)
 - 🎨 v0.21.0 — Third-Party Review & Feedback (external validation before v1.0)
+- 🧰 v0.22.0 — Python 3.14, dynamic versioning, dependency updates, README refresh
+- 🩹 v0.22.1 — Editable install fix (packages.find for all subpackages, setuptools compat mode for Python 3.14)
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 - 🏗️ v2.0.0 — Data Model Restructure (field grouping, nested objects, API-first patterns)
 

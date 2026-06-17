@@ -27,24 +27,38 @@ def run_command(cmd: list[str], check: bool = True) -> subprocess.CompletedProce
 
 
 def update_version_file(new_version: str) -> None:
-    """Update __version__ in __init__.py."""
-    init_file = Path("src/srd_builder/__init__.py")
-    content = init_file.read_text()
+    """Update version in pyproject.toml (single source of truth).
 
-    # Extract current version
+    The package exposes ``__version__`` dynamically via ``importlib.metadata``,
+    so ``pyproject.toml`` is the only place the version string lives.
+    """
+    pyproject = Path("pyproject.toml")
+    content = pyproject.read_text()
+
     for line in content.splitlines():
-        if line.startswith('__version__ = "'):
+        if line.startswith('version = "'):
             old_version = line.split('"')[1]
             break
     else:
-        raise ValueError("Could not find __version__ in __init__.py")
+        raise ValueError("Could not find version line in pyproject.toml")
 
-    # Replace version
-    new_content = content.replace(
-        f'__version__ = "{old_version}"', f'__version__ = "{new_version}"'
+    new_content = content.replace(f'version = "{old_version}"', f'version = "{new_version}"', 1)
+    pyproject.write_text(new_content)
+    print(f"✓ Updated pyproject.toml: {old_version} → {new_version}")
+
+    # Reinstall so importlib.metadata reflects the new version for fixture regen.
+    run_command(
+        [
+            "pip",
+            "install",
+            "-e",
+            ".",
+            "--config-settings",
+            "editable_mode=compat",
+            "--no-deps",
+            "--quiet",
+        ]
     )
-    init_file.write_text(new_content)
-    print(f"✓ Updated __init__.py: {old_version} → {new_version}")
 
 
 def regenerate_fixtures() -> None:
@@ -54,17 +68,23 @@ def regenerate_fixtures() -> None:
     # Import after version update
     sys.path.insert(0, str(Path.cwd() / "src"))
     from srd_builder import __version__
+    from srd_builder.parse.parse_ability_scores import parse_ability_scores
     from srd_builder.parse.parse_conditions import parse_condition_records
+    from srd_builder.parse.parse_damage_types import parse_damage_types
     from srd_builder.parse.parse_diseases import parse_disease_records
     from srd_builder.parse.parse_equipment import parse_equipment_records
     from srd_builder.parse.parse_lineages import _build_lineage_record
     from srd_builder.parse.parse_magic_items import parse_magic_items
     from srd_builder.parse.parse_monsters import parse_monster_records
     from srd_builder.parse.parse_poisons_table import parse_poisons_table
+    from srd_builder.parse.parse_skills import parse_skills
     from srd_builder.parse.parse_spells import parse_spell_records
+    from srd_builder.parse.parse_weapon_properties import parse_weapon_properties
     from srd_builder.postprocess import (
+        clean_ability_score_record,
         clean_class_record,
         clean_condition_record,
+        clean_damage_type_record,
         clean_disease_record,
         clean_equipment_record,
         clean_feature_record,
@@ -73,8 +93,10 @@ def regenerate_fixtures() -> None:
         clean_monster_record,
         clean_poison_record,
         clean_rule_record,
+        clean_skill_record,
         clean_spell_record,
         clean_table_record,
+        clean_weapon_property_record,
     )
     from srd_builder.utils.metadata import meta_block, read_schema_version
 
@@ -238,6 +260,19 @@ def regenerate_fixtures() -> None:
         },
     ]
 
+    # Reference datasets generated from code (no raw input).
+    reference_fixtures = [
+        ("ability_scores", "ability_score", parse_ability_scores, clean_ability_score_record),
+        ("damage_types", "damage_type", parse_damage_types, clean_damage_type_record),
+        ("skills", "skill", parse_skills, clean_skill_record),
+        (
+            "weapon_properties",
+            "weapon_property",
+            parse_weapon_properties,
+            clean_weapon_property_record,
+        ),
+    ]
+
     for fixture in fixtures:
         raw_path = Path(fixture["raw"])
         normalized_path = Path(fixture["normalized"])
@@ -253,6 +288,17 @@ def regenerate_fixtures() -> None:
 
         normalized_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
         print(f"✓ Regenerated {fixture['name']}.json (v{__version__}, schema v{schema_version})")
+
+    for name, schema_name, parse_fn, clean_fn in reference_fixtures:
+        normalized_path = Path(f"tests/fixtures/srd_5_1/normalized/{name}.json")
+        processed = [clean_fn(item) for item in parse_fn()]
+        schema_version = read_schema_version(schema_name)
+        doc = {
+            "_meta": meta_block("srd_5_1", schema_version),
+            "items": processed,
+        }
+        normalized_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n")
+        print(f"✓ Regenerated {name}.json (v{__version__}, schema v{schema_version})")
 
 
 def update_readme(new_version: str) -> None:
@@ -304,9 +350,9 @@ def commit_changes(new_version: str) -> None:
     commit_msg = f"""chore: bump version to v{new_version}
 
 Version Changes:
-- src/srd_builder/__init__.py: → {new_version}
+- pyproject.toml: \u2192 {new_version}
 
-Regenerated Fixtures (all 12 datasets):
+Regenerated Fixtures (all 16 datasets):
 - tests/fixtures/srd_5_1/normalized/monsters.json
 - tests/fixtures/srd_5_1/normalized/equipment.json
 - tests/fixtures/srd_5_1/normalized/spells.json
