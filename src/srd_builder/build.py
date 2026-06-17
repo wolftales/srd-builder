@@ -70,7 +70,7 @@ from .utils.metadata import (
     wrap_with_meta,
 )
 from .utils.table_indexer import TableIndexer
-from .validate_references import validate_references
+from .utils.validate_references import validate_references
 
 
 def _load_raw_monsters(raw_dir: Path) -> list[dict[str, Any]]:

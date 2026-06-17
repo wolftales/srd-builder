@@ -1,6 +1,6 @@
 """Tests for cross-reference validation."""
 
-from srd_builder.validate_references import ReferenceValidator
+from srd_builder.utils.validate_references import ReferenceValidator
 
 
 def test_valid_damage_type_refs():
