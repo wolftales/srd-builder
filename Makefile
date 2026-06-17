@@ -3,6 +3,12 @@
 init:
 	pip install -e . --config-settings editable_mode=compat
 	pip install -e ".[dev]" --config-settings editable_mode=compat
+	@# macOS: iCloud / Finder may flag site-packages as UF_HIDDEN, which
+	@# causes Python 3.14's site.py to skip .pth files (including the
+	@# editable install marker). Clear the flag so imports work.
+	@if [ -d .venv ] && command -v chflags >/dev/null 2>&1; then \
+		chflags -R nohidden .venv; \
+	fi
 	pre-commit install
 
 lint:
