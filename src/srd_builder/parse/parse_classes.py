@@ -6,7 +6,7 @@ BOUNDARIES: Transforms CLASS_DATA → structured records with metadata
 NOTE: Each class references its progression table (e.g., table:barbarian_progression)
       These tables contain level-by-level features, abilities, and class-specific values.
       Class progression tables need to be extracted from SRD PDF pages 8-55 and added
-      to scripts/table_targets.py for complete dataset.
+      to src/srd_builder/extraction/table_targets.py for complete dataset.
 """
 
 from __future__ import annotations

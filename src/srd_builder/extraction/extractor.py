@@ -14,14 +14,7 @@ import fitz  # PyMuPDF
 
 from .extraction_metadata import get_table_metadata
 from .patterns import RawTable, extract_by_config
-
-try:
-    from scripts.table_targets import TARGET_TABLES, TableTarget
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-    from scripts.table_targets import TARGET_TABLES, TableTarget
+from .table_targets import TARGET_TABLES, TableTarget
 
 logger = logging.getLogger(__name__)
 

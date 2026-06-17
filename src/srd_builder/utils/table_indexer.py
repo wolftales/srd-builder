@@ -330,14 +330,7 @@ class TableIndexer:
         # Add reference tables from target list
         reference_tables: list[dict[str, str]] = []
         try:
-            try:
-                from scripts.table_targets import TARGET_TABLES
-            except ModuleNotFoundError:
-                import sys
-                from pathlib import Path
-
-                sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-                from scripts.table_targets import TARGET_TABLES
+            from srd_builder.extraction.table_targets import TARGET_TABLES
 
             for target in TARGET_TABLES:
                 # Skip tables that weren't successfully extracted

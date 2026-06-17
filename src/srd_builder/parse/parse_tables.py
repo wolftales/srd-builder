@@ -18,17 +18,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+from srd_builder.extraction.table_targets import TARGET_TABLES
+
 # CLI constants
 MIN_CLI_ARGS = 2  # Minimum command-line arguments required
 CLI_OUTPUT_PATH_ARG_INDEX = 2  # Index of optional output path in sys.argv
-
-try:
-    from scripts.table_targets import TARGET_TABLES
-except ModuleNotFoundError:
-    import sys
-
-    sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-    from scripts.table_targets import TARGET_TABLES
 
 logger = logging.getLogger(__name__)
 

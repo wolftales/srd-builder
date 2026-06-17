@@ -1103,7 +1103,7 @@ def build(  # noqa: C901
     raw_tables = _load_raw_tables(layout["raw"])
     parsed_tables = None
     if raw_tables:
-        from scripts.table_targets import TARGET_TABLES
+        from .extraction.table_targets import TARGET_TABLES
 
         targets_by_id = {t["id"]: t for t in TARGET_TABLES}
         parsed_tables = [parse_single_table(raw, targets_by_id) for raw in raw_tables]

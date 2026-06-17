@@ -8,14 +8,11 @@ Validates that:
 """
 
 import json
-import sys
 from pathlib import Path
 
 import pytest
 
-# Add scripts to path for importing TARGET_TABLES
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-from table_targets import TARGET_TABLES
+from srd_builder.extraction.table_targets import TARGET_TABLES
 
 
 @pytest.fixture
