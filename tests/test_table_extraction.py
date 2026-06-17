@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from srd_builder.extraction.table_targets import TARGET_TABLES
+from srd_builder.extract.table_targets import TARGET_TABLES
 
 
 @pytest.fixture

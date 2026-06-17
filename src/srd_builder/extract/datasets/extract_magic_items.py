@@ -15,7 +15,7 @@ from typing import Any
 import fitz
 
 try:
-    from ..constants import EXTRACTOR_VERSION
+    from ...constants import EXTRACTOR_VERSION
 except ImportError:
     # Running as script
     import sys

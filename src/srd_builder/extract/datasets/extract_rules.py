@@ -12,8 +12,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from ..constants import EXTRACTOR_VERSION
-from ..utils.page_index import PAGE_INDEX
+from ...constants import EXTRACTOR_VERSION
+from ...utils.page_index import PAGE_INDEX
 
 # Rules chapters from PAGE_INDEX (Phase 1 scope - v0.17.0)
 RULES_SECTIONS = [

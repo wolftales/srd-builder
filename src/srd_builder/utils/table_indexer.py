@@ -330,7 +330,7 @@ class TableIndexer:
         # Add reference tables from target list
         reference_tables: list[dict[str, str]] = []
         try:
-            from srd_builder.extraction.table_targets import TARGET_TABLES
+            from srd_builder.extract.table_targets import TARGET_TABLES
 
             for target in TARGET_TABLES:
                 # Skip tables that weren't successfully extracted

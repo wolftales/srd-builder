@@ -18,7 +18,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from srd_builder.extraction.table_targets import TARGET_TABLES
+from srd_builder.extract.table_targets import TARGET_TABLES
 
 # CLI constants
 MIN_CLI_ARGS = 2  # Minimum command-line arguments required

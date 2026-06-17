@@ -17,7 +17,7 @@ from typing import Any
 
 from srd_builder.utils.prose import ProseExtractor
 
-from ..constants import EXTRACTOR_VERSION
+from ...constants import EXTRACTOR_VERSION
 
 # Condition pages from Appendix PH-A
 CONDITION_START_PAGE = 358

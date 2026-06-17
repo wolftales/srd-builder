@@ -21,15 +21,15 @@ from .assemble.assemble_equipment import assemble_equipment_from_tables
 from .assemble.assemble_prose import assemble_prose_dataset
 from .assemble.indexer import build_indexes
 from .constants import RULESETS_DIRNAME
-from .extract.extract_equipment import extract_equipment
-from .extract.extract_features import extract_class_features, extract_lineage_traits
-from .extract.extract_magic_items import extract_magic_items
-from .extract.extract_monsters import extract_monsters
-from .extract.extract_pdf_metadata import extract_pdf_metadata
-from .extract.extract_rules import extract_rules
-from .extract.extract_spells import extract_spells
-from .extraction import extract_tables_to_json
-from .extraction.extraction_metadata import TABLES
+from .extract import extract_tables_to_json
+from .extract.datasets.extract_equipment import extract_equipment
+from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
+from .extract.datasets.extract_magic_items import extract_magic_items
+from .extract.datasets.extract_monsters import extract_monsters
+from .extract.datasets.extract_pdf_metadata import extract_pdf_metadata
+from .extract.datasets.extract_rules import extract_rules
+from .extract.datasets.extract_spells import extract_spells
+from .extract.extraction_metadata import TABLES
 from .parse.parse_ability_scores import parse_ability_scores
 from .parse.parse_classes import parse_classes
 from .parse.parse_conditions import parse_condition_records
@@ -1103,7 +1103,7 @@ def build(  # noqa: C901
     raw_tables = _load_raw_tables(layout["raw"])
     parsed_tables = None
     if raw_tables:
-        from .extraction.table_targets import TARGET_TABLES
+        from .extract.table_targets import TARGET_TABLES
 
         targets_by_id = {t["id"]: t for t in TARGET_TABLES}
         parsed_tables = [parse_single_table(raw, targets_by_id) for raw in raw_tables]
