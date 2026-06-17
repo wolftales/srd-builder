@@ -20,7 +20,7 @@ from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
 from .assemble.assemble_prose import assemble_prose_dataset
 from .assemble.indexer import build_indexes
-from .constants import RULESETS_DIRNAME
+from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMAS_DIRNAME
 from .extract import extract_tables_to_json
 from .extract.datasets.extract_equipment import extract_equipment
 from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
@@ -534,7 +534,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--out",
-        default="dist",
+        default=DIST_DIRNAME,
         help="Root output directory for build artifacts",
     )
     parser.add_argument(
@@ -729,8 +729,8 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     print("  ✓ Generated README.md")
 
     # Copy every shipped dataset schema. Source of truth: DATASET_TO_SCHEMA.
-    schemas_src = repo_root / "schemas"
-    schemas_dst = target_dir / "schemas"
+    schemas_src = repo_root / SCHEMAS_DIRNAME
+    schemas_dst = target_dir / SCHEMAS_DIRNAME
     schemas_dst.mkdir(exist_ok=True)
     schema_names = sorted(set(DATASET_TO_SCHEMA.values()))
     for schema_name in schema_names:
@@ -742,9 +742,9 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     print(f"  ✓ Copied schemas/ ({len(schema_names)} schemas)")
 
     # Copy generated exemplars (one minimal valid instance per schema).
-    exemplars_src = repo_root / "schemas" / "exemplars"
+    exemplars_src = repo_root / SCHEMAS_DIRNAME / EXEMPLARS_DIRNAME
     if exemplars_src.exists():
-        exemplars_dst = schemas_dst / "exemplars"
+        exemplars_dst = schemas_dst / EXEMPLARS_DIRNAME
         exemplars_dst.mkdir(exist_ok=True)
         count = 0
         for src in sorted(exemplars_src.glob("*.exemplar.json")):

@@ -11,9 +11,11 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
-SCHEMA_DIR = Path(__file__).resolve().parents[3] / "schemas"
-DIST_DIR = Path(__file__).resolve().parents[3] / "dist"
-RULESETS_DIR = Path(__file__).resolve().parents[3] / "rulesets"
+from ..constants import DIST_DIRNAME, RULESETS_DIRNAME, SCHEMAS_DIRNAME
+
+SCHEMA_DIR = Path(__file__).resolve().parents[3] / SCHEMAS_DIRNAME
+DIST_DIR = Path(__file__).resolve().parents[3] / DIST_DIRNAME
+RULESETS_DIR = Path(__file__).resolve().parents[3] / RULESETS_DIRNAME
 
 
 def load_json(path: Path) -> object:

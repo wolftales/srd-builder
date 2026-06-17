@@ -15,7 +15,17 @@ from typing import Final
 EXTRACTOR_VERSION: Final = "0.4.0"
 
 # Data source identifier
+#
+# TODO(v0.27+): graduate to per-ruleset config under
+# rulesets/<ruleset>/config.py once a second ruleset (e.g. SRD 5.2) is
+# actually available to test against. Doing it now would require
+# threading a ruleset id through every parser/postprocessor purely
+# for a single string, with no second ruleset to validate the
+# abstraction against — premature abstraction.
 DATA_SOURCE: Final = "SRD_CC_v5.1"
 
 # Directory names
 RULESETS_DIRNAME: Final = "rulesets"
+DIST_DIRNAME: Final = "dist"
+SCHEMAS_DIRNAME: Final = "schemas"
+EXEMPLARS_DIRNAME: Final = "exemplars"
