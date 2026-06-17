@@ -322,6 +322,89 @@ becomes purely a `rulesets/` sibling directory, not a `srd_builder/` fork.
 - The ruleset-data move is a strict additive then a strict removal — no
   ambiguity, no behavior change, easy to verify.
 
+### Hardcoded values / config-vs-constant inventory
+
+`src/srd_builder/constants.py` is small (3 values) but each value has a
+different real lifetime, which the file currently hides:
+
+| Symbol | Real meaning | Right home |
+| --- | --- | --- |
+| `EXTRACTOR_VERSION = "0.4.0"` | Fingerprint of how *we* extract — describes raw output format | **Stays global.** Belongs next to whatever code it fingerprints (likely under `extract/` after the rename). |
+| `DATA_SOURCE = "SRD_CC_v5.1"` | Identifies the source PDF and SRD edition | **Per-ruleset.** Becomes wrong the moment SRD 5.2.1 lands. Move to `rulesets/srd_5_1/config/source.yaml` (or similar). |
+| `RULESETS_DIRNAME = "rulesets"` | The string "rulesets" | Either deletes (just inline the string) or moves alongside whatever defines what a ruleset *is*. |
+
+The same shape exists for the **dist directory** (verified):
+
+- `build.py:537` — `default="dist"` for the CLI `--target`
+- `utils/validate.py:15` — `DIST_DIR = Path(...) / "dist"` module-level
+
+`dist/` is structurally identical to `rulesets/` — a top-level workspace
+directory. Treat it the same way.
+
+> Broader audit: while doing v0.26.2, sweep `src/srd_builder/` for
+> remaining magic strings and hardcoded paths and decide for each one
+> whether it is (a) a true constant that belongs alongside the code it
+> describes, (b) per-ruleset config that belongs in
+> `rulesets/<ruleset>/config/`, or (c) a workspace-shape constant
+> (like `dist/`, `rulesets/`) that probably belongs in a single
+> `paths.py` module or — better — a `pyproject.toml`-driven settings
+> object.
+
+### Configuration UX (must not get lost)
+
+The proposed multi-ruleset structure is technically right but creates
+a real risk: the user wants to set a couple of values and run the
+engine; we must not force them to edit YAML files spread across three
+directories.
+
+**Constraint for v0.26.2 / v0.27.0 implementation:**
+
+- Default behavior with zero config edits: `make build` against the
+  default ruleset (`srd_5_1`) just works.
+- Per-ruleset config files exist for *us* (the engine maintainers) to
+  declare facts about the source — page indexes, edition strings,
+  source filenames. They should not be where users put their
+  preferences.
+- User-level overrides (output dir, ruleset selection, schema strict
+  mode, etc.) belong on the CLI / Make target / a single root-level
+  config file the user can edit, not buried per-ruleset.
+- The split is: **engine config** (per-ruleset, declarative facts about
+  the source — checked in) vs. **user settings** (per-invocation,
+  preferences — flags or one settings file). Keep these separate or
+  the simplicity-of-use goal evaporates.
+
+If we can't articulate "to add SRD 5.2.1, copy `rulesets/srd_5_1/` to
+`rulesets/srd_5_2_1/`, edit two files, run `make build RULESET=srd_5_2_1`"
+in one paragraph, the design isn't done.
+
+### Duplication signal (consolidate during the move, don't migrate twice)
+
+Two pairs of modules that look like the same job done twice — flagging
+so v0.26.2 picks the better implementation rather than relocating both:
+
+- **Cross-reference index building:**
+  - `src/srd_builder/validate_references.py` — `ReferenceValidator`
+    builds ID indexes (damage_types, abilities, skills, conditions,
+    spells, features, equipment, weapon_properties) from datasets to
+    validate cross-references at build time.
+  - `src/srd_builder/assemble/indexer.py` — also builds cross-reference
+    indexes. Same datasets.
+  - **Action during v0.26.2:** read both, identify the better
+    abstraction, keep one under `utils/` (it's a pure-data operation),
+    delete the other, relink the consumer (currently `build.py`).
+- **Validation utilities:**
+  - `utils/validate.py`, `utils/validate_monsters.py` — already under
+    `utils/`, do schema-level validation.
+  - `validate_references.py` (top-level package — see below) does a
+    different but related job.
+  - **Action:** at minimum, move `validate_references.py` to `utils/`
+    where it belongs alongside its peers. Possibly merge with the
+    indexer cleanup above if the index-building is shared.
+
+This is in scope for v0.26.2 because we're already moving things; doing
+the consolidation in the same release avoids a "moved bad code, then
+moved it again" sequence.
+
 ### Constraint while v0.26.1 is in flight
 
 > Do not extend the technical debt in the old code.
