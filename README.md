@@ -55,9 +55,32 @@ print(f"Loaded {len(data['items'])} monsters")
 
 See "Building datasets" below for all available build options.
 
-### Build pipeline (v0.22.2)
+### Build pipeline (v0.23.0)
 
-The build pipeline extracts monster, equipment, spell, magic item, rule, table, lineage, and class data from PDF, parses stat blocks, normalizes fields, and builds indexes. **317 creatures**, **106 equipment items**, **319 spells**, **264 magic items**, **172 rules**, **37 tables** (12 class progression + 25 equipment/reference), **13 lineages** (9 base + 4 subraces), and **12 classes** with full provenance tracking.
+The build pipeline extracts data from the SRD PDF, parses and normalizes it, validates against
+JSON Schema, and emits 16 dataset files plus a search index. Latest build: **1,696 items across 16 datasets**.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full pipeline.
+
+| Dataset | Count | Schema |
+|---|---:|---|
+| Monsters | 317 | v2.0.0 |
+| Spells | 319 | v2.0.0 |
+| Equipment | 259 | v2.0.0 |
+| Magic Items | 240 | v2.0.0 |
+| Features | 246 | v2.0.0 |
+| Rules | 172 | v2.0.0 |
+| Tables | 38 | v2.0.0 |
+| Skills | 18 | v1.0.0 |
+| Conditions | 15 | v2.0.0 |
+| Poisons | 14 | v2.0.0 |
+| Damage Types | 13 | v1.0.0 |
+| Lineages | 13 | v2.0.0 |
+| Classes | 12 | v2.0.0 |
+| Weapon Properties | 11 | v1.0.0 |
+| Ability Scores | 6 | v1.0.0 |
+| Diseases | 3 | v2.0.0 |
+
+Live counts are also written to `dist/srd_5_1/meta.json` under `inventory` on every build.
 
 ## Building datasets
 
@@ -66,7 +89,7 @@ Build SRD 5.1 JSON output for Blackmoor:
 **With make (recommended):**
 ```bash
 # Build complete bundle: data + schemas + docs + README
-# Output: 13 JSON files + 8 schemas + 2 docs + README in dist/srd_5_1/
+# Output: 16 dataset JSON files + 16 schemas + 2 docs + dynamically-generated README
 make bundle
 ```
 
@@ -88,8 +111,8 @@ PYTHONPATH=src python -m srd_builder.validate --ruleset srd_5_1
 
 | | Data only | Complete bundle |
 |---|---|---|
-| **Data files** | ✅ 13 JSON files | ✅ 13 JSON files |
-| **Schemas** | ❌ None | ✅ 8 schema files |
+| **Data files** | ✅ 16 JSON files | ✅ 16 JSON files |
+| **Schemas** | ❌ None | ✅ 16 schema files |
 | **Documentation** | ❌ None | ✅ SCHEMAS.md, DATA_DICTIONARY.md |
 | **README** | ❌ None | ✅ Consumer-facing README.md |
 | **Speed** | ⚡ Fast | 🐢 Slightly slower |
@@ -98,37 +121,28 @@ PYTHONPATH=src python -m srd_builder.validate --ruleset srd_5_1
 **Output structure (with `make bundle`):**
 ```
 dist/srd_5_1/
-├── monsters.json          # 317 creature stat blocks
-├── equipment.json         # 106 items
-├── spells.json            # 319 spells
-├── magic_items.json       # 264 magic items
-├── rules.json             # 172 rules
-├── tables.json            # 37 reference tables
-├── lineages.json          # 13 character lineages
+├── ability_scores.json    # 6 ability score definitions
 ├── classes.json           # 12 character classes
-├── index.json             # Lookup indexes (all datasets)
-├── meta.json              # Dataset metadata (license, provenance)
-├── build_report.json      # Build metadata (version, timestamp)
-├── README.md              # Consumer documentation
-├── schemas/               # JSON schemas for all datasets
-│   ├── monster.schema.json
-│   ├── equipment.schema.json
-│   ├── spell.schema.json
-│   ├── magic_item.schema.json
-│   ├── class.schema.json
-│   ├── lineage.schema.json
-│   ├── table.schema.json
-│   ├── condition.schema.json
-│   ├── disease.schema.json
-│   ├── poison.schema.json
-│   ├── features.schema.json
-│   ├── damage_type.schema.json
-│   ├── skill.schema.json
-│   ├── ability_score.schema.json
-│   └── weapon_property.schema.json
-└── docs/                  # Consumer documentation
-    ├── SCHEMAS.md
-    └── DATA_DICTIONARY.md
+├── conditions.json        # 15 status conditions
+├── damage_types.json      # 13 damage types
+├── diseases.json          # 3 diseases
+├── equipment.json         # 259 items (weapons, armor, gear)
+├── features.json          # 246 class + lineage features
+├── lineages.json          # 13 lineages (formerly races)
+├── magic_items.json       # 240 magic items
+├── monsters.json          # 317 creature stat blocks
+├── poisons.json           # 14 poisons
+├── rules.json             # 172 rules from 7 core chapters
+├── skills.json            # 18 skills
+├── spells.json            # 319 spells
+├── tables.json            # 38 reference tables
+├── weapon_properties.json # 11 weapon properties
+├── index.json             # Lookup index (all datasets, with aliases)
+├── meta.json              # Bundle metadata (versions, license, inventory)
+├── build_report.json      # Build provenance (timestamp, builder version)
+├── README.md              # Auto-generated consumer documentation
+├── schemas/               # 16 JSON Schema files (one per dataset)
+└── docs/                  # SCHEMAS.md, DATA_DICTIONARY.md
 ```
 
 **Pipeline stages:**
@@ -140,6 +154,8 @@ dist/srd_5_1/
 5. **Validate** (`validate.py`) - JSON Schema validation
 
 **Parsed fields (27):** id, simple_name, name, summary, size, type, alignment, armor_class, hit_points, hit_dice, speed, ability_scores, saving_throws, skills, damage_resistances, damage_immunities, damage_vulnerabilities, condition_immunities, senses, languages, challenge_rating, xp_value, traits, actions, reactions, legendary_actions, page.
+
+A full inventory is written to `dist/srd_5_1/meta.json` under the `inventory` key after every build.
 
 ### Consume the dataset (Python)
 
@@ -259,68 +275,48 @@ python -c "import srd_builder; print(srd_builder.__version__)"
 ```shell
 srd-builder/
 ├── src/srd_builder/
-│   ├── build.py             # CLI orchestrator: --ruleset, --out
+│   ├── build.py             # CLI orchestrator (--ruleset, --out, --bundle)
 │   ├── validate.py          # JSON Schema validation
-│   ├── parse_monsters.py    # Field mapping from raw to structured
-│   ├── postprocess/         # Normalization & cleanup functions
-│   └── indexer.py           # Build lookup indexes
+│   ├── extract/             # PDF extraction modules
+│   ├── parse/               # Field parsing (one per dataset)
+│   ├── postprocess/         # Normalization & cleanup
+│   ├── assemble/            # Assembly + indexer
+│   └── utils/               # Metadata, page index, helpers
 ├── rulesets/
 │   └── srd_5_1/
 │       ├── SRD_CC_v5.1.pdf  # (gitignored) Local source PDF
 │       └── raw/             # (gitignored) Build-generated *_raw.json intermediates
-├── dist/                     # Build output (gitignored)
-│   └── srd_5_1/
-│       ├── build_report.json
-│       └── data/
-│           ├── monsters.json
-│           └── index.json
-├── schemas/                  # JSON Schema definitions
-│   └── monster.schema.json
+├── dist/                    # Build output (gitignored)
+│   └── srd_5_1/             # See "Output structure" above
+├── schemas/                 # 17 JSON Schema definitions (source of truth)
 ├── tests/
-│   ├── fixtures/            # Test data (raw & normalized)
-│   └── test_*.py
-├── docs/
-│   └── ROADMAP.md           # Development roadmap
-├── .github/workflows/
-│   └── ci.yml               # GitHub Actions CI
-├── Makefile                 # Development shortcuts
+│   ├── fixtures/            # Raw + normalized test data
+│   └── test_*.py            # Pytest suite (292 tests)
+├── docs/                    # ARCHITECTURE, ROADMAP, SCHEMAS, etc.
+├── archive/                 # Historical snapshots + retired code/docs
+├── scripts/                 # Build helpers, smoke checks, version bump
+├── .github/workflows/ci.yml
+├── Makefile
 ├── pyproject.toml
 └── .pre-commit-config.yaml
 ```
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full development plan.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.23.0** — audit, cleanup, and consumer-handoff readiness.
 
-- ✅ **v0.1.0** - Foundation (CI, build infrastructure, validation)
-- ✅ **v0.2.0** - End-to-end pipeline with fixture data
-- ✅ **v0.3.0** - PDF extraction module (296 monsters)
-- ✅ **v0.4.0** - Structured field parsing (AC, HP objects)
-- ✅ **v0.5.0** - Equipment dataset complete (111 items)
-- ✅ **v0.5.1** - Action parsing & ability modifiers (schema v1.2.0)
-- ✅ **v0.6.2** - Spells dataset complete (319 spells, schema v1.3.0)
-- ✅ **v0.6.3** - Fixed build_report.json path reference
-- ✅ **v0.6.4** - Spell parsing improvements (ritual, area, healing, attack effects)
-- ✅ **v0.6.5** - Version management tooling
-- ✅ **v0.7.0** - Reference tables dataset (12 class progression tables)
-- ✅ **v0.7.1** - Classes & Lineages (character creation + terminology aliases)
-- ✅ **v0.9.0** - Equipment tables (armor, weapons, exchange rates)
-- ✅ **v0.9.1** - Equipment tables (adventure gear, tools, container capacity)
-- ✅ **v0.9.2** - Equipment tables complete (25 equipment/pricing tables)
-- ✅ **v0.9.3** - Text parser refactor (utilities + migration guide)
-- ✅ **v0.9.4** - Migrate CALCULATED tables (ability_scores to PDF extraction)
-- ✅ **v0.9.5** - Pattern-based architecture (metadata-driven table extraction)
-- ✅ **v0.9.6** - TOC & Page Index (PAGE_INDEX with 23 sections, accurate page numbers)
-- ✅ **v0.9.7** - Migrate REFERENCE tables (travel_pace, size_categories from PDF; removed non-SRD tables)
-- 🎯 **v0.9.8** - Migrate CLASS_PROGRESSIONS (12 class tables to PDF extraction)
-- 🎯 **v0.10.0** - Conditions dataset (~15 conditions)
-- 🎯 **v0.10.0** - Features dataset (class/racial features)
-- ✅ **v0.14.0** - Deterministic metadata + prose datasets (conditions, diseases, madness, poisons)
-- ✅ **v0.15.0** - Module Reorganization + Monster/Spell Refactoring
-- ✅ **v0.16.0** - Magic Items Dataset (264 items with full metadata)
-- ✅ **v0.17.0** - Rules Dataset (172 rules from 7 core chapters)
-- 🎯 **v0.18.0** - Quality & Polish (final cleanup before v1.0.0)
-- 🎯 **v1.0.0** - Complete SRD 5.1 in JSON (9 datasets) 🚀
+Key milestones:
+
+- **v0.3.0–v0.7.x** — PDF extraction + structured field parsing
+- **v0.9.x** — Equipment + reference tables + class progressions
+- **v0.14.0** — Conditions, diseases, madness, poisons (deterministic prose pipeline)
+- **v0.15.0** — Module reorganization + monster/spell refactor
+- **v0.16.0** — Magic items dataset (240 items)
+- **v0.17.0** — Rules dataset (172 rules, 7 chapters)
+- **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
+- **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.23.0** — Bundle README auto-generation, full schema coverage, inventory manifest, repo cleanup
+- **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## Testing
 
@@ -351,11 +347,11 @@ pytest tests/test_golden_monsters.py  # End-to-end pipeline test
   - Dataset structure validation
 
 **Coverage:**
-- `test_raw_extraction.py` - Validates raw PDF extraction output structure (monsters_raw.json)
-- `test_parse_*.py` - Unit tests for parsing modules (monsters, equipment, actions)
-- `test_golden_*.py` - End-to-end tests comparing pipeline output to fixtures
-- `test_schema_versions.py` - Schema version consistency (unit + package tests)
-- 92 tests passing
+- `test_raw_extraction.py` — Validates raw PDF extraction output structure (monsters_raw.json)
+- `test_parse_*.py` — Unit tests for parsing modules (monsters, equipment, actions)
+- `test_golden_*.py` — End-to-end tests comparing pipeline output to fixtures (one per dataset)
+- `test_schema_versions.py` — Schema version consistency (unit + package tests)
+- 292 tests passing
 
 ## Use Cases
 
@@ -379,7 +375,7 @@ from jsonschema import Draft202012Validator
 
 with open('schemas/monster.schema.json') as f:
     schema = json.load(f)
-with open('dist/srd_5_1/data/monsters.json') as f:
+with open('dist/srd_5_1/monsters.json') as f:
     data = json.load(f)
 
 validator = Draft202012Validator(schema)
@@ -389,15 +385,12 @@ for error in validator.iter_errors(data['items'][0]):
 
 ## Versioning
 
-srd-builder uses **three version numbers**:
+srd-builder uses **two version numbers**:
 
-- **Package version** (`__version__` = `0.5.2`) - The data/package we produce
-- **Extractor version** (`EXTRACTOR_VERSION` = `0.3.0`) - Raw extraction format for all `*_raw.json` files
-- **Schema version** (`1.2.0`) - JSON Schema validation rules (consumer data contract)
+- **Package version** (read from `pyproject.toml` at runtime via `importlib.metadata`, currently `v0.23.0`) — the builder release.
+- **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently (currently v1.0.0–v2.0.0). Schema versions are written into `dist/srd_5_1/meta.json` `schemas` on every build, and into each dataset's `_meta.schema_version`.
 
-The **package version** tracks each release. The **extractor version** tracks how we extract from PDF (stable since v0.3.0). The **schema version** tracks the final data structure for consumers.
-
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md#version-management) for detailed version management documentation.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#version-management) for the detailed policy.
 
 ## License
 
