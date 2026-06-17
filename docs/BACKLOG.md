@@ -159,6 +159,94 @@ distinguish the two.
 - `extract_equipment.py` `EQUIPMENT_START_PAGE` / `_END_PAGE` constants
   should be replaced with TOC lookup once `verify_pdf_sections.py` lands.
 
+### Re-extraction candidates (remove the crutch, don't just declare it)
+
+Some hand-curated sources may exist because *earlier* extraction tooling
+couldn't handle them, not because the PDF is genuinely unreadable. With
+the newer PyMuPDF capabilities (font/coord-aware extraction, table-rect
+detection) it's worth re-attempting extraction and retiring the manual
+data wherever it succeeds.
+
+- **`spell_class_targets.py` (pp. 105–113 spell lists)** — comment says
+  "PDF text is corrupted." Verify with a focused reproducer:
+  1. `fitz.Document.load_page(104..112).get_text("dict")` and inspect.
+  2. If text is genuinely mojibake → keep manual + write reproducer test.
+  3. If text is fine but layout-driven (multi-column lists per class)
+     → write a real parser. Layout-driven extraction is what tripped up
+     equipment originally; same fix pattern likely applies here.
+- **`class_targets.py` features list** — features have known section
+  headers and a stable font fingerprint (`GillSans-SemiBold 13.9pt`,
+  per Phase D research). The feature *names* should be extractable; only
+  the class→feature *grouping* needs verification against the PDF cursor
+  walk we already do in `parse_features._resolve_owners()`.
+- **`lineage_targets.py`** — same question as classes. The traits text is
+  already extracted into `features.json` (lineage-owned features); the
+  *table* fields (ability_modifiers, size, speed) may be extractable from
+  the "Racial Traits" sidebar layout.
+
+Process: for each candidate, the verification is cheap (one notebook
+or scratch script per file). Outcome is either (a) retire the manual
+source, or (b) upgrade its declaration from vague "PDF corrupted" to a
+specific reproducer-backed exception. Either result is a win.
+
+## Pre-v1.0 code-health audit
+
+Before locking v1.0 and starting SRD 5.2.1, do a single full-repo pass
+focused on *removal* and *standards*, not new features. Goal: the leanest
+codebase that can produce the bundle.
+
+### Scope
+- **Dead code** — modules with no importers in `src/srd_builder/`
+  (`reference_data.py` already identified). Use `vulture` or grep on each
+  top-level symbol to enumerate; delete or move to `archive/code/`.
+- **Cruft accumulation** —
+  - `archive/dist_versions/` retention policy (keep last N? keep tagged
+    only?). Currently grows unbounded.
+  - `scripts/archive/` — same question.
+  - `docs/archive/`, `docs/planning/` — confirm nothing still actively
+    referenced from live docs.
+  - `*.json` artifacts at repo root (`build_output.txt`, `tables.json`,
+    `tables_raw.json`, `table_metadata.json`, `discovery_report.json`) —
+    are these generated, checked-in by mistake, or intentional? Move to
+    `dist/` or `.gitignore` as appropriate.
+- **Module boundary leaks** — `parse/` modules should not do I/O;
+  `postprocess/` should be pure; `assemble/` should not parse. Verify
+  with a grep for `open(` / `Path(...).read_*` / `json.load(` inside
+  `parse/` and `postprocess/`. Each violation is a real bug or a
+  refactor candidate.
+- **Standards pass** —
+  - All new code uses `from __future__ import annotations`? Consistent?
+  - Type-hint coverage — run `mypy --strict` once and see how bad it is.
+  - Docstring style — pick one (Google / NumPy / plain) and apply.
+  - No bare `except:`; no `print()` outside CLI entry points; no
+    `# type: ignore` without explanation.
+- **Test surface** —
+  - Tests skipped (19 today) — each one needs a reason or removal.
+  - Tests marked `xfail` — same.
+  - Golden tests: confirm every dataset has one and every golden uses
+    real fixtures, not inline literals.
+- **Dependencies** — `pyproject.toml` audit: anything in `[dev]` or
+  `[project.dependencies]` that's no longer imported?
+- **Schema hygiene** — every schema in `schemas/` should have at least
+  one record in `dist/` that validates against it; orphan schemas
+  (no producer) should be deleted.
+- **Doc consolidation** — `docs/` has grown to ~10 active files plus
+  archive. A v1.0 doc structure should be: README, ARCHITECTURE,
+  CONTRIBUTING, PROVENANCE, SCHEMAS, CHANGELOG. Everything else either
+  consolidates in or archives out.
+
+### Output
+A single `docs/PRE_V1_AUDIT.md` checklist (created during the work,
+not before) with measured findings. Each finding → ticket → fix or
+intentional defer. Land all fixes in one or two release waves, then cut
+v1.0.
+
+### Why now (before SRD 5.2.1)
+Every line of cruft we carry into the multi-ruleset era doubles in cost.
+SRD 5.2.1 will be the first real test of the ruleset abstraction —
+anything sloppy in `src/srd_builder/srd_5_1/` will get copy-pasted into
+`src/srd_builder/srd_5_2_1/`. Audit *before* the copy.
+
 ## Notes
 - Items here are *aspirational*, not blockers for the Blackmoor bundle.
 - Add to this list freely; promote to a release plan (`docs/V0.x.0_PLAN.md`)
