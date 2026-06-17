@@ -51,11 +51,12 @@ this file is the *current state*.
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/srd_5_1/spell_class_targets.py](../src/srd_builder/srd_5_1/spell_class_targets.py) |
-| Scope | Spell→class mapping for all 6 caster classes (~300 spells × 6 classes) |
-| Reason | `pdf_corruption` (preliminary — verify, same hypothesis as lineages) |
+| Scope | Spell→class mapping for all 8 caster classes (~888 lines, wired into every spell record) |
+| Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (2026-06-17) shows pages 105–113 are fully extractable after whitespace normalization |
 | PDF pages | 105–113 |
 | Last verified | 2026-06-17 |
-| Reproducer | **TODO** — same probe pattern as lineage reproducer; expected outcome unknown |
+| Reproducer | [tests/test_pdf_provenance.py::test_spell_lists_pages_class_headers_are_extractable](../tests/test_pdf_provenance.py) |
+| Notes | Same finding as lineages: under pymupdf 1.27.x with the standard `\t\r\xa0` whitespace normalization (see `utils.pdf_probe`), all 8 class section headers (Bard Spells, Cleric Spells, Druid Spells, Paladin Spells, Ranger Spells, Sorcerer Spells, Warlock Spells, Wizard Spells) AND a sampling of well-known spells (Vicious Mockery, Sacred Flame, Druidcraft, Eldritch Blast, Fire Bolt) appear in the page range. **This is the largest hand-curated surface in the project (~888 lines) and a strong retirement candidate for v0.27.0.** A real `extract_spell_classes.py` on top of `utils.pdf_probe` + `PAGE_INDEX["spell_lists"]` should replace it. |
 | Downstream | `dist/srd_5_1/spells.json` (every record's `classes` field, set by `postprocess/spells.py`) |
 
 ### `poison_descriptions_manual.py` — POISON_DESCRIPTIONS
@@ -130,20 +131,21 @@ this file is the *current state*.
   should carry an optional `_provenance` block (TODO: promote
   `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
 
-## Status snapshot (2026-06-17, v0.26.0)
+## Status snapshot (2026-06-17, v0.26.1)
 
 - 8 registered sources
-- 1 with verified reproducer (lineages — **disputes** the original
-  corruption claim; manual override likely retire-able in v0.27.0)
-- 7 awaiting reproducer
+- 2 reproducer-backed (lineages, spell_class_targets — both **dispute**
+  the original corruption claim; both retire-able in v0.27.0)
+- 6 awaiting reproducer
 - 0 fully retired
 
-### Key v0.26.0 finding
+### Cumulative finding (v0.26.0 → v0.26.1)
 
-The lineage reproducer demonstrated that the original "PDF text is
-corrupted" rationale was likely a whitespace-handling artifact, not real
-corruption. By implication, the same rationale on
-`spell_class_targets.py` and the implicit one on `class_targets.py`
-should be treated with strong skepticism — likely **3 of the 8
-registered sources** can be retired by writing real parsers rather than
-permanently transcribing.
+The lineage reproducer (v0.26.0) and the spell-class reproducer
+(v0.26.1) **both** disprove the "PDF text is corrupted" claim under
+pymupdf 1.27.x with standard whitespace normalization (see
+`utils.pdf_probe`). That covers two of the three hand-curated modules
+that used the corruption rationale. The implicit corruption rationale
+on `class_targets.py` is the next candidate to probe — once verified,
+the registry shrinks from 8 sources to 5 in v0.27.0 by writing real
+parsers on top of `utils.pdf_probe` + `PAGE_INDEX`.
