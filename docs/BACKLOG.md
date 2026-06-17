@@ -209,6 +209,103 @@ or scratch script per file). Outcome is either (a) retire the manual
 source, or (b) upgrade its declaration from vague "PDF corrupted" to a
 specific reproducer-backed exception. Either result is a win.
 
+## Structural cleanup (proposed v0.26.2)
+
+Discovered while auditing the extraction layer for the v0.26.1 spell-class
+probe. None of these are bugs; all are organizational debt that makes the
+codebase harder to navigate and extend. **Defer until after v0.26.1 ships
+so the probe work doesn't get tangled with rename noise.**
+
+### Naming inconsistency: `extract/` vs `extraction/`
+
+Two sibling directories at the same pipeline layer with confusingly similar
+names, doing different shapes of the same job:
+
+- `src/srd_builder/extract/` — 9 bespoke per-dataset extractors
+  (`extract_spells.py`, `extract_equipment.py`, etc.). Each opens the PDF
+  directly with `fitz.open()`, hardcodes its own page constants, and picks
+  its own text-extraction mode.
+- `src/srd_builder/extraction/` — generic config-driven table-extraction
+  engine (`extractor.py` + `patterns.py` + `extraction_metadata.py`). The
+  mature pattern: metadata-driven, one engine per `pattern_type`.
+
+Neither is "raw" vs. "cleaned" — both are PDF→raw structures. The split
+is *shape of work* (per-dataset module vs. config-driven engine), not
+pipeline phase.
+
+**Proposed cutover (v0.26.2, one commit per move):**
+
+1. Rename `extraction/` → `extract/` (the generic engine becomes the
+   primary `extract/` namespace).
+2. Move existing `extract/extract_*.py` → `extract/_legacy/` (or
+   `extract/datasets/`) with a deprecation note in each file's docstring.
+3. New extractors (e.g., `extract_lineages.py`, `extract_spell_classes.py`)
+   land directly under `extract/` using the engine pattern.
+4. Migrate the legacy bespoke extractors to the engine pattern one
+   dataset at a time as opportunity arises (during normal feature work,
+   not as a forced refactor).
+
+### Misplaced data and config files
+
+Hand-curated data and engine config are scattered across **five**
+different homes with no organizing principle:
+
+| What | Currently lives at | Type |
+| --- | --- | --- |
+| `DATASET_CONFIGS` | `postprocess/configs.py` | engine config |
+| `PATTERN_TYPES` + table metadata | `extraction/extraction_metadata.py` | engine config |
+| `TARGET_TABLES` (16 tables) | `scripts/table_targets.py` | engine config (**wrong place** — `scripts/` is for CLIs) |
+| `PAGE_INDEX` | `utils/page_index.py` | ruleset config |
+| `CLASS_DATA`, `LINEAGE_DATA`, `SPELL_CLASSES` | `srd_5_1/*.py` | ruleset data |
+| Manual poison descriptions | `data/poison_descriptions_manual.py` | ruleset data (single-file orphan) |
+| Equipment packs / descriptions / extended | `assemble/equipment_*.py` | ruleset data (mixed in with assembly code) |
+
+**Proposed target shape:**
+
+```
+src/srd_builder/
+  extract/        # engine + per-dataset extractors (post-rename)
+  parse/
+  postprocess/
+  assemble/
+  utils/
+  build.py
+rulesets/
+  srd_5_1/
+    SRD_CC_v5.1.pdf
+    raw/          # extraction working dir (already exists)
+    data/         # class_data.json, lineage_data.json, spell_classes.json,
+                  # poison_descriptions.json, equipment_packs.json,
+                  # equipment_descriptions.json, equipment_extended.json
+    config/       # page_index.yaml, target_tables.yaml,
+                  # extraction_metadata.yaml, dataset_configs.yaml
+  srd_5_2_1/
+    ...
+```
+
+Engine code is then *ruleset-agnostic* — `srd_builder/` contains zero
+ruleset-specific data. Adding SRD 5.2.1 / Pathfinder / homebrew rulesets
+becomes purely a `rulesets/` sibling directory, not a `srd_builder/` fork.
+
+### Why defer
+
+- v0.26.1 (now) ships actionable user value (spell-class probe + shared
+  PDF probe utility) without polluting commits with renames.
+- Each item above can land in its own commit during v0.26.2, reviewable
+  in isolation, with test suite green between each move.
+- The ruleset-data move is a strict additive then a strict removal — no
+  ambiguity, no behavior change, easy to verify.
+
+### Constraint while v0.26.1 is in flight
+
+> Do not extend the technical debt in the old code.
+
+New code added in v0.26.1 (the `pdf_probe.py` utility) lives under
+`utils/` rather than the about-to-be-renamed `extract/`, and consumes
+`PAGE_INDEX` rather than introducing new hardcoded page constants. New
+test code uses `pdf_probe` rather than inline whitespace helpers. This
+keeps the v0.26.2 cutover small.
+
 ## Pre-v1.0 code-health audit
 
 Before locking v1.0 and starting SRD 5.2.1, do a single full-repo pass
