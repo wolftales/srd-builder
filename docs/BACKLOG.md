@@ -402,31 +402,34 @@ in one paragraph, the design isn't done.
 
 ### Duplication signal (consolidate during the move, don't migrate twice)
 
-Two pairs of modules that look like the same job done twice — flagging
-so v0.26.2 picks the better implementation rather than relocating both:
+Two pairs of modules that look like the same job done twice — flagged
+during v0.26.2 planning so the relocation pass would pick a better
+implementation rather than moving both.
 
-- **Cross-reference index building:**
-  - `src/srd_builder/validate_references.py` — `ReferenceValidator`
-    builds ID indexes (damage_types, abilities, skills, conditions,
-    spells, features, equipment, weapon_properties) from datasets to
-    validate cross-references at build time.
-  - `src/srd_builder/assemble/indexer.py` — also builds cross-reference
-    indexes. Same datasets.
-  - **Action during v0.26.2:** read both, identify the better
-    abstraction, keep one under `utils/` (it's a pure-data operation),
-    delete the other, relink the consumer (currently `build.py`).
-- **Validation utilities:**
-  - `utils/validate.py`, `utils/validate_monsters.py` — already under
-    `utils/`, do schema-level validation.
-  - `validate_references.py` (top-level package — see below) does a
-    different but related job.
-  - **Action:** at minimum, move `validate_references.py` to `utils/`
-    where it belongs alongside its peers. Possibly merge with the
-    indexer cleanup above if the index-building is shared.
-
-This is in scope for v0.26.2 because we're already moving things; doing
-the consolidation in the same release avoids a "moved bad code, then
-moved it again" sequence.
+- **Cross-reference index building — AUDITED v0.26.2 Phase B, no
+  consolidation needed:**
+  - `src/srd_builder/utils/validate_references.py` (`ReferenceValidator`)
+    performs build-time **integrity checks** — raises errors when one
+    entity references an ID that doesn't exist (broken `damage_type_id`,
+    missing `spell_id`, etc.). Output: pass/fail + error list.
+  - `src/srd_builder/assemble/indexer.py::build_cross_reference_indexes`
+    builds the **public lookup tables shipped in the bundle**
+    (`spells_by_damage_type`, `monsters_immune_to_condition`,
+    `magic_items_by_granted_spell`, etc.) for downstream consumers.
+    Output: structured dict that becomes part of the dataset.
+  - The only overlap is the one-line idiom
+    `{x["id"] for x in xs if "id" in x}` (validator builds 8 sets
+    eagerly from the bundle structure; indexer builds 4 inline from
+    pre-extracted lists, using `fallback_id()` instead of `["id"]`).
+    Extracting a shared helper would *add* indirection rather than
+    remove duplication. **Decision:** keep both, distinct purposes.
+- **Validation utilities — RESOLVED v0.26.2 Phase A:**
+  - `utils/validate.py`, `utils/validate_monsters.py` — schema-level
+    validation (always lived under `utils/`).
+  - `validate_references.py` — moved into `utils/` alongside them
+    (commit `e7e3331`). Different but related job: schema validators
+    check shape, reference validator checks ID existence. Co-located
+    is enough.
 
 ### Constraint while v0.26.1 is in flight
 
