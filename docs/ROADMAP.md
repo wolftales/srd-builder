@@ -470,7 +470,7 @@ print(damage_info["description"])  # "Fire damage represents..."
    - Enables schema migration tooling
 
 3. **Documentation Reorganization** ✅
-   - `docs/templates/` - JSON templates for all datasets
+   - `exemplars/` - Generated valid instances for all dataset schemas (replaces docs/templates/ as of v0.26.0)
    - `docs/external/` - External project documentation
    - `docs/archive/` - Historical planning docs
    - Clear structure for consumer documentation

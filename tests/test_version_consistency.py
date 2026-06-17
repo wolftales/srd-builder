@@ -73,24 +73,6 @@ def test_normalized_fixture_version_matches():
     )
 
 
-def test_template_files_have_version_note():
-    """Template files should note that version is a placeholder."""
-    template_dir = Path("docs/templates")
-    if not template_dir.exists():
-        return
-
-    for template_path in template_dir.glob("TEMPLATE_*.json"):
-        content = template_path.read_text(encoding="utf-8")
-        data = json.loads(content)
-
-        if "_meta" in data and "generated_by" in data["_meta"]:
-            generated_by = data["_meta"]["generated_by"]
-            # Templates can have any version, but let's check they're marked as templates
-            assert "srd-builder" in generated_by, (
-                f"{template_path.name} should reference srd-builder in generated_by"
-            )
-
-
 def test_golden_test_uses_version_constant():
     """Golden test should use meta_block from metadata module, not duplicate logic."""
     test_path = Path("tests/test_golden_monsters.py")
