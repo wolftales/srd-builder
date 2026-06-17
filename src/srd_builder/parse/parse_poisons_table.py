@@ -12,8 +12,8 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from ..data.poison_descriptions_manual import POISON_DESCRIPTIONS
 from ..postprocess import normalize_id
+from ..rulesets.srd_5_1.poison_descriptions import POISON_DESCRIPTIONS
 
 
 def parse_poisons_table(

@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Any
 
 from srd_builder.constants import DATA_SOURCE
-from srd_builder.srd_5_1.class_targets import CLASS_DATA
+from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
 
 
 def parse_classes() -> list[dict[str, Any]]:

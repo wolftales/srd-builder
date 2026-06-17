@@ -10,8 +10,8 @@ import re
 from typing import Any
 
 from srd_builder.postprocess.ids import normalize_id
-from srd_builder.srd_5_1.class_targets import CLASS_DATA
-from srd_builder.srd_5_1.lineage_targets import LINEAGE_DATA
+from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
+from srd_builder.rulesets.srd_5_1.lineage_targets import LINEAGE_DATA
 
 _WHITESPACE_RE = re.compile(r"\s+")
 
