@@ -31,7 +31,7 @@ this file is the *current state*.
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/srd_5_1/class_targets.py](../src/srd_builder/srd_5_1/class_targets.py) |
+| Path | [src/srd_builder/rulesets/srd_5_1/class_targets.py](../src/srd_builder/rulesets/srd_5_1/class_targets.py) |
 | Scope | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, pages |
 | Reason | `pdf_missing` (preliminary — verify) |
 | PDF pages | 8–55 |
@@ -43,7 +43,7 @@ this file is the *current state*.
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/srd_5_1/lineage_targets.py](../src/srd_builder/srd_5_1/lineage_targets.py) |
+| Path | [src/srd_builder/rulesets/srd_5_1/lineage_targets.py](../src/srd_builder/rulesets/srd_5_1/lineage_targets.py) |
 | Scope | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages |
 | Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (2026-06-17) shows the text is fully extractable once whitespace is normalized |
 | PDF pages | 3–7 |
@@ -56,7 +56,7 @@ this file is the *current state*.
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/srd_5_1/spell_class_targets.py](../src/srd_builder/srd_5_1/spell_class_targets.py) |
+| Path | [src/srd_builder/rulesets/srd_5_1/spell_class_targets.py](../src/srd_builder/rulesets/srd_5_1/spell_class_targets.py) |
 | Scope | Spell→class mapping for all 8 caster classes (~888 lines, wired into every spell record) |
 | Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (2026-06-17) shows pages 105–113 are fully extractable after whitespace normalization |
 | PDF pages | 105–113 |
@@ -69,7 +69,7 @@ this file is the *current state*.
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/data/poison_descriptions_manual.py](../src/srd_builder/data/poison_descriptions_manual.py) |
+| Path | [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](../src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) |
 | Scope | Prose + DC + damage for all 14 SRD poisons |
 | Reason | `pdf_corruption` |
 | PDF pages | 204–205 |
@@ -118,7 +118,7 @@ this file is the *current state*.
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/extract/extract_equipment.py](../src/srd_builder/extract/extract_equipment.py) (lines 31–32) |
+| Path | [src/srd_builder/extract/datasets/extract_equipment.py](../src/srd_builder/extract/datasets/extract_equipment.py) (lines 31–32) |
 | Scope | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` |
 | Reason | `cross_reference_glue` (anchors for extraction range) |
 | PDF pages | 62–73 (1-indexed SRD labels — note constants use 0-indexed PyMuPDF) |

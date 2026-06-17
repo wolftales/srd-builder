@@ -2,6 +2,100 @@
 
 Captured ideas not yet scheduled. Pull items into a release plan as priorities allow.
 
+## Next up: v0.27.0 — Retire the largest hand-curated surfaces
+
+Now that v0.26.2 has consolidated the codebase structure (one `extract/`
+home, one ruleset-data home, `RULESETS` registry threaded everywhere),
+v0.27.0 returns to the work flagged by the v0.26.0 + v0.26.1 reproducer
+tests: replace hand-curated lineage and spell-class data with real
+PDF extraction.
+
+**Why this is the right next milestone:** two reproducer tests already
+prove the source PDF is fully extractable for the regions the manual
+data claims are "corrupted." Together those two files are ~888 lines
+(spell_class_targets) + ~700 lines (lineage_targets) ≈ **1,400 lines of
+hand-curated data** wired into every spell record and every lineage /
+features.json owner resolution. Replacing them shrinks the
+`PROVENANCE.md` registry from 8 entries to 4–5 and removes the largest
+silent-drift risk in the bundle.
+
+### Scope
+
+**Priority 1 — `extract_lineages.py` (lowest risk, reproducer already passes)**
+- Build `src/srd_builder/extract/datasets/extract_lineages.py` on top of
+  `utils.pdf_probe` + `PAGE_INDEX["lineages"]` (pp. 3–7).
+- Parse all 9 base lineages + subraces: name, ability_modifiers, size,
+  speed, traits, languages, pages.
+- Output shape: `rulesets/srd_5_1/raw/lineages_raw.json` matching what
+  `LINEAGE_DATA` currently provides to `parse_lineages.py` and
+  `parse_features.py` (owner resolution).
+- Delete `src/srd_builder/rulesets/srd_5_1/lineage_targets.py` once
+  `parse_lineages.py` + `parse_features.py` consume the raw file.
+- Remove the PROVENANCE entry.
+- Golden test: `tests/test_golden_lineages.py` should keep passing
+  byte-for-byte against the existing normalized fixture.
+
+**Priority 2 — `extract_spell_classes.py` (highest payoff)**
+- Build `src/srd_builder/extract/datasets/extract_spell_classes.py` on top
+  of `utils.pdf_probe` + `PAGE_INDEX["spell_lists"]` (pp. 105–113).
+- Parse all 8 class spell lists into a `{class_name: [spell_simple_name]}`
+  raw structure.
+- Output: `rulesets/srd_5_1/raw/spell_classes_raw.json`.
+- Update `postprocess/spells.py` (`clean_spell_record`) to consume the
+  raw file instead of importing from `spell_class_targets.py`.
+- Delete `src/srd_builder/rulesets/srd_5_1/spell_class_targets.py`
+  (~888 lines).
+- Remove the PROVENANCE entry.
+- Golden test: `tests/test_golden_spells.py` must keep passing — every
+  spell's `classes` field must be identical.
+
+**Priority 3 — `class_targets.py` features list probe (exploratory)**
+- Add reproducer test that asserts the features-list portion of pp. 8–55
+  is extractable using the same `pdf_probe` + whitespace-normalization
+  pattern.
+- If extraction succeeds → write `extract_classes.py` (at minimum for
+  the features lists; the structured fields like hit_die, proficiencies
+  may stay manual if their PDF layout proves layout-sensitive).
+- If extraction fails for documented reasons → upgrade the PROVENANCE
+  entry from vague "manually transcribed" to a specific reproducer-backed
+  exception. Either result is a win.
+
+### Out of scope for v0.27.0
+
+- Multi-ruleset support (`srd_5_2_1/` directory). The `RULESETS` registry
+  is ready, but no second ruleset is queued.
+- `equipment_packs.py` / `equipment_descriptions.py` extraction. Lower
+  payoff than the lineage/spell-class work; defer to v0.28.0 or pre-v1.0
+  audit.
+- Schema bumps. None planned; all changes are at the extractor + raw-file
+  layer.
+
+### Success criteria
+
+- `docs/PROVENANCE.md` registry: 8 entries → 4–5 entries.
+- ~1,400 lines of hand-curated Python data deleted.
+- All golden tests still green byte-for-byte.
+- New reproducer tests for any remaining "PDF corruption" claim, per
+  AGENTS.md PDF extraction discipline.
+- `parse_features.py` owner resolution still works (this is the most
+  delicate consumer of `LINEAGE_DATA` — covered by `test_golden_features.py`).
+
+### Risks / known unknowns
+
+- **Layout-driven extraction.** Spell lists are multi-column per class.
+  If a naive top-to-bottom text walk produces wrong column ordering,
+  may need coordinate-aware extraction (PyMuPDF's `get_text("dict")`
+  with bbox). Same fix pattern equipment originally needed.
+- **Subrace nesting.** Lineages have parent/subrace structure that
+  `LINEAGE_DATA` flattens into a specific shape. The extractor must
+  preserve that shape (or update `parse_lineages.py` simultaneously).
+- **Page constants in `extract_*.py`** still hardcoded. The BACKLOG
+  "Hardcoded values" section says these should come from `PAGE_INDEX`
+  via TOC verification — possibly worth doing as Phase 0 of v0.27.0
+  since the new extractors will need page lookups anyway.
+
+---
+
 ## Data integrity / extraction confidence
 
 Goal: build justified confidence that what we extracted matches the PDF source,
@@ -73,15 +167,15 @@ Wiring column verified via `grep_search` on 2026-06-17. `LIVE` = imported by
 
 | Module | Wiring | Scope | Declared reason | Concerns |
 | --- | --- | --- | --- | --- |
-| [src/srd_builder/srd_5_1/class_targets.py](src/srd_builder/srd_5_1/class_targets.py) | **LIVE** — `parse_classes.py`, `parse_features.py` | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers | "Manually transcribed via visual inspection" (pp. 8–55) | Drives `classes.json` AND `features.json` owner resolution. Page numbers are author-curated, not verified against PDF TOC. No round-trip test ensures `CLASS_DATA[i].features` actually appears on `CLASS_DATA[i].page`. |
-| [src/srd_builder/srd_5_1/lineage_targets.py](src/srd_builder/srd_5_1/lineage_targets.py) | **LIVE** — `parse_lineages.py`, `parse_features.py` | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages | "PDF text is corrupted; manually transcribed" (pp. 3–7) | Same as above. The "PDF corrupted" claim is plausible but not documented with a reproducer (which page, which extraction call, what was returned). |
-| [src/srd_builder/srd_5_1/spell_class_targets.py](src/srd_builder/srd_5_1/spell_class_targets.py) | **LIVE** — `postprocess/spells.py:32` injects `classes` field into *every* spell record | Spell→class mapping for all 6 caster classes (~300 spells × 6 classes) | "PDF text is corrupted; manually mapped" (pp. 105–113) | **Largest hand-curated surface in the project, and it's wired straight into every spell.** Confirmed not legacy: `clean_spell_record()` calls `get_spell_classes(simple_name)` and sets `patched["classes"]`. Errors here silently propagate to every spell record. No independent cross-check. **Strongest candidate for v0.26.0 PDF re-extraction work.** |
-| [src/srd_builder/data/poison_descriptions_manual.py](src/srd_builder/data/poison_descriptions_manual.py) | **LIVE (with extraction fallback already wired)** — `parse_poisons_table.py:68` prefers manual, falls back to `parse_poison_descriptions` | Full prose + DC + damage for all 14 SRD poisons | "Corrupted text on pages 204–205" — TODO replace when better PDF source available | Only file that names a specific PDF defect. **Good model for documenting deviations** — already has the layered "manual-wins, extraction-fallback" shape the user described. Likely a justified permanent exception unless PyMuPDF improves on those pages. |
-| [src/srd_builder/extraction/reference_data.py](src/srd_builder/extraction/reference_data.py) | **DEAD** — no imports in `src/srd_builder/`. Only `archive/code/src_archived/` and `tests/validation_data.py` reference its lineage. | `REFERENCE_TABLES` (spell-slots-by-level, etc.) | "Cannot be reliably extracted from PDF due to formatting issues" | **Likely safe to delete.** Confirm by running tests with the file removed; if green, drop it. Removes ~720 lines of stale hand-curated data and the worst justification in the codebase. |
+| [src/srd_builder/rulesets/srd_5_1/class_targets.py](src/srd_builder/rulesets/srd_5_1/class_targets.py) | **LIVE** — `parse_classes.py`, `parse_features.py` | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers | "Manually transcribed via visual inspection" (pp. 8–55) | Drives `classes.json` AND `features.json` owner resolution. Page numbers are author-curated, not verified against PDF TOC. No round-trip test ensures `CLASS_DATA[i].features` actually appears on `CLASS_DATA[i].page`. |
+| [src/srd_builder/rulesets/srd_5_1/lineage_targets.py](src/srd_builder/rulesets/srd_5_1/lineage_targets.py) | **LIVE** — `parse_lineages.py`, `parse_features.py` | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages | "PDF text is corrupted; manually transcribed" (pp. 3–7) — **DISPROVEN v0.26.0** (lineage reproducer passes; retire in v0.27.0) | Same as above. The "PDF corrupted" claim is plausible but not documented with a reproducer (which page, which extraction call, what was returned). |
+| [src/srd_builder/rulesets/srd_5_1/spell_class_targets.py](src/srd_builder/rulesets/srd_5_1/spell_class_targets.py) | **LIVE** — `postprocess/spells.py:32` injects `classes` field into *every* spell record | Spell→class mapping for all 8 caster classes (~888 lines, wired into every spell record) | "PDF text is corrupted; manually mapped" (pp. 105–113) — **DISPROVEN v0.26.1** (spell-class reproducer passes; retire in v0.27.0) | **Largest hand-curated surface in the project, and it's wired straight into every spell.** Confirmed not legacy: `clean_spell_record()` calls `get_spell_classes(simple_name)` and sets `patched["classes"]`. Errors here silently propagate to every spell record. No independent cross-check. **Strongest candidate for v0.27.0 PDF re-extraction work.** |
+| [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) | **LIVE (with extraction fallback already wired)** — `parse_poisons_table.py:68` prefers manual, falls back to `parse_poison_descriptions` | Full prose + DC + damage for all 14 SRD poisons | "Corrupted text on pages 204–205" — TODO replace when better PDF source available | Only file that names a specific PDF defect. **Good model for documenting deviations** — already has the layered "manual-wins, extraction-fallback" shape the user described. Likely a justified permanent exception unless PyMuPDF improves on those pages. |
+| ~~`src/srd_builder/extraction/reference_data.py`~~ | **DELETED v0.26.0** | (was `REFERENCE_TABLES` lookup) | — | Removed in v0.26.0; −625 net lines. Listed here for history. |
 | [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
 | [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | **LIVE** — `assemble_equipment.py:1019` | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. Real fix: pack contents should reference items by `simple_name` and synthesize IDs at assembly time via `normalize_id`. |
 | [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | **LIVE** — `assemble_equipment.py:1104` | Prose descriptions for adventure-gear / tools / armor / lifestyle items (pp. 66–68) | "Documented in the SRD" — but transcribed not extracted | Same pattern as packs. No assertion the prose actually appears verbatim in the PDF. |
-| [src/srd_builder/extract/extract_equipment.py](src/srd_builder/extract/extract_equipment.py) (lines 31–32) | **LIVE** | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` | Implicit | Magic numbers without TOC verification. Same risk for other extract_*.py page constants. |
+| [src/srd_builder/extract/datasets/extract_equipment.py](src/srd_builder/extract/datasets/extract_equipment.py) (lines 31–32) | **LIVE** | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` | Implicit | Magic numbers without TOC verification. Same risk for other extract_*.py page constants. |
 
 ### Spectrum of legitimate exceptions vs. pollution
 
@@ -210,6 +304,12 @@ source, or (b) upgrade its declaration from vague "PDF corrupted" to a
 specific reproducer-backed exception. Either result is a win.
 
 ## Structural cleanup (proposed v0.26.2)
+
+> **✅ SHIPPED in v0.26.2** (commit `22ad820`, tag `v0.26.2`). All
+> Phase A–F items below landed. See
+> [docs/releases/v0.26.2.md](releases/v0.26.2.md) for the consolidated
+> change list. The text below is retained as historical context for
+> what "attempt #3" set out to do; not a forward-looking ticket.
 
 Discovered while auditing the extraction layer for the v0.26.1 spell-class
 probe. None of these are bugs; all are organizational debt that makes the
