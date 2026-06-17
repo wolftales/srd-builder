@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.26.1`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.26.2`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -219,8 +219,8 @@ srd-builder uses two version numbers:
 Bump the package version with:
 
 ```bash
-python scripts/bump_version.py 0.26.2          # commit + tag locally
-python scripts/bump_version.py 0.26.2 --no-commit   # preview only
+python scripts/bump_version.py 0.27.0          # commit + tag locally
+python scripts/bump_version.py 0.27.0 --no-commit   # preview only
 ```
 
 See [docs/ARCHITECTURE.md § Version Management](docs/ARCHITECTURE.md) for the policy.
@@ -234,14 +234,16 @@ srd-builder/
 │   ├── validate.py               # JSON Schema validation
 │   ├── validate_references.py    # Cross-dataset reference auditor
 │   ├── constants.py              # Versioned/static builder constants
-│   ├── extract/                  # Per-dataset PDF extractors
-│   ├── extraction/               # Table-extraction engine + patterns
+│   ├── extract/                  # Table engine + bespoke per-dataset extractors
+│   │   ├── extractor.py          # Table-extraction engine
+│   │   ├── patterns.py           # Table-extraction patterns
+│   │   ├── table_targets.py      # Hand-curated table targets
+│   │   └── datasets/             # Per-dataset PDF extractors (extract_*.py)
 │   ├── parse/                    # parse_<dataset>.py
 │   ├── postprocess/              # engine.py + DATASET_CONFIGS
 │   ├── assemble/                 # Cross-dataset indexer
-│   ├── srd_5_1/                  # Hand-curated SRD 5.1 targets (legacy; see BACKLOG v0.26.2)
-│   ├── data/                     # Hand-curated dataset overrides (legacy; see BACKLOG v0.26.2)
-│   └── utils/                    # pdf_probe, page_index, metadata, helpers
+│   ├── rulesets/srd_5_1/         # Per-ruleset hand-curated Python data (class/lineage/spell targets)
+│   └── utils/                    # pdf_probe, page_index, metadata, prose, helpers
 ├── rulesets/
 │   └── srd_5_1/
 │       ├── SRD_CC_v5.1.pdf       # (gitignored) Source PDF
@@ -265,7 +267,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.26.1** — `utils/pdf_probe.py` shared PDF-text primitive; second reproducer test overturns the spell-class "PDF corrupted" claim (pp. 105–113 fully extractable). Two of the three corruption-rationale modules now confirmed retire-able in v0.27.0.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.26.2** — structural cleanup of attempt #2: `extraction/` renamed to `extract/` (bespoke extractors grouped under `extract/datasets/`); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; `RULESETS` registry replaces the single-`DATA_SOURCE` constant; `ruleset` parameter threaded through every parser, assembler, and extractor that stamps `"source"`; `source` field normalized from `"SRD 5.1"` to canonical `"SRD_CC_v5.1"` across all datasets.
 
 Key milestones:
 
@@ -277,6 +279,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.26.2** — Structural cleanup of attempt #2: `extraction/` → `extract/` (table engine + bespoke extractors unified); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; shared prose utilities moved to `utils/prose.py`; workspace dirname literals swept into constants; `RULESETS` registry introduced (replaces lone `DATA_SOURCE`); `ruleset` parameter threaded through every parser/assembler/extractor; `source` field normalized to canonical `"SRD_CC_v5.1"` (was `"SRD 5.1"`); `stamp_source()` helper centralizes source stamping; `bump_version.py` fixed to thread `ruleset` through fixture regen
 - **v0.26.1** — `utils/pdf_probe.py` shared PDF text-probe primitive (`open_pdf`, `page_text`, `normalize_whitespace`, `srd_page_to_pdf_index`); second reproducer test for spell-class lists pp. 105–113 (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
 - **v0.26.0** — Generated schema exemplars in bundle (one per schema, replaces `docs/templates/`); `docs/PROVENANCE.md` registry of hand-curated data sources with reason codes; `tests/test_pdf_provenance.py` reproducer test framework (first finding: lineage "PDF corrupted" claim is FALSE under pymupdf 1.27.x); dead `extraction/reference_data.py` removed (−625 net lines)
 - **v0.25.0** — Owner-qualified feature IDs (`feature:{owner_simple_name}:{name}` + `owner_id` field); equipment IDs normalized through `normalize_id` (no more hyphens); audit clean on cross-refs + bad-id-format

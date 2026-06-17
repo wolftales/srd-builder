@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from src.srd_builder.assemble.equipment_packs import EQUIPMENT_PACKS, validate_pack_contents
+from srd_builder.assemble.equipment_packs import EQUIPMENT_PACKS, validate_pack_contents
 
 
 def test_validate_pack_contents_all_found():

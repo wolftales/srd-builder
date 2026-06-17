@@ -77,6 +77,7 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 🆔 v0.25.0 — Owner-qualified feature IDs (`feature:{owner}:{name}` + `owner_id`); equipment ID normalization; clean cross-ref audit
 - 🧬 v0.26.0 — Generated schema exemplars in bundle (replaces docs/templates/); `docs/PROVENANCE.md` registry; `tests/test_pdf_provenance.py` reproducer framework (lineage "PDF corrupted" claim DISPROVEN); dead `extraction/reference_data.py` removed
 - 🔬 v0.26.1 — `utils/pdf_probe.py` shared PDF text-probe primitive; spell-class reproducer (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
+- 🧹 v0.26.2 — Structural cleanup of attempt #2: `extraction/` → `extract/` (table engine + bespoke per-dataset extractors unified under `extract/datasets/`); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; shared prose helpers moved to `utils/prose.py`; workspace dirname literals swept into constants; `RULESETS` registry replaces lone `DATA_SOURCE`; `ruleset` parameter threaded through every parser/assembler/extractor that stamps `"source"`; `source` field normalized to canonical `"SRD_CC_v5.1"` (was `"SRD 5.1"`); `stamp_source()` helper centralizes source stamping; `bump_version.py` fixed to thread `ruleset` through fixture regen
 - �🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 - 🏗️ v2.0.0 — Data Model Restructure (field grouping, nested objects, API-first patterns)
 
