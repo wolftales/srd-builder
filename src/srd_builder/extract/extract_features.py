@@ -84,8 +84,9 @@ def _extract_features_from_page(page: fitz.Page, page_num: int) -> list[dict[str
                 is_italic = bool(flags & 2**1)
 
                 # Class feature header: 13.9pt GillSans-SemiBold
+                # len>=2 keeps short feature names like the monk's "Ki".
                 is_class_feature = (
-                    is_bold and "GillSans" in font and 13.5 <= size <= 14.5 and len(text) > 2
+                    is_bold and "GillSans" in font and 13.5 <= size <= 14.5 and len(text) >= 2
                 )
 
                 # Lineage trait header: 9.8pt Cambria-BoldItalic ending with "."

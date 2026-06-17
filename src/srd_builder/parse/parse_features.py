@@ -9,6 +9,10 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from srd_builder.postprocess.ids import normalize_id
+
+_WHITESPACE_RE = re.compile(r"\s+")
+
 
 def parse_features(
     raw_features: dict[str, Any], source_type: str = "class"
@@ -25,7 +29,7 @@ def parse_features(
     features = []
 
     for raw in raw_features.get("features", []):
-        name = raw["name"]
+        name = _WHITESPACE_RE.sub(" ", raw["name"]).strip()
         text = raw["text"]
         page = raw["page"]
 
@@ -92,20 +96,11 @@ def _is_section_header(name: str) -> bool:
 def _create_simple_name(name: str) -> str:
     """Create simple_name from feature name.
 
-    Args:
-        name: Feature name
-
-    Returns:
-        Lowercase underscored simple_name
+    Delegates to the canonical normalize_id so hyphens and embedded
+    whitespace control characters (\\t, \\r, \\xa0) collapse to a
+    single underscore instead of being silently dropped.
     """
-    # Remove punctuation, lowercase, replace spaces with underscores
-    simple = re.sub(r"[^\w\s]", "", name)
-    simple = simple.lower().replace(" ", "_")
-
-    # Remove trailing/leading underscores
-    simple = simple.strip("_")
-
-    return simple
+    return normalize_id(name)
 
 
 def _extract_summary(text: str) -> str:
