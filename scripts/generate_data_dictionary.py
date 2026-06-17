@@ -222,7 +222,7 @@ def generate_data_dictionary() -> str:
         "",
         "## Purpose",
         "",
-        "This document provides comprehensive field-level documentation for all SRD dataset schemas. ",
+        "This document provides comprehensive field-level documentation for all SRD dataset schemas.",
         "It's automatically generated from the JSON schema files to ensure accuracy and consistency.",
         "",
         "Like Swagger/OpenAPI documentation, this dictionary describes:",

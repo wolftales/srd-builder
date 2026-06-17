@@ -2,37 +2,49 @@
 
 This document describes the schema versioning strategy, evolution patterns, and design principles for srd-builder datasets.
 
+> **Source of truth:** Each `schemas/*.schema.json` carries its own `version` field, and `dist/srd_5_1/meta.json.schemas` is the live manifest of what shipped in the current bundle. If this doc disagrees with either of those, **the schema files and `meta.json` win**.
+
 ---
 
-## Schema Version: 1.3.0
+## Schema Versions (v0.23.0)
 
-**Current Version:** `1.3.0`
-**Adopted:** v0.6.0 (November 2025)
-**Status:** Stable
+Schemas are versioned **independently per dataset**. There is no single "current schema version" — v0.23.0 ships 16 schemas spanning v1.0.0 (atomic reference schemas) through v2.0.0 (the rest).
 
-### What's Included in Schema v1.3.0
+| Schema | Version | Entity namespace | Dataset |
+|--------|--------:|------------------|---------|
+| `ability_score.schema.json` | 1.0.0 | `ability:*` | ability_scores.json |
+| `class.schema.json` | 2.0.0 | `class:*` | classes.json |
+| `condition.schema.json` | 2.0.0 | `condition:*` | conditions.json |
+| `damage_type.schema.json` | 1.0.0 | `damage_type:*` | damage_types.json |
+| `disease.schema.json` | 2.0.0 | `disease:*` | diseases.json |
+| `equipment.schema.json` | 2.0.0 | `item:*` | equipment.json |
+| `features.schema.json` | 2.0.0 | `feature:*` | features.json |
+| `lineage.schema.json` | 2.0.0 | `lineage:*` | lineages.json |
+| `magic_item.schema.json` | 2.0.0 | `magic_item:*` | magic_items.json |
+| `monster.schema.json` | 2.0.0 | `monster:*`, `creature:*`, `npc:*` | monsters.json |
+| `poison.schema.json` | 2.0.0 | `poison:*` | poisons.json |
+| `rule.schema.json` | 2.0.0 | `rule:*` | rules.json |
+| `skill.schema.json` | 1.0.0 | `skill:*` | skills.json |
+| `spell.schema.json` | 2.0.0 | `spell:*` | spells.json |
+| `table.schema.json` | 2.0.0 | `table:*` | tables.json |
+| `weapon_property.schema.json` | 1.0.0 | `weapon_property:*` | weapon_properties.json |
 
-All dataset files produced by srd-builder conform to schema version 1.3.0, which includes:
+### Common Structure (all schemas)
 
-**Core Structure:**
-- `_meta` wrapper with dataset metadata
-- `items` array containing entity records
-- Consistent entity structure: `{id, name, simple_name, page, src, ...}`
+- `_meta` wrapper with dataset metadata (`source`, `schema_version`, `generated_by`, etc.)
+- Items array — most datasets use `items: [...]`; three legacy datasets (`conditions`, `diseases`, `features`) use the dataset name as the array key. Normalizing this is tracked in [docs/PARKING_LOT.md](docs/PARKING_LOT.md).
+- Consistent entity structure: `{id, name, simple_name, page, source, ...}`
+- Nested entries with `{name, text}` (traits, actions, features)
+- Source tracking: `page` and `source` fields on all entities
+- Optional `aliases: string[]` for alternative search terms
 
-**Entity Namespaces:**
-- `monster:*` - Monster stat blocks
-- `item:*` - Equipment, weapons, armor, gear
-- `spell:*` - Spells (v0.6.0)
-- `rule:*` - Game rules and mechanics (v0.17.0)
-- `class:*` - Character classes (planned)
-- `lineage:*` - Lineages/races (planned)
-- `condition:*` - Game conditions (planned)
+### v1.0.0 (Atomic Reference Schemas)
 
-**Common Patterns:**
-- Nested entries with `{name, text}` structure (traits, actions, features)
-- Source tracking: `page` and `src` fields on all entities
-- Normalized IDs: `simple_name` for search/indexing
-- Optional aliases: `aliases: string[]` for alternative search terms (v1.3.0)
+`ability_score`, `damage_type`, `skill`, `weapon_property` — small, stable vocabularies extracted from prose and tables. They enable cross-reference validation in the v2.0.0 schemas (e.g. spells reference `damage_type:*` IDs, weapons reference `weapon_property:*` IDs).
+
+### v2.0.0 (Stable Baseline)
+
+The rest. v2.0.0 was the migration that removed redundant summary fields, added cross-reference IDs (`type_id`, `school_id`, etc.), and unified the entity-namespace pattern. Once a schema reaches v2.0.0 it is considered the stable baseline contract for downstream consumers.
 
 ---
 
@@ -40,14 +52,29 @@ All dataset files produced by srd-builder conform to schema version 1.3.0, which
 
 ### Location: `/schemas/`
 
+All 16 schemas live in the top-level `schemas/` directory and are also copied into every bundle under `dist/srd_5_1/schemas/`.
+
 ```
 schemas/
-├── monster.schema.json       # Monster stat blocks
-├── equipment.schema.json     # Equipment/items
-├── spell.schema.json         # Spells (v1.3.0)
-├── rule.schema.json          # Game rules and mechanics (v1.3.0)
-└── ...
+├── ability_score.schema.json       # v1.0.0 - atomic reference
+├── class.schema.json               # v2.0.0
+├── condition.schema.json           # v2.0.0
+├── damage_type.schema.json         # v1.0.0 - atomic reference
+├── disease.schema.json             # v2.0.0
+├── equipment.schema.json           # v2.0.0
+├── features.schema.json            # v2.0.0
+├── lineage.schema.json             # v2.0.0
+├── magic_item.schema.json          # v2.0.0
+├── monster.schema.json             # v2.0.0
+├── poison.schema.json              # v2.0.0
+├── rule.schema.json                # v2.0.0
+├── skill.schema.json               # v1.0.0 - atomic reference
+├── spell.schema.json               # v2.0.0
+├── table.schema.json               # v2.0.0
+└── weapon_property.schema.json     # v1.0.0 - atomic reference
 ```
+
+> **Note:** `madness.schema.json` was an orphan removed in v0.23.0 — madness content lives in `tables.json`, not as its own dataset.
 
 ### Schema File Structure
 
@@ -93,11 +120,11 @@ Every dataset file includes a `_meta` section documenting its structure:
 {
   "_meta": {
     "source": "SRD_CC_v5.1",
-    "schema_version": "1.1.0",
+    "schema_version": "2.0.0",
     "format": "unified_items_array",
-    "entity_count": 296,
-    "generated_at": "2025-10-31T05:23:10Z",
-    "builder_version": "0.5.0"
+    "entity_count": 317,
+    "generated_at": "2026-06-17T00:00:00Z",
+    "builder_version": "0.23.0"
   },
   "items": [ ... ]
 }
@@ -108,11 +135,11 @@ Every dataset file includes a `_meta` section documenting its structure:
 | Field | Description | Example |
 |-------|-------------|---------|
 | `source` | Source document identifier | `"SRD_CC_v5.1"` |
-| `schema_version` | Data structure version | `"1.1.0"` |
+| `schema_version` | Data structure version (per-dataset) | `"2.0.0"` or `"1.0.0"` |
 | `format` | Array structure type | `"unified_items_array"` |
-| `entity_count` | Number of items | `296` |
+| `entity_count` | Number of items | `317` |
 | `generated_at` | Build timestamp | ISO 8601 |
-| `builder_version` | srd-builder version | `"0.4.2"` |
+| `builder_version` | srd-builder version (from `pyproject.toml`) | `"0.23.0"` |
 
 ---
 
@@ -381,29 +408,20 @@ Prefer structured objects over formatted strings:
 
 ## Gap Analysis & Recommendations
 
-### Current Gaps
+### Status (v0.23.0)
 
-1. ✅ **Schema files now have version field** - Added `"version": "1.1.0"` to all .schema.json files
-2. ✅ **Schema documentation exists** - This file (SCHEMAS.md) serves as schema changelog
-3. ❌ **No migration guides** - No documentation for breaking changes (needed when v2.0 comes)
-4. ❌ **Inconsistent versioning** - Some docs say "v1.1.0", others "1.1.0" (cleanup needed)
-5. ❌ **No schema validation of schema_version** - Meta fields not validated against schema version
-
-### Recommendations
-
-1. ✅ **DONE: Added version to schema files** - All schemas now include `"version"` field
-2. ✅ **DONE: Created SCHEMAS.md** - This document tracks schema changes and patterns
-3. 🔄 **TODO: Document migration paths** - Create MIGRATIONS.md when MAJOR bumps occur (v2.0+)
-4. 🔄 **TODO: Standardize version format** - Use "1.1.0" (no "v" prefix) everywhere consistently
-5. 🔄 **TODO: Validate schema_version** - Add validation in build.py to ensure schema_version matches schema file version
+1. ✅ **All shipped schemas include a `version` field** — read with `jq '.version' schemas/<name>.schema.json`
+2. ✅ **Schemas listed in bundle `meta.json.schemas`** — `_copy_bundle_collateral` ships every schema and records its version (driven by `DATASET_TO_SCHEMA` in `src/srd_builder/utils/metadata.py`)
+3. ✅ **Validation in build pipeline** — `python -m srd_builder.validate --ruleset srd_5_1` checks every dataset against its schema
+4. 🔄 **TODO: Migration guide for the v1.x → v2.0 jump** — the v2.0.0 migration removed redundant summary fields and added cross-reference IDs; consumers upgrading from v1.x need a written checklist (tracked in [docs/PARKING_LOT.md](docs/PARKING_LOT.md))
+5. 🔄 **TODO: Normalize legacy array-key datasets** — `conditions`, `diseases`, and `features` still use dataset-name array keys instead of `items: [...]`; tracked in PARKING_LOT.md
 
 ---
 
-## Spell Schema (v1.3.0)
+## Spell Schema (v2.0.0)
 
-**Added in:** v0.6.0 (November 2025)
 **Schema File:** `schemas/spell.schema.json`
-**Version:** 1.3.0
+**Version:** 2.0.0
 
 ### Design Philosophy
 
@@ -506,7 +524,7 @@ The spell schema uses **structured nested objects** for related fields, followin
 
 ---
 
-## Rule Schema (v1.3.0)
+## Rule Schema (v2.0.0)
 
 **Added in:** v0.17.0 (December 2024)
 **Schema File:** `schemas/rule.schema.json`
@@ -725,19 +743,19 @@ Ammunition, Finesse, Heavy, Light, Loading, Range, Reach, Special, Thrown, Two-H
 
 ## Future Schema Additions
 
-### Planned (v1.4.0+)
+All 16 currently-planned schemas have shipped (v0.23.0). Open directions:
 
-- `class.schema.json` - Character classes with features
-- `lineage.schema.json` - Lineages/races with traits
-- `condition.schema.json` - Game conditions
+### Under Consideration
 
-### Under Consideration (v2.0.0?)
+- **Magic items**: deeper `base_item` references back to equipment
+- **Combined spell indexes**: derived index built from `classes.json` spell lists (parked)
+- **Sentient magic item** sub-schema (parked)
+- **Item variants**: structured way to express “type X (any)” patterns (parked)
+- **Rich text markup**: markdown/annotation hints inside description arrays
+- **Cross-reference expansion**: more `type_id` style links between datasets
+- **Computed fields**: e.g. CR-derived stats, ability-modifier denormalization
 
-- **Magic items** with base_item references
-- **Cross-references** between entities
-- **Rich text markup** (markdown, annotations)
-- **Computed fields** (e.g., CR-derived stats)
-- **Armor class objects** (breaking change from integer)
+See [docs/PARKING_LOT.md](docs/PARKING_LOT.md) for the full list of deferred schema decisions.
 
 ---
 
