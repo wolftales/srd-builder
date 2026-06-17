@@ -55,7 +55,7 @@ print(f"Loaded {len(data['items'])} monsters")
 
 See "Building datasets" below for all available build options.
 
-### Build pipeline (v0.23.0)
+### Build pipeline (v0.24.0)
 
 The build pipeline extracts data from the SRD PDF, parses and normalizes it, validates against
 JSON Schema, and emits 16 dataset files plus a search index. Latest build: **1,696 items across 16 datasets**.
@@ -303,7 +303,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.23.0** — audit, cleanup, and consumer-handoff readiness.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.24.0** — data-quality audit + footer/control-char/damage-type fixes; meta.json `datasets` block.
 
 Key milestones:
 
@@ -315,6 +315,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.24.0** — Data-quality audit script; footer/control-char/damage-type fixes; `meta.json.datasets` block collapses files/inventory/extraction_status
 - **v0.23.0** — Bundle README auto-generation, full schema coverage, inventory manifest, repo cleanup
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
@@ -387,7 +388,7 @@ for error in validator.iter_errors(data['items'][0]):
 
 srd-builder uses **two version numbers**:
 
-- **Package version** (read from `pyproject.toml` at runtime via `importlib.metadata`, currently `v0.23.0`) — the builder release.
+- **Package version** (read from `pyproject.toml` at runtime via `importlib.metadata`, currently `v0.24.0`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently (currently v1.0.0–v2.0.0). Schema versions are written into `dist/srd_5_1/meta.json` `schemas` on every build, and into each dataset's `_meta.schema_version`.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#version-management) for the detailed policy.
