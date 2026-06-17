@@ -52,7 +52,7 @@ def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
         "primary_abilities": data["primary_abilities"],
         "saving_throw_proficiencies": data["saving_throw_proficiencies"],
         "proficiencies": data["proficiencies"],
-        "features": data["features"],
+        "features": _qualify_feature_ids(data["features"], simple_name),
         "subclasses": data.get("subclasses", []),
         "progression": data["progression"],
         "source": DATA_SOURCE,
@@ -104,3 +104,20 @@ def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
     record["tables_referenced"] = sorted(tables_referenced)
 
     return record
+
+
+def _qualify_feature_ids(feature_ids: list[str], owner_simple: str) -> list[str]:
+    """Rewrite ``feature:rage`` → ``feature:{owner_simple}:rage``.
+
+    Leaves already-qualified IDs (two colons) unchanged.
+    """
+    qualified: list[str] = []
+    for fid in feature_ids:
+        parts = fid.split(":")
+        if len(parts) >= 3:
+            qualified.append(fid)
+        elif len(parts) == 2 and parts[0] == "feature":
+            qualified.append(f"feature:{owner_simple}:{parts[1]}")
+        else:
+            qualified.append(fid)
+    return qualified

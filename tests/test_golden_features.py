@@ -4,7 +4,18 @@ import json
 from pathlib import Path
 
 from srd_builder.postprocess import clean_feature_record
+from srd_builder.postprocess.ids import normalize_id
 from srd_builder.utils.metadata import meta_block, read_schema_version
+
+# Each fixture entry is hand-paired with its canonical owner because the
+# raw fixture intentionally contains a sparse, hand-picked sample (one
+# feature per family) rather than the full PDF stream the
+# ``parse_features`` resolver expects.
+_FIXTURE_OWNERS: dict[str, tuple[str, str]] = {
+    "Rage": ("class", "barbarian"),
+    "Evasion": ("class", "rogue"),
+    "Languages": ("lineage", "tiefling"),
+}
 
 
 def test_feature_dataset_matches_normalized_fixture() -> None:
@@ -13,16 +24,18 @@ def test_feature_dataset_matches_normalized_fixture() -> None:
     expected_path = Path("tests/fixtures/srd_5_1/normalized/features.json")
 
     raw_data = json.loads(raw_path.read_text(encoding="utf-8"))
-
-    # Raw fixture contains feature extraction output
     raw_features = raw_data["raw_features"]
 
-    # Simulate parse_features output
     parsed = []
     for rf in raw_features:
+        owner_kind, owner_simple = _FIXTURE_OWNERS[rf["name"]]
+        simple_name = normalize_id(rf["name"])
         parsed.append(
             {
+                "id": f"feature:{owner_simple}:{simple_name}",
                 "name": rf["name"],
+                "simple_name": simple_name,
+                "owner_id": f"{owner_kind}:{owner_simple}",
                 "page": rf["page"],
                 "source": "SRD 5.1",
                 "summary": rf["summary"],
@@ -30,10 +43,8 @@ def test_feature_dataset_matches_normalized_fixture() -> None:
             }
         )
 
-    # Postprocess: normalize IDs and polish text
     processed = [clean_feature_record(f) for f in parsed]
 
-    # Wrap with metadata
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("features")),
         "features": processed,

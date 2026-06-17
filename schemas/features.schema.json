@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/wolftales/srd-builder/schemas/features.schema.json",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "title": "Feature",
   "description": "Class feature or lineage trait from SRD 5.1",
   "type": "object",
@@ -9,6 +9,7 @@
     "id",
     "name",
     "simple_name",
+    "owner_id",
     "page",
     "source",
     "text"
@@ -16,8 +17,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^feature:[a-z0-9_]+$",
-      "description": "Unique identifier: feature:{simple_name}"
+      "pattern": "^feature:[a-z0-9_]+:[a-z0-9_]+$",
+      "description": "Unique identifier: feature:{owner_simple_name}:{simple_name}"
     },
     "name": {
       "type": "string",
@@ -27,6 +28,11 @@
       "type": "string",
       "pattern": "^[a-z0-9_]+$",
       "description": "Lowercase underscored name for indexing"
+    },
+    "owner_id": {
+      "type": "string",
+      "pattern": "^(class|lineage):[a-z0-9_]+$",
+      "description": "Owning class or lineage ID"
     },
     "page": {
       "type": "integer",
@@ -40,15 +46,9 @@
       "type": "string",
       "description": "Full feature description text"
     },
-    "source_class": {
+    "summary": {
       "type": "string",
-      "pattern": "^class:[a-z_]+$",
-      "description": "Parent class ID if class feature"
-    },
-    "source_lineage": {
-      "type": "string",
-      "pattern": "^lineage:[a-z_]+$",
-      "description": "Parent lineage ID if lineage trait"
+      "description": "Short first-sentence summary"
     },
     "level_acquired": {
       "type": "integer",
