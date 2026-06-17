@@ -31006,7 +31006,7 @@
         {
           "type": "piercing and slashing",
           "conditions": "nonmagical attacks that aren’t adamantine",
-          "type_id": "damage:piercing_and_slashing"
+          "type_id": "damage:piercing"
         }
       ],
       "languages": "Terran",

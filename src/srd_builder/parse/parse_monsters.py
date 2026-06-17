@@ -218,8 +218,9 @@ def _normalize_defense_entries(value: Any) -> list[Any]:
                 damage_types, condition = cleaned.split(" from ", 1)
                 entry["type"] = damage_types.strip()
                 entry["conditions"] = condition.strip()
-            # Add type_id (first damage type word)
-            entry["type_id"] = _extract_damage_type_id(entry["type"])
+            type_id = _extract_damage_type_id(entry["type"])
+            if type_id:
+                entry["type_id"] = type_id
             entries.append(entry)
     return entries
 
@@ -227,23 +228,45 @@ def _normalize_defense_entries(value: Any) -> list[Any]:
 def _add_type_id_to_defense(entry: dict[str, Any]) -> dict[str, Any]:
     """Add type_id to defense entry if missing."""
     if "type_id" not in entry and "type" in entry:
-        entry["type_id"] = _extract_damage_type_id(entry["type"])
+        type_id = _extract_damage_type_id(entry["type"])
+        if type_id:
+            entry["type_id"] = type_id
     return entry
 
 
-def _extract_damage_type_id(damage_type: str) -> str:
-    """Extract normalized damage type ID from type string.
+_CANONICAL_DAMAGE_TYPES = (
+    "acid",
+    "bludgeoning",
+    "cold",
+    "fire",
+    "force",
+    "lightning",
+    "necrotic",
+    "piercing",
+    "poison",
+    "psychic",
+    "radiant",
+    "slashing",
+    "thunder",
+)
 
-    Examples:
-        "fire" -> "damage:fire"
-        "bludgeoning, piercing, and slashing" -> "damage:bludgeoning"
-        "radiant" -> "damage:radiant"
+
+def _extract_damage_type_id(damage_type: str) -> str | None:
+    """Extract canonical damage type ID from a free-form type string.
+
+    Walks tokens left-to-right and returns the first canonical D&D 5e
+    damage type word found, so qualifiers ("nonmagical"), connectors
+    ("and"), and noise ("from stoneskin") are skipped instead of being
+    promoted to a bogus id like ``damage:nonmagical_bludgeoning`` or
+    ``damage:piercing_and_slashing``.
+
+    Returns ``None`` when no known damage type is present so callers can
+    omit the optional ``type_id`` field rather than emit ``damage:damage``.
     """
-    # Take first word/type from comma-separated list
-    first_type = damage_type.split(",", maxsplit=1)[0].strip()
-    # Normalize to lowercase snake_case
-    normalized = re.sub(r"[^a-z0-9]+", "_", first_type.lower()).strip("_")
-    return f"damage:{normalized}"
+    for token in re.findall(r"[a-z]+", damage_type.lower()):
+        if token in _CANONICAL_DAMAGE_TYPES:
+            return f"damage:{token}"
+    return None
 
 
 def _normalize_condition_immunities(value: Any) -> list[dict[str, str]]:
