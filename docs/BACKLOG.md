@@ -67,17 +67,48 @@ or surfaced to downstream consumers.
 
 ### Inventory of hand-curated sources
 
-| Module | Scope | Declared reason | Concerns |
-| --- | --- | --- | --- |
-| [src/srd_builder/srd_5_1/class_targets.py](src/srd_builder/srd_5_1/class_targets.py) | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers | "Manually transcribed via visual inspection" (pp. 8–55) | Drives `classes.json` AND `features.json` owner resolution. Page numbers are author-curated, not verified against PDF TOC. No round-trip test ensures `CLASS_DATA[i].features` actually appears on `CLASS_DATA[i].page`. |
-| [src/srd_builder/srd_5_1/lineage_targets.py](src/srd_builder/srd_5_1/lineage_targets.py) | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages | "PDF text is corrupted; manually transcribed" (pp. 3–7) | Same as above. The "PDF corrupted" claim is plausible but not documented with a reproducer (which page, which extraction call, what was returned). |
-| [src/srd_builder/srd_5_1/spell_class_targets.py](src/srd_builder/srd_5_1/spell_class_targets.py) | Spell→class mapping for all 6 caster classes (~300 spells × 6 classes) | "PDF text is corrupted; manually mapped" (pp. 105–113) | Largest hand-curated surface in the project. Errors here silently propagate to every spell record. No independent cross-check. |
-| [src/srd_builder/data/poison_descriptions_manual.py](src/srd_builder/data/poison_descriptions_manual.py) | Full prose + DC + damage for all 14 SRD poisons | "Corrupted text on pages 204–205" (TODO: replace when better PDF source available) | Only file that names a specific PDF defect. Good model for documenting deviations. |
-| [src/srd_builder/extraction/reference_data.py](src/srd_builder/extraction/reference_data.py) | `REFERENCE_TABLES` (spell-slots-by-level, etc.) | "Cannot be reliably extracted from PDF due to formatting issues" | Vague reason — same wording used for fundamentally different table types. No per-table justification. |
-| [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | `EXTENDED_EQUIPMENT`: ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. Critical to flag in `meta.json` so consumers know which items are inferred. Currently only the `_note` field hints at this. |
-| [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. If the equipment ID scheme changes again, these silently break. |
-| [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | Prose descriptions for adventure-gear items with special rules (pp. 66–68) | "Documented in the SRD" — but transcribed not extracted | Same pattern as packs. No assertion the prose actually appears verbatim in the PDF. |
-| [src/srd_builder/extract/extract_equipment.py](src/srd_builder/extract/extract_equipment.py) (lines 31–32) | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` | Implicit | Magic numbers without TOC verification. Same risk for other extract_*.py page constants. |
+Wiring column verified via `grep_search` on 2026-06-17. `LIVE` = imported by
+`build.py` / `parse/` / `postprocess/` / `assemble/`. `DEAD` = no callers in
+`src/srd_builder/` (only archived code or tests reference it).
+
+| Module | Wiring | Scope | Declared reason | Concerns |
+| --- | --- | --- | --- | --- |
+| [src/srd_builder/srd_5_1/class_targets.py](src/srd_builder/srd_5_1/class_targets.py) | **LIVE** — `parse_classes.py`, `parse_features.py` | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers | "Manually transcribed via visual inspection" (pp. 8–55) | Drives `classes.json` AND `features.json` owner resolution. Page numbers are author-curated, not verified against PDF TOC. No round-trip test ensures `CLASS_DATA[i].features` actually appears on `CLASS_DATA[i].page`. |
+| [src/srd_builder/srd_5_1/lineage_targets.py](src/srd_builder/srd_5_1/lineage_targets.py) | **LIVE** — `parse_lineages.py`, `parse_features.py` | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages | "PDF text is corrupted; manually transcribed" (pp. 3–7) | Same as above. The "PDF corrupted" claim is plausible but not documented with a reproducer (which page, which extraction call, what was returned). |
+| [src/srd_builder/srd_5_1/spell_class_targets.py](src/srd_builder/srd_5_1/spell_class_targets.py) | **LIVE** — `postprocess/spells.py:32` injects `classes` field into *every* spell record | Spell→class mapping for all 6 caster classes (~300 spells × 6 classes) | "PDF text is corrupted; manually mapped" (pp. 105–113) | **Largest hand-curated surface in the project, and it's wired straight into every spell.** Confirmed not legacy: `clean_spell_record()` calls `get_spell_classes(simple_name)` and sets `patched["classes"]`. Errors here silently propagate to every spell record. No independent cross-check. **Strongest candidate for v0.26.0 PDF re-extraction work.** |
+| [src/srd_builder/data/poison_descriptions_manual.py](src/srd_builder/data/poison_descriptions_manual.py) | **LIVE (with extraction fallback already wired)** — `parse_poisons_table.py:68` prefers manual, falls back to `parse_poison_descriptions` | Full prose + DC + damage for all 14 SRD poisons | "Corrupted text on pages 204–205" — TODO replace when better PDF source available | Only file that names a specific PDF defect. **Good model for documenting deviations** — already has the layered "manual-wins, extraction-fallback" shape the user described. Likely a justified permanent exception unless PyMuPDF improves on those pages. |
+| [src/srd_builder/extraction/reference_data.py](src/srd_builder/extraction/reference_data.py) | **DEAD** — no imports in `src/srd_builder/`. Only `archive/code/src_archived/` and `tests/validation_data.py` reference its lineage. | `REFERENCE_TABLES` (spell-slots-by-level, etc.) | "Cannot be reliably extracted from PDF due to formatting issues" | **Likely safe to delete.** Confirm by running tests with the file removed; if green, drop it. Removes ~720 lines of stale hand-curated data and the worst justification in the codebase. |
+| [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
+| [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | **LIVE** — `assemble_equipment.py:1019` | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. Real fix: pack contents should reference items by `simple_name` and synthesize IDs at assembly time via `normalize_id`. |
+| [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | **LIVE** — `assemble_equipment.py:1104` | Prose descriptions for adventure-gear / tools / armor / lifestyle items (pp. 66–68) | "Documented in the SRD" — but transcribed not extracted | Same pattern as packs. No assertion the prose actually appears verbatim in the PDF. |
+| [src/srd_builder/extract/extract_equipment.py](src/srd_builder/extract/extract_equipment.py) (lines 31–32) | **LIVE** | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` | Implicit | Magic numbers without TOC verification. Same risk for other extract_*.py page constants. |
+
+### Spectrum of legitimate exceptions vs. pollution
+
+The user noted there's a spectrum between "pure source" and "useful augmentation."
+Captured here as a mental model for the proposed `reason_code` enum:
+
+- **Pure extracted** — bytes in PDF → record in JSON. Default; no `_provenance`.
+- **`pdf_corruption`** — PDF bytes exist but unreadable (poisons pp. 204–205).
+  *Permanent exception until upstream fix.* Reproducer test required.
+- **`pdf_missing`** — concept exists in SRD prose but no structured source
+  (some equipment_descriptions, possibly some traits).
+  *Permanent exception, transcription faithful to prose.*
+- **`cross_reference_glue`** — author-invented to keep refs resolvable
+  (EXTENDED_EQUIPMENT items not in any SRD table).
+  *Justified augmentation; must be flagged in record + meta.json.*
+- **`derived_lookup_table`** — calculated from game rules, not extracted
+  (spell-slots-by-level if it were live).
+  *Justified; should live in rules dataset, not equipment/spell datasets.*
+- **`alias` / `common_name`** — user-mentioned future case. Layer on top
+  without overwriting source field. *Augmentation, not exception.*
+- **`homebrew_overlay`** — user's future vision: independent dataset that
+  augments srd_5_1 via the same `_provenance` mechanism.
+  *Out of scope for v0.26.0; informs the design now.*
+
+Anything that doesn't fit these codes is data pollution from earlier rounds
+where extraction was bypassed for convenience. The v0.26.0 audit must
+distinguish the two.
 
 ### Proposed provenance process
 
