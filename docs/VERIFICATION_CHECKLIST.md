@@ -75,19 +75,21 @@ dist/srd_5_1/
 
 ### 4. Inventory cross-check (new in v0.23.0)
 
-The `meta.json.inventory` block has per-dataset counts. Compare them against what's actually in the JSON files:
+The `meta.json.datasets` block has a per-dataset entry of the form
+`{file, count, status}`. Compare the declared `count` against what's actually in each JSON file:
 
 ```bash
-# Compare meta.json inventory against actual item counts
+# Compare meta.json datasets[*].count against actual item counts
 python3 - <<'PY'
 import json, sys
 from pathlib import Path
 
 meta = json.load(open("dist/srd_5_1/meta.json"))
-inv = meta["inventory"]
+datasets = meta["datasets"]
 fail = False
-for dataset, expected in sorted(inv.items()):
-    path = Path("dist/srd_5_1") / f"{dataset}.json"
+for dataset, entry in sorted(datasets.items()):
+    expected = entry["count"]
+    path = Path("dist/srd_5_1") / entry["file"]
     doc = json.load(open(path))
     actual = len(doc.get("items") or doc.get(dataset, []))
     status = "OK" if actual == expected else "MISMATCH"
@@ -114,7 +116,7 @@ root = Path("dist/srd_5_1")
 fail = False
 for dataset, entry in sorted(meta["schemas"].items()):
     schema = root / entry["file"]
-    data   = root / meta["files"][dataset]
+    data   = root / meta["datasets"][dataset]["file"]
     rc = subprocess.call(["check-jsonschema", "--schemafile", str(schema), str(data)])
     if rc != 0:
         fail = True
@@ -214,8 +216,9 @@ A minimal CI block:
     from pathlib import Path
     meta = json.load(open("dist/srd_5_1/meta.json"))
     fail = False
-    for dataset, expected in meta["inventory"].items():
-        doc = json.load(open(Path("dist/srd_5_1") / f"{dataset}.json"))
+    for dataset, entry in meta["datasets"].items():
+        expected = entry["count"]
+        doc = json.load(open(Path("dist/srd_5_1") / entry["file"]))
         actual = len(doc.get("items") or doc.get(dataset, []))
         assert actual == expected, f"{dataset}: {actual} != {expected}"
     PY

@@ -85,8 +85,11 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert dist_meta["source"] == "SRD_CC_v5.1"
     assert "license" in dist_meta
     assert "page_index" in dist_meta
-    assert "files" in dist_meta
-    assert "extraction_status" in dist_meta
+    assert "datasets" in dist_meta
+    # datasets block carries file/count/status per dataset
+    monsters_entry = dist_meta["datasets"]["monsters"]
+    assert monsters_entry["file"] == "monsters.json"
+    assert monsters_entry["status"] == "complete"
 
     # Check data files at package root (flat structure)
     monsters_path = dist_ruleset_dir / "monsters.json"

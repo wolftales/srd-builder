@@ -12,7 +12,7 @@ Checks (grouped by severity):
     - duplicate_id            same id appears more than once in a dataset
     - control_chars_in_field  raw \\t / \\r / \\xa0 leaked into id, name, or text
     - footer_leakage          "System Reference Document" copy bled into prose
-    - inventory_mismatch      meta.json.inventory disagrees with actual counts
+    - inventory_mismatch      meta.json.datasets[*].count disagrees with actual counts
 
   warning
     - bad_id_format           id does not match ``^[a-z][a-z0-9_]*:[a-z0-9_]+$``
@@ -235,7 +235,7 @@ def check_cross_references(distributions: dict[str, list[dict[str, Any]]]) -> It
 
 
 def check_inventory(dist_dir: Path, counts: dict[str, int]) -> Iterable[Finding]:
-    """Confirm meta.json.inventory matches the on-disk dataset sizes."""
+    """Confirm meta.json.datasets[*].count matches the on-disk dataset sizes."""
     meta_path = dist_dir / "meta.json"
     if not meta_path.exists():
         return
@@ -243,19 +243,21 @@ def check_inventory(dist_dir: Path, counts: dict[str, int]) -> Iterable[Finding]
         meta = json.loads(meta_path.read_text(encoding="utf-8"))
     except OSError, json.JSONDecodeError:
         return
-    inventory = meta.get("inventory")
-    if not isinstance(inventory, dict):
+    datasets = meta.get("datasets")
+    if not isinstance(datasets, dict):
         return
     for dataset, actual in counts.items():
-        declared = inventory.get(dataset)
-        if declared is None:
+        entry = datasets.get(dataset)
+        if not isinstance(entry, dict):
             yield Finding(
                 severity="critical",
                 dataset=dataset,
                 code="inventory_mismatch",
-                detail="not present in meta.json.inventory",
+                detail="not present in meta.json.datasets",
             )
-        elif declared != actual:
+            continue
+        declared = entry.get("count")
+        if declared != actual:
             yield Finding(
                 severity="critical",
                 dataset=dataset,

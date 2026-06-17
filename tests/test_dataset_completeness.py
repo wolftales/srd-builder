@@ -160,10 +160,11 @@ def test_meta_json_extraction_status() -> None:
         pytest.skip("meta.json not found - build may not have run")
 
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
-    extraction_status = meta.get("extraction_status", {})
+    datasets = meta.get("datasets", {})
 
     for dataset_name in EXPECTED_COUNTS.keys():
-        status = extraction_status.get(dataset_name)
+        entry = datasets.get(dataset_name) or {}
+        status = entry.get("status")
         assert status == "complete", (
             f"meta.json shows {dataset_name} status as '{status}', expected 'complete'"
         )

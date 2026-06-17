@@ -63,15 +63,14 @@ When a new bundle drops, read `meta.json` first. It tells you everything that sh
 import json
 meta = json.loads(open("dist/srd_5_1/meta.json").read())
 
-builder_version = meta["build"]["builder_version"]   # e.g. "0.23.0"
-inventory       = meta["inventory"]                  # {"monsters": 317, "spells": 319, ...}
-schemas         = meta["schemas"]                    # {"monster": {"file": "...", "version": "2.0.0"}, ...}
-files           = meta["files"]                      # full dataset → file path map
+builder_version = meta["build"]["builder_version"]   # e.g. "0.24.0"
+datasets        = meta["datasets"]                   # {"monsters": {"file": "monsters.json", "count": 317, "status": "complete"}, ...}
+schemas         = meta["schemas"]                    # {"monster": "2.0.0", ...}
 ```
 
-**Use `inventory` for sanity checks.** Don't hard-code per-dataset counts in your loader — read the manifest and compare against what you actually parsed. If we add a dataset in a future release, your loader picks it up automatically.
+**Use `datasets` for sanity checks and discovery.** Each entry has `{file, count, status}`. Don't hard-code per-dataset counts in your loader — iterate the manifest and compare against what you actually parsed. If we add a dataset in a future release, your loader picks it up automatically.
 
-**Use `schemas` to gate features.** Each entry has `{file, version}`. If you depend on a schema field that's only present at v2.0.0, branch on the version here.
+**Use `schemas` to gate features.** If you depend on a schema field that's only present at v2.0.0, branch on the version here.
 
 ---
 
@@ -170,8 +169,8 @@ import jsonschema
 meta    = json.loads(open("dist/srd_5_1/meta.json").read())
 dataset = "monsters"
 
-schema  = json.loads(open(f"dist/srd_5_1/{meta['schemas'][dataset]['file']}").read())
-data    = json.loads(open(f"dist/srd_5_1/{meta['files'][dataset]}").read())
+schema  = json.loads(open(f"dist/srd_5_1/schemas/monster.schema.json").read())
+data    = json.loads(open(f"dist/srd_5_1/{meta['datasets'][dataset]['file']}").read())
 
 jsonschema.validate(instance=data, schema=schema)
 ```

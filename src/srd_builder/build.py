@@ -597,14 +597,14 @@ def _generate_bundle_readme(target_dir: Path) -> str:
     and dataset counts always match the shipped payload.
     """
     meta = json.loads((target_dir / "meta.json").read_text(encoding="utf-8"))
-    inventory = meta.get("inventory", {})
+    datasets = meta.get("datasets", {})
     schemas = meta.get("schemas", {})
     builder_version = meta.get("builder_version", __version__)
     ruleset_version = meta.get("ruleset_version", "5.1")
     extracted_at = meta.get("build", {}).get("extracted_at")
     generated_line = extracted_at[:10] if extracted_at else "(reproducible build)"
 
-    total_items = sum(inventory.values())
+    total_items = sum(entry.get("count", 0) for entry in datasets.values())
 
     # Pretty dataset rows: "datasets" key with display name + schema lookup.
     dataset_display = {
@@ -627,9 +627,9 @@ def _generate_bundle_readme(target_dir: Path) -> str:
     }
 
     rows = []
-    for name in sorted(inventory):
+    for name in sorted(datasets):
         label, schema_key = dataset_display.get(name, (name.title(), name))
-        count = inventory[name]
+        count = datasets[name].get("count", 0)
         schema_ver = schemas.get(schema_key, "—")
         rows.append(f"| {label} | {count} | `{name}.json` | v{schema_ver} |")
     inventory_table = "\n".join(rows)
@@ -643,7 +643,7 @@ def _generate_bundle_readme(target_dir: Path) -> str:
 **Builder version:** srd-builder v{builder_version}
 **Ruleset:** SRD {ruleset_version} (System Reference Document)
 **Generated:** {generated_line}
-**Total items:** {total_items} across {len(inventory)} datasets
+**Total items:** {total_items} across {len(datasets)} datasets
 
 ---
 

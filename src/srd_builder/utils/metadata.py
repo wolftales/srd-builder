@@ -328,19 +328,37 @@ def generate_meta_json(  # noqa: PLR0913
             spells_page_range=spells_page_range,
             table_page_index=table_page_index,
         ),
-        "files": {
-            "meta": "meta.json",
-            "build_report": "build_report.json",
-            "index": "index.json",
-            **{name: f"{name}.json" for name in ALL_DATASETS},
-        },
-        "inventory": inventory,
-        "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
-        "extraction_status": _compute_extraction_status(
-            dist_dir=dist_dir,
-            monsters_complete=monsters_complete,
-            equipment_complete=equipment_complete,
-            spells_complete=spells_complete,
-            classes_complete=classes_complete,
+        "datasets": _build_datasets_block(
+            inventory=inventory,
+            extraction_status=_compute_extraction_status(
+                dist_dir=dist_dir,
+                monsters_complete=monsters_complete,
+                equipment_complete=equipment_complete,
+                spells_complete=spells_complete,
+                classes_complete=classes_complete,
+            ),
         ),
+        "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
     }
+
+
+def _build_datasets_block(
+    *,
+    inventory: dict[str, int],
+    extraction_status: dict[str, str],
+) -> dict[str, dict[str, Any]]:
+    """Collapse files / inventory / extraction_status into one per-dataset block.
+
+    Shape: ``{dataset_name: {"file": str, "count": int, "status": str}}``
+
+    Always emits every dataset in ALL_DATASETS so consumers can iterate the
+    block without cross-referencing a separate file list.
+    """
+    block: dict[str, dict[str, Any]] = {}
+    for name in ALL_DATASETS:
+        block[name] = {
+            "file": f"{name}.json",
+            "count": inventory.get(name, 0),
+            "status": extraction_status.get(name, "in_progress"),
+        }
+    return block
