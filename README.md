@@ -261,10 +261,10 @@ Version is automatically read from `pyproject.toml` at runtime via `importlib.me
 
 ```bash
 # Bump version in pyproject.toml (handles docs/commits/tags automatically)
-python scripts/bump_version.py 0.22.1
+python scripts/bump_version.py 0.23.1
 
 # Preview version changes without committing
-python scripts/bump_version.py 0.23.0 --no-commit
+python scripts/bump_version.py 0.24.0 --no-commit
 
 # Verify current version
 python -c "import srd_builder; print(srd_builder.__version__)"
@@ -288,7 +288,7 @@ srd-builder/
 │       └── raw/             # (gitignored) Build-generated *_raw.json intermediates
 ├── dist/                    # Build output (gitignored)
 │   └── srd_5_1/             # See "Output structure" above
-├── schemas/                 # 17 JSON Schema definitions (source of truth)
+├── schemas/                 # 16 JSON Schema definitions (source of truth)
 ├── tests/
 │   ├── fixtures/            # Raw + normalized test data
 │   └── test_*.py            # Pytest suite (292 tests)

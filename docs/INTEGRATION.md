@@ -1,295 +1,237 @@
-# Downstream Integration Strategy
+# Integration Guide (Consumers)
 
-## Producer-Consumer Relationship
+This document is written for **downstream consumers** of the srd-builder bundle (campaign tools, VTTs, LLM applications, analysis pipelines). It describes the shape of `dist/srd_5_1/`, the conventions consumers should rely on, and how to react when our schemas change.
 
-### **The Vision: Separation of Concerns**
-
-srd-builder was created to **remove data processing burden from downstream consumers**, allowing game frameworks and applications to focus purely on game logic and usage. The project was bootstrapped collaboratively with downstream consumers to define the specification and ensure alignment with their consumption needs.
-
-**srd-builder** (Producer/Upstream)
-- **Role:** Data extraction and processing specialist
-- Extracts structured data directly from SRD 5.1 PDF
-- Produces clean, validated JSON data files
-- Maintains schemas and metadata
-- Version controlled, tested, reproducible
-- Implements the spec consumers need
-
-**Consumers** (Downstream)
-- **Role:** Game frameworks and application logic
-- Defined the data specification and structure requirements
-- Integrates srd-builder's data files into game frameworks
-- Focuses on game mechanics, not data extraction
-- Consumes: data files, schemas, indexes, metadata
-- No longer needs to maintain extraction pipeline
-
-## Data Package Structure
-
-srd-builder currently produces the following files for downstream consumption:
-
-```
-dist/srd_5_1/
-├── data/
-│   ├── monsters.json         # 317 creatures with structured fields
-│   ├── equipment.json        # 106 equipment items
-│   ├── spells.json           # 319 spells with structured effects
-│   ├── rules.json            # 172 game rules and mechanics (v0.17.0)
-│   ├── tables.json           # 23 reference tables
-│   ├── lineages.json         # 13 character lineages
-│   ├── classes.json          # 12 character classes
-│   └── index.json            # Lookup tables (by_name, by_cr, by_type, etc.)
-├── build_report.json         # Build metadata and version info
-└── schemas/                  # JSON schemas for validation
-    ├── monster.schema.json
-    ├── equipment.schema.json
-    ├── spell.schema.json
-    ├── rule.schema.json      # v0.17.0
-    └── ...
-```
-
-## What We Provide vs What They Need
-
-### ✅ Currently Available (v0.4.1)
-- **data/monsters.json**: 296 monsters with structured AC/HP/Speed
-- **data/index.json**: Rich indexes (name, CR, type, size)
-- **build_report.json**: Build metadata and versioning
-- **schemas/monster.schema.json**: Validation schema
-
-### 🔄 Data Quality Features
-1. **Complete extraction**: 296 monsters (100% coverage of SRD 5.1)
-2. **Structured AC**: `{"value": 17, "source": "natural armor"}` vs simple `17`
-3. **Structured HP**: `{"average": 135, "formula": "18d10+36"}` vs separate fields
-4. **Speed conditions**: Preserves `(hover)` and other modifiers
-5. **Direct PDF extraction**: Reproducible, version-controlled pipeline
-
-### 📋 Future Content Types
-Following the SRD structure, srd-builder will expand to extract:
-- ✅ Equipment (weapons, armor, gear) - v0.5.0
-- ✅ Classes & Lineages - v0.13.0
-- ✅ Spells & Features - v0.6.0
-- ✅ Tables - v0.8.3
-- ✅ Rules & Mechanics - v0.17.0
-- 🔄 Conditions - Future
-
-Each content type follows the same pattern:
-```
-dist/srd_5_1/
-└── data/
-    ├── monsters.json     # ✅ v0.5.0 (317 creatures)
-    ├── equipment.json    # ✅ v0.5.0 (106 items)
-    ├── spells.json       # ✅ v0.6.0 (319 spells)
-    ├── rules.json        # ✅ v0.17.0 (172 rules)
-    ├── tables.json       # ✅ v0.8.3 (23 tables)
-    ├── lineages.json     # ✅ v0.13.0 (13 lineages)
-    ├── classes.json      # ✅ v0.13.0 (12 classes)
-    ├── conditions.json   # 🔄 Future
-    └── index.json        # Unified indexes
-```
-
-## Integration Workflow
-
-### For Consumers (Downstream)
-1. Pull latest srd-builder release
-2. Copy `dist/srd_5_1/data/*` → consumer data directory
-3. Use `schemas/` for validation if needed
-4. Reference `meta.json` and `build_report.json` for versioning/metadata
+> Looking for *producer-side* build verification? See [docs/VERIFICATION_CHECKLIST.md](docs/VERIFICATION_CHECKLIST.md).
 
 ---
 
-## Real-World Integration Validation
+## Producer / Consumer split
 
-### Blackmoor Integration Review (v0.8.3 - November 2025)
+**srd-builder** (upstream) extracts structured JSON from the SRD 5.1 PDF and ships a self-contained bundle. It guarantees:
 
-**Overview:**
-The Blackmoor VTT project performed comprehensive real-world integration testing of the v0.8.3 data package across all 6 datasets. This was the first external consumer integration test, providing critical validation of data quality and usability.
+- Reproducible, deterministic output (same PDF → identical bundle)
+- Schema-validated datasets
+- Full provenance back to the source PDF (page numbers, hash)
+- Stable IDs, stable file shapes within a MAJOR schema version
 
-**Dataset Quality Assessment:**
-
-| Dataset | Rating | Status | Issues Found |
-|---------|--------|--------|--------------|
-| Monsters (296) | ⭐⭐⭐⭐⭐ | Production Ready | None - stable since v0.2.0 |
-| Equipment (106) | ⭐⭐⭐⭐⭐ | Production Ready | None - v0.8.3 cleanup successful |
-| Tables (23) | ⭐⭐⭐⭐⭐ | Production Ready | None - excellent structure |
-| Spells (319) | ⭐⭐⭐⭐ | Reference Only | Missing range field (critical) |
-| Lineages (13) | ⭐⭐⭐ | Reference Only | Missing ability score increases |
-| Classes (12) | ⭐⭐⭐ | Reference Only | Missing primary ability & saves |
-
-**Key Findings:**
-
-✅ **Production Ready (50% of datasets)**
-- 3 of 6 datasets are production-ready on first integration
-- Structure and extraction quality validated by real usage
-- No architectural changes needed
-
-🔴 **Critical Gaps Discovered (Not in TODO.md)**
-1. **Lineage ability scores** - Human missing +1 all stats (blocks character creation)
-2. **Class primary ability & saves** - Fighter missing Str/Dex and save proficiencies (blocks character sheets)
-3. **Spell range field** - All 319 spells missing range (blocks spell targeting/attacks)
-
-**Impact:**
-- Identified character creation blockers not visible in internal testing
-- Prioritized v0.8.4 work based on real consumer needs
-- Validated that extraction approach and structure are sound
-- Proved dataset quality when complete (3/3 complete datasets = 5 stars)
-
-**Blackmoor Priorities for v0.8.4:**
-1. Add missing fields to lineages (ability scores, subrace links)
-2. Add missing fields to classes (primary ability, saving throws)
-3. Add range field to all spells
-4. Complete spell healing coverage (2% → 100%)
-
-**Lessons Learned:**
-- External integration reveals gaps internal testing misses
-- Structure quality is excellent when data is complete
-- Incomplete extraction (missing fields) != poor design
-- Real consumer feedback is invaluable for prioritization
+**Consumers** load the bundle and build the application. The goal is that you never need to re-parse the PDF or maintain your own extraction pipeline.
 
 ---
 
-### For srd-builder (Producer)
-1. Extract content from SRD PDF
-2. Normalize and structure data
-3. Validate against schema
-4. Generate indexes and metadata
-5. Tag release
-6. Consumers pull the release
+## Bundle Layout (v0.23.0)
 
-## File Format Compatibility
+The full bundle lives under `dist/srd_5_1/`:
 
-### Naming Convention
-Both projects use three-level naming:
-- `id`: "monster:aboleth" (stable identifier)
-- `simple_name`: "aboleth" (machine-readable)
-- `name`: "Aboleth" (display name)
-
-### Field Structure
-srd-builder provides RICHER data that consumers can either:
-- **Use directly**: Consume structured AC/HP/Speed as-is
-- **Flatten**: Convert `{"value": 17, "source": "..."}` → `17` if needed
-
-No data loss - consumers can always extract the simple value from our structured format.
-
-## Current vs Target State
-
-### Current (v0.5.0)
 ```
-srd-builder → [monsters.json, equipment.json, index.json, meta.json, schemas] → Consumers
-  296 monsters with full provenance tracking
-  111 equipment items with structured parsing
-  Structured fields with rich metadata
-```
-
-### Target (v1.0)
-```
-srd-builder → [full SRD data + schemas + provenance] → Consumers
-  - Monsters (317) ✅
-  - Equipment (106) ✅
-  - Spells (319) ✅
-  - Rules (172) ✅
-  - Tables (23) ✅
-  - Lineages (13) ✅
-  - Classes (12) ✅
-  - Conditions (TBD)
+dist/srd_5_1/
+├── README.md                  # Generated dynamically from meta.json
+├── meta.json                  # Source of truth for inventory + schema manifest
+├── index.json                 # Cross-dataset lookup maps
+├── build_report.json          # Per-stage parse/postprocess counts
+│
+├── ability_scores.json        # 6     (schema v1.0.0)
+├── classes.json               # 12    (schema v2.0.0)
+├── conditions.json            # 15    (schema v2.0.0)
+├── damage_types.json          # 13    (schema v1.0.0)
+├── diseases.json              # 3     (schema v2.0.0)
+├── equipment.json             # 259   (schema v2.0.0)
+├── features.json              # 246   (schema v2.0.0)
+├── lineages.json              # 13    (schema v2.0.0)
+├── magic_items.json           # 240   (schema v2.0.0)
+├── monsters.json              # 317   (schema v2.0.0)
+├── poisons.json               # 14    (schema v2.0.0)
+├── rules.json                 # 172   (schema v2.0.0)
+├── skills.json                # 18    (schema v1.0.0)
+├── spells.json                # 319   (schema v2.0.0)
+├── tables.json                # 38    (schema v2.0.0)
+├── weapon_properties.json     # 11    (schema v1.0.0)
+│
+├── schemas/                   # All 16 JSON Schema files (copies of /schemas/)
+└── docs/                      # DATA_DICTIONARY.md, SCHEMAS.md (shipped to consumers)
 ```
 
-## Consumption Examples
+**Totals shipped:** 16 datasets, 1,696 items.
 
-### Loading Rules Data
+---
+
+## `meta.json` is the source of truth
+
+When a new bundle drops, read `meta.json` first. It tells you everything that shipped without your code having to guess:
 
 ```python
 import json
+meta = json.loads(open("dist/srd_5_1/meta.json").read())
 
-# Load rules dataset
-with open("dist/srd_5_1/rules.json") as f:
-    rules_data = json.load(f)
-
-# Access metadata
-meta = rules_data["_meta"]
-print(f"Rules from {meta['source']} (schema v{meta['schema_version']})")
-
-# Access rules
-rules = rules_data["items"]
-print(f"Loaded {len(rules)} rules")
-
-# Find rules by category
-combat_rules = [r for r in rules if r["category"] == "Using Ability Scores"
-                and r.get("subcategory") == "Making an Attack"]
-
-# Display a rule
-attack_roll = next(r for r in rules if r["id"] == "rule:attack_rolls")
-print(f"\n{attack_roll['name']}")
-for paragraph in attack_roll["text"]:
-    print(f"  {paragraph}")
-
-# Search by tags
-action_rules = [r for r in rules if "action" in r.get("tags", [])]
-print(f"\nFound {len(action_rules)} rules tagged with 'action'")
-
-# Use index for fast lookup
-with open("dist/srd_5_1/index.json") as f:
-    index = json.load(f)
-
-# Lookup by name
-ability_check_id = index["rules"]["by_name"]["ability_checks"]
-# Get from main dataset using ID
-ability_check_rule = next(r for r in rules if r["id"] == ability_check_id)
-
-# Browse by category
-combat_rule_ids = index["rules"]["by_category"]["Using Ability Scores"]
-combat_rules = [r for r in rules if r["id"] in combat_rule_ids]
+builder_version = meta["build"]["builder_version"]   # e.g. "0.23.0"
+inventory       = meta["inventory"]                  # {"monsters": 317, "spells": 319, ...}
+schemas         = meta["schemas"]                    # {"monster": {"file": "...", "version": "2.0.0"}, ...}
+files           = meta["files"]                      # full dataset → file path map
 ```
 
-### Cross-Referencing Rules with Other Datasets
+**Use `inventory` for sanity checks.** Don't hard-code per-dataset counts in your loader — read the manifest and compare against what you actually parsed. If we add a dataset in a future release, your loader picks it up automatically.
+
+**Use `schemas` to gate features.** Each entry has `{file, version}`. If you depend on a schema field that's only present at v2.0.0, branch on the version here.
+
+---
+
+## Dataset shape
+
+Two shapes ship today:
+
+### Shape A — `items` wrapper (most datasets)
+
+```json
+{
+  "_meta": {
+    "source": "SRD_CC_v5.1",
+    "schema_version": "2.0.0",
+    "format": "unified_items_array",
+    "entity_count": 317,
+    "generated_at": "2026-06-17T00:00:00Z",
+    "builder_version": "0.23.0"
+  },
+  "items": [ ... ]
+}
+```
+
+Used by: `ability_scores`, `classes`, `damage_types`, `equipment`, `lineages`, `magic_items`, `monsters`, `poisons`, `rules`, `skills`, `spells`, `tables`, `weapon_properties`.
+
+### Shape B — dataset-named array key (legacy)
+
+```json
+{
+  "_meta": { ... },
+  "conditions": [ ... ]
+}
+```
+
+Used by: `conditions`, `diseases`, `features`.
+
+Normalizing this is on the roadmap (see [docs/PARKING_LOT.md](docs/PARKING_LOT.md) → "JSON Field Ordering"). Until then, treat the items-array key as either `items` or the dataset's basename. A simple helper:
 
 ```python
-# Rules can reference other datasets via cross-reference fields
-rule = next(r for r in rules if r["id"] == "rule:concentration")
-
-# Load related spells
-if "related_spells" in rule:
-    with open("dist/srd_5_1/spells.json") as f:
-        spells_data = json.load(f)
-
-    related_spells = [s for s in spells_data["items"]
-                     if s["id"] in rule["related_spells"]]
-    print(f"Spells requiring concentration: {len(related_spells)}")
-
-# Load related conditions
-if "related_conditions" in rule:
-    # Future: load conditions.json when available
-    pass
+def load_items(path: str, dataset: str) -> list[dict]:
+    doc = json.loads(open(path).read())
+    return doc.get("items") or doc[dataset]
 ```
 
-## Design Philosophy
+---
 
-### **Collaborative Spec, Focused Execution**
+## ID conventions
 
-- **Consumers define the spec**: Field names, structure, what data is needed
-- **srd-builder implements extraction**: PDF parsing, normalization, validation
-- **Result**: Clean separation allows each project to excel at its specialty
+Every entity has a `{id, name, simple_name}` triple:
 
-### **Data Enrichment Strategy**
+| Field | Purpose | Example |
+|-------|---------|---------|
+| `id` | Stable, namespaced identifier — what cross-references point at | `"monster:aboleth"` |
+| `name` | Display name | `"Aboleth"` |
+| `simple_name` | Lowercase, snake_case, ASCII-only — what indexes key on | `"aboleth"` |
 
-We provide **richer** data than strictly required:
-- Structured fields (AC with sources, HP with formulas) can be flattened if needed
-- Additional indexes and metadata available but optional
-- Backwards compatible: consumers can ignore enrichments and use simple values
+**Namespaces shipped:** `ability:`, `class:`, `condition:`, `creature:`, `damage_type:`, `disease:`, `feature:`, `item:`, `lineage:`, `magic_item:`, `monster:`, `npc:`, `poison:`, `rule:`, `skill:`, `spell:`, `table:`, `weapon_property:`.
 
-This approach:
-- ✅ **No lock-in**: Consumers can use as much or as little structure as needed
-- ✅ **Future-proof**: New use cases can leverage richer data without re-extraction
-- ✅ **No data loss**: Flattening is always possible, but original detail preserved
+> **Monster note:** `monsters.json` uses three prefixes — `monster:` (main bestiary, pages 261–365), `creature:` (Appendix MM-A, pages 366–394), `npc:` (Appendix MM-B, pages 395–403). Code that only checked `id.startswith("monster:")` will miss creatures and NPCs. Filter on prefix only when you actually want that subset; otherwise iterate `items`.
 
-## Design Principles
+---
 
-1. **Provide structured fields** that consumers can flatten if needed (no data loss)
-   - **Status**: Implemented in v0.4.0 - structured fields with backwards compatibility
+## Cross-references
 
-2. **Rich indexes** cover common lookups (name, CR, type, size)
-   - Additional indexes (alignment, environment, etc.) can be added as needed
+The v2.0.0 schemas use `*_id` fields to point between datasets:
 
-3. **Complete provenance** in meta.json (license, PDF hash, page ranges, extraction status)
-   - Enables traceability and compliance
-   - **Status**: Implemented in v0.5.0
+- `spell.damage_type_id` → `damage_type:fire`
+- `equipment.weapon_property_ids[]` → `weapon_property:versatile`
+- `skill.ability_id` → `ability:strength`
+- `rule.related_spells[]` → `spell:fireball`
 
-4. **File naming conventions**: Plural for collections (`monsters.json`, `spells.json`)
-   - **Status**: Confirmed and consistent across all content types
+Resolve them with `index.json`'s `by_name` maps or by building your own `{id: entity}` dict at load time.
+
+---
+
+## Indexes (`index.json`)
+
+`index.json` ships with cross-dataset lookup maps so you don't have to build them. Typical contents:
+
+- `by_name` for every dataset (entity aliases auto-expanded)
+- `by_type` / `by_category` / `by_cr` where it makes sense per dataset
+- Top-level `terminology` aliases (e.g. `"races" → "lineages"`) for backwards-compatible category names
+
+If you need an index we don't ship, it's safe to build one in your loader — just don't write it back into our files.
+
+---
+
+## Schema validation
+
+Every dataset ships with a corresponding JSON Schema under `schemas/`. To validate in your CI:
+
+```python
+import json
+import jsonschema
+
+meta    = json.loads(open("dist/srd_5_1/meta.json").read())
+dataset = "monsters"
+
+schema  = json.loads(open(f"dist/srd_5_1/{meta['schemas'][dataset]['file']}").read())
+data    = json.loads(open(f"dist/srd_5_1/{meta['files'][dataset]}").read())
+
+jsonschema.validate(instance=data, schema=schema)
+```
+
+Or shell out to `check-jsonschema`:
+
+```bash
+check-jsonschema --schemafile dist/srd_5_1/schemas/monster.schema.json \
+                 dist/srd_5_1/monsters.json
+```
+
+---
+
+## Versioning contract
+
+Three versions matter to consumers:
+
+| Version | Where it lives | What it tracks |
+|---------|----------------|----------------|
+| **Bundle / package version** | `meta.json.build.builder_version`, dataset `_meta.builder_version` | "Which release of srd-builder produced this bundle?" |
+| **Per-schema version** | `meta.json.schemas.<dataset>.version`, dataset `_meta.schema_version`, schema file `version` | "What data contract should I validate against?" |
+| **Extractor version** | `*_raw.json _meta.extractor_version` (only in source repo, not in the bundle) | Internal — tracks raw PDF extraction format |
+
+**Compatibility rules** (semver):
+
+- A **patch** bump (e.g. `2.0.0 → 2.0.1`) is doc/clarification — no consumer changes needed.
+- A **minor** bump (e.g. `2.0.0 → 2.1.0`) is additive — new optional fields, new enum values. Existing consumers keep working.
+- A **major** bump (e.g. `1.x → 2.0.0`) is breaking — renamed/removed fields, type changes. Read the release notes and migrate.
+
+---
+
+## Upgrade workflow
+
+1. Pull the new bundle (`pip install srd-builder==X.Y.Z` or `git pull`)
+2. Read `meta.json` — check `build.builder_version`, `inventory`, and `schemas`
+3. Run your loader against the new bundle in CI; any schema-validation failure tells you which dataset's contract moved
+4. For any schema whose **major** version bumped, consult that release's notes and migrate
+5. Re-run your test suite
+
+---
+
+## Provenance and licensing
+
+Every entity preserves source provenance:
+
+- `page: int` — SRD 5.1 page number the entity was extracted from
+- `source: "SRD 5.1"` — source document identifier
+- `meta.json.license` — full license text
+- `meta.json.build.pdf_sha256` — hash of the source PDF used to build this bundle
+
+This is enough for downstream attribution and for verifying you and the producer parsed the same PDF.
+
+---
+
+## Where to file issues
+
+| Type of problem | Where |
+|-----------------|-------|
+| Extraction bug (wrong value, missing entity) | GitHub Issues with the `data` label |
+| Schema feedback or proposed field | GitHub Issues with the `schema` label |
+| Performance, loader patterns | GitHub Discussions |
+
+When reporting an issue, please include the bundle's `builder_version` and the dataset's `schema_version` — both are in the file's `_meta` block.

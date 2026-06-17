@@ -1,33 +1,47 @@
 # SRD-Builder Architecture
 
-**Version:** v0.19.4
+**Version:** v0.23.0
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
+
+> The authoritative item counts and schema versions live in `dist/srd_5_1/meta.json` (the `inventory` and `schemas` blocks). The tables below are a human-readable snapshot — if they ever disagree with the live `meta.json`, `meta.json` wins.
 
 ---
 
 ## Datasets Overview
 
-SRD-Builder extracts structured JSON datasets from SRD 5.1 PDF. Below is the complete target list and current status:
+SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.23.0 build ships **16 datasets** containing **1,696 items**:
 
-| File | Status | Count | Schema | Description |
-|------|--------|-------|--------|-------------|
-| `meta.json` | ✅ Complete | 1 | - | Version, license, page index, terminology aliases |
-| `monsters.json` | ✅ Complete | 317 | v2.0.0 | Monsters, creatures, and NPCs (normalized) |
-| `equipment.json` | ✅ Complete | 258 | v2.0.0 | Weapons, armor, adventuring gear |
-| `spells.json` | ✅ Complete | 319 | v2.0.0 | Spell list with effects, components, casting |
-| `classes.json` | ✅ Complete | 12 | v2.0.0 | Character classes with progression |
-| `conditions.json` | ✅ Complete | 15 | v2.0.0 | Status conditions (poisoned, stunned, etc.) |
-| `diseases.json` | ✅ Complete | 3 | v2.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
-| `features.json` | ✅ Complete | 246 | v2.0.0 | Class features and lineage traits |
-| `lineages.json` | ✅ Complete | 13 | v2.0.0 | Races/lineages with traits |
-| `magic_items.json` | ✅ Complete | 240 | v2.0.0 | Magic items with descriptions |
-| `poisons.json` | ✅ Complete | 14 | v2.0.0 | Poison gear entries + descriptions |
-| `rules.json` | ✅ Complete | 172 | v2.0.0 | Core mechanics from 7 chapters |
-| `tables.json` | ✅ Complete | 38 | v2.0.0 | Reference tables (equipment, expenses, services) |
-| `index.json` | ✅ Complete | - | - | Fast lookup maps (by name, CR, type, etc.) |
+| File | Count | Schema | Description |
+|------|------:|--------|-------------|
+| `ability_scores.json` | 6 | v1.0.0 | Atomic reference: STR/DEX/CON/INT/WIS/CHA |
+| `classes.json` | 12 | v2.0.0 | Character classes with progression |
+| `conditions.json` | 15 | v2.0.0 | Status conditions (poisoned, stunned, etc.) |
+| `damage_types.json` | 13 | v1.0.0 | Atomic reference: damage type vocabulary |
+| `diseases.json` | 3 | v2.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
+| `equipment.json` | 259 | v2.0.0 | Weapons, armor, adventuring gear |
+| `features.json` | 246 | v2.0.0 | Class features and lineage traits |
+| `lineages.json` | 13 | v2.0.0 | Races/lineages with traits |
+| `magic_items.json` | 240 | v2.0.0 | Magic items with descriptions |
+| `monsters.json` | 317 | v2.0.0 | Monsters, creatures, and NPCs |
+| `poisons.json` | 14 | v2.0.0 | Poison gear entries + descriptions |
+| `rules.json` | 172 | v2.0.0 | Core mechanics from 7 chapters |
+| `skills.json` | 18 | v1.0.0 | Atomic reference: skill vocabulary |
+| `spells.json` | 319 | v2.0.0 | Spell list with effects, components, casting |
+| `tables.json` | 38 | v2.0.0 | Reference tables (equipment, expenses, services, madness) |
+| `weapon_properties.json` | 11 | v1.0.0 | Atomic reference: weapon property vocabulary |
 
-**Progress:** 13/13 datasets complete (100%)
-**Current Schema Version:** v2.0.0 (stable baseline, cross-reference IDs, no summary fields)
+**Bundle collateral** (also under `dist/srd_5_1/`):
+
+| File | Purpose |
+|------|---------|
+| `meta.json` | Version, license, page index, terminology aliases, `inventory` and `schemas` manifest |
+| `index.json` | Fast lookup maps (by name, CR, type, etc.) |
+| `build_report.json` | Per-stage parse/postprocess counts and warnings |
+| `README.md` | Generated dynamically from `meta.json` (see [build.py](src/srd_builder/build.py)) |
+| `schemas/` | All 16 JSON Schema files |
+| `docs/` | DATA_DICTIONARY.md, SCHEMAS.md (shipped to consumers) |
+
+**Dataset shape note:** Most datasets follow `{"_meta": ..., "items": [...]}`. Three legacy datasets (`conditions`, `diseases`, `features`) use the dataset name as the array key (`{"_meta": ..., "conditions": [...]}`). The `build_inventory()` helper in [src/srd_builder/utils/metadata.py](src/srd_builder/utils/metadata.py) handles both shapes. Normalizing this is tracked in [docs/PARKING_LOT.md](docs/PARKING_LOT.md).
 
 ---
 
@@ -279,12 +293,37 @@ Extract (PDF → Raw JSON) → Parse (Structure) → Postprocess (Normalize) →
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ OUTPUT: dist/srd_5_1/                                      │
-│ • meta.json (license, provenance, page index)              │
+│ • meta.json (license, provenance, inventory, schemas)      │
 │ • build_report.json (build metadata)                       │
-│ • data/monsters.json (296 normalized monsters)             │
-│ • data/index.json (lookup tables)                          │
+│ • monsters.json (317 normalized monsters)                  │
+│ • index.json (lookup tables)                               │
+│ • README.md (generated from meta.json)                     │
+│ • schemas/ (16 JSON Schema files)                          │
+│ • docs/ (DATA_DICTIONARY.md, SCHEMAS.md)                   │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Prose Extraction Framework
+
+Most datasets pull from layout-rich PDF regions (monsters, equipment, spells), but several pull primarily from running prose: conditions, diseases, poisons, rules, features, magic items. The shared helpers for that pattern live in [src/srd_builder/extract/extract_prose.py](src/srd_builder/extract/extract_prose.py).
+
+**Core helpers** (importable from `srd_builder.extract.extract_prose`):
+
+| Helper | Purpose |
+|--------|---------|
+| `ProseExtractor` (class) | End-to-end: configure with `section_name`, `known_headers`, `start_page`, `end_page`; returns `(sections, warnings)` for downstream parsing |
+| `extract_bullet_points(text)` | Detects `•`, numbered (`1. 2.`), or dashed (`-`) lists |
+| `extract_table_by_pattern(text, pattern, columns)` | Generic regex-based table extraction |
+| `split_by_known_headers(text, headers)` | Section splitter when header names are known |
+| `discover_headers_by_font(page, font_name, font_size)` | Font-based header discovery when names are not known |
+
+Text cleanup (smart-quote normalization, whitespace, encoding fixes) lives in [src/srd_builder/postprocess/text.py](src/srd_builder/postprocess/text.py) as `clean_text()` — call it from your `parse_*.py` after structure extraction, not during extraction.
+
+**Reference implementation:** [src/srd_builder/extract/extract_conditions.py](src/srd_builder/extract/extract_conditions.py) is the canonical example — short, complete, and follows the modular Extract → Parse → Postprocess split. Use it as the template when adding a new prose dataset.
+
+**Composition:** [src/srd_builder/assemble/assemble_prose.py](src/srd_builder/assemble/assemble_prose.py) is the build-stage entry point that wires these helpers into the pipeline.
 
 ---
 
@@ -334,16 +373,16 @@ Extract (PDF → Raw JSON) → Parse (Structure) → Postprocess (Normalize) →
 - Cleaner assertions (no `assertEqual` verbosity)
 - Great plugin ecosystem (pytest-cov for coverage)
 
-**Test Strategy:**
+**Test Strategy (v0.23.0: 292 passing, 19 skipped):**
 ```
 tests/
-├── test_extract_*.py        # PDF extraction (10 tests)
+├── test_extract_*.py         # PDF extraction
 ├── test_parse_*.py           # Field parsing (minimal, covered by golden)
-├── test_postprocess_*.py     # Normalization (15 tests)
-├── test_indexer*.py          # Index building (3 tests)
-├── test_build_pipeline.py    # End-to-end (1 test)
-├── test_validate_*.py        # Schema validation (10 tests)
-├── test_golden_monsters.py   # Golden file comparison (1 test)
+├── test_postprocess_*.py     # Normalization
+├── test_indexer*.py          # Index building
+├── test_build_pipeline.py    # End-to-end
+├── test_validate_*.py        # Schema validation
+├── test_golden_*.py          # Golden file comparison (16 — one per dataset)
 └── fixtures/                 # Test data (raw + normalized)
 ```
 
@@ -712,12 +751,12 @@ When adding output formats (YAML, SQLite, etc.):
 
 ## Performance Characteristics
 
-**Current (v0.8.5):**
-- Extraction: ~5-10 seconds per dataset (6 datasets)
-- Parsing: ~0.5 seconds per dataset
-- Postprocessing: ~0.1 seconds per dataset
-- Indexing: ~0.05 seconds
-- Total build: ~30-60 seconds (all datasets)
+**Current (v0.23.0, 16 datasets):**
+- Extraction: ~5-10 seconds per dataset (the slow stages)
+- Parsing: sub-second per dataset
+- Postprocessing: sub-second per dataset
+- Indexing: sub-second
+- Total `make bundle`: ~60-90 seconds end-to-end
 
 **Bottlenecks:**
 - PDF extraction (80-90% of time)
@@ -764,80 +803,78 @@ When adding equipment/spells/classes:
 
 srd-builder uses **three version numbers** that serve different purposes.
 
-### 1. Package Version (`__version__`)
+### 1. Package Version
 
-**Location:** `src/srd_builder/__init__.py`
-**Current:** `0.8.5`
+**Source of truth:** `pyproject.toml` `[project] version` field
+**Current:** `0.23.0`
 **Format:** Semantic versioning (`X.Y.Z`)
 
-**Purpose:** Software release version - tracks the data/package we produce.
+**Purpose:** Software release version — tracks the package we produce.
+
+**How code reads it:** `src/srd_builder/__init__.py` calls `importlib.metadata.version("srd-builder")` so there is **no version literal in code** — `pyproject.toml` is the single source of truth. The helper script [scripts/bump_version.py](scripts/bump_version.py) updates `pyproject.toml` and regenerates committed fixtures in one step.
 
 **When it changes:**
-- PATCH (0.5.Z): Bug fixes, documentation updates, non-functional changes
+- PATCH (0.X.Z): Bug fixes, documentation updates, non-functional changes
 - MINOR (0.Y.0): New features, new entity types, new optional fields
 - MAJOR (X.0.0): Breaking changes (field renames, type changes, required fields removed)
 
 **Used in:**
-- `pyproject.toml` version field
+- `pyproject.toml` `[project] version` (canonical)
 - Package distribution (pip install)
 - `meta.json` → `build.builder_version`
 - `build_report.json` → `generated_by`
-- `monsters.json` → `_meta.generated_by`
-- All consumer-facing documentation
+- Every dataset's `_meta.generated_by`
+- The dynamic bundle README
 
 **Example changes:**
-- `0.5.0 → 0.5.1`: Added action parsing + ability modifiers (feature)
-- `0.4.2 → 0.5.0`: Added equipment extraction (new entity type)
+- `0.22.1 → 0.22.2`: `make init` auto-clears macOS UF_HIDDEN flag on `.venv` (bug fix)
+- `0.22.2 → 0.23.0`: Dynamic bundle README, inventory manifest, full 16-schema coverage (feature)
 
 ---
 
 ### 2. Extractor Version (`EXTRACTOR_VERSION`)
 
 **Location:** `src/srd_builder/constants.py`
-**Current:** `0.3.0`
+**Current:** `0.4.0`
 **Format:** Semantic versioning (`X.Y.Z`)
 
-**Purpose:** Tracks the raw extraction format for **all** `*_raw.json` files (monsters_raw, equipment_raw, spells_raw, etc.).
+**Purpose:** Tracks the raw extraction format for `*_raw.json` files.
 
 **When it changes:**
 - MINOR: New metadata fields in raw files (font info, positioning data)
 - MAJOR: Breaking changes to raw extraction structure (column detection algorithm, table parsing format)
 
 **Used in:**
-- `monsters_raw.json` → `_meta.extractor_version`
-- `equipment_raw.json` → `_meta.extractor_version`
-- Future: `spells_raw.json`, `classes_raw.json`, etc.
+- `*_raw.json` → `_meta.extractor_version`
 
 **Why separate from package version?**
-- Extraction format may stay stable across many package releases
+- Extraction format stays stable across many package releases
 - Documents the intermediate format between PDF and parsed output
 - Useful for debugging extraction issues
 - Changes independently of parsing/postprocessing improvements
 
 **Example changes:**
-- `0.3.0 → 0.4.0`: Add character-level positioning metadata to raw output
-- `0.4.0 → 1.0.0`: Switch from line-based to block-based extraction format
+- `0.3.0 → 0.4.0`: Added font metadata blocks (header_blocks/description_blocks) for spells
 
 ---
 
 ### 3. Schema Version
 
-**Location:** `schemas/monster.schema.json`, `constants.py`
-**Current:** `1.4.0`
+**Location:** Each `schemas/*.schema.json` carries its own `$id` with embedded version.
+**Current range:** v1.0.0 (atomic reference schemas: ability_score, damage_type, skill, weapon_property) through v2.0.0 (most others).
 **Format:** Semantic versioning (`X.Y.Z`)
 
-**Purpose:** JSON Schema validation rules version - tracks structure of final output data.
+**Purpose:** JSON Schema validation rules version — tracks structure of final output data.
 
 **When it changes:**
-- PATCH (1.2.Z): Documentation improvements, example updates (rare)
-- MINOR (1.Y.0): New optional properties, new enum values (backward compatible)
+- PATCH (X.Y.Z): Documentation improvements, example updates (rare)
+- MINOR (X.Y.0): New optional properties, new enum values (backward compatible)
 - MAJOR (X.0.0): Breaking schema changes (new required fields, type changes)
 
 **Used in:**
-- `schemas/monster.schema.json` → `$id` field
-- `build.py` → `SCHEMA_VERSION` constant
-- `meta.json` → `schema_version`
-- `monsters.json` → `_meta.schema_version`
+- Each `schemas/*.schema.json` → `$id` field
+- Each dataset's `_meta.schema_version`
+- `meta.json` → `schemas` block lists every shipped schema and its version
 - Validation in `validate.py`
 
 **Why separate from package version?**
@@ -848,21 +885,21 @@ srd-builder uses **three version numbers** that serve different purposes.
 
 **Example changes:**
 - `1.1.0 → 1.2.0`: Added optional action parsing fields (backward compatible)
-- `1.0.0 → 2.0.0`: Would indicate breaking data structure changes
+- `1.x.0 → 2.0.0`: Removed redundant summary fields, added cross-reference IDs
 
 ---
 
 ### Version Relationships
 
 ```
-EXTRACTOR_VERSION (0.3.0)  →  *_raw.json format  →  [parsing/postprocessing]
+EXTRACTOR_VERSION (0.4.0)  →  *_raw.json format  →  [parsing/postprocessing]
                                                               ↓
-__version__ (0.5.1)  →  Package release  →  monsters.json, equipment.json
+Package version (0.23.0, from pyproject.toml)  →  Bundle release  →  16 datasets
                                                               ↓
-SCHEMA_VERSION (1.2.0)  →  Data contract  →  Consumer validation
+Schema version (per-schema, v1.0.0–v2.0.0)  →  Data contract  →  Consumer validation
 ```
 
-**Key insight:** Extractor version tracks "how we extract from PDF" (affects all `*_raw.json` files), while package version tracks "the data/package we produce".
+**Key insight:** Extractor version tracks "how we extract from PDF" (affects all `*_raw.json` files); package version tracks "the bundle we produce"; schema version is per-schema and tracks "the contract consumers validate against".
 
 ---
 
@@ -875,67 +912,52 @@ When releasing a new version:
    - New feature/entity type? → MINOR package version
    - Breaking change? → MAJOR package version (rare)
 
-2. **Update package version:**
-   - Edit `src/srd_builder/__init__.py` → `__version__`
+2. **Bump the package version:**
+   - Run `python scripts/bump_version.py X.Y.Z` — this edits `pyproject.toml` AND regenerates every committed normalized fixture in one shot.
 
 3. **Update extractor version (if raw extraction changed):**
    - Only if `*_raw.json` format changes (rare)
-   - New metadata fields? → MINOR extractor version
-   - Breaking raw format changes? → MAJOR extractor version
-   - Edit `constants.py` → `EXTRACTOR_VERSION`
+   - Edit `src/srd_builder/constants.py` → `EXTRACTOR_VERSION`
 
 4. **Update schema version (if data structure changed):**
-   - New optional fields? → MINOR schema version
-   - Breaking changes? → MAJOR schema version
-   - Edit `constants.py` → `SCHEMA_VERSION`
-   - Edit `schemas/monster.schema.json` → `$id`
+   - Edit `schemas/<dataset>.schema.json` → `$id`
+   - Re-run `make bundle` so dataset `_meta.schema_version` and `meta.json.schemas` get the new value
 
 5. **Update documentation:**
-   - `README.md` → version references
-   - `ROADMAP.md` → completed version section
+   - `docs/ROADMAP.md` → completed version section
+   - This file's dataset table if counts changed materially
 
-6. **Regenerate test fixtures:**
-   - Run: `python -m srd_builder.build --ruleset srd_5_1`
-   - Copy `dist/srd_5_1/data/monsters.json` → `tests/fixtures/srd_5_1/normalized/monsters.json`
-   - Version consistency tests will validate automatically
+6. **Rebuild + verify:**
+   - `make bundle && ./scripts/smoke.sh srd_5_1 dist bundle && pytest -q`
+   - Confirm `dist/srd_5_1/meta.json` `inventory` and `schemas` blocks match expectations
 
 ---
 
 ## Reference Data
 
-### Dataset Statistics (v0.8.5)
+### Dataset Statistics (v0.23.0)
 
-**Monsters (296 entries):**
-- Source pages: 261-394 (134 pages)
-- Field coverage: 27 fields, 100% required fields
-- Optional field rates:
-  - Legendary actions: 10.1%
-  - Reactions: 2.7%
-  - Condition immunities: 29.7%
-  - Damage immunities: 42.6%
-  - Damage resistances: 20.3%
-  - Damage vulnerabilities: 5.1%
+Live counts come from `dist/srd_5_1/meta.json.inventory`. Snapshot for this revision:
 
-**Equipment (111 items):**
-- Weapons: 37, Armor: 14, Adventuring gear: 60
-- Properties: 11 types (finesse, heavy, light, loading, etc.)
-
-**Spells (319 entries):**
-- Levels: cantrip through 9th level
-- Schools: 8 schools (abjuration, conjuration, etc.)
-- Effects: healing (10 spells, 100%), AOE (79 spells, 24.8%), range (319 spells, 100%)
-
-**Tables (23 entries):**
-- Equipment tables, expenses, services
-- Multi-page handling, column alignment
-
-**Lineages (13 entries):**
-- Base lineages: 9, Subraces: 4
-- Ability modifiers, traits, languages
-
-**Classes (12 entries):**
-- Full progression tables (levels 1-20)
-- Saving throw proficiencies, spellcasting details
+| Dataset | Count | Notes |
+|---------|------:|-------|
+| monsters | 317 | Pages 261–394; 27 fields, 100% required coverage |
+| spells | 319 | Cantrip through 9th, all 8 schools |
+| equipment | 259 | Weapons, armor, adventuring gear (11 weapon properties) |
+| features | 246 | Class features and lineage traits |
+| magic_items | 240 | Magic items with descriptions |
+| rules | 172 | 7 chapters of core mechanics |
+| tables | 38 | Equipment, expenses, services, madness, etc. |
+| skills | 18 | Atomic reference |
+| conditions | 15 | Status conditions |
+| poisons | 14 | Poison gear + descriptions |
+| damage_types | 13 | Atomic reference |
+| lineages | 13 | 9 base + 4 subraces |
+| classes | 12 | Full progression tables (levels 1–20) |
+| weapon_properties | 11 | Atomic reference |
+| ability_scores | 6 | STR/DEX/CON/INT/WIS/CHA |
+| diseases | 3 | Cackle Fever, Sewer Plague, Sight Rot |
+| **Total** | **1,696** | |
 
 ### PDF Typography (SRD 5.1)
 

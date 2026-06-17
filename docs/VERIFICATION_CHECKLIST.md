@@ -1,293 +1,234 @@
-# Build Verification Checklist
+# Build Verification Checklist (Producers / Maintainers)
 
-This document defines the complete verification process for validating srd-builder builds and refactors.
+This is the **maintainer-facing** checklist for validating a srd-builder bundle before tagging a release. It assumes you have a working dev environment (`make init`) and the SRD PDF in place.
+
+> Looking for *consumer-side* integration guidance? See [docs/INTEGRATION.md](docs/INTEGRATION.md).
+
+---
 
 ## Quick Verification (Development)
 
 For development work and small changes:
 
 ```bash
-# 1. Run golden dataset tests
-pytest tests/test_conditions_golden.py tests/test_golden_monsters.py tests/test_golden_spells.py -v
+# 1. Run golden dataset tests (16 datasets)
+pytest tests/test_golden_*.py -v
 
-# 2. Run code quality checks
-ruff check .
+# 2. Code quality
+ruff check . && ruff format --check .
 
 # 3. Spot-check one dataset
-head -100 dist/srd_5_1/monsters.json
+jq '._meta' dist/srd_5_1/monsters.json
 ```
 
-**Expected:** All tests pass, ruff clean, JSON structure looks correct.
+**Expected:** all golden tests pass, ruff clean, `_meta` block looks right.
 
 ---
 
-## Complete Verification (Before Commit)
+## Complete Verification (Pre-Release)
 
-For refactors, major changes, or pre-release validation:
+For refactors, major changes, and any tagged release.
 
-### 1. Build Complete Bundle
-
-```bash
-# Build with --bundle flag to include schemas and docs
-python -m srd_builder.build --ruleset srd_5_1 --format json --bundle
-
-# Or use Makefile shortcut
-make output
-```
-
-### 2. Verify Bundle Contents
+### 1. Build the bundle
 
 ```bash
-# Check all expected files present
-ls -la dist/srd_5_1/
-
-# Expected structure:
-# dist/srd_5_1/
-# ├── README.md              (bundle guide)
-# ├── *.json                 (13 data files)
-# ├── schemas/*.schema.json  (10 schema files)
-# └── docs/*.md              (2 documentation files)
+make bundle
 ```
 
-**Expected files (27 total):**
+This runs the full pipeline and writes `dist/srd_5_1/` (16 datasets + manifest + schemas + docs).
 
-**Data files (14):**
-- build_report.json
-- classes.json
-- conditions.json
-- diseases.json
-- equipment.json
-- features.json
-- index.json
-- lineages.json
-- madness.json
-- meta.json
-- monsters.json
-- poisons.json
-- spells.json
-- tables.json
-
-**Schemas (10):**
-- schemas/class.schema.json
-- schemas/condition.schema.json
-- schemas/disease.schema.json
-- schemas/equipment.schema.json
-- schemas/features.schema.json
-- schemas/lineage.schema.json
-- schemas/madness.schema.json
-- schemas/monster.schema.json
-- schemas/poison.schema.json
-- schemas/spell.schema.json
-- schemas/table.schema.json
-
-**Documentation (3):**
-- README.md (at root)
-- docs/SCHEMAS.md
-- docs/DATA_DICTIONARY.md
-
-### 3. Validate File Sizes
+### 2. Smoke-check the bundle
 
 ```bash
-wc -c dist/srd_5_1/*.json
+./scripts/smoke.sh srd_5_1 dist bundle
 ```
 
-**Expected sizes (approximate):**
-- monsters.json: ~1,041,000 bytes (317 monsters)
-- spells.json: ~550,000 bytes (319 spells)
-- equipment.json: ~141,000 bytes (106+ items)
-- features.json: ~165,000 bytes (246 features)
-- index.json: ~324,000 bytes (search index)
-- conditions.json: ~10,000 bytes (15 conditions)
-- classes.json: ~47,000 bytes (12 classes)
-- lineages.json: ~29,000 bytes (13 lineages)
-- tables.json: ~145,000 bytes (23 tables)
-- diseases.json: ~5,400 bytes
-- madness.json: ~13,000 bytes
-- poisons.json: ~10,400 bytes
-- meta.json: ~11,400 bytes
-- build_report.json: ~200 bytes
+This script checks file presence and basic structural assertions. Exit code 0 = pass.
 
-**If file sizes are drastically different** (e.g., <1000 bytes), parsing likely failed.
+### 3. Verify bundle contents match `meta.json`
 
-### 4. Run Full Test Suite
+The bundle should be self-describing. **Always trust `meta.json` over hard-coded expectations** — if the inventory grew, fix the checklist, not the bundle.
 
 ```bash
-pytest -v
+# Show what shipped
+jq '.inventory' dist/srd_5_1/meta.json
+jq '.schemas | keys' dist/srd_5_1/meta.json
+jq '.files | keys' dist/srd_5_1/meta.json
 ```
 
-**Expected:**
-- 105+ tests passing
-- 2 known failures (both in tmp_path environment):
-  - `test_build_pipeline` (looks for schemas in tmp_path not workspace)
-  - `test_meta_json_schema_version` (expects deprecated $schema_version field)
+**Expected bundle structure (v0.23.0 baseline):**
 
-**If other tests fail,** the refactor broke something.
+```
+dist/srd_5_1/
+├── README.md              (generated from meta.json)
+├── meta.json              (inventory + schemas + files manifest)
+├── index.json             (cross-dataset lookups)
+├── build_report.json      (per-stage stats)
+├── *.json                 (16 dataset files)
+├── schemas/*.schema.json  (16 schema files)
+└── docs/*.md              (2 docs: DATA_DICTIONARY.md, SCHEMAS.md)
+```
 
-### 5. Validate Against Schemas
+**Datasets shipped (16):** ability_scores, classes, conditions, damage_types, diseases, equipment, features, lineages, magic_items, monsters, poisons, rules, skills, spells, tables, weapon_properties.
+
+**Schemas shipped (16):** one `.schema.json` per dataset. (`madness.schema.json` was removed in v0.23.0 — madness data lives in `tables.json`.)
+
+### 4. Inventory cross-check (new in v0.23.0)
+
+The `meta.json.inventory` block has per-dataset counts. Compare them against what's actually in the JSON files:
 
 ```bash
-# Requires jsonschema CLI: pip install check-jsonschema
-check-jsonschema --schemafile dist/srd_5_1/schemas/monster.schema.json dist/srd_5_1/monsters.json
-check-jsonschema --schemafile dist/srd_5_1/schemas/spell.schema.json dist/srd_5_1/spells.json
-check-jsonschema --schemafile dist/srd_5_1/schemas/equipment.schema.json dist/srd_5_1/equipment.json
+# Compare meta.json inventory against actual item counts
+python3 - <<'PY'
+import json, sys
+from pathlib import Path
+
+meta = json.load(open("dist/srd_5_1/meta.json"))
+inv = meta["inventory"]
+fail = False
+for dataset, expected in sorted(inv.items()):
+    path = Path("dist/srd_5_1") / f"{dataset}.json"
+    doc = json.load(open(path))
+    actual = len(doc.get("items") or doc.get(dataset, []))
+    status = "OK" if actual == expected else "MISMATCH"
+    if status == "MISMATCH":
+        fail = True
+    print(f"  {dataset:22s} expected={expected:4d} actual={actual:4d}  {status}")
+sys.exit(1 if fail else 0)
+PY
 ```
 
-**Expected:** No validation errors.
+**Expected:** every dataset reports `OK`. A mismatch means either `build_inventory()` miscounted or the dataset has the wrong shape.
 
-### 6. Content Spot Checks
+### 5. Schema validation
+
+Validate every dataset against its shipped schema. Driven by `meta.json` so this stays correct as datasets are added:
 
 ```bash
-# Check monsters contain expected fields
-jq '.items[0] | keys' dist/srd_5_1/monsters.json
+python3 - <<'PY'
+import json, subprocess, sys
+from pathlib import Path
 
-# Check spell count
-jq '.items | length' dist/srd_5_1/spells.json  # Should be 319
-
-# Check index stats
-jq '.stats' dist/srd_5_1/index.json
+meta = json.load(open("dist/srd_5_1/meta.json"))
+root = Path("dist/srd_5_1")
+fail = False
+for dataset, entry in sorted(meta["schemas"].items()):
+    schema = root / entry["file"]
+    data   = root / meta["files"][dataset]
+    rc = subprocess.call(["check-jsonschema", "--schemafile", str(schema), str(data)])
+    if rc != 0:
+        fail = True
+sys.exit(1 if fail else 0)
+PY
 ```
 
-**Expected counts:**
-- Monsters: 317 total (201 monsters + 95 creatures + 21 NPCs)
-- Spells: 319
-- Equipment: 106+
-- Features: 246 (154 class + 92 lineage)
-- Tables: 23
-- Conditions: 15
-- Classes: 12
-- Lineages: 13
+Requires `pip install check-jsonschema`. Exit code 0 = every dataset valid.
 
-### 7. Code Quality Checks
+### 6. Full test suite
 
 ```bash
-# Before commit - runs formatting, linting, tests
-make verify-ci
-
-# Or individual checks:
-ruff format .          # Auto-format
-ruff check .           # Linting
-pytest -q              # Tests
+pytest -q
 ```
 
-**Expected:** All checks pass. Pre-push hook blocks bad pushes automatically.
+**Baseline (v0.23.0):** 292 passing, 19 skipped (skips are environment-gated, e.g. tests that need the actual SRD PDF). Any new failure on green main is a regression.
 
-**Note:** Always run `make verify-ci` before pushing to ensure GitHub Actions will pass.
+### 7. Golden tests
+
+```bash
+pytest tests/test_golden_*.py -v
+```
+
+**Baseline:** 16 golden tests (one per dataset), all passing. These compare a parse-and-postprocess run against committed normalized fixtures. A failure here means either the parser changed (intentional → update fixture via `python scripts/bump_version.py`) or there's a regression.
+
+### 8. Code quality
+
+```bash
+# In dev (pre-commit installed)
+pre-commit run -a
+
+# In CI / containers
+ruff check .
+ruff format --check .
+pytest -q
+```
+
+All must pass. Pre-commit also runs `pretty-format-json` (excludes `tests/fixtures/.*/normalized/` and `archive/dist_versions/.*` to preserve curly quotes in snapshots).
 
 ---
 
 ## Regression Testing (Baseline Comparison)
 
-For major refactors, compare output against known-good baseline:
-
-### 1. Save Baseline Before Refactor
+For major refactors, compare output against a known-good baseline:
 
 ```bash
-# Before starting refactor work
-python -m srd_builder.build --ruleset srd_5_1 --format json --bundle
-cp -r dist/srd_5_1 /tmp/baseline_srd_5_1
-```
+# Before refactor
+make bundle
+cp -R dist/srd_5_1 /tmp/baseline_srd_5_1
 
-### 2. Build After Refactor
+# ... do the refactor ...
 
-```bash
-# After completing refactor
-python -m srd_builder.build --ruleset srd_5_1 --format json --bundle
-```
-
-### 3. Compare Outputs
-
-```bash
-# Byte-for-byte comparison (should be identical)
+# After refactor
+make bundle
 diff -r /tmp/baseline_srd_5_1 dist/srd_5_1
-
-# Or use hash comparison
-find /tmp/baseline_srd_5_1 -type f -exec sha256sum {} \; | sort > /tmp/baseline_hashes.txt
-find dist/srd_5_1 -type f -exec sha256sum {} \; | sort > /tmp/current_hashes.txt
-diff /tmp/baseline_hashes.txt /tmp/current_hashes.txt
 ```
 
-**Expected:** No differences (files should be byte-identical).
+**Expected:** no diff (output is deterministic). If there *is* a diff, decide whether it's intentional (data fix → update goldens) or an accident.
 
-**If there are differences:**
-- Check if timestamps in metadata (these should be deterministic now)
-- Check if data ordering changed (investigate why)
-- Check if fields were added/removed (breaking change)
+`archive/dist_versions/srd_5_1_YYYYMMDD_v0.X.Y/` snapshots in the repo serve the same purpose for comparing against previously-shipped releases.
 
 ---
 
-## Known Issues / Acceptable Failures
+## Pre-Release Checklist
 
-### Test Failures (2)
+Before tagging a new version:
 
-**test_build_pipeline** - Looking for schemas in tmp_path:
-- **Why it fails:** Test creates build in tmp_path but validator looks in workspace root for schemas/
-- **Impact:** None - real builds work fine
-- **Fix needed:** Update test to either bundle schemas or mock validator
-
-**test_meta_json_schema_version** - Deprecated field:
-- **Why it fails:** Looking for `$schema_version` field that was removed from meta.json
-- **Impact:** None - schema_version now in each dataset's _meta
-- **Fix needed:** Update test to check dataset._meta.schema_version instead
-
-### MyPy Error (1)
-
-**Duplicate module names:**
-- **Issue:** "Source file found twice under different module names"
-- **Why:** Possibly related to src/ layout or package discovery
-- **Impact:** None - not blocking development
-- **Fix needed:** Investigation required
+- [ ] `make bundle` completes cleanly
+- [ ] `./scripts/smoke.sh srd_5_1 dist bundle` exits 0
+- [ ] `meta.json.inventory` matches actual item counts (step 4 above)
+- [ ] All 16 datasets validate against their schemas (step 5)
+- [ ] `pytest -q`: 292+ passing, 19 skipped, 0 failed
+- [ ] All 16 golden tests pass
+- [ ] `pre-commit run -a` clean
+- [ ] `pyproject.toml` version bumped (use `python scripts/bump_version.py X.Y.Z` — it also regenerates committed fixtures)
+- [ ] `docs/ROADMAP.md` updated for the new version
+- [ ] Snapshot saved to `archive/dist_versions/srd_5_1_YYYYMMDD_vX.Y.Z/`
+- [ ] Git tree is clean, commits land on main, then `git tag vX.Y.Z && git push --tags`
 
 ---
 
 ## Automated Verification (CI)
 
-For CI/GitHub Actions:
+A minimal CI block:
 
 ```yaml
-- name: Build complete bundle
-  run: python -m srd_builder.build --ruleset srd_5_1 --format json --bundle
+- name: Build bundle
+  run: make bundle
 
-- name: Verify bundle structure
+- name: Smoke check
+  run: ./scripts/smoke.sh srd_5_1 dist bundle
+
+- name: Inventory cross-check
   run: |
-    test -f dist/srd_5_1/README.md
-    test -d dist/srd_5_1/schemas
-    test -d dist/srd_5_1/docs
-    test -f dist/srd_5_1/monsters.json
-    test -f dist/srd_5_1/spells.json
+    python3 - <<'PY'
+    import json
+    from pathlib import Path
+    meta = json.load(open("dist/srd_5_1/meta.json"))
+    fail = False
+    for dataset, expected in meta["inventory"].items():
+        doc = json.load(open(Path("dist/srd_5_1") / f"{dataset}.json"))
+        actual = len(doc.get("items") or doc.get(dataset, []))
+        assert actual == expected, f"{dataset}: {actual} != {expected}"
+    PY
 
-- name: Validate file counts
-  run: |
-    # Should have 14 JSON files + README at root
-    [ $(ls dist/srd_5_1/*.json | wc -l) -eq 14 ]
-    # Should have 10+ schema files
-    [ $(ls dist/srd_5_1/schemas/*.schema.json | wc -l) -ge 10 ]
-    # Should have 2 doc files
-    [ $(ls dist/srd_5_1/docs/*.md | wc -l) -eq 2 ]
-
-- name: Run tests
-  run: pytest -v --tb=short
+- name: Tests
+  run: pytest -q
 ```
-
----
-
-## Post-Refactor Checklist
-
-After completing a refactor:
-
-- [ ] Full build with `--bundle` completes without errors
-- [ ] All 27 expected files present in dist/srd_5_1/
-- [ ] File sizes match expected ranges
-- [ ] Golden tests pass (7/7)
-- [ ] Full test suite: 105+ pass, ≤2 known failures
-- [ ] Ruff checks clean
-- [ ] Content spot checks pass (monster count, spell count, etc.)
-- [ ] Git history preserved (`git log --follow` works on moved files)
-- [ ] Documentation updated (ARCHITECTURE.md, CHANGELOG.md, etc.)
 
 ---
 
 ## References
 
-- The consumer-facing bundle README is generated dynamically into `dist/srd_5_1/README.md` on every `make bundle` (see `_generate_bundle_readme` in [src/srd_builder/build.py](../src/srd_builder/build.py)).
-- [ARCHITECTURE.md](ARCHITECTURE.md) - System design and module organization
-- [SCHEMAS.md](SCHEMAS.md) - Schema versioning and field definitions
+- The consumer-facing bundle README is generated dynamically into `dist/srd_5_1/README.md` on every `make bundle` (see `_generate_bundle_readme` in [src/srd_builder/build.py](src/srd_builder/build.py)).
+- [ARCHITECTURE.md](ARCHITECTURE.md) — system design and module organization
+- [SCHEMAS.md](SCHEMAS.md) — schema versioning and field definitions
+- [INTEGRATION.md](INTEGRATION.md) — consumer-side integration guide
