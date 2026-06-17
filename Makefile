@@ -1,8 +1,7 @@
 .PHONY: init lint test format pre-commit ci verify-ci output bundle smoke release-check tables monsters equipment spells bump-version
 
 init:
-	pip install -e . --config-settings editable_mode=compat
-	pip install -e ".[dev]" --config-settings editable_mode=compat
+	pip install -e ".[dev]"
 	@# macOS: iCloud / Finder may flag site-packages as UF_HIDDEN, which
 	@# causes Python 3.14's site.py to skip .pth files (including the
 	@# editable install marker). Clear the flag so imports work.

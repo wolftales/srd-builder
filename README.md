@@ -23,8 +23,8 @@ cd srd-builder
 python3.14 -m venv .venv
 source .venv/bin/activate  # on Windows: .venv\Scripts\activate
 
-# Install project (editable mode, Python 3.14 compatible)
-pip install -e . --config-settings editable_mode=compat
+# Install project (editable mode)
+pip install -e .
 
 # Add SRD PDF to enable full extraction (gitignored)
 # Place your CC-BY licensed SRD_CC_v5.1.pdf in: rulesets/srd_5_1/
