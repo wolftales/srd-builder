@@ -22,6 +22,10 @@ rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/
 
+# macOS
+.DS_Store
+**/.DS_Store
+
 # Archive folder - local reference only
 archive/*
 !archive/dist_versions/
