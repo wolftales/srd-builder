@@ -288,6 +288,6 @@ After completing a refactor:
 
 ## References
 
-- [BUNDLE_README.md](BUNDLE_README.md) - Expected bundle structure
+- The consumer-facing bundle README is generated dynamically into `dist/srd_5_1/README.md` on every `make bundle` (see `_generate_bundle_readme` in [src/srd_builder/build.py](../src/srd_builder/build.py)).
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System design and module organization
 - [SCHEMAS.md](SCHEMAS.md) - Schema versioning and field definitions

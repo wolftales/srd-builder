@@ -26,11 +26,6 @@ docs/external/
 .DS_Store
 **/.DS_Store
 
-# Archive folder - local reference only
-archive/*
-!archive/dist_versions/
-archive/dist_versions/*
-!archive/dist_versions/README.md
-!archive/dist_versions/srd_*/
-docs/archive
-docs/archive/
+# Archive folder — tracked in git as historical reference.
+# (Old rules excluded most of archive/; consolidated under archive/ in v0.23.0
+# and we now track the whole tree intentionally.)
