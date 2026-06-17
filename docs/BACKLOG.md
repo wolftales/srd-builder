@@ -350,6 +350,29 @@ directory. Treat it the same way.
 > `paths.py` module or — better — a `pyproject.toml`-driven settings
 > object.
 
+#### Resolution rule (avoid over-engineering)
+
+The instinct to "fix" `constants.py` by inventing a multi-layer settings
+system (env vars → user file → ruleset file → defaults) makes things
+*less* visible, not more. The current `constants.py` is a useful
+**visible debt counter** — three lines that tell you "these three values
+matter and aren't yet properly homed."
+
+Rule for v0.26.2: **a value graduates from `constants.py` only when it
+has a real reason to live somewhere else, driven by a real use case.**
+
+| Value | Action | Why |
+| --- | --- | --- |
+| `EXTRACTOR_VERSION` | Keep in `constants.py` | True constant, no second value coming |
+| `DATA_SOURCE` | Move to `rulesets/srd_5_1/config/` | Forced by SRD 5.2.1 needing a different value |
+| `RULESETS_DIRNAME` | Keep in `constants.py` | Workspace fact, no per-ruleset variant |
+| `"dist"` (currently scattered in 2 files) | **Move INTO `constants.py`** as `DIST_DIRNAME` | Workspace fact, surface it for visibility |
+| Other magic strings (`"raw"`, etc.) | Sweep into `constants.py` if workspace-level | Same reason |
+
+End state: `constants.py` is *more* populated than today, not less.
+Only genuinely per-ruleset values graduate to the per-ruleset config dir.
+Boring, visible, easy to grep — beats clever every time.
+
 ### Configuration UX (must not get lost)
 
 The proposed multi-ruleset structure is technically right but creates
