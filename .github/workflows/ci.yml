@@ -11,8 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # The project now targets Python 3.14+, so we only run CI on supported interpreters.
-        python-version: ["3.12", "3.13", "3.14"]
+        # The project targets Python 3.14+ (see pyproject.toml requires-python).
+        python-version: ["3.14"]
     steps:
       - uses: actions/checkout@v4
 

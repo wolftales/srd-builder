@@ -73,7 +73,11 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 🩹 v0.22.1 — Editable install fix (packages.find for all subpackages, setuptools compat mode for Python 3.14)
 - 🩹 v0.22.2 — macOS iCloud workaround (clear UF_HIDDEN on .venv during make init so editable .pth loads)
 - 🧹 v0.23.0 — Pre-v1.0 audit & cleanup: dynamic bundle README, complete schema coverage (all 16), inventory manifest in meta.json, archive consolidation, repo cruft removal
-- 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
+- � v0.24.0 — Data-quality audit script; footer/control-char/damage-type fixes; meta.json datasets block
+- 🆔 v0.25.0 — Owner-qualified feature IDs (`feature:{owner}:{name}` + `owner_id`); equipment ID normalization; clean cross-ref audit
+- 🧬 v0.26.0 — Generated schema exemplars in bundle (replaces docs/templates/); `docs/PROVENANCE.md` registry; `tests/test_pdf_provenance.py` reproducer framework (lineage "PDF corrupted" claim DISPROVEN); dead `extraction/reference_data.py` removed
+- 🔬 v0.26.1 — `utils/pdf_probe.py` shared PDF text-probe primitive; spell-class reproducer (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
+- �🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 - 🏗️ v2.0.0 — Data Model Restructure (field grouping, nested objects, API-first patterns)
 
 ---
