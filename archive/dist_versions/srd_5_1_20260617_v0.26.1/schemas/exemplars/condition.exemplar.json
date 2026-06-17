@@ -1,0 +1,10 @@
+{
+  "id": "condition:example",
+  "name": "example name",
+  "simple_name": "example",
+  "effects": [
+    "example effects"
+  ],
+  "source": "example source",
+  "page": 1
+}

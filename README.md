@@ -55,7 +55,7 @@ print(f"Loaded {len(data['items'])} monsters")
 
 See "Building datasets" below for all available build options.
 
-### Build pipeline (v0.26.0)
+### Build pipeline (v0.26.1)
 
 The build pipeline extracts data from the SRD PDF, parses and normalizes it, validates against
 JSON Schema, and emits 16 dataset files plus a search index. Latest build: **1,696 items across 16 datasets**.
@@ -264,7 +264,7 @@ Version is automatically read from `pyproject.toml` at runtime via `importlib.me
 python scripts/bump_version.py 0.23.1
 
 # Preview version changes without committing
-python scripts/bump_version.py 0.26.0 --no-commit
+python scripts/bump_version.py 0.26.1 --no-commit
 
 # Verify current version
 python -c "import srd_builder; print(srd_builder.__version__)"
@@ -303,7 +303,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.26.0** — generated schema exemplars ship in bundle (`schemas/exemplars/`); `docs/templates/` retired; `docs/PROVENANCE.md` registry + first reproducer-backed corruption test (overturns lineage "PDF corrupted" claim); dead `reference_data.py` removed (-625 net lines).
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.26.1** — `utils/pdf_probe.py` shared PDF-text primitive; second reproducer test overturns the spell-class "PDF corrupted" claim (pp. 105–113 fully extractable). Two of the three corruption-rationale modules now confirmed retire-able in v0.27.0.
 
 Key milestones:
 
@@ -315,6 +315,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.26.1** — `utils/pdf_probe.py` shared PDF text-probe primitive (`open_pdf`, `page_text`, `normalize_whitespace`, `srd_page_to_pdf_index`); second reproducer test for spell-class lists pp. 105–113 (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
 - **v0.26.0** — Generated schema exemplars in bundle (one per schema, replaces `docs/templates/`); `docs/PROVENANCE.md` registry of hand-curated data sources with reason codes; `tests/test_pdf_provenance.py` reproducer test framework (first finding: lineage "PDF corrupted" claim is FALSE under pymupdf 1.27.x); dead `extraction/reference_data.py` removed (−625 net lines)
 - **v0.25.0** — Owner-qualified feature IDs (`feature:{owner_simple_name}:{name}` + `owner_id` field); equipment IDs normalized through `normalize_id` (no more hyphens); audit clean on cross-refs + bad-id-format
 - **v0.24.0** — Data-quality audit script; footer/control-char/damage-type fixes; `meta.json.datasets` block collapses files/inventory/extraction_status
@@ -390,7 +391,7 @@ for error in validator.iter_errors(data['items'][0]):
 
 srd-builder uses **two version numbers**:
 
-- **Package version** (read from `pyproject.toml` at runtime via `importlib.metadata`, currently `v0.26.0`) — the builder release.
+- **Package version** (read from `pyproject.toml` at runtime via `importlib.metadata`, currently `v0.26.1`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently (currently v1.0.0–v2.0.0). Schema versions are written into `dist/srd_5_1/meta.json` `schemas` on every build, and into each dataset's `_meta.schema_version`.
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#version-management) for the detailed policy.

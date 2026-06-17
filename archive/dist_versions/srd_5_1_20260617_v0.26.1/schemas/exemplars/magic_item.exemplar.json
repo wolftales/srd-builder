@@ -1,0 +1,13 @@
+{
+  "id": "magic_item:example",
+  "name": "example name",
+  "simple_name": "example",
+  "type": "example type",
+  "rarity": "common",
+  "requires_attunement": false,
+  "description": [
+    "example description"
+  ],
+  "page": 1,
+  "source": "example source"
+}

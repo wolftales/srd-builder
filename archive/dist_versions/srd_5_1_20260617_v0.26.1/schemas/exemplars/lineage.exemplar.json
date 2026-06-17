@@ -1,0 +1,23 @@
+{
+  "id": "lineage:example",
+  "simple_name": "example",
+  "name": "example name",
+  "size": "Small",
+  "speed": 0,
+  "ability_modifiers": {},
+  "languages": [
+    "example languages"
+  ],
+  "traits": [
+    {
+      "name": "example name",
+      "text": "example text"
+    }
+  ],
+  "extraction_metadata": {
+    "source_pages": [
+      1
+    ],
+    "section": "example section"
+  }
+}
