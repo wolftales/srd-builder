@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/wolftales/srd-builder/schemas/damage_type.schema.json",
+  "version": "1.0.0",
+  "last_modified": "2025-12-23",
+  "title": "Damage Type",
+  "description": "A type of damage in D&D 5e (v2.0.0)",
+  "type": "object",
+  "required": [
+    "id",
+    "simple_name",
+    "name",
+    "description",
+    "page",
+    "source"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^damage_type:",
+      "description": "Unique identifier with damage_type: prefix (e.g., 'damage_type:fire')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z_]+$",
+      "description": "Machine-readable name (e.g., 'fire')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Fire')"
+    },
+    "description": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "description": "Array of description paragraphs from SRD"
+    },
+    "page": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "SRD page number where this damage type is described"
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document (e.g., 'SRD_CC_v5.1')"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Alternative names for this damage type"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Example sources of this damage type (e.g., 'red dragon breath', 'fireball spell')"
+    }
+  }
+}
