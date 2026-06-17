@@ -15,12 +15,54 @@ from .page_index import PAGE_INDEX
 SCHEMA_DIR = Path(__file__).resolve().parents[3] / "schemas"
 
 __all__ = [
-    "meta_block",
-    "wrap_with_meta",
+    "ALL_DATASETS",
+    "build_inventory",
     "build_page_index",
     "generate_meta_json",
+    "meta_block",
     "read_schema_version",
+    "wrap_with_meta",
 ]
+
+# Single source of truth for the complete set of shipped datasets (alphabetical).
+ALL_DATASETS: list[str] = [
+    "ability_scores",
+    "classes",
+    "conditions",
+    "damage_types",
+    "diseases",
+    "equipment",
+    "features",
+    "lineages",
+    "magic_items",
+    "monsters",
+    "poisons",
+    "rules",
+    "skills",
+    "spells",
+    "tables",
+    "weapon_properties",
+]
+
+# Mapping from dataset file basename to its schema name.
+DATASET_TO_SCHEMA: dict[str, str] = {
+    "ability_scores": "ability_score",
+    "classes": "class",
+    "conditions": "condition",
+    "damage_types": "damage_type",
+    "diseases": "disease",
+    "equipment": "equipment",
+    "features": "features",
+    "lineages": "lineage",
+    "magic_items": "magic_item",
+    "monsters": "monster",
+    "poisons": "poison",
+    "rules": "rule",
+    "skills": "skill",
+    "spells": "spell",
+    "tables": "table",
+    "weapon_properties": "weapon_property",
+}
 
 
 def _compute_extraction_status(
@@ -47,8 +89,10 @@ def _compute_extraction_status(
         # Fallback to parameter-based approach (legacy)
         # Keep in alphabetical order
         return {
+            "ability_scores": "complete",
             "classes": "complete" if classes_complete else "in_progress",
             "conditions": "complete",
+            "damage_types": "complete",
             "diseases": "complete",
             "equipment": "complete" if equipment_complete else "in_progress",
             "features": "complete",
@@ -57,26 +101,15 @@ def _compute_extraction_status(
             "monsters": "complete" if monsters_complete else "in_progress",
             "poisons": "complete",
             "rules": "complete",
+            "skills": "complete",
             "spells": "complete" if spells_complete else "in_progress",
             "tables": "complete",
+            "weapon_properties": "complete",
         }
 
     # Check actual file existence
     # Keep in alphabetical order for consistency in meta.json output
-    datasets = [
-        "classes",
-        "conditions",
-        "diseases",
-        "equipment",
-        "features",
-        "lineages",
-        "magic_items",
-        "monsters",
-        "poisons",
-        "rules",
-        "spells",
-        "tables",
-    ]
+    datasets = ALL_DATASETS
 
     status = {}
     for dataset in datasets:
@@ -108,6 +141,35 @@ def read_schema_version(schema_name: str) -> str:
         raise KeyError(f"Schema file {schema_path} missing 'version' field")
 
     return schema_data["version"]
+
+
+def build_inventory(dist_dir: Path) -> dict[str, int]:
+    """Count items in each shipped dataset, returning {dataset_name: count}.
+
+    Some legacy datasets use the dataset name as the array key (e.g. ``conditions``,
+    ``diseases``, ``features``) instead of the canonical ``items`` key. We accept
+    either shape; missing or unreadable files report 0.
+    """
+    inventory: dict[str, int] = {}
+    for name in ALL_DATASETS:
+        path = dist_dir / f"{name}.json"
+        if not path.exists():
+            inventory[name] = 0
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except OSError, json.JSONDecodeError:
+            inventory[name] = 0
+            continue
+        if not isinstance(data, dict):
+            inventory[name] = 0
+            continue
+        items = data.get("items")
+        if not isinstance(items, list):
+            # Legacy datasets use their own name as the array key.
+            items = data.get(name)
+        inventory[name] = len(items) if isinstance(items, list) else 0
+    return inventory
 
 
 def meta_block(ruleset: str, schema_version: str, ruleset_version: str = "5.1") -> dict[str, str]:
@@ -235,20 +297,15 @@ def generate_meta_json(  # noqa: PLR0913
     if build_timestamp is not None:
         build_info["extracted_at"] = build_timestamp
 
-    # Schema versions for each dataset type (read from schema files for independent evolution)
+    # Schema versions for each dataset type (read from schema files for independent evolution).
+    # One entry per shipped dataset, alphabetical by schema name.
     schemas = {
-        "monster": read_schema_version("monster"),
-        "spell": read_schema_version("spell"),
-        "equipment": read_schema_version("equipment"),
-        "class": read_schema_version("class"),
-        "lineage": read_schema_version("lineage"),
-        "table": read_schema_version("table"),
-        "condition": read_schema_version("condition"),
-        "disease": read_schema_version("disease"),
-        "poison": read_schema_version("poison"),
-        "features": read_schema_version("features"),
-        "magic_item": read_schema_version("magic_item"),
+        schema_name: read_schema_version(schema_name)
+        for schema_name in sorted(set(DATASET_TO_SCHEMA.values()))
     }
+
+    # Per-dataset item counts ("inventory") computed from the actual dist files if present.
+    inventory = build_inventory(dist_dir) if dist_dir is not None else {}
 
     return {
         "source": DATA_SOURCE,
@@ -275,18 +332,9 @@ def generate_meta_json(  # noqa: PLR0913
             "meta": "meta.json",
             "build_report": "build_report.json",
             "index": "index.json",
-            "monsters": "monsters.json",
-            "equipment": "equipment.json",
-            "spells": "spells.json",
-            "tables": "tables.json",
-            "lineages": "lineages.json",
-            "classes": "classes.json",
-            "conditions": "conditions.json",
-            "diseases": "diseases.json",
-            "poisons": "poisons.json",
-            "features": "features.json",
-            "magic_items": "magic_items.json",
+            **{name: f"{name}.json" for name in ALL_DATASETS},
         },
+        "inventory": inventory,
         "terminology": {"aliases": {"race": "lineage", "races": "lineages"}},
         "extraction_status": _compute_extraction_status(
             dist_dir=dist_dir,

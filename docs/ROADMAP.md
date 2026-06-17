@@ -72,6 +72,7 @@ PDF  ─►  text extraction  ─►  raw JSON (verbatim blocks)
 - 🧰 v0.22.0 — Python 3.14, dynamic versioning, dependency updates, README refresh
 - 🩹 v0.22.1 — Editable install fix (packages.find for all subpackages, setuptools compat mode for Python 3.14)
 - 🩹 v0.22.2 — macOS iCloud workaround (clear UF_HIDDEN on .venv during make init so editable .pth loads)
+- 🧹 v0.23.0 — Pre-v1.0 audit & cleanup: dynamic bundle README, complete schema coverage (all 16), inventory manifest in meta.json, archive consolidation, repo cruft removal
 - 🚀 v1.0.0 — Complete SRD 5.1 in JSON (stable release)
 - 🏗️ v2.0.0 — Data Model Restructure (field grouping, nested objects, API-first patterns)
 

@@ -95,19 +95,24 @@ def test_meta_json_schema_version():
     assert "schemas" in meta, "meta.json missing schemas section"
     schemas = meta["schemas"]
 
-    # All dataset types should be listed
+    # All dataset types should be listed (one entry per shipped dataset, v0.23.0+).
     expected_datasets = {
-        "monster",
-        "spell",
-        "equipment",
+        "ability_score",
         "class",
-        "lineage",
-        "table",
         "condition",
+        "damage_type",
         "disease",
-        "poison",
+        "equipment",
         "features",
+        "lineage",
         "magic_item",
+        "monster",
+        "poison",
+        "rule",
+        "skill",
+        "spell",
+        "table",
+        "weapon_property",
         # Note: madness is not a separate dataset - madness tables are in tables.json
     }
     assert set(schemas.keys()) == expected_datasets, (

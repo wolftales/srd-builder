@@ -63,7 +63,12 @@ from .postprocess import (
     clean_table_record,
     clean_weapon_property_record,
 )
-from .utils.metadata import generate_meta_json, read_schema_version, wrap_with_meta
+from .utils.metadata import (
+    DATASET_TO_SCHEMA,
+    generate_meta_json,
+    read_schema_version,
+    wrap_with_meta,
+)
 from .utils.table_indexer import TableIndexer
 from .validate_references import validate_references
 
@@ -585,45 +590,155 @@ def ensure_ruleset_layout(ruleset: str, out_dir: Path) -> dict[str, Path]:
     }
 
 
+def _generate_bundle_readme(target_dir: Path) -> str:
+    """Build the bundle README dynamically from the freshly written meta.json.
+
+    The README is regenerated on every build so version, date, schema versions,
+    and dataset counts always match the shipped payload.
+    """
+    meta = json.loads((target_dir / "meta.json").read_text(encoding="utf-8"))
+    inventory = meta.get("inventory", {})
+    schemas = meta.get("schemas", {})
+    builder_version = meta.get("builder_version", __version__)
+    ruleset_version = meta.get("ruleset_version", "5.1")
+    extracted_at = meta.get("build", {}).get("extracted_at")
+    generated_line = extracted_at[:10] if extracted_at else "(reproducible build)"
+
+    total_items = sum(inventory.values())
+
+    # Pretty dataset rows: "datasets" key with display name + schema lookup.
+    dataset_display = {
+        "ability_scores": ("Ability Scores", "ability_score"),
+        "classes": ("Classes", "class"),
+        "conditions": ("Conditions", "condition"),
+        "damage_types": ("Damage Types", "damage_type"),
+        "diseases": ("Diseases", "disease"),
+        "equipment": ("Equipment", "equipment"),
+        "features": ("Features", "features"),
+        "lineages": ("Lineages", "lineage"),
+        "magic_items": ("Magic Items", "magic_item"),
+        "monsters": ("Monsters", "monster"),
+        "poisons": ("Poisons", "poison"),
+        "rules": ("Rules", "rule"),
+        "skills": ("Skills", "skill"),
+        "spells": ("Spells", "spell"),
+        "tables": ("Tables", "table"),
+        "weapon_properties": ("Weapon Properties", "weapon_property"),
+    }
+
+    rows = []
+    for name in sorted(inventory):
+        label, schema_key = dataset_display.get(name, (name.title(), name))
+        count = inventory[name]
+        schema_ver = schemas.get(schema_key, "—")
+        rows.append(f"| {label} | {count} | `{name}.json` | v{schema_ver} |")
+    inventory_table = "\n".join(rows)
+
+    schema_list = "\n".join(
+        f"- `{name}.schema.json` — v{schemas[name]}" for name in sorted(schemas)
+    )
+
+    return f"""# SRD 5.1 Dataset Bundle
+
+**Builder version:** srd-builder v{builder_version}
+**Ruleset:** SRD {ruleset_version} (System Reference Document)
+**Generated:** {generated_line}
+**Total items:** {total_items} across {len(inventory)} datasets
+
+---
+
+## What's Included
+
+Machine-readable D&D 5e SRD data extracted from the official PDF. Each dataset
+ships as a single `*.json` file with a `_meta` block + `items` array.
+
+| Dataset | Items | File | Schema |
+|---|---:|---|---|
+{inventory_table}
+
+Plus:
+
+- `meta.json` — bundle metadata (versions, license, page index, inventory)
+- `build_report.json` — build provenance (timestamps, builder version)
+- `index.json` — pre-built search index with alias support
+- `schemas/` — JSON Schema files for all datasets
+- `docs/` — `SCHEMAS.md`, `DATA_DICTIONARY.md`
+
+---
+
+## Quick Start
+
+```javascript
+// Node.js
+const monsters = require('./monsters.json');
+const dragon = monsters.items.find(m => m.simple_name === 'adult_red_dragon');
+console.log(dragon.challenge_rating);  // 17
+
+const spells = require('./spells.json');
+const fireball = spells.items.find(s => s.simple_name === 'fireball');
+console.log(fireball.level);  // 3
+```
+
+```python
+# Python
+import json
+
+with open('monsters.json') as f:
+    monsters = json.load(f)['items']
+dragon = next(m for m in monsters if m['id'] == 'monster:adult_red_dragon')
+
+with open('spells.json') as f:
+    spells = json.load(f)['items']
+fireball = next(s for s in spells if s['simple_name'] == 'fireball')
+```
+
+---
+
+## Schemas
+
+All datasets are validated against JSON Schema files in `schemas/`:
+
+{schema_list}
+
+---
+
+## License
+
+This work includes material taken from the System Reference Document 5.1
+("SRD 5.1") by Wizards of the Coast LLC, licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+See `meta.json` for full attribution.
+"""
+
+
 def _copy_bundle_collateral(target_dir: Path) -> None:
     """Copy schemas and documentation to create complete bundle.
 
     For production releases, this assembles the full package with:
-    - README.md (from BUNDLE_README.md)
-    - schemas/ directory
-    - docs/ directory
+    - README.md (generated dynamically from meta.json)
+    - schemas/ directory (every dataset schema)
+    - docs/ directory (SCHEMAS.md, DATA_DICTIONARY.md)
     """
     repo_root = Path(__file__).resolve().parents[2]
 
-    # Copy README (from BUNDLE_README.md)
-    readme_src = repo_root / "docs" / "BUNDLE_README.md"
+    # Generate README from live meta.json so it always matches the payload.
     readme_dst = target_dir / "README.md"
-    if readme_src.exists():
-        readme_dst.write_text(readme_src.read_text(encoding="utf-8"), encoding="utf-8")
-        print("  ✓ Copied README.md")
+    readme_dst.write_text(_generate_bundle_readme(target_dir), encoding="utf-8")
+    print("  ✓ Generated README.md")
 
-    # Copy schemas
+    # Copy every shipped dataset schema. Source of truth: DATASET_TO_SCHEMA.
     schemas_src = repo_root / "schemas"
     schemas_dst = target_dir / "schemas"
     schemas_dst.mkdir(exist_ok=True)
-    for schema_file in [
-        "monster.schema.json",
-        "equipment.schema.json",
-        "spell.schema.json",
-        "table.schema.json",
-        "lineage.schema.json",
-        "class.schema.json",
-        "condition.schema.json",
-        "features.schema.json",
-    ]:
-        src = schemas_src / schema_file
+    schema_names = sorted(set(DATASET_TO_SCHEMA.values()))
+    for schema_name in schema_names:
+        src = schemas_src / f"{schema_name}.schema.json"
         if src.exists():
-            (schemas_dst / schema_file).write_text(
-                src.read_text(encoding="utf-8"), encoding="utf-8"
-            )
+            (schemas_dst / src.name).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
         else:
-            print(f"  ⚠ Schema not found: {schema_file}")
-    print("  ✓ Copied schemas/")
+            print(f"  ⚠ Schema not found: {src.name}")
+    print(f"  ✓ Copied schemas/ ({len(schema_names)} schemas)")
 
     # Copy docs
     docs_src = repo_root / "docs"
