@@ -105,7 +105,6 @@ def _render_json(payload: Any) -> str:
 def _write_datasets(  # noqa: PLR0913
     *,
     ruleset: str,
-    ruleset_version: str,
     dist_data_dir: Path,
     monsters: list[dict[str, Any]],
     equipment: list[dict[str, Any]] | None = None,
@@ -130,7 +129,6 @@ def _write_datasets(  # noqa: PLR0913
         {"items": processed_monsters},
         ruleset=ruleset,
         schema_version=read_schema_version("monster"),
-        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "monsters.json").write_text(
         _render_json(monsters_doc),
@@ -145,7 +143,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_equipment},
             ruleset=ruleset,
             schema_version=read_schema_version("equipment"),
-            ruleset_version=ruleset_version,
         )
 
         # Add equipment-specific metadata (SRD economic rules)
@@ -176,7 +173,6 @@ def _write_datasets(  # noqa: PLR0913
         {"items": processed_spells},
         ruleset=ruleset,
         schema_version=read_schema_version("spell"),
-        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "spells.json").write_text(
         _render_json(spells_doc),
@@ -193,7 +189,6 @@ def _write_datasets(  # noqa: PLR0913
         {"items": processed_magic_items},
         ruleset=ruleset,
         schema_version=read_schema_version("magic_item"),
-        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "magic_items.json").write_text(
         _render_json(magic_items_doc),
@@ -242,7 +237,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": reordered_tables},
             ruleset=ruleset,
             schema_version=read_schema_version("table"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
@@ -257,7 +251,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_lineages},
             ruleset=ruleset,
             schema_version=read_schema_version("lineage"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "lineages.json").write_text(
             _render_json(lineages_doc),
@@ -272,7 +265,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_classes},
             ruleset=ruleset,
             schema_version=read_schema_version("class"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "classes.json").write_text(
             _render_json(classes_doc),
@@ -290,7 +282,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_ability_scores},
             ruleset=ruleset,
             schema_version=read_schema_version("ability_score"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "ability_scores.json").write_text(
             _render_json(ability_scores_doc),
@@ -308,7 +299,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_damage_types},
             ruleset=ruleset,
             schema_version=read_schema_version("damage_type"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "damage_types.json").write_text(
             _render_json(damage_types_doc),
@@ -324,7 +314,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_skills},
             ruleset=ruleset,
             schema_version=read_schema_version("skill"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "skills.json").write_text(
             _render_json(skills_doc),
@@ -344,7 +333,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_weapon_properties},
             ruleset=ruleset,
             schema_version=read_schema_version("weapon_property"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "weapon_properties.json").write_text(
             _render_json(weapon_properties_doc),
@@ -402,7 +390,6 @@ def _write_datasets(  # noqa: PLR0913
             {"items": processed_rules},
             ruleset=ruleset,
             schema_version=read_schema_version("rule"),
-            ruleset_version=ruleset_version,
         )
         (dist_data_dir / "rules.json").write_text(
             _render_json(rules_doc),
@@ -449,7 +436,6 @@ def _write_datasets(  # noqa: PLR0913
         index_payload,
         ruleset=ruleset,
         schema_version="1.0.0",
-        ruleset_version=ruleset_version,
     )
     (dist_data_dir / "index.json").write_text(
         _render_json(index_doc),
@@ -1139,7 +1125,7 @@ def build(  # noqa: C901
 
     # Parse classes (v0.8.2)
     # Classes come from canonical targets, not PDF extraction
-    parsed_classes = parse_classes()
+    parsed_classes = parse_classes(ruleset)
 
     # Parse ability_scores (v0.20.0)
     # Ability scores are game constants (6 core abilities: STR, DEX, CON, INT, WIS, CHA)
@@ -1228,8 +1214,6 @@ def build(  # noqa: C901
         except Exception as exc:
             print(f"⚠️ PDF metadata extraction failed: {exc}")
 
-    ruleset_version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
-
     # Build poison items from table + descriptions (tables themselves go to tables.json)
     if parsed_tables:
         # Build poison items from table + descriptions
@@ -1254,7 +1238,6 @@ def build(  # noqa: C901
                     {"items": processed_poisons},
                     ruleset=ruleset,
                     schema_version=read_schema_version("poison"),
-                    ruleset_version=ruleset_version,
                 )
                 print(f"✓ Parsed {len(processed_poisons)} poison items")
             except Exception as exc:
@@ -1268,12 +1251,10 @@ def build(  # noqa: C901
             {"features": processed_features_list},
             ruleset=ruleset,
             schema_version=read_schema_version("features"),
-            ruleset_version=ruleset_version,
         )
 
     _write_datasets(
         ruleset=ruleset,
-        ruleset_version=ruleset_version,
         dist_data_dir=target_dir,
         monsters=parsed_monsters,
         equipment=parsed_equipment if parsed_equipment else None,
@@ -1333,6 +1314,7 @@ def build(  # noqa: C901
 
     # Generate rich meta.json for consumers (includes license, page_index, etc.)
     meta_json = generate_meta_json(
+        ruleset=ruleset,
         pdf_hash=pdf_hash,
         pdf_metadata=pdf_metadata,
         monsters_complete=len(parsed_monsters) > 0,

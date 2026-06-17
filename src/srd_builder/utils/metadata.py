@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from .. import __version__
-from ..constants import DATA_SOURCE
+from ..constants import RULESETS
 from .page_index import PAGE_INDEX
 
 # Schema directory location
@@ -172,42 +172,40 @@ def build_inventory(dist_dir: Path) -> dict[str, int]:
     return inventory
 
 
-def meta_block(ruleset: str, schema_version: str, ruleset_version: str = "5.1") -> dict[str, str]:
+def meta_block(ruleset: str, schema_version: str) -> dict[str, str]:
     """Generate standardized _meta block with consistent field order.
 
     Args:
-        ruleset: Ruleset identifier (e.g., 'srd_5_1')
-        schema_version: Schema version for this specific dataset
-        ruleset_version: Version of the ruleset (default: '5.1')
+        ruleset: Ruleset identifier (e.g., 'srd_5_1'). Used to look up
+            source_id and ruleset_version from the RULESETS registry.
+        schema_version: Schema version for this specific dataset.
 
     Returns:
         Metadata dictionary
     """
+    info = RULESETS[ruleset]
     return {
-        "source": DATA_SOURCE,
-        "ruleset_version": ruleset_version,
+        "source": info["source_id"],
+        "ruleset_version": info["ruleset_version"],
         "schema_version": schema_version,
         "generated_by": f"srd-builder v{__version__}",
         "build_report": "./build_report.json",
     }
 
 
-def wrap_with_meta(
-    payload: dict[str, Any], *, ruleset: str, schema_version: str, ruleset_version: str = "5.1"
-) -> dict[str, Any]:
+def wrap_with_meta(payload: dict[str, Any], *, ruleset: str, schema_version: str) -> dict[str, Any]:
     """Wrap payload with _meta block.
 
     Args:
         payload: Data to wrap
         ruleset: Ruleset identifier
         schema_version: Schema version for this dataset
-        ruleset_version: Version of the ruleset
 
     Returns:
         Document with _meta block
     """
     document: OrderedDict[str, Any] = OrderedDict()
-    document["_meta"] = meta_block(ruleset, schema_version, ruleset_version)
+    document["_meta"] = meta_block(ruleset, schema_version)
     for key, value in payload.items():
         document[key] = value
     return document
@@ -243,6 +241,7 @@ def build_page_index(
 
 def generate_meta_json(  # noqa: PLR0913
     *,
+    ruleset: str,
     pdf_hash: str | None,
     pdf_metadata: dict[str, Any] | None = None,
     monsters_complete: bool,
@@ -259,11 +258,15 @@ def generate_meta_json(  # noqa: PLR0913
     """Generate rich metadata for dist/meta.json with provenance.
 
     Args:
+        ruleset: Ruleset identifier (e.g., 'srd_5_1') used to look up
+            source_id and ruleset_version in the RULESETS registry.
         dist_dir: Distribution directory to check for actual file existence.
                   If provided, extraction_status will reflect what was actually built.
     """
 
-    version = pdf_metadata.get("version", "5.1") if pdf_metadata else "5.1"
+    info = RULESETS[ruleset]
+    fallback_version = info["ruleset_version"]
+    version = pdf_metadata.get("version", fallback_version) if pdf_metadata else fallback_version
     license_type = pdf_metadata.get("license_type", "CC-BY-4.0") if pdf_metadata else "CC-BY-4.0"
     license_url = (
         pdf_metadata.get("license_url", "https://creativecommons.org/licenses/by/4.0/legalcode")
@@ -308,7 +311,7 @@ def generate_meta_json(  # noqa: PLR0913
     inventory = build_inventory(dist_dir) if dist_dir is not None else {}
 
     return {
-        "source": DATA_SOURCE,
+        "source": info["source_id"],
         "ruleset_version": version,
         "builder_version": __version__,
         "schemas": schemas,

@@ -13,12 +13,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from srd_builder.constants import DATA_SOURCE
+from srd_builder.constants import RULESETS
 from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
 
 
-def parse_classes() -> list[dict[str, Any]]:
+def parse_classes(ruleset: str) -> list[dict[str, Any]]:
     """Parse all classes from canonical target data.
+
+    Args:
+        ruleset: Ruleset identifier (e.g., 'srd_5_1') used to stamp
+            the canonical source_id on each record.
 
     Returns:
         List of class records with complete progression data.
@@ -27,17 +31,18 @@ def parse_classes() -> list[dict[str, Any]]:
     classes: list[dict[str, Any]] = []
 
     for class_data in CLASS_DATA:
-        class_record = _build_class_record(class_data)
+        class_record = _build_class_record(class_data, ruleset)
         classes.append(class_record)
 
     return classes
 
 
-def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
+def _build_class_record(data: dict[str, Any], ruleset: str) -> dict[str, Any]:
     """Build a complete class record from target data.
 
     Args:
         data: Class data from CLASS_DATA
+        ruleset: Ruleset identifier for source_id lookup.
 
     Returns:
         Fully structured class record with metadata
@@ -55,7 +60,7 @@ def _build_class_record(data: dict[str, Any]) -> dict[str, Any]:
         "features": _qualify_feature_ids(data["features"], simple_name),
         "subclasses": data.get("subclasses", []),
         "progression": data["progression"],
-        "source": DATA_SOURCE,
+        "source": RULESETS[ruleset]["source_id"],
         "page": data["page"],
         "extraction_metadata": {
             "source_pages": [data["page"]],
