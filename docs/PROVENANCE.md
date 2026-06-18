@@ -28,7 +28,8 @@ this file is the *current state*.
 ## Status at a glance
 
 8 historical hand-curated sources. 5 retired in the v0.27.x line.
-1 awaiting reproducer (`equipment_descriptions.py`, low-priority).
+1 disputed (`equipment_descriptions.py` — reproducer added 2026-06-18,
+proves extractable across all 4 sections; parser TODO).
 1 structural drift fixed and pinned by audit test in v0.27.4.
 
 | Source | Lines | Status | Reproducer | Live extractor | Quality vs. legacy | Blocker |
@@ -39,7 +40,7 @@ this file is the *current state*.
 | `poison_descriptions.py` | 129 | ✅ **RETIRED v0.27.3** | ✓ | [`parse_poison_descriptions.py`](../src/srd_builder/parse/parse_poison_descriptions.py) returns clean 14/14 with byte-perfect description/save/damage parity | **Equivalent** — 14/14 perfect match against legacy POISON_DESCRIPTIONS dict | — |
 | `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
 | `equipment_packs.py` | 323 | ✅ **RETIRED v0.27.5 P6** | ✓ | [`extract_equipment_packs.py`](../src/srd_builder/extract/datasets/extract_equipment_packs.py) | **Equivalent** — 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) against the retired EQUIPMENT_PACKS literal | — |
-| `equipment_descriptions.py` | 398 | ⬜ **LIVE** | **TODO** | none | (Unverified — pp. 66–68 prose likely extractable like other prose sections) | No reproducer yet |
+| `equipment_descriptions.py` | 398 | 🟡 **DISPUTED** (reproducer added 2026-06-18) | ✓ | none (parser pending) | (All 4 sections — adventure_gear pp. 66–68, tools p. 71, armor p. 63, lifestyle p. 73 — have their first heading on the expected PDF page and 13/13 probed item signatures survive whitespace normalization) | Parser to walk bold-headed prose blocks (`{Heading}. {prose}`) and normalize PDF soft-hyphen artifacts (`-\xad‐‑`) in compound words like `15-foot` |
 | `extract_equipment.py` page constants | 2 | ✅ **RESOLVED v0.27.4** | ✓ | Constants harmonized to 1-indexed; PDF page 74 (Services / Lifestyle tables) now extracted | Bug-fix — 8 dropped rows recovered | — |
 
 ### What "Better" means here
@@ -147,12 +148,14 @@ a failed save"` phrasing.
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/assemble/equipment_descriptions.py](../src/srd_builder/assemble/equipment_descriptions.py) |
-| Scope | Adventure gear / tools / armor / lifestyle prose descriptions |
-| Reason | `pdf_missing` |
-| PDF pages | 66–68 |
-| Last verified | 2026-06-17 |
-| Reproducer | **TODO** — prose is in SRD body text, should be extractable like other prose sections |
-| Downstream | `dist/srd_5_1/equipment.json` (description fields on adventure-gear records) |
+| Scope | 4 hand-curated TypedDict lists — `ADVENTURE_GEAR_DESCRIPTIONS` (42 entries, pp. 66–68), `TOOLS_DESCRIPTIONS` (9 entries, pp. 70–71), `ARMOR_DESCRIPTIONS` (12 entries, p. 63), `LIFESTYLE_DESCRIPTIONS` (6 entries, p. 73). 69 entries / ~398 lines total. |
+| Reason (was) | `pdf_missing` |
+| Status | 🟡 **DISPUTED** — reproducer added 2026-06-18; the `pdf_missing` rationale is disproven for all 4 sections. Every section's first heading (`Acid.`, `Disguise Kit.`, `Padded.`, `Wretched.`) is recovered cleanly from its expected PDF page under standard whitespace normalization, and 13 representative item-heading + signature-phrase probes all pass. The PDF does carry soft-hyphen artifacts (`-\xad‐‑`) inside compound words (e.g. `15-foot`, `narrow-bladed`); the parser will need to normalize them, but the prose itself is intact. The hand-curated `*_DESCRIPTIONS` literals can be retired by a parser that walks page text from one `{Heading}. ` anchor to the next. |
+| PDF pages | 63 (armor), 66–68 (adventure_gear), 70–71 (tools), 73 (lifestyle) |
+| Last verified | 2026-06-18 |
+| Reproducer | [tests/test_pdf_provenance.py::test_equipment_descriptions_section_anchor_extractable](../tests/test_pdf_provenance.py) (parametrized × 4 sections), [tests/test_pdf_provenance.py::test_equipment_descriptions_item_signature_extractable](../tests/test_pdf_provenance.py) (parametrized × 13 — heading + distinctive content-phrase probe per item across all 4 sections) |
+| Open work | Parser — walk page text with a heading regex (`^[A-Z][A-Za-z ’,()]+\.\s`), normalize PDF soft-hyphen artifacts (U+00AD + U+2010 + U+2011 sequences → `-`) before emitting descriptions, and verify curated `page` fields against PDF reality (the reproducer already caught `Antitoxin` as p. 66, not p. 67 as the curated module claims). Achieve byte-perfect parity with the 4 retired `*_DESCRIPTIONS` literals, treating any divergence as a curated-data correction (the prior 5 retirements found similar drift each time). |
+| Downstream | `dist/srd_5_1/equipment.json` (description fields on adventure-gear / tools / armor / lifestyle records) |
 
 ### `extract_equipment.py` — page constants  *(resolved in v0.27.4)*
 

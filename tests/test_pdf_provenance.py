@@ -689,3 +689,141 @@ def test_equipment_packs_pdf_page_70_contents_extractable(
             f"contents prose on page 70. If this fails, the parser-design "
             f"assumption (comma-separated SRD prose) needs revisiting."
         )
+
+
+# ---------------------------------------------------------------------------
+# equipment_descriptions.py reproducer (v0.27.5 — pre-P7 cutover)
+# ---------------------------------------------------------------------------
+# Mirrors the structure of the equipment_packs reproducer above. This batch
+# proves that the prose descriptions which currently live as four hand-
+# curated Python literals
+# (`ADVENTURE_GEAR_DESCRIPTIONS`, `TOOLS_DESCRIPTIONS`, `ARMOR_DESCRIPTIONS`,
+# `LIFESTYLE_DESCRIPTIONS`, ~398 lines total in
+# `src/srd_builder/assemble/equipment_descriptions.py`) are in fact
+# extractable from their respective PDF pages (63, 66–68, 71, 73) under the
+# same whitespace normalization used by every other v0.27.x extractor.
+#
+# Why a reproducer comes first: the same "PDF text is corrupted / missing"
+# rationale has now been disproven five times in a row (lineages, spell-
+# classes, classes, poisons, equipment_packs). Before writing the parser
+# for P7, AGENTS.md § "PDF extraction discipline" requires evidence that
+# the section is recoverable.
+#
+# Result: every section anchor is present on its expected PDF page, and
+# every probed item heading is followed (within ~600 chars) by a
+# distinctive content phrase from its SRD description. The parser just
+# needs to be written.
+
+
+def _page_text_normalized(pdf_page_1_indexed: int) -> str:
+    """Return whitespace-normalized text of the given 1-indexed SRD PDF page."""
+    from srd_builder.utils.pdf_probe import open_pdf, page_text
+
+    with open_pdf(SRD_5_1_PDF) as doc:
+        return page_text(doc, pdf_page_1_indexed - 1)
+
+
+# Section anchors: the first heading the parser would land on in each
+# section. If any of these are missing, the section is in trouble at the
+# structural level and no item-by-item probe will help.
+_EQUIPMENT_DESCRIPTION_SECTION_ANCHORS: list[tuple[str, int, str]] = [
+    # (section_label, pdf_page_1_indexed, heading_with_trailing_period)
+    ("adventure_gear", 66, "Acid."),
+    ("tools", 71, "Disguise Kit."),
+    ("armor", 63, "Padded."),
+    ("lifestyle", 73, "Wretched."),
+]
+
+
+@pytest.mark.parametrize(
+    ("section_label", "pdf_page", "anchor_heading"),
+    _EQUIPMENT_DESCRIPTION_SECTION_ANCHORS,
+)
+def test_equipment_descriptions_section_anchor_extractable(
+    section_label: str,
+    pdf_page: int,
+    anchor_heading: str,
+) -> None:
+    """The first prose-description heading of each section must be present.
+
+    Cheapest possible probe per section: if the section's first heading
+    is missing from the expected PDF page, the page is broken at the
+    structural level and the hand-curated module's `pdf_missing`
+    rationale would (this once) be justified. Every other v0.27.x
+    reproducer in this file has shown the opposite is the case.
+    """
+    _require_pdf_and_fitz()
+    text = _page_text_normalized(pdf_page)
+    assert anchor_heading in text, (
+        f"Section anchor {anchor_heading!r} ({section_label}) not found on "
+        f"PDF page {pdf_page}. If this fails, the hand-curated "
+        f"equipment_descriptions.py *_DESCRIPTIONS list is the only source "
+        f"for that section's prose."
+    )
+
+
+# Per-item signature probes: (section_label, pdf_page, heading, signature_phrase).
+# Each heading is the bold item label as it appears in SRD prose, and the
+# signature phrase is a distinctive piece of that item's description that
+# survives standard whitespace normalization (no soft-hyphen artifacts
+# inside compound words). The probe asserts the signature appears within
+# 600 chars after the heading start on the expected page — strong evidence
+# that a parser anchored on `^[A-Z][A-Za-z ’,()]+\.\s` can lift the prose.
+_EQUIPMENT_DESCRIPTION_ITEM_PROBES: list[tuple[str, int, str, str]] = [
+    # adventure gear — pp. 66–68
+    ("adventure_gear", 66, "Acid.", "splash the contents of this vial"),
+    ("adventure_gear", 66, "Antitoxin.", "saving throws against poison for 1 hour"),
+    ("adventure_gear", 67, "Ball Bearings.", "spill these tiny metal balls"),
+    ("adventure_gear", 67, "Caltrops.", "stop moving this turn"),
+    ("adventure_gear", 68, "Manacles.", "DC 20 Dexterity check"),
+    ("adventure_gear", 68, "Spyglass.", "twice their size"),
+    # tools — p. 71
+    ("tools", 71, "Disguise Kit.", "pouch of cosmetics, hair dye"),
+    ("tools", 71, "Forgery Kit.", "small box contains a variety"),
+    ("tools", 71, "Poisoner", "vials, chemicals, and other equipment"),
+    # armor — p. 63 (note: PDF text flows the prose without "Padded armor"
+    # repeating the heading word, so signature phrases are domain text)
+    ("armor", 63, "Padded.", "quilted layers of cloth and batting"),
+    ("armor", 63, "Ring mail", "inferior to chain mail"),
+    # lifestyle — p. 73 (cost table appears before the prose headings, so
+    # we explicitly anchor on the `Wretched.` prose heading, not just the
+    # word `Wretched` which appears earlier in the cost table)
+    ("lifestyle", 73, "Wretched.", "inhumane conditions"),
+    ("lifestyle", 73, "Aristocratic.", "life of plenty and comfort"),
+]
+
+
+@pytest.mark.parametrize(
+    ("section_label", "pdf_page", "heading", "signature_phrase"),
+    _EQUIPMENT_DESCRIPTION_ITEM_PROBES,
+)
+def test_equipment_descriptions_item_signature_extractable(
+    section_label: str,
+    pdf_page: int,
+    heading: str,
+    signature_phrase: str,
+) -> None:
+    """Each probed item's heading + signature phrase survive extraction.
+
+    A `find()` on the heading anchors the probe inside the right item's
+    paragraph; the signature phrase is then required to appear within
+    the next 600 chars. This is the same shape as the equipment-packs
+    contents reproducer above and proves a parser can lift the prose
+    body for each item by walking from one heading to the next.
+    """
+    _require_pdf_and_fitz()
+    text = _page_text_normalized(pdf_page)
+    heading_idx = text.find(heading)
+    assert heading_idx >= 0, (
+        f"Heading {heading!r} ({section_label}) not found on PDF page "
+        f"{pdf_page} — section anchor test should have caught structural "
+        f"breakage first."
+    )
+    body = text[heading_idx : heading_idx + 600]
+    assert signature_phrase in body, (
+        f"Signature phrase {signature_phrase!r} not found within 600 chars "
+        f"after heading {heading!r} on PDF page {pdf_page}. The "
+        f"hand-curated {section_label} description for this item cannot "
+        f"be justified by 'PDF corruption'; the parser just needs to be "
+        f"written."
+    )
