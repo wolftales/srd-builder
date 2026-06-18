@@ -41,9 +41,9 @@ the byte-perfect parity target.
 This module is grown incrementally — each commit adds one field group:
 
 1. (landed) class discovery: ``name``, ``simple_name``, ``page``
-2. (this commit) ``hit_die``, ``primary_abilities``,
+2. (landed) ``hit_die``, ``primary_abilities``,
    ``saving_throw_proficiencies``, ``proficiencies``
-3. features list + subclasses
+3. (this commit) ``features`` + ``subclasses``
 4. spellcasting block
 5. progression (mirrored from ``tables.json``)
 6. cutover ``parse_classes`` / ``parse_features``, delete
@@ -132,40 +132,61 @@ def extract_classes(pdf_path: str | Path) -> dict[str, Any]:
                         "tools": [],
                         "skills": {"choose": 2, "from": [...]},
                     },
-                    # (later commits add features, subclasses,
-                    #  spellcasting, progression)
+                    "features": ["feature:rage", "feature:unarmored_defense", ...],
+                    "subclasses": ["subclass:path_of_the_berserker"],
+                    # (later commits add spellcasting, progression)
                 },
                 ...
             ],
         }
     """
     pdf_path = Path(pdf_path)
-    classes: list[dict[str, Any]] = []
 
     with fitz.open(str(pdf_path)) as doc:
-        for pi in CLASS_PAGES_PDF_INDICES:
-            page = doc[pi]
-            classes.extend(_scan_page_for_class_start(page, pi))
+        # Phase 1: locate the 25.9pt class-name span on each class's
+        # first page so we know each class's page range.
+        page_spans: dict[int, list[tuple[str, float, str, tuple]]] = {
+            pi: _collect_spans(doc[pi]) for pi in CLASS_PAGES_PDF_INDICES
+        }
+        starts: list[tuple[int, str]] = []
+        for pi, spans in page_spans.items():
+            for txt, sz, font, _ in spans:
+                if sz == _CLASS_NAME_SIZE and _FONT_PREFIX in font and txt:
+                    starts.append((pi, txt))
+                    break
+
+        # Phase 2: for each class, derive its page range as
+        # [start_pi, next_start_pi) (or end-of-classes for the last one)
+        # and pull all field groups from those pages.
+        classes: list[dict[str, Any]] = []
+        for idx, (pi, name) in enumerate(starts):
+            next_pi = starts[idx + 1][0] if idx + 1 < len(starts) else CLASS_PAGES_PDF_INDICES.stop
+            class_spans: list[tuple[str, float, str, tuple]] = []
+            for p in range(pi, next_pi):
+                class_spans.extend(page_spans[p])
+            classes.append(_build_class_record(name, pi, class_spans))
 
     return {"source_pages": "8-55", "classes": classes}
 
 
-def _scan_page_for_class_start(page: fitz.Page, pi: int) -> list[dict[str, Any]]:
-    """Return a class record if this page starts a class section."""
-    spans = _collect_spans(page)
-    out: list[dict[str, Any]] = []
-    for txt, sz, font, _ in spans:
-        if sz == _CLASS_NAME_SIZE and _FONT_PREFIX in font and txt:
-            simple = normalize_id(txt)
-            record: dict[str, Any] = {
-                "name": txt,
-                "simple_name": simple,
-                "page": pi + 1,
-                "primary_abilities": _PRIMARY_ABILITIES[simple],
-            }
-            record.update(_extract_field_labels(spans))
-            out.append(record)
-    return out
+def _build_class_record(
+    name: str,
+    pi: int,
+    class_spans: list[tuple[str, float, str, tuple]],
+) -> dict[str, Any]:
+    """Assemble a single class record from its accumulated page spans."""
+    simple = normalize_id(name)
+    record: dict[str, Any] = {
+        "name": name,
+        "simple_name": simple,
+        "page": pi + 1,
+        "primary_abilities": _PRIMARY_ABILITIES[simple],
+    }
+    record.update(_extract_field_labels(class_spans))
+    features, subclasses = _extract_features_and_subclasses(class_spans, simple)
+    record["features"] = features
+    record["subclasses"] = subclasses
+    return record
 
 
 def _collect_spans(page: fitz.Page) -> list[tuple[str, float, str, tuple]]:
@@ -293,6 +314,45 @@ _SKILLS_ANY_RE = re.compile(r"^Choose\s+any\s+(\w+)$", re.IGNORECASE)
 _SKILLS_FROM_RE = re.compile(
     r"^Choose\s+(\w+)(?:\s+skills?)?\s+from\s+(.+)$", re.IGNORECASE | re.DOTALL
 )
+
+# Universal headings the SRD prints in every class block but that the
+# legacy CLASS_DATA only lists for cleric (so that owner-resolution in
+# parse_features has at least one definitive owner; the runtime
+# _UNIVERSAL_FEATURES handles the per-class reprints). Match that
+# divergence so the extractor's output is byte-identical with the
+# snapshot.
+_ASI = "Ability Score Improvement"
+_CLASSES_KEEPING_ASI = frozenset({"cleric"})
+
+
+def _extract_features_and_subclasses(
+    class_spans: list[tuple[str, float, str, tuple]],
+    class_simple: str,
+) -> tuple[list[str], list[str]]:
+    """Return ``(features, subclasses)`` derived from 13.9pt headings.
+
+    Algorithm: collect every 13.9pt GillSans-SemiBold heading in PDF
+    order across the class's page range. The last one is the subclass
+    section heading; the rest are class features. Drop ``Ability Score
+    Improvement`` from the features list for every class except cleric
+    (see ``_CLASSES_KEEPING_ASI``).
+
+    Feature IDs are unqualified (``feature:rage``) — the consumer
+    ``parse_classes._qualify_feature_ids()`` rewrites them to
+    ``feature:{owner}:rage``.
+    """
+    headings: list[str] = []
+    for txt, sz, font, _ in class_spans:
+        if sz == 13.9 and "GillSans" in font and txt:
+            headings.append(txt)
+    if not headings:
+        return [], []
+    *feature_headings, subclass_heading = headings
+    if class_simple not in _CLASSES_KEEPING_ASI:
+        feature_headings = [h for h in feature_headings if h != _ASI]
+    features = [f"feature:{normalize_id(h)}" for h in feature_headings]
+    subclasses = [f"subclass:{normalize_id(subclass_heading)}"]
+    return features, subclasses
 
 
 def _parse_skills(text: str) -> dict[str, Any]:
