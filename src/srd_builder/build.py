@@ -24,6 +24,7 @@ from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMA
 from .extract import extract_tables_to_json
 from .extract.datasets.extract_classes import extract_classes
 from .extract.datasets.extract_equipment import extract_equipment
+from .extract.datasets.extract_equipment_packs import extract_equipment_packs
 from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
 from .extract.datasets.extract_lineages import extract_lineages
 from .extract.datasets.extract_magic_items import extract_magic_items
@@ -1107,8 +1108,19 @@ def build(  # noqa: C901
     parsed_equipment = []
     if "equipment" not in skip_datasets:
         if parsed_tables:
+            # Equipment packs are extracted from PDF page 70 (v0.27.5 — see
+            # src/srd_builder/extract/datasets/extract_equipment_packs.py;
+            # retired hand-curated EQUIPMENT_PACKS literal).
+            equipment_packs = None
+            ruleset_dir = Path("rulesets") / ruleset
+            pdf_files = sorted(ruleset_dir.glob("*.pdf"))
+            if pdf_files:
+                equipment_packs = extract_equipment_packs(pdf_files[0])["packs"]
+
             # New table-based assembly (v0.9.9 Part 2)
-            parsed_equipment = assemble_equipment_from_tables(parsed_tables, ruleset)
+            parsed_equipment = assemble_equipment_from_tables(
+                parsed_tables, ruleset, equipment_packs=equipment_packs
+            )
         else:
             # Fallback to old PyMuPDF extraction if no tables available
             raw_equipment = _load_raw_equipment(layout["raw"])

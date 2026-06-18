@@ -59,13 +59,20 @@ EQUIPMENT_TABLES = [
 
 
 def assemble_equipment_from_tables(
-    tables: list[dict[str, Any]], ruleset: str
+    tables: list[dict[str, Any]],
+    ruleset: str,
+    *,
+    equipment_packs: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Assemble equipment items from normalized tables.
 
     Args:
         tables: List of table dictionaries from tables.json
         ruleset: Ruleset identifier used to stamp source_id on each item.
+        equipment_packs: Pre-extracted equipment packs from
+            ``extract_equipment_packs(pdf_path)["packs"]``. When ``None``,
+            no pack records are added to the output (build.py is
+            responsible for threading this through; tests can omit it).
 
     Returns:
         List of equipment item dictionaries
@@ -134,8 +141,13 @@ def assemble_equipment_from_tables(
     extended_items = _add_extended_equipment(items_by_id, source)
     equipment_items.extend(extended_items)
 
-    # Add equipment packs (from prose extraction, not tables)
-    pack_items = _assemble_equipment_packs(items_by_id, source)
+    # Add equipment packs (from PDF page-70 extractor — see
+    # src/srd_builder/extract/datasets/extract_equipment_packs.py).
+    pack_items = (
+        _assemble_equipment_packs(equipment_packs, items_by_id, source)
+        if equipment_packs is not None
+        else []
+    )
     equipment_items.extend(pack_items)
 
     # Add descriptions to items (from prose sections)
@@ -1011,42 +1023,43 @@ def _infer_gear_subcategories(name: str, categories: dict[str, Any], row_index: 
 
 
 def _assemble_equipment_packs(
-    items_by_id: dict[str, dict[str, Any]], source: str
+    packs: list[dict[str, Any]],
+    items_by_id: dict[str, dict[str, Any]],
+    source: str,
 ) -> list[dict[str, Any]]:
-    """Assemble equipment pack items from prose data.
+    """Assemble equipment pack items from extractor output.
 
-    Equipment packs are described in prose on page 70, not in tables.
-    This function creates structured pack items with validated contents.
+    Equipment packs are described in prose on PDF page 70, not in tables.
+    The page-70 extractor in
+    ``src/srd_builder/extract/datasets/extract_equipment_packs.py`` returns
+    structured pack records; this function applies the same final-record
+    shaping (weight calc, validation, ID/category stamping) that the
+    retired ``equipment_packs.py`` literal had baked in.
 
     Args:
-        items_by_id: Dict of existing equipment items (for validation)
+        packs: Pre-extracted pack records (name, cost_gp, description,
+            contents).
+        items_by_id: Existing equipment items (used for weight calc and
+            missing-item validation).
+        source: Ruleset source identifier.
 
     Returns:
-        List of equipment pack items
+        List of equipment pack items, ready to merge into equipment.json.
     """
-    from .equipment_packs import (
-        EQUIPMENT_PACKS,
-        calculate_pack_weight,
-        validate_pack_contents,
-    )
+    from srd_builder.postprocess.ids import normalize_id
 
     pack_items = []
 
-    for pack_data in EQUIPMENT_PACKS:
-        # Calculate total weight from contents
-        total_weight = calculate_pack_weight(pack_data, items_by_id)
+    for pack_data in packs:
+        total_weight = _calculate_pack_weight(pack_data, items_by_id)
 
-        # Validate contents
-        validation = validate_pack_contents(pack_data, items_by_id)
+        validation = _validate_pack_contents(pack_data, items_by_id)
         if validation["missing_count"] > 0:
             logger.warning(
                 f"{pack_data['name']}: {validation['missing_count']} items not in equipment.json"
             )
             for missing in validation["missing_items"][:3]:
                 logger.debug(f"  Missing: {missing}")
-
-        # Create pack item
-        from srd_builder.postprocess.ids import normalize_id
 
         simple_name = normalize_id(pack_data["name"])
         item_id = f"item:{simple_name}"
@@ -1070,6 +1083,35 @@ def _assemble_equipment_packs(
 
     logger.info(f"Created {len(pack_items)} equipment packs")
     return pack_items
+
+
+def _calculate_pack_weight(
+    pack: dict[str, Any], equipment_lookup: dict[str, dict[str, Any]]
+) -> float:
+    """Total pack weight (sum of contents × quantity), rounded to 1 decimal."""
+    total = 0.0
+    for content in pack["contents"]:
+        item = equipment_lookup.get(content["item_id"])
+        if item and item.get("weight_lb"):
+            total += item["weight_lb"] * content["quantity"]
+    return round(total, 1)
+
+
+def _validate_pack_contents(
+    pack: dict[str, Any], equipment_lookup: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
+    """Report which pack contents resolve to known equipment IDs."""
+    found: list[str] = []
+    missing: list[str] = []
+    for content in pack["contents"]:
+        target = found if content["item_id"] in equipment_lookup else missing
+        target.append(content["item_name"])
+    missing.extend(pack.get("missing_items", []))
+    return {
+        "found_count": len(found),
+        "missing_count": len(missing),
+        "missing_items": missing,
+    }
 
 
 def _add_extended_equipment(
