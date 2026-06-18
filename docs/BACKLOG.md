@@ -4,8 +4,8 @@ Captured ideas not yet scheduled. Pull items into a release plan as priorities a
 
 ## Completed: v0.27.x — Retire the largest hand-curated surfaces
 
-Four planned retirements + one follow-on structural fix have shipped.
-~2,135 lines of hand-curated Python data deleted in total, plus a
+Five planned retirements + one follow-on structural fix have shipped.
+~2,458 lines of hand-curated Python data deleted in total, plus a
 silent data-loss bug closed:
 
 - **P1 — `lineage_targets.py` (326 lines, v0.27.0)** — replaced by
@@ -33,12 +33,24 @@ silent data-loss bug closed:
   Ship's passage, etc.). Pinned by new audit test
   [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](tests/test_pdf_provenance.py),
   parametrized across equipment, spells, magic_items, conditions.
+- **P6 — `equipment_packs.py` (323 lines, v0.27.5)** — replaced by
+  [src/srd_builder/extract/datasets/extract_equipment_packs.py](src/srd_builder/extract/datasets/extract_equipment_packs.py).
+  Parser walks PDF page 70 with a pack-header regex
+  (`{Name}’s Pack (N gp).`) and a section-end sentinel (`Tools\nA tool helps`),
+  splits each `Includes …` clause on `, ` / ` and ` boundaries, and
+  resolves each token through a small typed `_PHRASE_TO_ITEM` table that
+  maps the SRD's exact prose phrase to a stable `item_id` and a quantity
+  rule. Trailing "50 feet of hempen rope strapped to the side" sentence
+  handled. Curly-apostrophe (U+2019) normalized to ASCII at output.
+  7-for-7 byte-perfect parity (name, cost_gp, description, contents) vs.
+  the retired `EQUIPMENT_PACKS` literal. `assemble_equipment_from_tables`
+  now takes an `equipment_packs=` kwarg; `build.py` calls
+  `extract_equipment_packs()` once and threads the result.
 
-Result: `PROVENANCE.md` registry shrank from 8 → 4 active hand-curated
-entries (page-constants drift resolved separately). The remaining LIVE
-entries are equipment-related (`equipment_extended.py`,
-`equipment_packs.py`, `equipment_descriptions.py`) — lower-priority
-work awaiting reproducers.
+Result: `PROVENANCE.md` registry shrank from 8 → 3 active hand-curated
+entries. The remaining LIVE entries are equipment-related
+(`equipment_extended.py` cross-reference glue, `equipment_descriptions.py`)
+— lower-priority work awaiting reproducers.
 
 ---
 
@@ -120,7 +132,7 @@ v0.27.x P3 after `class_targets.py` was retired. `LIVE` = imported by
 | ~~`src/srd_builder/rulesets/srd_5_1/poison_descriptions.py`~~ | **DELETED v0.27.3** | (was full prose + DC + damage for all 14 SRD poisons, 129 lines) | "Corrupted text on pages 204–205" — **DISPROVEN v0.27.1** | Replaced by [src/srd_builder/parse/parse_poison_descriptions.py](src/srd_builder/parse/parse_poison_descriptions.py). v0.27.1 fixed the splitter (smart-quote `clean_text`, `start_marker="Sample Poisons"`, restored `Assassin's Blood` header, renamed `assassin's_blood` key). v0.27.3 extended the damage-formula regex from `takes?` to `tak(?:es?\|ing)` (covers `midnight_tears`, `purple_worm_poison`, `serpent_venom`, `wyvern_poison`), stripped the leading `"Name (Type). "` section header, and emitted `type_id`. 14/14 byte-perfect parity vs. legacy `POISON_DESCRIPTIONS`. Listed here for history. |
 | ~~`src/srd_builder/extraction/reference_data.py`~~ | **DELETED v0.26.0** | (was `REFERENCE_TABLES` lookup) | — | Removed in v0.26.0; −625 net lines. Listed here for history. |
 | [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
-| [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | **LIVE** (DISPUTED) — `assemble_equipment.py:1019` | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal. Reproducer added 2026-06-18 ([tests/test_pdf_provenance.py](tests/test_pdf_provenance.py) `test_equipment_packs_pdf_page_70_*`) confirms all 7 pack headers + costs + contents prose extractable from page 70 under standard whitespace normalization. Parser pending. | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. Real fix: pack contents should reference items by `simple_name` and synthesize IDs at assembly time via `normalize_id`. |
+| ~~[src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py)~~ | **DELETED v0.27.5 P6** | (was 7 equipment packs with item-by-item contents — item_id, quantity — plus costs and prose, 323 lines) | "Extracted from SRD 5.1 page 70" — actually transcribed into a Python literal; **DISPROVEN** (page 70 prose fully extractable). Replaced by [src/srd_builder/extract/datasets/extract_equipment_packs.py](src/srd_builder/extract/datasets/extract_equipment_packs.py). 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) vs. retired literal. Pinned by [tests/test_pdf_provenance.py](tests/test_pdf_provenance.py) `test_equipment_packs_pdf_page_70_*` (15 assertions) and [tests/test_equipment_packs.py](tests/test_equipment_packs.py) (11 tests including end-to-end integration). Listed here for history. |
 | [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | **LIVE** — `assemble_equipment.py:1104` | Prose descriptions for adventure-gear / tools / armor / lifestyle items (pp. 66–68) | "Documented in the SRD" — but transcribed not extracted | Same pattern as packs. No assertion the prose actually appears verbatim in the PDF. |
 | [src/srd_builder/extract/datasets/extract_equipment.py](src/srd_builder/extract/datasets/extract_equipment.py) (lines 30–35) | **FIXED v0.27.4** | (was `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` — 0-indexed; end-1 silently dropped PDF page 74) | Harmonized to 1-indexed `62`–`74` matching `PAGE_INDEX["equipment"]`. Pinned by [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](tests/test_pdf_provenance.py) (parametrized across all 4 extractors). | Listed here for history. |
 

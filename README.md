@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.27.4`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.27.5`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -219,8 +219,8 @@ srd-builder uses two version numbers:
 Bump the package version with:
 
 ```bash
-python scripts/bump_version.py 0.27.4          # commit + tag locally
-python scripts/bump_version.py 0.27.4 --no-commit   # preview only
+python scripts/bump_version.py 0.27.5          # commit + tag locally
+python scripts/bump_version.py 0.27.5 --no-commit   # preview only
 ```
 
 See [docs/ARCHITECTURE.md § Version Management](docs/ARCHITECTURE.md) for the policy.
@@ -267,7 +267,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.4** — Equipment page-constants drift fixed + cross-extractor audit. `extract_equipment.py` was 0-indexed where the other 3 per-dataset extractors are 1-indexed, and its `EQUIPMENT_END_PAGE = 72` was off by one — silently dropping PDF page 74 (Services / Lifestyle / Spellcasting Services tables) on every build, hidden because that page's content was hand-curated in `equipment_descriptions.py` `LIFESTYLE_DESCRIPTIONS`. Constants harmonized to 1-indexed (`62`–`74`, matching `PAGE_INDEX["equipment"]`); 8 silently-dropped rows now extracted (Bread loaf, Inn-stay tiers, Skilled hireling, Messenger, Ship's passage, etc.). New parametrized audit test `test_extractor_page_constants_agree_with_page_index` pins all 4 extractors against canonical `PAGE_INDEX` so future drift fails CI; +4 new test assertions (464 passed). The originally-planned `Document.get_toc()` lookup was investigated and abandoned — the SRD PDF's TOC only exposes 2 file-level entries with no section anchors, so `PAGE_INDEX` is the source of truth instead.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.5** — `equipment_packs.py` retired (P6 cutover): 323-line hand-curated `EQUIPMENT_PACKS` literal replaced by live `extract_equipment_packs.py`. Parser walks PDF page 70 with a pack-header regex (`{Name}'s Pack (N gp).`) and a section-end sentinel (`Tools\nA tool helps`), splits each `Includes …` clause on `, ` / ` and ` boundaries, and resolves each token through a small typed `_PHRASE_TO_ITEM` table mapping the SRD's exact prose phrase to a stable `item_id` and a quantity rule. Trailing "50 feet of hempen rope" sentence handled; curly-apostrophe (U+2019) normalized to ASCII at output. 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) vs. retired literal. `assemble_equipment_from_tables` now takes an `equipment_packs=` kwarg; `build.py` calls `extract_equipment_packs()` once and threads the result. Closes the v0.27.x retirement line at ~2,458 lines deleted; PROVENANCE shrinks 4 → 3 active entries; +21 new test assertions (485 passed).
 
 Key milestones:
 
@@ -279,6 +279,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.27.5** — `equipment_packs.py` retired (P6 cutover): 323-line `EQUIPMENT_PACKS` literal replaced by live `extract_equipment_packs.py`; pack-header regex + `_PHRASE_TO_ITEM` resolution table + trailing-rope sentence handling yield 7-for-7 byte-perfect parity (name, cost_gp, description, contents); curly-apostrophe normalized to ASCII at output; `assemble_equipment_from_tables` takes `equipment_packs=` kwarg; closes v0.27.x retirement line at ~2,458 lines deleted; PROVENANCE 4 → 3 active; 485 passed
 - **v0.27.4** — Equipment page-constants drift fixed + cross-extractor audit: `EQUIPMENT_START_PAGE` / `EQUIPMENT_END_PAGE` harmonized from 0-indexed `61`–`72` to 1-indexed `62`–`74` (matching `PAGE_INDEX["equipment"]`); 8 silently-dropped rows from PDF page 74 (Services / Lifestyle tables) now extracted; new parametrized audit test `test_extractor_page_constants_agree_with_page_index` pins all 4 per-dataset extractors against canonical `PAGE_INDEX`; +4 new test assertions (464 passed)
 - **v0.27.3** — `poison_descriptions.py` retired (P4 cutover): 129-line hand-curated `POISON_DESCRIPTIONS` replaced by live `parse_poison_descriptions.py`; damage regex extended to `tak(?:es?|ing)` unblocks 4 delayed-damage poisons; description header strip + `type_id` emit yield 14/14 byte-perfect parity; PROVENANCE shrinks 5 → 4; v0.27.x line concludes at ~2,135 lines deleted
 - **v0.27.2** — `class_targets.py` retired (P3 cutover): five-step `extract_classes.py` replaces the 763-line hand-curated `CLASS_DATA`; `parse_classes()` / `parse_features()` take `class_data=` kwargs; bbox-aware progression walk handles newspaper layouts + duplicate columns + apostrophe/hyphen heals; 4 genuinely-unextractable cells reproducer-pinned

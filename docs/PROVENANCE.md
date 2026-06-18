@@ -27,9 +27,7 @@ this file is the *current state*.
 
 ## Status at a glance
 
-8 historical hand-curated sources. 4 retired in the v0.27.x line.
-1 disputed (`equipment_packs.py` — page 70 reproducer added 2026-06-18,
-proves extractable; parser TODO).
+8 historical hand-curated sources. 5 retired in the v0.27.x line.
 1 awaiting reproducer (`equipment_descriptions.py`, low-priority).
 1 structural drift fixed and pinned by audit test in v0.27.4.
 
@@ -40,7 +38,7 @@ proves extractable; parser TODO).
 | `class_targets.py` | 763 | ✅ **RETIRED v0.27.2 P3** | ✓ | [`extract_classes.py`](../src/srd_builder/extract/datasets/extract_classes.py) | **Better** — caught one transcription error (Monk L4 ordering); 4 silently-fabricated cells now reproducer-pinned overrides | — |
 | `poison_descriptions.py` | 129 | ✅ **RETIRED v0.27.3** | ✓ | [`parse_poison_descriptions.py`](../src/srd_builder/parse/parse_poison_descriptions.py) returns clean 14/14 with byte-perfect description/save/damage parity | **Equivalent** — 14/14 perfect match against legacy POISON_DESCRIPTIONS dict | — |
 | `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
-| `equipment_packs.py` | 323 | 🟡 **DISPUTED** (reproducer added v0.27.x) | ✓ | none (parser pending) | (Page 70 prose fully extractable — all 7 packs + costs + comma-separated contents survive whitespace normalization) | Parser to convert prose contents lists into structured `(item_id, quantity)` records |
+| `equipment_packs.py` | 323 | ✅ **RETIRED v0.27.5 P6** | ✓ | [`extract_equipment_packs.py`](../src/srd_builder/extract/datasets/extract_equipment_packs.py) | **Equivalent** — 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) against the retired EQUIPMENT_PACKS literal | — |
 | `equipment_descriptions.py` | 398 | ⬜ **LIVE** | **TODO** | none | (Unverified — pp. 66–68 prose likely extractable like other prose sections) | No reproducer yet |
 | `extract_equipment.py` page constants | 2 | ✅ **RESOLVED v0.27.4** | ✓ | Constants harmonized to 1-indexed; PDF page 74 (Services / Lifestyle tables) now extracted | Bug-fix — 8 dropped rows recovered | — |
 
@@ -131,19 +129,18 @@ a failed save"` phrasing.
 | Reproducer | N/A (records flagged in source by `_note` field; should be promoted to structured `_provenance` block per BACKLOG.md proposal 2) |
 | Downstream | `dist/srd_5_1/equipment.json` (12 records with `_note`) |
 
-### `equipment_packs.py` — EQUIPMENT_PACKS
+### `equipment_packs.py` — EQUIPMENT_PACKS  *(retired in v0.27.5)*
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/assemble/equipment_packs.py](../src/srd_builder/assemble/equipment_packs.py) |
-| Scope | 7 equipment packs, item-by-item contents (item_id, quantity) |
-| Reason (was) | `pdf_missing` |
-| Status | 🟡 **DISPUTED** — reproducer added; the `pdf_missing` rationale is disproven for the pack section. All 7 pack headers (`Burglar’s Pack (16 gp).`, `Diplomat’s Pack (39 gp).`, …, `Scholar’s Pack (40 gp).`) and their comma-separated SRD contents prose are recovered cleanly from PDF page 70 under standard whitespace normalization. The hand-curated `EQUIPMENT_PACKS` literal can be retired by a parser that splits the prose section on the pack headers and tokenizes each `Includes …` clause. |
+| Status | **RETIRED** in v0.27.5 — replaced by [src/srd_builder/extract/datasets/extract_equipment_packs.py](../src/srd_builder/extract/datasets/extract_equipment_packs.py) |
+| Scope (was) | 7 equipment packs, item-by-item contents (item_id, quantity), pack costs, descriptive prose (~323 lines) |
+| Original reason | `pdf_missing` — **disproven** in v0.27.x reproducer (PDF page 70 prose fully extractable: all 7 pack headers and their comma-separated `Includes …` contents clauses recovered cleanly under standard whitespace normalization) |
 | PDF pages | 70 |
-| Last verified | 2026-06-18 |
 | Reproducer | [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_section_header_extractable](../tests/test_pdf_provenance.py), [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_pack_header_extractable](../tests/test_pdf_provenance.py) (parametrized × 7), [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_contents_extractable](../tests/test_pdf_provenance.py) (parametrized × 7 with distinctive multi-word signature phrases) |
-| Open work | Parser — split the page-70 prose on the seven `‘s Pack (N gp). Includes ` anchors; tokenize each contents clause on `, ` / ` and ` boundaries; normalize each phrase to an `item_id` via the existing `normalize_id` machinery; handle the trailing "The pack also has 50 feet of hempen rope strapped to the side of it" sentence (Burglar’s, Dungeoneer’s, Explorer’s); achieve byte-perfect parity with the retired `EQUIPMENT_PACKS` literal. |
-| Downstream | `dist/srd_5_1/equipment.json` (pack records) |
+| Live extractor tests | [tests/test_equipment_packs.py](../tests/test_equipment_packs.py) (11 tests: 7-for-7 byte-perfect parity on `(item_id, quantity)` lists, pack-summary snapshot, meta block, description shape, and integration check against built `equipment.json`) |
+| Notes | Parser walks page 70 with `_PACK_HEADER_RE` (`{Name}’s Pack (N gp).`) and `_SECTION_END_RE` ("Tools\nA tool helps"), then splits each `Includes …` clause on `, ` / ` and ` boundaries. Each token is resolved via a small typed `_PHRASE_TO_ITEM` table that maps the SRD's exact prose phrase (e.g., `"a backpack"`, `"5 candles"`, `"a bag of 1,000 ball bearings"`) to a stable `item_id` and a quantity rule (parsed leading digit, or `qty_override=1` for N-bound phrases like "10 feet of string" where the digit is part of item identity). The trailing "The pack also has 50 feet of hempen rope strapped to the side of it" sentence (Burglar’s, Dungeoneer’s, Explorer’s) is handled by appending `("item:rope_hempen_50_feet", 1)` after the `Includes` list. The U+2019 curly apostrophe in the SRD is normalized to ASCII `'` at the extractor output boundary so the assembler keys (`Burglar's Pack`) match the rest of the dataset. `assemble_equipment_from_tables(parsed_tables, ruleset, *, equipment_packs=None)` now takes the extracted packs as a kwarg; `_assemble_equipment_packs` iterates the parameter list and contains inline private `_calculate_pack_weight` and `_validate_pack_contents` helpers. `build.py` calls `extract_equipment_packs(pdf_files[0])["packs"]` once and threads the result through. |
+| Downstream | `dist/srd_5_1/equipment.json` (7 pack records under `sub_category == "equipment_pack"`) |
 
 ### `equipment_descriptions.py` — *_DESCRIPTIONS
 
@@ -182,30 +179,59 @@ a failed save"` phrasing.
   should carry an optional `_provenance` block (TODO: promote
   `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
 
-## Cumulative finding (v0.26.0 → v0.27.4)
+## Cumulative finding (v0.26.0 → v0.27.5)
 
-Four "PDF text is corrupted" claims were made by the original
-hand-curated modules. All four have been disproven by mechanical
-reproducer tests under pymupdf 1.27.x with standard whitespace
-normalization (see [`utils.pdf_probe`](../src/srd_builder/utils/pdf_probe.py)):
+Four "PDF text is corrupted" claims and one "PDF missing" claim were
+made by the original hand-curated modules. All five have been
+disproven by mechanical reproducer tests under pymupdf 1.27.x with
+standard whitespace normalization (see
+[`utils.pdf_probe`](../src/srd_builder/utils/pdf_probe.py)):
 
-| Claim | Disproven in | Outcome |
-| --- | --- | --- |
-| Lineages corrupted (pp. 3–7) | v0.26.0 | Retired in v0.27.0 P1 |
-| Spell-lists corrupted (pp. 105–113) | v0.26.1 | Retired in v0.27.0 P2 |
-| Class pages corrupted (pp. 8–55) | v0.27.0 P3 (probe) | Retired in v0.27.2 P3 (cutover) |
-| Poison pages corrupted (pp. 204–205) | v0.27.1 | Retired in v0.27.3 (damage-formula parser extended; 14/14 byte-perfect parity) |
+| Claim | Original reason | Disproven in | Outcome |
+| --- | --- | --- | --- |
+| Lineages corrupted (pp. 3–7) | `pdf_corruption` | v0.26.0 | Retired in v0.27.0 P1 |
+| Spell-lists corrupted (pp. 105–113) | `pdf_corruption` | v0.26.1 | Retired in v0.27.0 P2 |
+| Class pages corrupted (pp. 8–55) | `pdf_missing` | v0.27.0 P3 (probe) | Retired in v0.27.2 P3 (cutover) |
+| Poison pages corrupted (pp. 204–205) | `pdf_corruption` | v0.27.1 | Retired in v0.27.3 (damage-formula parser extended; 14/14 byte-perfect parity) |
+| Equipment packs missing (p. 70) | `pdf_missing` | v0.27.5 reproducer | Retired in v0.27.5 P6 (7-for-7 byte-perfect parity) |
 
-In addition, v0.27.4 closed a fifth, structural finding: the equipment
+In addition, v0.27.4 closed a sixth, structural finding: the equipment
 extractor was silently dropping PDF page 74 due to an inherited
 0-indexed `EQUIPMENT_END_PAGE = 72` constant. Harmonized to 1-indexed
 and pinned by `test_extractor_page_constants_agree_with_page_index`
 (parametrized across equipment, spells, magic_items, conditions).
 
-Net result of the v0.27.x line: ~2,135 lines of hand-curated Python
+Net result of the v0.27.x line: ~2,458 lines of hand-curated Python
 data deleted (326 lineages + 917 spell_classes + 763 classes + 129
-poisons), 2 silent transcription errors corrected, 4 silently-
-fabricated cell values now pinned by reproducer tests, and 1 silent
-page-drop bug (8 rows / PDF page 74) recovered. The "PDF
-corrupted" rationale should be treated as a hypothesis until a
-reproducer fails — see `AGENTS.md` § *PDF extraction discipline*.
+poisons + 323 equipment_packs), 2 silent transcription errors
+corrected, 4 silently-fabricated cell values now pinned by reproducer
+tests, and 1 silent page-drop bug (8 rows / PDF page 74) recovered.
+The "PDF corrupted" / "PDF missing" rationales should be treated as
+hypotheses until a reproducer fails — see `AGENTS.md` § *PDF extraction
+discipline*.
+
+## Data quality — session-level summary (v0.27.x line)
+
+This section captures the *measurable* quality difference between the
+start of the v0.27.x line and the close of v0.27.5, for use as
+release-note input and as evidence that the "declare corrupted,
+transcribe by hand" pattern was a quiet correctness liability.
+
+| Axis | Before v0.27.0 | After v0.27.5 |
+| --- | --- | --- |
+| Hand-curated `*_targets.py` / `*_descriptions.py` / `EQUIPMENT_PACKS` lines on the source-of-truth path | ~2,458 (lineages 326 + spell_classes 917 + classes 763 + poisons 129 + equipment_packs 323) | 0 |
+| "PDF corrupted/missing" claims in the codebase | 5 unverified | 0 — all disproven by reproducers |
+| Silent transcription errors | unknown (not detectable without a reproducer) | 2 corrected (`Lightfoot Halfling` → `Lightfoot`; Monk L4 feature ordering) |
+| Silently-fabricated dataset cells | 4 (class progression) | 0 — all 4 pinned by `_PROGRESSION_FIXES` reproducer-backed overrides |
+| Silently-dropped PDF rows | 8 (entire PDF page 74 of equipment) | 0 — recovered in v0.27.4, audit test parametrized across all four per-dataset extractors |
+| Audit infrastructure | None — page constants, transcription, and "corruption" claims were unchecked | Parametrized cross-extractor page-constants test pinning all 4 extractors to `PAGE_INDEX`; per-region reproducer tests in [tests/test_pdf_provenance.py](../tests/test_pdf_provenance.py) |
+| Test count | 460 (v0.27.0 baseline) | 485 (v0.27.5) |
+| Source of truth for PDF page ranges | Module-level constants, mixed 0-/1-indexed conventions across 4 extractors | `PAGE_INDEX` ([src/srd_builder/utils/page_index.py](../src/srd_builder/utils/page_index.py)) is the sole source; constants in extractors are pinned by audit test |
+| TOC-based page lookup | Considered as alternative | Abandoned — SRD PDF's `Document.get_toc()` returns only 2 file-level entries, so it is unusable as a region map |
+
+The headline trade is favorable: ~2,458 lines of opaque hand-curated
+Python replaced by ~1,200 lines of reproducer-pinned extractors and
+parsers (see `extract_lineages.py`, `extract_spell_classes.py`,
+`extract_classes.py`, `parse_poison_descriptions.py`,
+`extract_equipment_packs.py`), every one of which fails loudly on
+upstream PDF drift. That is the property the legacy literals never had.
