@@ -56,6 +56,16 @@ def _parse_single_description(raw: dict[str, Any]) -> dict[str, Any] | None:
     # Generate simple_name
     simple_name = normalize_id(name)
 
+    # Strip the leading section header "Name (Type). " from the prose body so
+    # the description starts with the rules text, matching the prior
+    # hand-curated POISON_DESCRIPTIONS shape.
+    header_match = re.match(
+        rf"\s*{re.escape(name)}\s*\([A-Za-z]+\)\.\s*",
+        text,
+    )
+    if header_match:
+        text = text[header_match.end() :]
+
     result: dict[str, Any] = {
         "simple_name": simple_name,
         "description": text,
@@ -67,13 +77,23 @@ def _parse_single_description(raw: dict[str, Any]) -> dict[str, Any] | None:
     if save_match:
         result["save"] = {"dc": int(save_match.group(1)), "ability": save_match.group(2).lower()}
 
-    # Extract damage if present (e.g., "takes 6 (1d12) poison damage")
-    damage_match = re.search(r"takes?\s+(\d+)\s*\(([^)]+)\)\s+(\w+)\s+damage", text, re.IGNORECASE)
+    # Extract damage if present. Covers all three SRD poison phrasings:
+    #   "takes 6 (1d12) poison damage"          (assassin's blood)
+    #   "take 10 (3d6) poison damage"           (burnt othur fumes, pale tincture)
+    #   "taking 24 (7d6) poison damage on a failed save"  (midnight tears,
+    #       purple worm poison, serpent venom, wyvern poison)
+    damage_match = re.search(
+        r"tak(?:es?|ing)\s+(\d+)\s*\(([^)]+)\)\s+(\w+)\s+damage",
+        text,
+        re.IGNORECASE,
+    )
     if damage_match:
+        damage_type = damage_match.group(3).lower()
         result["damage"] = {
             "average": int(damage_match.group(1)),
             "formula": damage_match.group(2),
-            "type": damage_match.group(3).lower(),
+            "type": damage_type,
+            "type_id": f"damage:{damage_type}",
         }
 
     return result

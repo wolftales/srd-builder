@@ -1,15 +1,8 @@
 """Parse poison table data into individual poison item records.
 
 This module takes raw poison table rows from table extraction
-and returns individual poison items (equipment-style records).
-
-KNOWN LIMITATION (DISPUTED v0.27.1): Poison descriptions are merged in
-from rulesets/srd_5_1/poison_descriptions.py. The PDF "corruption"
-claim is disproven — see docs/PROVENANCE.md and the reproducer test
-in tests/test_pdf_provenance.py. The real blocker is bugs in the
-upstream prose section splitter (drops `assassin's blood`, over-greedy
-on `malice` and `torpor`); once those are fixed the manual file can be
-deleted.
+and merges them with descriptions parsed live from the PDF prose
+(see ``parse_poison_descriptions``).
 """
 
 from __future__ import annotations
@@ -19,7 +12,6 @@ from typing import Any
 
 from ..constants import RULESETS
 from ..postprocess import normalize_id
-from ..rulesets.srd_5_1.poison_descriptions import POISON_DESCRIPTIONS
 
 
 def parse_poisons_table(
@@ -72,14 +64,8 @@ def parse_poisons_table(
                 "cost": cost,
             }
 
-            # Merge description fields
-            # Use manual descriptions (PDF pages 204-205 have corrupted text)
-            desc_data = {}
-            if simple_name in POISON_DESCRIPTIONS:
-                desc_data = POISON_DESCRIPTIONS[simple_name]
-            elif simple_name in descriptions_map:
-                # Fallback to extracted if manual not available (for future use)
-                desc_data = descriptions_map[simple_name]
+            # Merge description fields parsed live from PDF prose.
+            desc_data = descriptions_map.get(simple_name, {})
 
             # Merge fields into poison record
             if desc_data:
