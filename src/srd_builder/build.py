@@ -22,6 +22,7 @@ from .assemble.assemble_prose import assemble_prose_dataset
 from .assemble.indexer import build_indexes
 from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMAS_DIRNAME
 from .extract import extract_tables_to_json
+from .extract.datasets.extract_classes import extract_classes
 from .extract.datasets.extract_equipment import extract_equipment
 from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
 from .extract.datasets.extract_lineages import extract_lineages
@@ -1135,6 +1136,7 @@ def build(  # noqa: C901
     pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
     lineage_data: list[dict[str, Any]] = []
     parsed_lineages: list[dict[str, Any]] = []
+    class_data: list[dict[str, Any]] = []
     spell_classes_map: dict[str, list[str]] = {}
     if pdf_files:
         try:
@@ -1143,14 +1145,17 @@ def build(  # noqa: C901
         except Exception as exc:
             print(f"⚠️ Lineage extraction skipped: {exc}")
         try:
+            class_data = extract_classes(pdf_files[0])["classes"]
+        except Exception as exc:
+            print(f"⚠️ Class extraction skipped: {exc}")
+        try:
             class_spells = extract_spell_classes(pdf_files[0])["class_spells"]
             spell_classes_map = build_spell_to_classes_map(class_spells)
         except Exception as exc:
             print(f"⚠️ Spell-class extraction skipped: {exc}")
 
-    # Parse classes (v0.8.2)
-    # Classes come from canonical targets, not PDF extraction
-    parsed_classes = parse_classes(ruleset)
+    # Parse classes (v0.8.2; live PDF extraction since v0.27.x)
+    parsed_classes = parse_classes(class_data, ruleset) if class_data else []
 
     # Parse ability_scores (v0.20.0)
     # Ability scores are game constants (6 core abilities: STR, DEX, CON, INT, WIS, CHA)
@@ -1179,7 +1184,12 @@ def build(  # noqa: C901
         try:
             print(f"Extracting features from {pdf_files[0].name}...")
             raw_class_features = extract_class_features(pdf_files[0])
-            class_features = parse_features(raw_class_features, "class", ruleset=ruleset)
+            class_features = parse_features(
+                raw_class_features,
+                "class",
+                ruleset=ruleset,
+                class_data=class_data,
+            )
 
             raw_lineage_traits = extract_lineage_traits(pdf_files[0])
             lineage_traits = parse_features(

@@ -27,17 +27,18 @@ this file is the *current state*.
 
 ## Registry
 
-### `class_targets.py` — CLASS_DATA
+### `class_targets.py` — CLASS_DATA  *(retired in v0.27.x P3)*
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/rulesets/srd_5_1/class_targets.py](../src/srd_builder/rulesets/srd_5_1/class_targets.py) |
-| Scope | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, pages, 20-level progression (~763 lines) |
-| Reason | **DISPUTED** — original claim was `pdf_missing` / "manually transcribed via visual inspection," but verification (v0.27.0) shows pages 8–55 are fully extractable after whitespace normalization |
+| Status | **RETIRED** in v0.27.x — replaced by [src/srd_builder/extract/datasets/extract_classes.py](../src/srd_builder/extract/datasets/extract_classes.py) |
+| Scope (was) | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, pages, 20-level progression (~763 lines) |
+| Original reason | `pdf_missing` / "manually transcribed via visual inspection" — **disproven** (v0.27.0 P3 reproducer confirmed all class-page text extractable after whitespace normalization) |
 | PDF pages | 8–55 |
-| Last verified | v0.27.0 |
 | Reproducer | [tests/test_pdf_provenance.py::test_class_pages_are_extractable_after_whitespace_normalization](../tests/test_pdf_provenance.py) |
-| Notes | Same finding as lineages (retired v0.27.0 P1) and spell_class_targets (retired v0.27.0 P2): all 12 class names, 15 sampled well-known features (Rage, Spellcasting, Sneak Attack, Action Surge, Wild Shape, Lay on Hands, Divine Sense, Favored Enemy, Cunning Action, Sorcerous Origin, Pact Magic, Arcane Recovery, Bardic Inspiration, Channel Divinity), and the standard section headers (Hit Points, Proficiencies, Equipment, Primal Path, Bard College, Divine Domain) are all present in pages 8–55. **Retirement is more involved than spell lists** — CLASS_DATA's structured payload (proficiencies dict with armor/weapons/tools/skills, feature-ID lists, subclass mapping, 20-level progression) is significantly richer than a flat spell list, so a real `extract_classes.py` will need a larger font-fingerprint + table walk. The probe only confirms the text is present; it does not yet replace the module. |
+| Live extractor tests | [tests/test_extract_classes.py](../tests/test_extract_classes.py) (72 assertions across discovery + 5 field groups + 20-level progression coverage) |
+| Snapshot fixture | [tests/fixtures/srd_5_1/class_targets_snapshot.json](../tests/fixtures/srd_5_1/class_targets_snapshot.json) — preserved as a deterministic reference for the extractor; built from the retired CLASS_DATA with PDF-fidelity corrections applied (e.g., Monk L4 features reordered to PDF order) |
+| Notes | Five-step extractor (discovery → hit_die + abilities + proficiencies → features + subclasses → spellcasting → progression). The progression step uses a bbox-aware Features column walk that locates the Calibri-Bold header, clusters level cells by x (handles barbarian's two-column newspaper layout), filters out warlock's "Slot Level" duplicate column, and post-processes cells with hyphen/apostrophe heals. Four genuinely-unextractable cells (barbarian L11 "Relentless Rage", ranger L8 "Land's Stride", rogue L10 "Ability Score Improvement", wizard L20 "Signature Spells") are filled by `_PROGRESSION_FIXES`, each pinned by a `page.search_for()` reproducer in `test_class_progression_truncations_are_real`. `parse_classes()` and `parse_features()` now take `class_data=` parameters; `build.py` calls `extract_classes(pdf_files[0])["classes"]` once and threads the result into both. |
 | Downstream | `dist/srd_5_1/classes.json`, `dist/srd_5_1/features.json` (owner resolution) |
 
 ### `lineage_targets.py` — LINEAGE_DATA  *(retired in v0.27.0)*
@@ -139,21 +140,23 @@ this file is the *current state*.
   should carry an optional `_provenance` block (TODO: promote
   `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
 
-## Status snapshot (2026-06-17, v0.26.1)
+## Status snapshot (v0.27.x P3)
 
-- 8 registered sources
-- 2 reproducer-backed (lineages, spell_class_targets — both **dispute**
-  the original corruption claim; both retire-able in v0.27.0)
-- 6 awaiting reproducer
-- 0 fully retired
+- 8 registered sources (historical), 3 retired (`lineage_targets`,
+  `spell_class_targets`, `class_targets`)
+- 1 disputed but live (`poison_descriptions` — extraction works;
+  delayed-damage parser still blocks)
+- 4 awaiting reproducer
 
-### Cumulative finding (v0.26.0 → v0.26.1)
+### Cumulative finding (v0.26.0 → v0.27.x)
 
-The lineage reproducer (v0.26.0) and the spell-class reproducer
-(v0.26.1) **both** disprove the "PDF text is corrupted" claim under
-pymupdf 1.27.x with standard whitespace normalization (see
-`utils.pdf_probe`). That covers two of the three hand-curated modules
-that used the corruption rationale. The implicit corruption rationale
-on `class_targets.py` is the next candidate to probe — once verified,
-the registry shrinks from 8 sources to 5 in v0.27.0 by writing real
-parsers on top of `utils.pdf_probe` + `PAGE_INDEX`.
+The lineage reproducer (v0.26.0), the spell-class reproducer (v0.26.1),
+and the class-pages reproducer (v0.27.0 P3) **all** disprove the
+"PDF text is corrupted" claim under pymupdf 1.27.x with standard
+whitespace normalization (see `utils.pdf_probe`). All three of the
+hand-curated modules that used the corruption rationale have now been
+replaced by extractors built on top of `utils.pdf_probe` + `PAGE_INDEX`:
+`extract_lineages.py` (v0.27.0 P1), `extract_spell_classes.py`
+(v0.27.0 P2), and `extract_classes.py` (v0.27.x P3, five-step pipeline
+discovery → hit_die/abilities/proficiencies → features/subclasses →
+spellcasting → bbox-aware progression walk).

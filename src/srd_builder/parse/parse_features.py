@@ -11,7 +11,6 @@ from typing import Any
 
 from srd_builder.constants import RULESETS
 from srd_builder.postprocess.ids import normalize_id
-from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
 
 _WHITESPACE_RE = re.compile(r"\s+")
 
@@ -21,6 +20,7 @@ def parse_features(
     source_type: str = "class",
     *,
     ruleset: str,
+    class_data: list[dict[str, Any]] | None = None,
     lineage_data: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Parse raw feature data into structured feature records.
@@ -29,6 +29,10 @@ def parse_features(
         raw_features: Raw features from extract_features()
         source_type: "class" or "lineage" for appropriate ID prefix
         ruleset: Ruleset identifier used to stamp source_id on each record.
+        class_data: ``classes`` list from
+            :func:`extract_classes.extract_classes`. Required when
+            ``source_type == "class"`` so owner-resolution can match
+            extracted feature names against the canonical class sequence.
         lineage_data: ``lineages`` list from
             :func:`extract_lineages.extract_lineages`. Required when
             ``source_type == "lineage"`` so owner-resolution can match
@@ -37,6 +41,8 @@ def parse_features(
     Returns:
         List of structured feature dicts matching feature schema
     """
+    if source_type == "class" and class_data is None:
+        raise ValueError("parse_features(source_type='class') requires class_data")
     if source_type == "lineage" and lineage_data is None:
         raise ValueError("parse_features(source_type='lineage') requires lineage_data")
     source = RULESETS[ruleset]["source_id"]
@@ -57,7 +63,12 @@ def parse_features(
             }
         )
 
-    owners = _resolve_owners(accepted, source_type, lineage_data=lineage_data)
+    owners = _resolve_owners(
+        accepted,
+        source_type,
+        class_data=class_data,
+        lineage_data=lineage_data,
+    )
 
     features: list[dict[str, Any]] = []
     for entry, (owner_kind, owner_simple) in zip(accepted, owners, strict=True):
@@ -147,12 +158,13 @@ def _resolve_owners(
     entries: list[dict[str, Any]],
     source_type: str,
     *,
+    class_data: list[dict[str, Any]] | None = None,
     lineage_data: list[dict[str, Any]] | None = None,
 ) -> list[tuple[str, str | None]]:
     """Assign ``(owner_kind, owner_simple)`` to each accepted feature.
 
     Algorithm: walk extracted features in PDF order, maintaining a cursor
-    over the canonical owner sequence (CLASS_DATA / LINEAGE_DATA). For
+    over the canonical owner sequence (class_data / lineage_data). For
     each feature:
 
     * Build the set of owners whose curated feature list contains this
@@ -166,7 +178,8 @@ def _resolve_owners(
       duplicate IDs).
     """
     if source_type == "class":
-        expected = _build_class_expected_sequence()
+        assert class_data is not None  # checked in parse_features
+        expected = _build_class_expected_sequence(class_data)
         kind = "class"
     elif source_type == "lineage":
         assert lineage_data is not None  # checked in parse_features
@@ -235,16 +248,19 @@ def _resolve_owners(
 
 
 # Features that appear in many classes' PDF sections but are not
-# consistently listed in CLASS_DATA (e.g., "Ability Score Improvement"
-# is only declared in cleric's features list, yet every class section
-# in the SRD reprints it). When the resolver encounters one of these
-# the current owner is preserved instead of advancing the cursor.
+# consistently listed in extracted class_data (e.g., "Ability Score
+# Improvement" is only declared in cleric's features list, yet every
+# class section in the SRD reprints it). When the resolver encounters
+# one of these the current owner is preserved instead of advancing the
+# cursor.
 _UNIVERSAL_FEATURES: frozenset[str] = frozenset({"ability_score_improvement"})
 
 
-def _build_class_expected_sequence() -> list[tuple[str, str]]:
-    """Flatten CLASS_DATA into ``[(class_simple, feature_simple), ...]``."""
-    ordered = sorted(CLASS_DATA, key=lambda c: c["page"])
+def _build_class_expected_sequence(
+    class_data: list[dict[str, Any]],
+) -> list[tuple[str, str]]:
+    """Flatten ``class_data`` into ``[(class_simple, feature_simple), ...]``."""
+    ordered = sorted(class_data, key=lambda c: c["page"])
     out: list[tuple[str, str]] = []
     for cls in ordered:
         owner = cls["simple_name"]

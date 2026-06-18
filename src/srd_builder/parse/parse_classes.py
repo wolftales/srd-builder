@@ -1,7 +1,8 @@
-"""Parse class data from canonical targets into validated records.
+"""Parse class data from extracted PDF records into validated records.
 
 GUARDRAILS: Pure parsing/mapping only (no I/O/logging)
-BOUNDARIES: Transforms CLASS_DATA → structured records with metadata
+BOUNDARIES: Transforms extract_classes() output → structured records
+            with metadata.
 
 NOTE: Each class references its progression table (e.g., table:barbarian_progression)
       These tables contain level-by-level features, abilities, and class-specific values.
@@ -14,13 +15,21 @@ from __future__ import annotations
 from typing import Any
 
 from srd_builder.constants import RULESETS
-from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
 
 
-def parse_classes(ruleset: str) -> list[dict[str, Any]]:
-    """Parse all classes from canonical target data.
+def parse_classes(
+    class_data: list[dict[str, Any]],
+    ruleset: str,
+) -> list[dict[str, Any]]:
+    """Parse all classes from extracted PDF records.
 
     Args:
+        class_data: ``classes`` list from
+            :func:`srd_builder.extract.datasets.extract_classes.extract_classes`.
+            Each dict carries the same shape the legacy ``CLASS_DATA``
+            constant exposed (simple_name, name, hit_die, primary_abilities,
+            saving_throw_proficiencies, proficiencies, features, subclasses,
+            progression, page, plus optional spellcasting/equipment).
         ruleset: Ruleset identifier (e.g., 'srd_5_1') used to stamp
             the canonical source_id on each record.
 
@@ -30,18 +39,18 @@ def parse_classes(ruleset: str) -> list[dict[str, Any]]:
     """
     classes: list[dict[str, Any]] = []
 
-    for class_data in CLASS_DATA:
-        class_record = _build_class_record(class_data, ruleset)
+    for entry in class_data:
+        class_record = _build_class_record(entry, ruleset)
         classes.append(class_record)
 
     return classes
 
 
 def _build_class_record(data: dict[str, Any], ruleset: str) -> dict[str, Any]:
-    """Build a complete class record from target data.
+    """Build a complete class record from extracted target data.
 
     Args:
-        data: Class data from CLASS_DATA
+        data: Single class dict from extract_classes()["classes"].
         ruleset: Ruleset identifier for source_id lookup.
 
     Returns:

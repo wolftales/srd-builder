@@ -2,97 +2,30 @@
 
 Captured ideas not yet scheduled. Pull items into a release plan as priorities allow.
 
-## Next up: v0.27.0 — Retire the largest hand-curated surfaces
+## Completed: v0.27.x — Retire the largest hand-curated surfaces
 
-Now that v0.26.2 has consolidated the codebase structure (one `extract/`
-home, one ruleset-data home, `RULESETS` registry threaded everywhere),
-v0.27.0 returns to the work flagged by the v0.26.0 + v0.26.1 reproducer
-tests: replace hand-curated lineage and spell-class data with real
-PDF extraction.
+All three priorities planned for v0.27.x have shipped. ~2,000 lines of
+hand-curated Python data deleted in total:
 
-**Why this is the right next milestone:** two reproducer tests already
-prove the source PDF is fully extractable for the regions the manual
-data claims are "corrupted." Together those two files are ~888 lines
-(spell_class_targets) + ~700 lines (lineage_targets) ≈ **1,400 lines of
-hand-curated data** wired into every spell record and every lineage /
-features.json owner resolution. Replacing them shrinks the
-`PROVENANCE.md` registry from 8 entries to 4–5 and removes the largest
-silent-drift risk in the bundle.
+- **P1 — `lineage_targets.py` (326 lines, v0.27.0)** — replaced by
+  [src/srd_builder/extract/datasets/extract_lineages.py](src/srd_builder/extract/datasets/extract_lineages.py).
+- **P2 — `spell_class_targets.py` (917 lines, v0.27.0)** — replaced by
+  [src/srd_builder/extract/datasets/extract_spell_classes.py](src/srd_builder/extract/datasets/extract_spell_classes.py).
+- **P3 — `class_targets.py` (763 lines, v0.27.x)** — replaced by
+  [src/srd_builder/extract/datasets/extract_classes.py](src/srd_builder/extract/datasets/extract_classes.py).
+  Five-step pipeline (discovery → hit_die+abilities+proficiencies →
+  features+subclasses → spellcasting → bbox-aware progression walk).
+  `parse_classes()` and `parse_features()` now take `class_data=` kwargs;
+  `build.py` calls `extract_classes()` once and threads the result.
 
-### Scope
-
-**Priority 1 — `extract_lineages.py` (lowest risk, reproducer already passes)**
-- Build `src/srd_builder/extract/datasets/extract_lineages.py` on top of
-  `utils.pdf_probe` + `PAGE_INDEX["lineages"]` (pp. 3–7).
-- Parse all 9 base lineages + subraces: name, ability_modifiers, size,
-  speed, traits, languages, pages.
-- Output shape: `rulesets/srd_5_1/raw/lineages_raw.json` matching what
-  `LINEAGE_DATA` currently provides to `parse_lineages.py` and
-  `parse_features.py` (owner resolution).
-- Delete `src/srd_builder/rulesets/srd_5_1/lineage_targets.py` once
-  `parse_lineages.py` + `parse_features.py` consume the raw file.
-- Remove the PROVENANCE entry.
-- Golden test: `tests/test_golden_lineages.py` should keep passing
-  byte-for-byte against the existing normalized fixture.
-
-**Priority 2 — `extract_spell_classes.py` (highest payoff)**
-- Build `src/srd_builder/extract/datasets/extract_spell_classes.py` on top
-  of `utils.pdf_probe` + `PAGE_INDEX["spell_lists"]` (pp. 105–113).
-- Parse all 8 class spell lists into a `{class_name: [spell_simple_name]}`
-  raw structure.
-- Output: `rulesets/srd_5_1/raw/spell_classes_raw.json`.
-- Update `postprocess/spells.py` (`clean_spell_record`) to consume the
-  raw file instead of importing from `spell_class_targets.py`.
-- Delete `src/srd_builder/rulesets/srd_5_1/spell_class_targets.py`
-  (~888 lines).
-- Remove the PROVENANCE entry.
-- Golden test: `tests/test_golden_spells.py` must keep passing — every
-  spell's `classes` field must be identical.
-
-**Priority 3 — `class_targets.py` features list probe (exploratory)**
-- Add reproducer test that asserts the features-list portion of pp. 8–55
-  is extractable using the same `pdf_probe` + whitespace-normalization
-  pattern.
-- If extraction succeeds → write `extract_classes.py` (at minimum for
-  the features lists; the structured fields like hit_die, proficiencies
-  may stay manual if their PDF layout proves layout-sensitive).
-- If extraction fails for documented reasons → upgrade the PROVENANCE
-  entry from vague "manually transcribed" to a specific reproducer-backed
-  exception. Either result is a win.
-
-### Out of scope for v0.27.0
-
-- Multi-ruleset support (`srd_5_2_1/` directory). The `RULESETS` registry
-  is ready, but no second ruleset is queued.
-- `equipment_packs.py` / `equipment_descriptions.py` extraction. Lower
-  payoff than the lineage/spell-class work; defer to v0.28.0 or pre-v1.0
-  audit.
-- Schema bumps. None planned; all changes are at the extractor + raw-file
-  layer.
-
-### Success criteria
-
-- `docs/PROVENANCE.md` registry: 8 entries → 4–5 entries.
-- ~1,400 lines of hand-curated Python data deleted.
-- All golden tests still green byte-for-byte.
-- New reproducer tests for any remaining "PDF corruption" claim, per
-  AGENTS.md PDF extraction discipline.
-- `parse_features.py` owner resolution still works (this is the most
-  delicate consumer of `LINEAGE_DATA` — covered by `test_golden_features.py`).
-
-### Risks / known unknowns
-
-- **Layout-driven extraction.** Spell lists are multi-column per class.
-  If a naive top-to-bottom text walk produces wrong column ordering,
-  may need coordinate-aware extraction (PyMuPDF's `get_text("dict")`
-  with bbox). Same fix pattern equipment originally needed.
-- **Subrace nesting.** Lineages have parent/subrace structure that
-  `LINEAGE_DATA` flattens into a specific shape. The extractor must
-  preserve that shape (or update `parse_lineages.py` simultaneously).
-- **Page constants in `extract_*.py`** still hardcoded. The BACKLOG
-  "Hardcoded values" section says these should come from `PAGE_INDEX`
-  via TOC verification — possibly worth doing as Phase 0 of v0.27.0
-  since the new extractors will need page lookups anyway.
+Result: `PROVENANCE.md` registry shrank from 8 → 5 active hand-curated
+entries. The remaining LIVE-but-disputed entry is
+[src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](src/srd_builder/rulesets/srd_5_1/poison_descriptions.py)
+— pages 204–205 are extractable (v0.27.1 verified), but full retirement
+is gated by the live damage-formula parser not yet recognising the
+"taking X poison damage on a failed save" phrasing used by 4 of the 14
+poisons. Once the parser is taught the delayed-damage phrase the manual
+file can be deleted with no other code change.
 
 ---
 
@@ -161,13 +94,14 @@ or surfaced to downstream consumers.
 
 ### Inventory of hand-curated sources
 
-Wiring column verified via `grep_search` on 2026-06-17. `LIVE` = imported by
+Wiring column verified via `grep_search` on 2026-06-17 and re-verified in
+v0.27.x P3 after `class_targets.py` was retired. `LIVE` = imported by
 `build.py` / `parse/` / `postprocess/` / `assemble/`. `DEAD` = no callers in
 `src/srd_builder/` (only archived code or tests reference it).
 
 | Module | Wiring | Scope | Declared reason | Concerns |
 | --- | --- | --- | --- | --- |
-| [src/srd_builder/rulesets/srd_5_1/class_targets.py](src/srd_builder/rulesets/srd_5_1/class_targets.py) | **LIVE** — `parse_classes.py`, `parse_features.py` | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers, 20-level progression | "Manually transcribed via visual inspection" (pp. 8–55) — **DISPUTED v0.27.0** (class-pages reproducer passes; 33/33 keywords extracted) | Retirement deferred from v0.27.0 because the structural payload (proficiencies dict, feature-ID lists, subclass mapping, 20-level progression) is significantly richer than a flat spell list. A real `extract_classes.py` will need a larger font-fingerprint + table walk than P1/P2 did. |
+| ~~`src/srd_builder/rulesets/srd_5_1/class_targets.py`~~ | **DELETED v0.27.x P3** | (was all 12 classes, 763 lines: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers, 20-level progression) | "Manually transcribed via visual inspection" (pp. 8–55) — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_classes.py](src/srd_builder/extract/datasets/extract_classes.py) — five-step pipeline (discovery → hit_die+abilities+proficiencies → features+subclasses → spellcasting → bbox-aware progression walk). Snapshot parity for all 12 classes × 20 levels = 240 rows; 4 genuinely-unextractable cells (barbarian L11, ranger L8, rogue L10, wizard L20) filled by `_PROGRESSION_FIXES`, each pinned by a `page.search_for()` reproducer. `parse_classes()` and `parse_features()` now take `class_data=` kwargs; `build.py` calls `extract_classes()` once and threads the result. Listed here for history. |
 | ~~`src/srd_builder/rulesets/srd_5_1/lineage_targets.py`~~ | **DELETED v0.27.0 P1** | (was all 9 lineages + 4 subraces, 326 lines) | "PDF text is corrupted; manually transcribed" — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_lineages.py](src/srd_builder/extract/datasets/extract_lineages.py) (font-fingerprint walk over pp. 3–7, +49 test assertions). Listed here for history. |
 | ~~`src/srd_builder/rulesets/srd_5_1/spell_class_targets.py`~~ | **DELETED v0.27.0 P2** | (was 917 lines, largest hand-curated surface) | "PDF text is corrupted; manually mapped" — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_spell_classes.py](src/srd_builder/extract/datasets/extract_spell_classes.py) — produced a byte-perfect 778-for-778 match against the retired `*_SPELLS` lists across all 8 caster classes. `clean_spell_record()` now takes an explicit `spell_classes_map=` kwarg. Listed here for history. |
 | [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) | **LIVE (with extraction fallback already wired)** — `parse_poisons_table.py:68` prefers manual, falls back to `parse_poison_descriptions` | Full prose + DC + damage for all 14 SRD poisons (~109 lines) | "Corrupted text on pages 204–205" — **DISPROVEN v0.27.1** (poison-pages reproducer passes; all 14 names + 5 DC values + mechanic keywords extracted) | **Splitter bugs fixed in v0.27.1**: `clean_text` smart-quote substitution was a source-mangled no-op (now uses explicit `\u20xx` escapes); `split_by_known_headers` gained a `start_marker=` kwarg so the splitter skips preamble price tables (set to `"Sample Poisons"` for this dataset); `"Assassin's Blood"` restored to `known_headers`; dead `POISON_DESCRIPTIONS["assassin's_blood"]` U+2019 key renamed to `"assassins_blood"`. Live extractor now returns clean 14/14. **Full retirement still gated** by the live damage-formula parser, which does not yet recognise the "taking X poison damage on a failed save" phrasing used by `midnight_tears`, `purple_worm_poison`, `serpent_venom`, and `wyvern_poison`. Once the parser is taught the delayed-damage phrase the manual file can be deleted with no other code change. |
