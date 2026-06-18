@@ -99,6 +99,14 @@ def regenerate_fixtures() -> None:
     )
     from srd_builder.utils.metadata import meta_block, read_schema_version
 
+    # Spell→classes map snapshot (lets us bump fixtures without re-running
+    # the live PDF extractor). Built in v0.27.0 to replace the retired
+    # rulesets/srd_5_1/spell_class_targets.py.
+    _spell_classes_snapshot = json.loads(
+        Path("tests/fixtures/srd_5_1/spell_class_targets_snapshot.json").read_text(encoding="utf-8")
+    )
+    _spell_classes_map: dict[str, list[str]] = _spell_classes_snapshot["spell_classes"]
+
     fixtures = [
         # Original 3 datasets
         {
@@ -128,7 +136,7 @@ def regenerate_fixtures() -> None:
             "normalized": "tests/fixtures/srd_5_1/normalized/spells.json",
             "output_key": "items",
             "process": lambda raw: [
-                clean_spell_record(item)
+                clean_spell_record(item, spell_classes_map=_spell_classes_map)
                 for item in parse_spell_records(
                     raw["spells"]
                     if isinstance(raw, dict) and "spells" in raw

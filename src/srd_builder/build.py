@@ -29,6 +29,10 @@ from .extract.datasets.extract_magic_items import extract_magic_items
 from .extract.datasets.extract_monsters import extract_monsters
 from .extract.datasets.extract_pdf_metadata import extract_pdf_metadata
 from .extract.datasets.extract_rules import extract_rules
+from .extract.datasets.extract_spell_classes import (
+    build_spell_to_classes_map,
+    extract_spell_classes,
+)
 from .extract.datasets.extract_spells import extract_spells
 from .extract.extraction_metadata import TABLES
 from .parse.parse_ability_scores import parse_ability_scores
@@ -123,6 +127,7 @@ def _write_datasets(  # noqa: PLR0913
     poisons: dict[str, Any] | None = None,  # Prose dataset document
     features: dict[str, Any] | None = None,  # Prose dataset document
     rules: list[dict[str, Any]] | None = None,
+    spell_classes_map: dict[str, list[str]] | None = None,
 ) -> None:
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
@@ -166,7 +171,9 @@ def _write_datasets(  # noqa: PLR0913
     # Write spells (always write, even if empty, to maintain consistent structure)
     processed_spells = None
     if spells is not None:
-        processed_spells = [clean_spell_record(spell) for spell in spells]
+        processed_spells = [
+            clean_spell_record(spell, spell_classes_map=spell_classes_map) for spell in spells
+        ]
     else:
         processed_spells = []
 
@@ -1128,12 +1135,18 @@ def build(  # noqa: C901
     pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
     lineage_data: list[dict[str, Any]] = []
     parsed_lineages: list[dict[str, Any]] = []
+    spell_classes_map: dict[str, list[str]] = {}
     if pdf_files:
         try:
             lineage_data = extract_lineages(pdf_files[0])["lineages"]
             parsed_lineages = parse_lineages(lineage_data)
         except Exception as exc:
             print(f"⚠️ Lineage extraction skipped: {exc}")
+        try:
+            class_spells = extract_spell_classes(pdf_files[0])["class_spells"]
+            spell_classes_map = build_spell_to_classes_map(class_spells)
+        except Exception as exc:
+            print(f"⚠️ Spell-class extraction skipped: {exc}")
 
     # Parse classes (v0.8.2)
     # Classes come from canonical targets, not PDF extraction
@@ -1289,6 +1302,7 @@ def build(  # noqa: C901
         poisons=poisons_doc if poisons_doc else None,
         features=features_doc if features_doc else None,
         rules=parsed_rules if parsed_rules else None,
+        spell_classes_map=spell_classes_map or None,
     )
 
     # Read PDF hash from pdf_meta.json (if present)

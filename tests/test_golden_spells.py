@@ -34,7 +34,10 @@ def test_spell_dataset_matches_normalized_fixture() -> None:
         spells_raw = [spells_raw]
 
     parsed = parse_spell_records(spells_raw)
-    processed = [clean_spell_record(spell) for spell in parsed]
+
+    snapshot_path = Path("tests/fixtures/srd_5_1/spell_class_targets_snapshot.json")
+    spell_classes_map = json.loads(snapshot_path.read_text(encoding="utf-8"))["spell_classes"]
+    processed = [clean_spell_record(spell, spell_classes_map=spell_classes_map) for spell in parsed]
 
     document = {"_meta": meta_block("srd_5_1", read_schema_version("spell")), "items": processed}
 

@@ -52,18 +52,19 @@ this file is the *current state*.
 | Notes | The SRD PDF uses `\t\r\xa0` (tab + CR + non-breaking space) sequences as word separators; the original "manually transcribed via visual inspection" claim was likely true against an older PyMuPDF, but under pymupdf 1.27.x the data was readable. Extractor walks pages 3–7 by font fingerprint (18pt = race, 12pt G-SB = subrace, 9.8pt Cambria-BoldItalic + period = trait header). One deliberate PDF-fidelity correction: the legacy data called the Halfling subrace "Lightfoot Halfling" but the PDF heading literally reads "Lightfoot". |
 | Downstream | `dist/srd_5_1/lineages.json`, `dist/srd_5_1/features.json` (lineage-owned features) |
 
-### `spell_class_targets.py` — *_SPELLS lists
+### `spell_class_targets.py` — *_SPELLS lists  *(retired in v0.27.0)*
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/rulesets/srd_5_1/spell_class_targets.py](../src/srd_builder/rulesets/srd_5_1/spell_class_targets.py) |
-| Scope | Spell→class mapping for all 8 caster classes (~888 lines, wired into every spell record) |
-| Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (2026-06-17) shows pages 105–113 are fully extractable after whitespace normalization |
+| Status | **RETIRED** in v0.27.0 — replaced by [src/srd_builder/extract/datasets/extract_spell_classes.py](../src/srd_builder/extract/datasets/extract_spell_classes.py) |
+| Scope (was) | Spell→class mapping for all 8 caster classes (~917 lines, wired into every spell record) |
+| Original reason | `pdf_corruption` (disputed 2026-06-17, disproven during v0.27.0 cutover — 778-for-778 byte-perfect match between extractor and the hand-curated `*_SPELLS` lists across all 8 classes) |
 | PDF pages | 105–113 |
-| Last verified | 2026-06-17 |
 | Reproducer | [tests/test_pdf_provenance.py::test_spell_lists_pages_class_headers_are_extractable](../tests/test_pdf_provenance.py) |
-| Notes | Same finding as lineages: under pymupdf 1.27.x with the standard `\t\r\xa0` whitespace normalization (see `utils.pdf_probe`), all 8 class section headers (Bard Spells, Cleric Spells, Druid Spells, Paladin Spells, Ranger Spells, Sorcerer Spells, Warlock Spells, Wizard Spells) AND a sampling of well-known spells (Vicious Mockery, Sacred Flame, Druidcraft, Eldritch Blast, Fire Bolt) appear in the page range. **This is the largest hand-curated surface in the project (~888 lines) and a strong retirement candidate for v0.27.0.** A real `extract_spell_classes.py` on top of `utils.pdf_probe` + `PAGE_INDEX["spell_lists"]` should replace it. |
-| Downstream | `dist/srd_5_1/spells.json` (every record's `classes` field, set by `postprocess/spells.py`) |
+| Live extractor tests | [tests/test_extract_spell_classes.py](../tests/test_extract_spell_classes.py) (12 assertions; per-class set equality pinned against snapshot) |
+| Snapshot fixture | [tests/fixtures/srd_5_1/spell_class_targets_snapshot.json](../tests/fixtures/srd_5_1/spell_class_targets_snapshot.json) — preserved as a deterministic reference for `bump_version.py` and `test_golden_spells.py` (avoids forcing them to re-run the live extractor on every fixture refresh) |
+| Notes | Detection rules: 13.9pt GillSans-SemiBold = class header (`Bard Spells`, …, `Wizard Spells`); 12pt G-SB = level header (skipped); 9.8pt Cambria = spell name (`normalize_id` applied). 18pt G-SB "Spell Lists" and 10.5–11.0pt page-number/footer runs are skipped. `clean_spell_record()` now takes an explicit `spell_classes_map=` keyword (default `None` → no `classes` field attached) instead of importing a module-level lookup. |
+| Downstream | `dist/srd_5_1/spells.json` (every record's `classes` field, attached by `postprocess/spells.py`) |
 
 ### `poison_descriptions_manual.py` — POISON_DESCRIPTIONS
 
