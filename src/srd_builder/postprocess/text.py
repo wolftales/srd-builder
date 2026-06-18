@@ -45,12 +45,15 @@ def clean_text(text: str) -> str:
     text = text.replace("‑", "-")
     text = text.replace("–", "-")  # en-dash
     text = text.replace("—", "--")  # em-dash
-    text = text.replace("'", "'")  # smart quotes
-    text = text.replace(
-        """, '"')
-    text = text.replace(""",
-        '"',
-    )
+    # Smart quotes → ASCII. The previous form `text.replace("'", "'")` was
+    # source-mangled (both sides ASCII U+0027) and silently became a no-op;
+    # use explicit Unicode escapes so the substitution is unambiguous and
+    # cannot regress through a future copy-paste through a smart-quote system.
+    text = text.replace("\u2018", "'")  # left single quotation mark
+    text = text.replace("\u2019", "'")  # right single quotation mark
+    text = text.replace("\u201b", "'")  # single high-reversed-9 quotation mark
+    text = text.replace("\u201c", '"')  # left double quotation mark
+    text = text.replace("\u201d", '"')  # right double quotation mark
 
     # Normalize all whitespace sequences to single space
     text = re.sub(r"\s+", " ", text)

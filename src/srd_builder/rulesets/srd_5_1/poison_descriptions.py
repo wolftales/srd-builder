@@ -6,21 +6,29 @@ tests/test_pdf_provenance.py::test_poison_pages_are_extractable_after_whitespace
 which shows all 14 poison names and standard mechanic keywords appear
 in pages 204–205 after whitespace normalization. The text is fine.
 
-What still blocks retirement is the upstream *prose section splitter*
-used by parse_poison_description_records, not PDF readability:
-  * 'assassin's blood' is dropped entirely (the U+2019 fancy apostrophe
-    in the heading defeats the section detector)
-  * 'malice' description absorbs ~2000 chars from neighboring sections
-  * 'torpor' description absorbs ~3700 chars
+The upstream splitter bugs noted in earlier revisions of this docstring
+were fixed in v0.27.2 by:
+  * `utils.postprocess.text.clean_text` now correctly normalizes
+    U+2019/U+2018 → ASCII apostrophe (the prior form was a source-mangled
+    no-op).
+  * `utils.prose.split_by_known_headers` now accepts a `start_marker`
+    that the poison_descriptions config sets to "Sample Poisons" so the
+    splitter skips the price-table preamble that previously trapped it
+    on `Malice` / `Torpor` rows at the top of page 204.
+  * `extract.extraction_metadata.TABLES["poison_descriptions"]` now
+    includes `Assassin's Blood` in `known_headers`.
 
-parse_poisons_table.py already prefers POISON_DESCRIPTIONS over the
-live extractor and falls back to the live extractor otherwise, so once
-the section splitter is fixed this file can be deleted with no other
-code change.
+The live extractor now returns all 14 sections with clean text. This
+file is kept as the source of truth for poison damage formulas because
+the live parser does not yet recognize the "taking X poison damage on
+a failed save" pattern used by midnight_tears, purple_worm_poison,
+serpent_venom, etc. Retirement is gated on parser improvements, not on
+extraction. `parse_poisons_table.py` prefers POISON_DESCRIPTIONS and
+falls back to the live extractor.
 """
 
 POISON_DESCRIPTIONS = {
-    "assassin's_blood": {  # Note: Uses fancy apostrophe from PDF
+    "assassins_blood": {
         "description": "A creature subjected to this poison must make a DC 10 Constitution saving throw. On a failed save, it takes 6 (1d12) poison damage and is poisoned for 24 hours. On a successful save, the creature takes half damage and isn't poisoned.",
         "save": {"dc": 10, "ability": "constitution"},
         "damage": {

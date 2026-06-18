@@ -123,6 +123,7 @@ def _extract_raw_sections(pdf_path: Path, config: dict[str, Any]) -> dict[str, A
         known_headers=config.get("known_headers", []),
         start_page=start_page,
         end_page=end_page,
+        start_marker=config.get("start_marker"),
     )
 
     # Extract sections (already returns list of dicts)

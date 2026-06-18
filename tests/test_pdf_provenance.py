@@ -275,21 +275,17 @@ def test_poison_pages_are_extractable_after_whitespace_normalization() -> None:
     "Poisons" appear in pages 204–205 after the standard whitespace
     normalization. They do — every one.
 
-    **However, retirement is NOT a straight cutover.** The live
-    `parse_poison_description_records` pipeline already exists and runs,
-    but the upstream prose section-splitter has bugs:
-
-    - The "assassin's blood" entry is dropped entirely (the fancy
-      apostrophe U+2019 in the heading appears to defeat the section
-      detector).
-    - The `malice` description absorbs ~2000 extra characters from
-      neighboring sections.
-    - The `torpor` description absorbs ~3700 extra characters.
-
-    Until the section splitter is fixed, the hand-curated
-    POISON_DESCRIPTIONS map remains correct behavior. PROVENANCE marks
-    the entry **DISPUTED** with this test as the truth probe; retirement
-    is gated on fixing the section splitter, not on PDF readability.
+    **Status (v0.27.2):** The upstream splitter bugs that originally
+    blocked retirement have been fixed in
+    ``utils.postprocess.text.clean_text`` (smart-quote normalization
+    was a source-mangled no-op) and ``utils.prose.split_by_known_headers``
+    (now accepts a ``start_marker`` so the splitter skips the price-table
+    preamble at the top of page 204). See
+    ``test_poison_descriptions_extract_all_14_sections_cleanly`` for the
+    end-to-end assertion. The hand-curated POISON_DESCRIPTIONS map is
+    still retained as the source of truth for poison damage formulas
+    until the parser learns the "taking X poison damage on a failed
+    save" pattern.
     """
     _require_pdf_and_fitz()
     from srd_builder.utils.pdf_probe import (
@@ -351,4 +347,82 @@ def test_poison_pages_are_extractable_after_whitespace_normalization() -> None:
     assert not missing_sections, (
         "Poison section header not found in pages 204–205 after "
         "whitespace normalization:\n  - " + "\n  - ".join(missing_sections)
+    )
+
+
+def test_poison_descriptions_extract_all_14_sections_cleanly() -> None:
+    """End-to-end regression for the v0.27.2 splitter + clean_text fix.
+
+    Before the fix:
+      * the splitter dropped "Assassin's Blood" entirely (excluded from
+        known_headers because the smart-quote no-op in clean_text made
+        the regex unmatchable);
+      * "Malice" locked onto its price-table row at the top of page 204
+        and absorbed ~2000 chars from neighbouring sections;
+      * "Torpor" did the same and absorbed ~3700 chars.
+
+    After the fix (``utils.postprocess.text.clean_text`` normalizes
+    U+2018/U+2019/U+201C/U+201D, and ``utils.prose.split_by_known_headers``
+    accepts a ``start_marker`` set to "Sample Poisons" in the
+    ``poison_descriptions`` config) the live extractor returns all 14
+    sections at description-shaped lengths.
+    """
+    _require_pdf_and_fitz()
+    from srd_builder.assemble.assemble_prose import assemble_prose_dataset
+    from srd_builder.parse.parse_poison_descriptions import (
+        parse_poison_description_records,
+    )
+
+    doc = assemble_prose_dataset(
+        "poison_descriptions",
+        SRD_5_1_PDF,
+        parse_poison_description_records,
+        "srd_5_1",
+    )
+    items = doc.get("poison_descriptions", doc.get("items", []))
+
+    expected_simple_names = {
+        "assassins_blood",
+        "burnt_othur_fumes",
+        "crawler_mucus",
+        "drow_poison",
+        "essence_of_ether",
+        "malice",
+        "midnight_tears",
+        "oil_of_taggit",
+        "pale_tincture",
+        "purple_worm_poison",
+        "serpent_venom",
+        "torpor",
+        "truth_serum",
+        "wyvern_poison",
+    }
+    got = {p["simple_name"] for p in items}
+    missing = expected_simple_names - got
+    extra = got - expected_simple_names
+    assert not missing, f"Poison descriptions missing from live extractor: {sorted(missing)}"
+    assert not extra, f"Unexpected poison descriptions from live extractor: {sorted(extra)}"
+
+    # Description length sanity: real poison descriptions in the SRD run
+    # 150–500 chars. Anything above 800 means a section absorbed the next
+    # one (the pre-fix malice/torpor regression).
+    over_long = [
+        (p["simple_name"], len(p.get("description") or ""))
+        for p in items
+        if len(p.get("description") or "") > 800
+    ]
+    assert not over_long, (
+        "Poison descriptions absorbed neighbouring sections "
+        "(>800 chars):\n  " + "\n  ".join(f"{n}: {ln} chars" for n, ln in over_long)
+    )
+
+    # Every section must have a Constitution save DC parsed out — that
+    # is the single uniform mechanic across all 14 SRD poisons.
+    missing_save = [p["simple_name"] for p in items if not (p.get("save") or {}).get("dc")]
+    assert not missing_save, "Poison descriptions missing parsed save DC:\n  - " + "\n  - ".join(
+        missing_save
+    )
+
+    assert doc.get("_meta", {}).get("warnings", []) == [], (
+        f"Poison description extractor produced warnings: {doc['_meta']['warnings']}"
     )

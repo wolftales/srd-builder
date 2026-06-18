@@ -1011,8 +1011,13 @@ TABLES: dict[str, dict[str, Any]] = {
         "pattern_type": "prose_section",
         "source": "srd",
         "pages": [204, 205],
+        # start_marker skips the price-table preamble at the top of page 204
+        # (rows like "Malice Inhaled 250 gp" / "Torpor Ingested 600 gp") that
+        # would otherwise capture the splitter ahead of the real body
+        # descriptions. See utils.prose.split_by_known_headers for details.
+        "start_marker": "Sample Poisons",
         "known_headers": [
-            # Note: "Assassin's Blood" not extractable (top of column, truncated in PDF text)
+            "Assassin's Blood",
             "Burnt Othur Fumes",
             "Crawler Mucus",
             "Drow Poison",

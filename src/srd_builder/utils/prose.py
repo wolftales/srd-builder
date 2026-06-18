@@ -103,7 +103,10 @@ def extract_level_effect_table(text: str) -> list[dict[str, str]]:
 
 
 def split_by_known_headers(
-    text: str, headers: list[str], validate_boundaries: bool = True
+    text: str,
+    headers: list[str],
+    validate_boundaries: bool = True,
+    start_marker: str | None = None,
 ) -> list[dict[str, Any]]:
     """Split text into sections using known headers as boundaries.
 
@@ -114,6 +117,15 @@ def split_by_known_headers(
         text: Full text to split
         headers: Ordered list of section headers
         validate_boundaries: If True, add warnings for cross-contamination
+        start_marker: Optional literal string. When provided, header search
+            begins only after the first occurrence of this marker. Use this
+            when the source text contains a preamble (e.g. a price table or
+            summary list) that repeats header words before the actual body
+            sections. The poison descriptions on SRD pages 204-205 are the
+            canonical case: a "Poisons" price table at the top of the column
+            contains "Malice" and "Torpor" as table entries before the
+            real "Sample Poisons" body headers, so the splitter would
+            otherwise lock onto the table row instead of the description.
 
     Returns:
         List of sections with name, raw_text, start_pos, end_pos, warnings (optional)
@@ -126,6 +138,12 @@ def split_by_known_headers(
     sections = []
     cleaned_text = clean_text(text)
 
+    search_offset = 0
+    if start_marker:
+        marker_match = re.search(re.escape(start_marker), cleaned_text)
+        if marker_match:
+            search_offset = marker_match.end()
+
     for i, header in enumerate(headers):
         # Find this header (word boundary to avoid partial matches)
         # Use case-sensitive matching to avoid matching references like
@@ -135,12 +153,12 @@ def split_by_known_headers(
         # Without case-sensitivity, "incapacitated" would incorrectly match the
         # "Incapacitated" header, causing Grappled section to be truncated
         pattern = rf"\b{re.escape(header)}\b"
-        match = re.search(pattern, cleaned_text)
+        match = re.search(pattern, cleaned_text[search_offset:])
 
         if not match:
             continue
 
-        start_pos = match.start()
+        start_pos = search_offset + match.start()
 
         # Find where next header starts (or end of text)
         end_pos = len(cleaned_text)
@@ -314,6 +332,7 @@ class ProseExtractor:
         known_headers: list[str],
         start_page: int,
         end_page: int,
+        start_marker: str | None = None,
     ):
         """Initialize extractor.
 
@@ -322,11 +341,15 @@ class ProseExtractor:
             known_headers: Ordered list of expected section headers
             start_page: Starting page (1-indexed)
             end_page: Ending page (1-indexed)
+            start_marker: Optional literal string passed to
+                ``split_by_known_headers`` to skip a preamble (e.g. a price
+                table) that repeats header words before the body sections.
         """
         self.section_name = section_name
         self.known_headers = known_headers
         self.start_page = start_page
         self.end_page = end_page
+        self.start_marker = start_marker
 
     def extract_from_pdf(self, pdf_path: Any) -> tuple[list[dict[str, Any]], list[str]]:
         """Extract sections from PDF with proper column handling.
@@ -354,7 +377,9 @@ class ProseExtractor:
             full_text = self._extract_text_with_columns(doc)
 
             # Split by headers
-            sections = split_by_known_headers(full_text, self.known_headers)
+            sections = split_by_known_headers(
+                full_text, self.known_headers, start_marker=self.start_marker
+            )
 
             # Check for missing sections
             warnings = []
