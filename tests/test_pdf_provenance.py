@@ -563,3 +563,129 @@ def test_extractor_page_constants_agree_with_page_index(
         f"{module_path}.{end_attr} = {end} "
         f"but PAGE_INDEX[{page_index_key!r}].end = {expected['end']}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Reproducer: equipment_packs.py — is PDF page 70 extractable?
+# ---------------------------------------------------------------------------
+#
+# src/srd_builder/assemble/equipment_packs.py (323 lines) hand-transcribes
+# all 7 SRD equipment packs (Burglar's, Diplomat's, Dungeoneer's,
+# Entertainer's, Explorer's, Priest's, Scholar's) with item-by-item
+# contents lists. The module header claims "Extracted from SRD 5.1
+# page 70" but no extractor exists; the data is a Python literal.
+#
+# Per AGENTS.md § "PDF extraction discipline (no magic wands)", we must
+# write a reproducer that proves the region is or is not extractable
+# before declaring the hand-curated module necessary.
+#
+# Result: page 70 yields all 7 pack headers + costs + comma-separated
+# contents prose under standard whitespace normalization. The pack
+# section is fully parseable — no PDF corruption.
+
+
+# Expected packs as they appear in the SRD prose on page 70.
+# Note the curly apostrophe (U+2019), not a straight ASCII apostrophe.
+_EXPECTED_PACKS: list[tuple[str, int]] = [
+    ("Burglar\u2019s Pack", 16),
+    ("Diplomat\u2019s Pack", 39),
+    ("Dungeoneer\u2019s Pack", 12),
+    ("Entertainer\u2019s Pack", 40),
+    ("Explorer\u2019s Pack", 10),
+    ("Priest\u2019s Pack", 19),
+    ("Scholar\u2019s Pack", 40),
+]
+
+
+def _load_page_70_text() -> str:
+    """Return whitespace-normalized text of SRD PDF page 70."""
+    from srd_builder.utils.page_index import PAGE_INDEX
+    from srd_builder.utils.pdf_probe import open_pdf, page_text
+
+    equipment_pages = PAGE_INDEX["equipment"]["pages"]
+    assert equipment_pages["start"] <= 70 <= equipment_pages["end"], (
+        "PAGE_INDEX['equipment'] no longer covers page 70 — update this test."
+    )
+
+    with open_pdf(SRD_5_1_PDF) as doc:
+        return page_text(doc, 69)  # 0-indexed: PDF page 70 → doc[69]
+
+
+def test_equipment_packs_pdf_page_70_section_header_extractable() -> None:
+    """The 'Equipment Packs' section header on PDF page 70 must be extractable.
+
+    This is the cheapest possible probe — if the section header itself is
+    missing, the page is in trouble and no parser can recover the data.
+    """
+    _require_pdf_and_fitz()
+    text = _load_page_70_text()
+    assert "Equipment Packs" in text, (
+        "'Equipment Packs' section header not found in page 70 text — "
+        "extraction is broken at the section level."
+    )
+
+
+@pytest.mark.parametrize(("pack_name", "cost_gp"), _EXPECTED_PACKS)
+def test_equipment_packs_pdf_page_70_pack_header_extractable(
+    pack_name: str,
+    cost_gp: int,
+) -> None:
+    """Each of the 7 SRD packs has its '{Name} ({cost} gp).' header on page 70.
+
+    This is the parser anchor: a regex like
+    r"(\\w+\u2019s Pack) \\((\\d+) gp\\)\\. Includes (.+?)(?=\\.\\s+\\w+\u2019s Pack|\\.\\s+Tools)"
+    can split the section into 7 (name, cost, contents-prose) tuples.
+    """
+    _require_pdf_and_fitz()
+    text = _load_page_70_text()
+    header = f"{pack_name} ({cost_gp} gp)."
+    assert header in text, (
+        f"Pack header {header!r} not found in page 70 text. The hand-curated "
+        f"{pack_name!r} entry in equipment_packs.py cannot be justified by "
+        f"'PDF corruption'; the parser just needs to be written."
+    )
+
+
+@pytest.mark.parametrize(
+    ("pack_name", "signature_items"),
+    [
+        # One distinctive multi-word phrase per pack, picked from the SRD
+        # contents list. If these phrases survive extraction, the full
+        # comma-separated contents list survives — a parser can split on
+        # ", " and recognize quantities like "10 pitons" / "2 flasks of oil".
+        ("Burglar\u2019s Pack", ["bag of 1,000 ball bearings", "10 pitons"]),
+        ("Diplomat\u2019s Pack", ["2 cases for maps and scrolls", "set of fine clothes"]),
+        ("Dungeoneer\u2019s Pack", ["10 torches", "10 days of rations"]),
+        ("Entertainer\u2019s Pack", ["2 costumes", "disguise kit"]),
+        ("Explorer\u2019s Pack", ["mess kit", "50 feet of hempen rope"]),
+        ("Priest\u2019s Pack", ["2 blocks of incense", "vestments"]),
+        ("Scholar\u2019s Pack", ["book of lore", "10 sheets of parchment"]),
+    ],
+)
+def test_equipment_packs_pdf_page_70_contents_extractable(
+    pack_name: str,
+    signature_items: list[str],
+) -> None:
+    """Each pack's distinctive contents phrases survive extraction on page 70.
+
+    The SRD lists pack contents as comma-separated prose immediately after
+    the '{Name} ({cost} gp). Includes ' header. If these signature phrases
+    survive whitespace normalization, the full contents list does too, and
+    a parser can split on ', ' / 'and ' to enumerate items with quantities.
+    """
+    _require_pdf_and_fitz()
+    text = _load_page_70_text()
+    # Anchor on the header so we know we're inside the right pack's prose.
+    pack_idx = text.find(pack_name)
+    assert pack_idx >= 0, (
+        f"Pack header {pack_name!r} missing — earlier test should have caught this."
+    )
+    # The pack's contents extend to the next pack header (or the 'Tools'
+    # section heading at the bottom of page 70).
+    after = text[pack_idx:]
+    for phrase in signature_items:
+        assert phrase in after, (
+            f"Signature phrase {phrase!r} not found inside the {pack_name} "
+            f"contents prose on page 70. If this fails, the parser-design "
+            f"assumption (comma-separated SRD prose) needs revisiting."
+        )

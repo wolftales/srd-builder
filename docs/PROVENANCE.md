@@ -28,7 +28,9 @@ this file is the *current state*.
 ## Status at a glance
 
 8 historical hand-curated sources. 4 retired in the v0.27.x line.
-2 awaiting reproducer (low-priority — equipment-related).
+1 disputed (`equipment_packs.py` — page 70 reproducer added 2026-06-18,
+proves extractable; parser TODO).
+1 awaiting reproducer (`equipment_descriptions.py`, low-priority).
 1 structural drift fixed and pinned by audit test in v0.27.4.
 
 | Source | Lines | Status | Reproducer | Live extractor | Quality vs. legacy | Blocker |
@@ -38,7 +40,7 @@ this file is the *current state*.
 | `class_targets.py` | 763 | ✅ **RETIRED v0.27.2 P3** | ✓ | [`extract_classes.py`](../src/srd_builder/extract/datasets/extract_classes.py) | **Better** — caught one transcription error (Monk L4 ordering); 4 silently-fabricated cells now reproducer-pinned overrides | — |
 | `poison_descriptions.py` | 129 | ✅ **RETIRED v0.27.3** | ✓ | [`parse_poison_descriptions.py`](../src/srd_builder/parse/parse_poison_descriptions.py) returns clean 14/14 with byte-perfect description/save/damage parity | **Equivalent** — 14/14 perfect match against legacy POISON_DESCRIPTIONS dict | — |
 | `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
-| `equipment_packs.py` | 323 | ⬜ **LIVE** | **TODO** | none | (Unverified — p. 70 pack table likely extractable; pre-v1.0 audit) | No reproducer yet |
+| `equipment_packs.py` | 323 | 🟡 **DISPUTED** (reproducer added v0.27.x) | ✓ | none (parser pending) | (Page 70 prose fully extractable — all 7 packs + costs + comma-separated contents survive whitespace normalization) | Parser to convert prose contents lists into structured `(item_id, quantity)` records |
 | `equipment_descriptions.py` | 398 | ⬜ **LIVE** | **TODO** | none | (Unverified — pp. 66–68 prose likely extractable like other prose sections) | No reproducer yet |
 | `extract_equipment.py` page constants | 2 | ✅ **RESOLVED v0.27.4** | ✓ | Constants harmonized to 1-indexed; PDF page 74 (Services / Lifestyle tables) now extracted | Bug-fix — 8 dropped rows recovered | — |
 
@@ -135,10 +137,12 @@ a failed save"` phrasing.
 | --- | --- |
 | Path | [src/srd_builder/assemble/equipment_packs.py](../src/srd_builder/assemble/equipment_packs.py) |
 | Scope | 7 equipment packs, item-by-item contents (item_id, quantity) |
-| Reason | `pdf_missing` |
+| Reason (was) | `pdf_missing` |
+| Status | 🟡 **DISPUTED** — reproducer added; the `pdf_missing` rationale is disproven for the pack section. All 7 pack headers (`Burglar’s Pack (16 gp).`, `Diplomat’s Pack (39 gp).`, …, `Scholar’s Pack (40 gp).`) and their comma-separated SRD contents prose are recovered cleanly from PDF page 70 under standard whitespace normalization. The hand-curated `EQUIPMENT_PACKS` literal can be retired by a parser that splits the prose section on the pack headers and tokenizes each `Includes …` clause. |
 | PDF pages | 70 |
-| Last verified | 2026-06-17 |
-| Reproducer | **TODO** — pack table on p. 70 should be extractable; revisit during pre-v1.0 audit |
+| Last verified | 2026-06-18 |
+| Reproducer | [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_section_header_extractable](../tests/test_pdf_provenance.py), [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_pack_header_extractable](../tests/test_pdf_provenance.py) (parametrized × 7), [tests/test_pdf_provenance.py::test_equipment_packs_pdf_page_70_contents_extractable](../tests/test_pdf_provenance.py) (parametrized × 7 with distinctive multi-word signature phrases) |
+| Open work | Parser — split the page-70 prose on the seven `‘s Pack (N gp). Includes ` anchors; tokenize each contents clause on `, ` / ` and ` boundaries; normalize each phrase to an `item_id` via the existing `normalize_id` machinery; handle the trailing "The pack also has 50 feet of hempen rope strapped to the side of it" sentence (Burglar’s, Dungeoneer’s, Explorer’s); achieve byte-perfect parity with the retired `EQUIPMENT_PACKS` literal. |
 | Downstream | `dist/srd_5_1/equipment.json` (pack records) |
 
 ### `equipment_descriptions.py` — *_DESCRIPTIONS
