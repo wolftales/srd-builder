@@ -4,8 +4,9 @@ Captured ideas not yet scheduled. Pull items into a release plan as priorities a
 
 ## Completed: v0.27.x — Retire the largest hand-curated surfaces
 
-All four priorities planned for v0.27.x have shipped. ~2,135 lines of
-hand-curated Python data deleted in total:
+Four planned retirements + one follow-on structural fix have shipped.
+~2,135 lines of hand-curated Python data deleted in total, plus a
+silent data-loss bug closed:
 
 - **P1 — `lineage_targets.py` (326 lines, v0.27.0)** — replaced by
   [src/srd_builder/extract/datasets/extract_lineages.py](src/srd_builder/extract/datasets/extract_lineages.py).
@@ -23,12 +24,21 @@ hand-curated Python data deleted in total:
   the four delayed-damage poisons; description header strip and `type_id`
   emission added; 14/14 byte-perfect parity vs. legacy `POISON_DESCRIPTIONS`.
   `parse_poisons_table.py` no longer imports the manual dict.
+- **P5 — `extract_equipment.py` page-constants drift (v0.27.4)** —
+  `EQUIPMENT_START_PAGE` / `EQUIPMENT_END_PAGE` were 0-indexed where the
+  other three per-dataset extractors are 1-indexed; the end constant was
+  off by one. Harmonized to 1-indexed (`62`–`74`, matching
+  `PAGE_INDEX["equipment"]`) which recovers 8 silently-dropped rows from
+  PDF page 74 (Bread loaf, Inn-stay tiers, Skilled hireling, Messenger,
+  Ship's passage, etc.). Pinned by new audit test
+  [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](tests/test_pdf_provenance.py),
+  parametrized across equipment, spells, magic_items, conditions.
 
 Result: `PROVENANCE.md` registry shrank from 8 → 4 active hand-curated
-entries. The remaining LIVE entries are equipment-related
-(`equipment_extended.py`, `equipment_packs.py`, `equipment_descriptions.py`)
-plus two `extract_equipment.py` page constants — lower-priority work
-awaiting reproducers and a TOC-based section lookup.
+entries (page-constants drift resolved separately). The remaining LIVE
+entries are equipment-related (`equipment_extended.py`,
+`equipment_packs.py`, `equipment_descriptions.py`) — lower-priority
+work awaiting reproducers.
 
 ---
 
@@ -112,7 +122,7 @@ v0.27.x P3 after `class_targets.py` was retired. `LIVE` = imported by
 | [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
 | [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | **LIVE** — `assemble_equipment.py:1019` | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. Real fix: pack contents should reference items by `simple_name` and synthesize IDs at assembly time via `normalize_id`. |
 | [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | **LIVE** — `assemble_equipment.py:1104` | Prose descriptions for adventure-gear / tools / armor / lifestyle items (pp. 66–68) | "Documented in the SRD" — but transcribed not extracted | Same pattern as packs. No assertion the prose actually appears verbatim in the PDF. |
-| [src/srd_builder/extract/datasets/extract_equipment.py](src/srd_builder/extract/datasets/extract_equipment.py) (lines 31–32) | **LIVE** | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` | Implicit | Magic numbers without TOC verification. Same risk for other extract_*.py page constants. |
+| [src/srd_builder/extract/datasets/extract_equipment.py](src/srd_builder/extract/datasets/extract_equipment.py) (lines 30–35) | **FIXED v0.27.4** | (was `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` — 0-indexed; end-1 silently dropped PDF page 74) | Harmonized to 1-indexed `62`–`74` matching `PAGE_INDEX["equipment"]`. Pinned by [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](tests/test_pdf_provenance.py) (parametrized across all 4 extractors). | Listed here for history. |
 
 ### Spectrum of legitimate exceptions vs. pollution
 
@@ -187,8 +197,14 @@ distinguish the two.
   generator in `postprocess/ids.py`) is the real lesson. Should not be
   possible at all: pack contents should reference items by `simple_name`
   and have IDs synthesized at assembly time.
-- `extract_equipment.py` `EQUIPMENT_START_PAGE` / `_END_PAGE` constants
-  should be replaced with TOC lookup once `verify_pdf_sections.py` lands.
+- ~~`extract_equipment.py` `EQUIPMENT_START_PAGE` / `_END_PAGE` constants
+  should be replaced with TOC lookup once `verify_pdf_sections.py` lands.~~
+  **DONE in v0.27.4** — the SRD PDF's `Document.get_toc()` only exposes
+  two file-level entries (no section anchors), so the TOC-lookup angle
+  was a dead end. Instead, constants are now pinned to
+  `PAGE_INDEX["equipment"]` via the parametrized
+  `test_extractor_page_constants_agree_with_page_index` audit, which
+  covers all four per-dataset extractors. Future drift fails CI.
 - **`docs/templates/` is incomplete and hand-maintained.** Only 5
   templates exist (equipment, lineage, monster, spell, table) vs. 16
   schemas in `schemas/`. The header comment says they're for "extraction

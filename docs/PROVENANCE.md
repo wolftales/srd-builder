@@ -28,7 +28,8 @@ this file is the *current state*.
 ## Status at a glance
 
 8 historical hand-curated sources. 4 retired in the v0.27.x line.
-3 awaiting reproducer (low-priority — equipment-related, structural).
+2 awaiting reproducer (low-priority — equipment-related).
+1 structural drift fixed and pinned by audit test in v0.27.4.
 
 | Source | Lines | Status | Reproducer | Live extractor | Quality vs. legacy | Blocker |
 | --- | ---: | --- | --- | --- | --- | --- |
@@ -39,7 +40,7 @@ this file is the *current state*.
 | `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
 | `equipment_packs.py` | 323 | ⬜ **LIVE** | **TODO** | none | (Unverified — p. 70 pack table likely extractable; pre-v1.0 audit) | No reproducer yet |
 | `equipment_descriptions.py` | 398 | ⬜ **LIVE** | **TODO** | none | (Unverified — pp. 66–68 prose likely extractable like other prose sections) | No reproducer yet |
-| `extract_equipment.py` page constants | 2 | ⬜ **LIVE** (constants) | **TODO** | N/A — would be replaced by TOC lookup | — | `scripts/verify_pdf_sections.py` + `Document.get_toc()` adoption |
+| `extract_equipment.py` page constants | 2 | ✅ **RESOLVED v0.27.4** | ✓ | Constants harmonized to 1-indexed; PDF page 74 (Services / Lifestyle tables) now extracted | Bug-fix — 8 dropped rows recovered | — |
 
 ### What "Better" means here
 
@@ -152,16 +153,18 @@ a failed save"` phrasing.
 | Reproducer | **TODO** — prose is in SRD body text, should be extractable like other prose sections |
 | Downstream | `dist/srd_5_1/equipment.json` (description fields on adventure-gear records) |
 
-### `extract_equipment.py` — page constants
+### `extract_equipment.py` — page constants  *(resolved in v0.27.4)*
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/extract/datasets/extract_equipment.py](../src/srd_builder/extract/datasets/extract_equipment.py) (lines 31–32) |
-| Scope | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` |
-| Reason | `cross_reference_glue` (anchors for extraction range) |
-| PDF pages | 62–73 (1-indexed SRD labels — note constants use 0-indexed PyMuPDF) |
-| Last verified | 2026-06-17 |
-| Reproducer | **TODO** — replace with TOC lookup via `fitz.Document.get_toc()` once `scripts/verify_pdf_sections.py` lands (BACKLOG.md "Section / structural verification") |
+| Status | **RESOLVED** in v0.27.4 — constants harmonized to the same 1-indexed PDF page convention used by `extract_spells.py`, `extract_magic_items.py`, and `extract_conditions.py`. End constant corrected from `72` (which dropped PDF page 74) to `74` (matching `PAGE_INDEX["equipment"]`). |
+| Path | [src/srd_builder/extract/datasets/extract_equipment.py](../src/srd_builder/extract/datasets/extract_equipment.py) (lines 30–35) |
+| Scope (was) | `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` (0-indexed; iteration `range(start, end+1)` covered PyMuPDF pages 61–72 = PDF pages 62–73, silently dropping PDF page 74 with the Services / Lifestyle / Spellcasting Services tables) |
+| Scope (now) | `EQUIPMENT_START_PAGE = 62`, `EQUIPMENT_END_PAGE = 74` (1-indexed; iteration `range(start - 1, end)` covers PyMuPDF pages 61–73 = PDF pages 62–74) |
+| PDF pages | 62–74 (matches `PAGE_INDEX["equipment"]`) |
+| Reason for original drift | The other three per-dataset extractors were written to a 1-indexed convention and pulled their range from a `dataclass` config; `extract_equipment.py` was written earlier against module-level 0-indexed constants and never reconciled. The off-by-one on the end constant was invisible because the dropped page's content was hand-curated in [`equipment_descriptions.py`](../src/srd_builder/assemble/equipment_descriptions.py) `LIFESTYLE_DESCRIPTIONS`. |
+| Audit test | [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](../tests/test_pdf_provenance.py) — parametrized across all four extractors; fails if any extractor's `(START, END)` constants drift from `PAGE_INDEX`. |
+| Newly captured | 8 additional rows from PDF page 74 (Bread loaf, Inn-stay tiers, Skilled hireling, Messenger, Ship's passage, etc.). Hand-curated `LIFESTYLE_DESCRIPTIONS` is no longer the sole source for that page, but is left in place pending the broader [`equipment_descriptions.py`](../src/srd_builder/assemble/equipment_descriptions.py) retirement (still TODO). |
 | Downstream | All equipment extraction |
 
 ## Process
@@ -175,7 +178,7 @@ a failed save"` phrasing.
   should carry an optional `_provenance` block (TODO: promote
   `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
 
-## Cumulative finding (v0.26.0 → v0.27.3)
+## Cumulative finding (v0.26.0 → v0.27.4)
 
 Four "PDF text is corrupted" claims were made by the original
 hand-curated modules. All four have been disproven by mechanical
@@ -189,9 +192,16 @@ normalization (see [`utils.pdf_probe`](../src/srd_builder/utils/pdf_probe.py)):
 | Class pages corrupted (pp. 8–55) | v0.27.0 P3 (probe) | Retired in v0.27.2 P3 (cutover) |
 | Poison pages corrupted (pp. 204–205) | v0.27.1 | Retired in v0.27.3 (damage-formula parser extended; 14/14 byte-perfect parity) |
 
+In addition, v0.27.4 closed a fifth, structural finding: the equipment
+extractor was silently dropping PDF page 74 due to an inherited
+0-indexed `EQUIPMENT_END_PAGE = 72` constant. Harmonized to 1-indexed
+and pinned by `test_extractor_page_constants_agree_with_page_index`
+(parametrized across equipment, spells, magic_items, conditions).
+
 Net result of the v0.27.x line: ~2,135 lines of hand-curated Python
 data deleted (326 lineages + 917 spell_classes + 763 classes + 129
 poisons), 2 silent transcription errors corrected, 4 silently-
-fabricated cell values now pinned by reproducer tests. The "PDF
+fabricated cell values now pinned by reproducer tests, and 1 silent
+page-drop bug (8 rows / PDF page 74) recovered. The "PDF
 corrupted" rationale should be treated as a hypothesis until a
 reproducer fails — see `AGENTS.md` § *PDF extraction discipline*.
