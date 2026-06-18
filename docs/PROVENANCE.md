@@ -32,11 +32,12 @@ this file is the *current state*.
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/rulesets/srd_5_1/class_targets.py](../src/srd_builder/rulesets/srd_5_1/class_targets.py) |
-| Scope | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, pages |
-| Reason | `pdf_missing` (preliminary — verify) |
+| Scope | All 12 classes: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, pages, 20-level progression (~763 lines) |
+| Reason | **DISPUTED** — original claim was `pdf_missing` / "manually transcribed via visual inspection," but verification (v0.27.0) shows pages 8–55 are fully extractable after whitespace normalization |
 | PDF pages | 8–55 |
-| Last verified | 2026-06-17 |
-| Reproducer | **TODO** — re-attempt extraction; comment claims visual transcription but no defect documented |
+| Last verified | v0.27.0 |
+| Reproducer | [tests/test_pdf_provenance.py::test_class_pages_are_extractable_after_whitespace_normalization](../tests/test_pdf_provenance.py) |
+| Notes | Same finding as lineages (retired v0.27.0 P1) and spell_class_targets (retired v0.27.0 P2): all 12 class names, 15 sampled well-known features (Rage, Spellcasting, Sneak Attack, Action Surge, Wild Shape, Lay on Hands, Divine Sense, Favored Enemy, Cunning Action, Sorcerous Origin, Pact Magic, Arcane Recovery, Bardic Inspiration, Channel Divinity), and the standard section headers (Hit Points, Proficiencies, Equipment, Primal Path, Bard College, Divine Domain) are all present in pages 8–55. **Retirement is more involved than spell lists** — CLASS_DATA's structured payload (proficiencies dict with armor/weapons/tools/skills, feature-ID lists, subclass mapping, 20-level progression) is significantly richer than a flat spell list, so a real `extract_classes.py` will need a larger font-fingerprint + table walk. The probe only confirms the text is present; it does not yet replace the module. |
 | Downstream | `dist/srd_5_1/classes.json`, `dist/srd_5_1/features.json` (owner resolution) |
 
 ### `lineage_targets.py` — LINEAGE_DATA  *(retired in v0.27.0)*
