@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.27.2`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.27.3`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -219,8 +219,8 @@ srd-builder uses two version numbers:
 Bump the package version with:
 
 ```bash
-python scripts/bump_version.py 0.27.2          # commit + tag locally
-python scripts/bump_version.py 0.27.2 --no-commit   # preview only
+python scripts/bump_version.py 0.27.3          # commit + tag locally
+python scripts/bump_version.py 0.27.3 --no-commit   # preview only
 ```
 
 See [docs/ARCHITECTURE.md § Version Management](docs/ARCHITECTURE.md) for the policy.
@@ -267,7 +267,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.2** — `class_targets.py` retired (P3 cutover): five-step extractor `extract_classes.py` (discovery → hit_die+abilities+proficiencies → features+subclasses → spellcasting → bbox-aware progression walk) replaces the 763-line hand-curated `CLASS_DATA`; `parse_classes()` and `parse_features()` now take `class_data=` kwargs; `build.py` calls `extract_classes()` once and threads the result; progression step uses a Calibri-Bold-anchored Features column walk that handles barbarian's two-column newspaper layout, filters out warlock's "Slot Level" duplicate column, and heals hyphen/apostrophe split spans; 4 genuinely-unextractable cells filled by `_PROGRESSION_FIXES`, each pinned by a `page.search_for()` reproducer; PROVENANCE registry shrinks 8 → 5 active entries; v0.27.x line concludes with ~2,000 lines of hand-curated data deleted across P1/P2/P3; +14 new test assertions (460 passed).
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.3** — `poison_descriptions.py` retired (P4 cutover): 129-line hand-curated `POISON_DESCRIPTIONS` dict replaced by the live `parse_poison_descriptions.py` extractor; damage-formula regex extended from `takes?` to `tak(?:es?|ing)` to cover all three SRD phrasings ("takes…", "take…", "taking… on a failed save"), unblocking the 4 delayed-damage poisons (`midnight_tears`, `purple_worm_poison`, `serpent_venom`, `wyvern_poison`); leading `"Name (Type). "` section header stripped from description body; `type_id` field emitted; `parse_poisons_table.py` no longer imports the manual dict; 14/14 byte-perfect parity vs. legacy on description/save/damage; PROVENANCE registry shrinks 5 → 4 active entries, closing the v0.27.x retirement line at ~2,135 lines of hand-curated data deleted; 460 passed (unchanged).
 
 Key milestones:
 
@@ -279,7 +279,8 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
-- **v0.27.2** — `class_targets.py` retired (P3 cutover): five-step `extract_classes.py` replaces the 763-line hand-curated `CLASS_DATA`; `parse_classes()` / `parse_features()` take `class_data=` kwargs; bbox-aware progression walk handles newspaper layouts + duplicate columns + apostrophe/hyphen heals; 4 genuinely-unextractable cells reproducer-pinned; v0.27.x line concludes with ~2,000 lines deleted across P1/P2/P3
+- **v0.27.3** — `poison_descriptions.py` retired (P4 cutover): 129-line hand-curated `POISON_DESCRIPTIONS` replaced by live `parse_poison_descriptions.py`; damage regex extended to `tak(?:es?|ing)` unblocks 4 delayed-damage poisons; description header strip + `type_id` emit yield 14/14 byte-perfect parity; PROVENANCE shrinks 5 → 4; v0.27.x line concludes at ~2,135 lines deleted
+- **v0.27.2** — `class_targets.py` retired (P3 cutover): five-step `extract_classes.py` replaces the 763-line hand-curated `CLASS_DATA`; `parse_classes()` / `parse_features()` take `class_data=` kwargs; bbox-aware progression walk handles newspaper layouts + duplicate columns + apostrophe/hyphen heals; 4 genuinely-unextractable cells reproducer-pinned
 - **v0.27.1** — Prose section splitter fix + poison probe: `clean_text` smart-quote substitution repaired (was source-mangled no-op); `split_by_known_headers` gained `start_marker=` to skip preamble tables; `malice`/`torpor` no longer absorb ~2000/~3700 extra chars; `"Assassin's Blood"` restored to poison `known_headers`; dead U+2019 key in `POISON_DESCRIPTIONS` renamed; live poison extractor now returns clean 14/14; 4th "PDF corruption" claim disproven with reproducer
 - **v0.27.0** — Hand-curated data retirement: `lineage_targets.py` (326 lines) replaced by live `extract_lineages.py` (P1); `spell_class_targets.py` (917 lines, byte-perfect 778-for-778 parity) replaced by `extract_spell_classes.py` (P2); `class_targets.py` reproducer added — text fully extractable, **DISPUTED** in PROVENANCE, retirement deferred (richer structural payload) (P3); `clean_spell_record()` now takes explicit `spell_classes_map=` kwarg; ~1,244 lines of hand-curated data deleted; +62 new test assertions
 - **v0.26.2** — Structural cleanup of attempt #2: `extraction/` → `extract/` (table engine + bespoke extractors unified); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; shared prose utilities moved to `utils/prose.py`; workspace dirname literals swept into constants; `RULESETS` registry introduced (replaces lone `DATA_SOURCE`); `ruleset` parameter threaded through every parser/assembler/extractor; `source` field normalized to canonical `"SRD_CC_v5.1"` (was `"SRD 5.1"`); `stamp_source()` helper centralizes source stamping; `bump_version.py` fixed to thread `ruleset` through fixture regen

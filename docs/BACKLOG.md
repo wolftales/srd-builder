@@ -4,28 +4,31 @@ Captured ideas not yet scheduled. Pull items into a release plan as priorities a
 
 ## Completed: v0.27.x — Retire the largest hand-curated surfaces
 
-All three priorities planned for v0.27.x have shipped. ~2,000 lines of
+All four priorities planned for v0.27.x have shipped. ~2,135 lines of
 hand-curated Python data deleted in total:
 
 - **P1 — `lineage_targets.py` (326 lines, v0.27.0)** — replaced by
   [src/srd_builder/extract/datasets/extract_lineages.py](src/srd_builder/extract/datasets/extract_lineages.py).
 - **P2 — `spell_class_targets.py` (917 lines, v0.27.0)** — replaced by
   [src/srd_builder/extract/datasets/extract_spell_classes.py](src/srd_builder/extract/datasets/extract_spell_classes.py).
-- **P3 — `class_targets.py` (763 lines, v0.27.x)** — replaced by
+- **P3 — `class_targets.py` (763 lines, v0.27.2)** — replaced by
   [src/srd_builder/extract/datasets/extract_classes.py](src/srd_builder/extract/datasets/extract_classes.py).
   Five-step pipeline (discovery → hit_die+abilities+proficiencies →
   features+subclasses → spellcasting → bbox-aware progression walk).
   `parse_classes()` and `parse_features()` now take `class_data=` kwargs;
   `build.py` calls `extract_classes()` once and threads the result.
+- **P4 — `poison_descriptions.py` (129 lines, v0.27.3)** — replaced by
+  [src/srd_builder/parse/parse_poison_descriptions.py](src/srd_builder/parse/parse_poison_descriptions.py).
+  Damage-formula regex extended from `takes?` to `tak(?:es?|ing)` to cover
+  the four delayed-damage poisons; description header strip and `type_id`
+  emission added; 14/14 byte-perfect parity vs. legacy `POISON_DESCRIPTIONS`.
+  `parse_poisons_table.py` no longer imports the manual dict.
 
-Result: `PROVENANCE.md` registry shrank from 8 → 5 active hand-curated
-entries. The remaining LIVE-but-disputed entry is
-[src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](src/srd_builder/rulesets/srd_5_1/poison_descriptions.py)
-— pages 204–205 are extractable (v0.27.1 verified), but full retirement
-is gated by the live damage-formula parser not yet recognising the
-"taking X poison damage on a failed save" phrasing used by 4 of the 14
-poisons. Once the parser is taught the delayed-damage phrase the manual
-file can be deleted with no other code change.
+Result: `PROVENANCE.md` registry shrank from 8 → 4 active hand-curated
+entries. The remaining LIVE entries are equipment-related
+(`equipment_extended.py`, `equipment_packs.py`, `equipment_descriptions.py`)
+plus two `extract_equipment.py` page constants — lower-priority work
+awaiting reproducers and a TOC-based section lookup.
 
 ---
 
@@ -104,7 +107,7 @@ v0.27.x P3 after `class_targets.py` was retired. `LIVE` = imported by
 | ~~`src/srd_builder/rulesets/srd_5_1/class_targets.py`~~ | **DELETED v0.27.x P3** | (was all 12 classes, 763 lines: hit_die, primary_abilities, saving throws, proficiencies, feature lists, subclass names, page numbers, 20-level progression) | "Manually transcribed via visual inspection" (pp. 8–55) — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_classes.py](src/srd_builder/extract/datasets/extract_classes.py) — five-step pipeline (discovery → hit_die+abilities+proficiencies → features+subclasses → spellcasting → bbox-aware progression walk). Snapshot parity for all 12 classes × 20 levels = 240 rows; 4 genuinely-unextractable cells (barbarian L11, ranger L8, rogue L10, wizard L20) filled by `_PROGRESSION_FIXES`, each pinned by a `page.search_for()` reproducer. `parse_classes()` and `parse_features()` now take `class_data=` kwargs; `build.py` calls `extract_classes()` once and threads the result. Listed here for history. |
 | ~~`src/srd_builder/rulesets/srd_5_1/lineage_targets.py`~~ | **DELETED v0.27.0 P1** | (was all 9 lineages + 4 subraces, 326 lines) | "PDF text is corrupted; manually transcribed" — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_lineages.py](src/srd_builder/extract/datasets/extract_lineages.py) (font-fingerprint walk over pp. 3–7, +49 test assertions). Listed here for history. |
 | ~~`src/srd_builder/rulesets/srd_5_1/spell_class_targets.py`~~ | **DELETED v0.27.0 P2** | (was 917 lines, largest hand-curated surface) | "PDF text is corrupted; manually mapped" — **DISPROVEN** | Replaced by [src/srd_builder/extract/datasets/extract_spell_classes.py](src/srd_builder/extract/datasets/extract_spell_classes.py) — produced a byte-perfect 778-for-778 match against the retired `*_SPELLS` lists across all 8 caster classes. `clean_spell_record()` now takes an explicit `spell_classes_map=` kwarg. Listed here for history. |
-| [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) | **LIVE (with extraction fallback already wired)** — `parse_poisons_table.py:68` prefers manual, falls back to `parse_poison_descriptions` | Full prose + DC + damage for all 14 SRD poisons (~109 lines) | "Corrupted text on pages 204–205" — **DISPROVEN v0.27.1** (poison-pages reproducer passes; all 14 names + 5 DC values + mechanic keywords extracted) | **Splitter bugs fixed in v0.27.1**: `clean_text` smart-quote substitution was a source-mangled no-op (now uses explicit `\u20xx` escapes); `split_by_known_headers` gained a `start_marker=` kwarg so the splitter skips preamble price tables (set to `"Sample Poisons"` for this dataset); `"Assassin's Blood"` restored to `known_headers`; dead `POISON_DESCRIPTIONS["assassin's_blood"]` U+2019 key renamed to `"assassins_blood"`. Live extractor now returns clean 14/14. **Full retirement still gated** by the live damage-formula parser, which does not yet recognise the "taking X poison damage on a failed save" phrasing used by `midnight_tears`, `purple_worm_poison`, `serpent_venom`, and `wyvern_poison`. Once the parser is taught the delayed-damage phrase the manual file can be deleted with no other code change. |
+| ~~`src/srd_builder/rulesets/srd_5_1/poison_descriptions.py`~~ | **DELETED v0.27.3** | (was full prose + DC + damage for all 14 SRD poisons, 129 lines) | "Corrupted text on pages 204–205" — **DISPROVEN v0.27.1** | Replaced by [src/srd_builder/parse/parse_poison_descriptions.py](src/srd_builder/parse/parse_poison_descriptions.py). v0.27.1 fixed the splitter (smart-quote `clean_text`, `start_marker="Sample Poisons"`, restored `Assassin's Blood` header, renamed `assassin's_blood` key). v0.27.3 extended the damage-formula regex from `takes?` to `tak(?:es?\|ing)` (covers `midnight_tears`, `purple_worm_poison`, `serpent_venom`, `wyvern_poison`), stripped the leading `"Name (Type). "` section header, and emitted `type_id`. 14/14 byte-perfect parity vs. legacy `POISON_DESCRIPTIONS`. Listed here for history. |
 | ~~`src/srd_builder/extraction/reference_data.py`~~ | **DELETED v0.26.0** | (was `REFERENCE_TABLES` lookup) | — | Removed in v0.26.0; −625 net lines. Listed here for history. |
 | [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
 | [src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py) | **LIVE** — `assemble_equipment.py:1019` | All 7 equipment packs with item-by-item contents (item_id, quantity) | "Extracted from SRD 5.1 page 70" — but actually transcribed into a Python literal | Hardcoded `item:foo` IDs (now `item:foo_bar`) embedded in source. Real fix: pack contents should reference items by `simple_name` and synthesize IDs at assembly time via `normalize_id`. |
