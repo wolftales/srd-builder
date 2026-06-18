@@ -102,3 +102,20 @@ def test_features_match_snapshot(extracted_classes: list[dict], expected: dict) 
 def test_subclasses_match_snapshot(extracted_classes: list[dict], expected: dict) -> None:
     ex = next(c for c in extracted_classes if c["name"] == expected["name"])
     assert ex["subclasses"] == expected["subclasses"]
+
+
+# ---------------------------------------------------------------------------
+# Step 4 — spellcasting block (8 caster classes; absent on the other 4)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_spellcasting_matches_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    if "spellcasting" in expected:
+        assert ex.get("spellcasting") == expected["spellcasting"]
+    else:
+        assert "spellcasting" not in ex, (
+            f"{expected['name']} should NOT have a spellcasting block, got "
+            f"{ex.get('spellcasting')!r}"
+        )

@@ -43,8 +43,8 @@ This module is grown incrementally — each commit adds one field group:
 1. (landed) class discovery: ``name``, ``simple_name``, ``page``
 2. (landed) ``hit_die``, ``primary_abilities``,
    ``saving_throw_proficiencies``, ``proficiencies``
-3. (this commit) ``features`` + ``subclasses``
-4. spellcasting block
+3. (landed) ``features`` + ``subclasses``
+4. (this commit) ``spellcasting`` block (8 caster classes)
 5. progression (mirrored from ``tables.json``)
 6. cutover ``parse_classes`` / ``parse_features``, delete
    ``class_targets.py``, retire from PROVENANCE
@@ -134,7 +134,9 @@ def extract_classes(pdf_path: str | Path) -> dict[str, Any]:
                     },
                     "features": ["feature:rage", "feature:unarmored_defense", ...],
                     "subclasses": ["subclass:path_of_the_berserker"],
-                    # (later commits add spellcasting, progression)
+                    # 8 caster classes also carry:
+                    # "spellcasting": {"ability": "Wis", "spell_list": "cleric"}
+                    # (later commits add progression)
                 },
                 ...
             ],
@@ -186,6 +188,9 @@ def _build_class_record(
     features, subclasses = _extract_features_and_subclasses(class_spans, simple)
     record["features"] = features
     record["subclasses"] = subclasses
+    spellcasting = _extract_spellcasting(class_spans, simple)
+    if spellcasting is not None:
+        record["spellcasting"] = spellcasting
     return record
 
 
@@ -324,6 +329,19 @@ _SKILLS_FROM_RE = re.compile(
 _ASI = "Ability Score Improvement"
 _CLASSES_KEEPING_ASI = frozenset({"cleric"})
 
+# Spellcasting ability detection lives in the feature body text — every
+# caster class has a "<Ability> is your spellcasting ability for your
+# <class> spells" sentence in its Spellcasting (or Pact Magic) feature.
+_SPELLCASTING_ABILITY_RE = re.compile(
+    r"(Charisma|Wisdom|Intelligence)\s+is\s+your\s+spellcasting\s+ability",
+    re.IGNORECASE,
+)
+_ABILITY_ABBR: dict[str, str] = {
+    "charisma": "Cha",
+    "wisdom": "Wis",
+    "intelligence": "Int",
+}
+
 
 def _extract_features_and_subclasses(
     class_spans: list[tuple[str, float, str, tuple]],
@@ -353,6 +371,30 @@ def _extract_features_and_subclasses(
     features = [f"feature:{normalize_id(h)}" for h in feature_headings]
     subclasses = [f"subclass:{normalize_id(subclass_heading)}"]
     return features, subclasses
+
+
+def _extract_spellcasting(
+    class_spans: list[tuple[str, float, str, tuple]],
+    class_simple: str,
+) -> dict[str, str] | None:
+    """Return ``{'ability': 'Wis', 'spell_list': 'cleric'}`` for caster classes.
+
+    Detection: scan all 9.8pt Cambria body spans in the class's page
+    range for a single sentence matching
+    ``/<Ability> is your spellcasting ability/`` (verified to fire
+    exactly once for each of the 8 SRD caster classes: bard, cleric,
+    druid, paladin, ranger, sorcerer, warlock, wizard — and zero times
+    for the 4 non-casters). The spell list always matches the class's
+    simple_name.
+    """
+    body = " ".join(txt for txt, sz, font, _ in class_spans if sz == 9.8 and "Cambria" in font)
+    m = _SPELLCASTING_ABILITY_RE.search(body)
+    if m is None:
+        return None
+    return {
+        "ability": _ABILITY_ABBR[m.group(1).lower()],
+        "spell_list": class_simple,
+    }
 
 
 def _parse_skills(text: str) -> dict[str, Any]:
