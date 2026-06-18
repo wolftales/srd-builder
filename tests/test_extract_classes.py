@@ -56,3 +56,32 @@ def test_each_class_has_expected_page(extracted_classes: list[dict]) -> None:
 
 def test_source_pages_label() -> None:
     assert extract_classes(PDF_PATH)["source_pages"] == "8-55"
+
+
+# ---------------------------------------------------------------------------
+# Step 2 — hit_die / primary_abilities / saving_throws / proficiencies
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_hit_die_matches_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    assert ex["hit_die"] == expected["hit_die"]
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_primary_abilities_matches_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    assert ex["primary_abilities"] == expected["primary_abilities"]
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_saving_throws_match_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    assert ex["saving_throw_proficiencies"] == expected["saving_throw_proficiencies"]
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_proficiencies_match_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    assert ex["proficiencies"] == expected["proficiencies"]
