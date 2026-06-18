@@ -1,25 +1,25 @@
 """Tests for the lineage extractor (PDF -> raw structured data).
 
-These tests pin the extractor's behavior against the actual SRD 5.1 PDF.
-They are the safety net for the cutover that retires
-`rulesets/srd_5_1/lineage_targets.py` in v0.27.0.
-
-Why we compare against LINEAGE_DATA rather than literal fixture values:
-LINEAGE_DATA is the legacy hand-curated shape that all downstream code
-already consumes. By proving the extractor reproduces that shape (with
-one documented PDF-fidelity correction), we know the cutover is safe.
+These tests pin the extractor's behavior against the actual SRD 5.1 PDF
+by comparing it to a JSON snapshot of the retired ``LINEAGE_DATA`` list
+(see ``tests/fixtures/srd_5_1/lineage_targets_snapshot.json``). The
+snapshot is the safety net the v0.27.0 cutover retiring
+``rulesets/srd_5_1/lineage_targets.py`` was built against; do not
+introduce new consumers of it.
 """
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
 from srd_builder.extract.datasets.extract_lineages import extract_lineages
-from srd_builder.rulesets.srd_5_1.lineage_targets import LINEAGE_DATA
 
 PDF_PATH = Path("rulesets/srd_5_1/SRD_CC_v5.1.pdf")
+_SNAPSHOT_PATH = Path("tests/fixtures/srd_5_1/lineage_targets_snapshot.json")
+LINEAGE_DATA: list[dict] = json.loads(_SNAPSHOT_PATH.read_text(encoding="utf-8"))
 
 # One deliberate divergence from the legacy hand-curated data: the PDF
 # heading literally reads "Lightfoot" (only the parent race is named

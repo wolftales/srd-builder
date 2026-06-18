@@ -260,19 +260,43 @@ def _classify_span(
 # ---------------------------------------------------------------------------
 
 
+# Trait-name -> table id annotations. Traits in this map get a
+# `references_table` field added during finalize so downstream parsers
+# can build cross-references.
+_TRAIT_TABLE_REFERENCES = {
+    "Draconic Ancestry": "draconic_ancestry",
+}
+
+
+def _annotate_trait(trait: dict[str, str]) -> dict[str, Any]:
+    """Add ``references_table`` if the trait is one we cross-reference."""
+    table_id = _TRAIT_TABLE_REFERENCES.get(trait["name"])
+    if not table_id:
+        return dict(trait)
+    annotated: dict[str, Any] = dict(trait)
+    annotated["references_table"] = table_id
+    return annotated
+
+
 def _finalize_lineage_record(rec: dict[str, Any]) -> dict[str, Any]:
     """Pull structural traits up into top-level fields; same for subraces."""
     traits_by_name = {t["name"]: t["text"] for t in rec["traits"]}
+    ability_text = traits_by_name.get("Ability Score Increase", "")
+    ability_modifiers = _parse_ability_modifiers(ability_text)
     structured: dict[str, Any] = {
         "name": rec["name"],
         "simple_name": _slug(rec["name"]),
         "page": rec["page"],
-        "ability_modifiers": _parse_ability_modifiers(
-            traits_by_name.get("Ability Score Increase", "")
-        ),
+        "ability_modifiers": ability_modifiers,
         "size": _parse_size(traits_by_name.get("Size", "")),
         "speed": _parse_speed(traits_by_name.get("Speed", "")),
     }
+    # When modifiers can't be fully expressed as a {ability: int} map
+    # (e.g. Half-Elf's "two other ability scores of your choice"), keep
+    # the original sentence as `ability_modifier_note` so downstream
+    # consumers can surface it verbatim.
+    if "other" in ability_modifiers and ability_text:
+        structured["ability_modifier_note"] = ability_text
     if "Age" in traits_by_name:
         structured["age"] = traits_by_name["Age"]
     if "Alignment" in traits_by_name:
@@ -280,7 +304,9 @@ def _finalize_lineage_record(rec: dict[str, Any]) -> dict[str, Any]:
     if "Size" in traits_by_name:
         structured["size_description"] = traits_by_name["Size"]
     structured["languages"] = _parse_languages(traits_by_name.get("Languages", ""))
-    structured["traits"] = [t for t in rec["traits"] if t["name"] not in _STRUCTURAL_TRAIT_NAMES]
+    structured["traits"] = [
+        _annotate_trait(t) for t in rec["traits"] if t["name"] not in _STRUCTURAL_TRAIT_NAMES
+    ]
     if rec["subraces"]:
         structured["subraces"] = [_finalize_subrace_record(sr) for sr in rec["subraces"]]
     return structured
@@ -295,7 +321,9 @@ def _finalize_subrace_record(rec: dict[str, Any]) -> dict[str, Any]:
         "ability_modifiers": _parse_ability_modifiers(
             traits_by_name.get("Ability Score Increase", "")
         ),
-        "traits": [t for t in rec["traits"] if t["name"] not in _STRUCTURAL_TRAIT_NAMES],
+        "traits": [
+            _annotate_trait(t) for t in rec["traits"] if t["name"] not in _STRUCTURAL_TRAIT_NAMES
+        ],
     }
 
 

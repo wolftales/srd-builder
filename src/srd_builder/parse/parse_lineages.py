@@ -1,34 +1,43 @@
-"""Parse lineage data from canonical targets into validated records.
+"""Parse lineage data from extracted records into validated lineage records.
 
 GUARDRAILS: Pure parsing/mapping only (no I/O/logging)
-BOUNDARIES: Transforms LINEAGE_DATA → structured records with metadata
+BOUNDARIES: Transforms extracted lineage records → structured records with
+            extraction metadata. Input is the ``lineages`` list produced by
+            ``srd_builder.extract.datasets.extract_lineages.extract_lineages``.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from srd_builder.rulesets.srd_5_1.lineage_targets import LINEAGE_DATA
 
+def parse_lineages(lineage_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Parse all lineages from extracted lineage data.
 
-def parse_lineages() -> list[dict[str, Any]]:
-    """Parse all lineages from canonical target data.
+    Args:
+        lineage_data: ``lineages`` list from
+            :func:`extract_lineages.extract_lineages`. Each entry carries
+            ``name``, ``simple_name``, ``page``, ``ability_modifiers``,
+            ``size``, ``speed``, ``languages``, ``traits`` and optional
+            ``age``/``alignment``/``size_description``/``ability_modifier_note``/
+            ``subraces``.
 
     Returns:
-        List of lineage records with all subraces expanded as separate entries.
-        Each record includes extraction_metadata for provenance.
+        List of lineage records with all subraces expanded as separate
+        entries. Each record includes ``extraction_metadata`` for
+        provenance.
     """
     lineages: list[dict[str, Any]] = []
 
-    for lineage_data in LINEAGE_DATA:
+    for entry in lineage_data:
         # Build base lineage record
-        lineage = _build_lineage_record(lineage_data)
+        lineage = _build_lineage_record(entry)
         lineages.append(lineage)
 
         # Build subrace records if present
-        if lineage_data.get("subraces"):
-            for subrace_data in lineage_data["subraces"]:
-                subrace = _build_subrace_record(lineage_data, subrace_data)
+        if entry.get("subraces"):
+            for subrace_data in entry["subraces"]:
+                subrace = _build_subrace_record(entry, subrace_data)
                 lineages.append(subrace)
 
     return lineages
@@ -38,7 +47,7 @@ def _build_lineage_record(data: dict[str, Any]) -> dict[str, Any]:
     """Build a complete lineage record from target data.
 
     Args:
-        data: Lineage data from LINEAGE_DATA
+        data: Lineage entry from extract_lineages
 
     Returns:
         Fully structured lineage record with metadata

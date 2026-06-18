@@ -12,13 +12,16 @@ from typing import Any
 from srd_builder.constants import RULESETS
 from srd_builder.postprocess.ids import normalize_id
 from srd_builder.rulesets.srd_5_1.class_targets import CLASS_DATA
-from srd_builder.rulesets.srd_5_1.lineage_targets import LINEAGE_DATA
 
 _WHITESPACE_RE = re.compile(r"\s+")
 
 
 def parse_features(
-    raw_features: dict[str, Any], source_type: str = "class", *, ruleset: str
+    raw_features: dict[str, Any],
+    source_type: str = "class",
+    *,
+    ruleset: str,
+    lineage_data: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Parse raw feature data into structured feature records.
 
@@ -26,10 +29,16 @@ def parse_features(
         raw_features: Raw features from extract_features()
         source_type: "class" or "lineage" for appropriate ID prefix
         ruleset: Ruleset identifier used to stamp source_id on each record.
+        lineage_data: ``lineages`` list from
+            :func:`extract_lineages.extract_lineages`. Required when
+            ``source_type == "lineage"`` so owner-resolution can match
+            extracted trait names against the canonical sequence.
 
     Returns:
         List of structured feature dicts matching feature schema
     """
+    if source_type == "lineage" and lineage_data is None:
+        raise ValueError("parse_features(source_type='lineage') requires lineage_data")
     source = RULESETS[ruleset]["source_id"]
     accepted: list[dict[str, Any]] = []
     for raw in raw_features.get("features", []):
@@ -48,7 +57,7 @@ def parse_features(
             }
         )
 
-    owners = _resolve_owners(accepted, source_type)
+    owners = _resolve_owners(accepted, source_type, lineage_data=lineage_data)
 
     features: list[dict[str, Any]] = []
     for entry, (owner_kind, owner_simple) in zip(accepted, owners, strict=True):
@@ -135,7 +144,10 @@ def _extract_summary(text: str) -> str:
 
 
 def _resolve_owners(
-    entries: list[dict[str, Any]], source_type: str
+    entries: list[dict[str, Any]],
+    source_type: str,
+    *,
+    lineage_data: list[dict[str, Any]] | None = None,
 ) -> list[tuple[str, str | None]]:
     """Assign ``(owner_kind, owner_simple)`` to each accepted feature.
 
@@ -157,7 +169,8 @@ def _resolve_owners(
         expected = _build_class_expected_sequence()
         kind = "class"
     elif source_type == "lineage":
-        expected = _build_lineage_expected_sequence()
+        assert lineage_data is not None  # checked in parse_features
+        expected = _build_lineage_expected_sequence(lineage_data)
         kind = "lineage"
     else:
         return [(source_type, None) for _ in entries]
@@ -241,15 +254,17 @@ def _build_class_expected_sequence() -> list[tuple[str, str]]:
     return out
 
 
-def _build_lineage_expected_sequence() -> list[tuple[str, str]]:
-    """Flatten LINEAGE_DATA + subraces into ``[(lineage_simple, name), ...]``.
+def _build_lineage_expected_sequence(
+    lineage_data: list[dict[str, Any]],
+) -> list[tuple[str, str]]:
+    """Flatten extracted lineage data + subraces into ``[(lineage_simple, name), ...]``.
 
     Includes implicit section-header traits the PDF emits for every
     lineage block (Ability Score Increase, Age, Alignment, Size, Speed,
     plus the closing Languages). Subraces immediately follow their parent.
     """
     out: list[tuple[str, str]] = []
-    ordered = sorted(LINEAGE_DATA, key=lambda lin: lin["page"])
+    ordered = sorted(lineage_data, key=lambda lin: lin["page"])
     for lin in ordered:
         out.extend(_lineage_trait_sequence(lin))
         for sub in lin.get("subraces", []):

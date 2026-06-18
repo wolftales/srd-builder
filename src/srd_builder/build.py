@@ -24,6 +24,7 @@ from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMA
 from .extract import extract_tables_to_json
 from .extract.datasets.extract_equipment import extract_equipment
 from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
+from .extract.datasets.extract_lineages import extract_lineages
 from .extract.datasets.extract_magic_items import extract_magic_items
 from .extract.datasets.extract_monsters import extract_monsters
 from .extract.datasets.extract_pdf_metadata import extract_pdf_metadata
@@ -1123,9 +1124,16 @@ def build(  # noqa: C901
     raw_rules = _load_raw_rules(layout["raw"]) if "rules" not in skip_datasets else {}
     parsed_rules = parse_rules(raw_rules, ruleset) if raw_rules else []
 
-    # Parse lineages (v0.8.0)
-    # Lineages come from canonical targets, not PDF extraction
-    parsed_lineages = parse_lineages()
+    # Parse lineages (v0.8.0; live PDF extraction since v0.27.0)
+    pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
+    lineage_data: list[dict[str, Any]] = []
+    parsed_lineages: list[dict[str, Any]] = []
+    if pdf_files:
+        try:
+            lineage_data = extract_lineages(pdf_files[0])["lineages"]
+            parsed_lineages = parse_lineages(lineage_data)
+        except Exception as exc:
+            print(f"⚠️ Lineage extraction skipped: {exc}")
 
     # Parse classes (v0.8.2)
     # Classes come from canonical targets, not PDF extraction
@@ -1149,7 +1157,7 @@ def build(  # noqa: C901
 
     # Build prose datasets (v0.10.0+)
     # Generic config-driven approach for conditions, diseases, madness, poisons
-    pdf_files = sorted(layout["ruleset"].glob("*.pdf"))
+    # (pdf_files already resolved above for lineage extraction)
 
     # Extract features (v0.11.0)
     # Features come from PDF extraction: class features + lineage traits
@@ -1161,7 +1169,12 @@ def build(  # noqa: C901
             class_features = parse_features(raw_class_features, "class", ruleset=ruleset)
 
             raw_lineage_traits = extract_lineage_traits(pdf_files[0])
-            lineage_traits = parse_features(raw_lineage_traits, "lineage", ruleset=ruleset)
+            lineage_traits = parse_features(
+                raw_lineage_traits,
+                "lineage",
+                ruleset=ruleset,
+                lineage_data=lineage_data,
+            )
 
             all_features = class_features + lineage_traits
             print(

@@ -39,17 +39,17 @@ this file is the *current state*.
 | Reproducer | **TODO** — re-attempt extraction; comment claims visual transcription but no defect documented |
 | Downstream | `dist/srd_5_1/classes.json`, `dist/srd_5_1/features.json` (owner resolution) |
 
-### `lineage_targets.py` — LINEAGE_DATA
+### `lineage_targets.py` — LINEAGE_DATA  *(retired in v0.27.0)*
 
 | Field | Value |
 | --- | --- |
-| Path | [src/srd_builder/rulesets/srd_5_1/lineage_targets.py](../src/srd_builder/rulesets/srd_5_1/lineage_targets.py) |
-| Scope | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages |
-| Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (2026-06-17) shows the text is fully extractable once whitespace is normalized |
+| Status | **RETIRED** in v0.27.0 — replaced by [src/srd_builder/extract/datasets/extract_lineages.py](../src/srd_builder/extract/datasets/extract_lineages.py) |
+| Scope (was) | All 9 base lineages + subraces: ability_modifiers, size, speed, traits, languages, pages (~326 lines) |
+| Original reason | `pdf_corruption` (disproven 2026-06-17 — text is fully extractable once whitespace is normalized) |
 | PDF pages | 3–7 |
-| Last verified | 2026-06-17 |
 | Reproducer | [tests/test_pdf_provenance.py::test_lineage_pages_are_extractable_after_whitespace_normalization](../tests/test_pdf_provenance.py) |
-| Notes | The SRD PDF uses `\t\r\xa0` (tab + CR + non-breaking space) sequences as word separators. The original "manually transcribed via visual inspection" claim was likely true against an older PyMuPDF, but under pymupdf 1.27.x all 10 tested lineage keywords (Dwarf, Hill Dwarf, High Elf, Halfling, Lightfoot, Dragonborn, Gnome, Half-Elf, Half-Orc, Tiefling) extract cleanly. **This manual override is a strong candidate for retirement.** A real lineage parser is in scope for v0.27.0. |
+| Live extractor tests | [tests/test_extract_lineages.py](../tests/test_extract_lineages.py) (49 assertions across 9 races + 4 subraces) |
+| Notes | The SRD PDF uses `\t\r\xa0` (tab + CR + non-breaking space) sequences as word separators; the original "manually transcribed via visual inspection" claim was likely true against an older PyMuPDF, but under pymupdf 1.27.x the data was readable. Extractor walks pages 3–7 by font fingerprint (18pt = race, 12pt G-SB = subrace, 9.8pt Cambria-BoldItalic + period = trait header). One deliberate PDF-fidelity correction: the legacy data called the Halfling subrace "Lightfoot Halfling" but the PDF heading literally reads "Lightfoot". |
 | Downstream | `dist/srd_5_1/lineages.json`, `dist/srd_5_1/features.json` (lineage-owned features) |
 
 ### `spell_class_targets.py` — *_SPELLS lists
