@@ -487,3 +487,79 @@ def test_class_progression_truncations_are_real() -> None:
         )
     finally:
         doc.close()
+
+
+# ---------------------------------------------------------------------------
+# Audit: extractor page constants agree with utils.page_index.PAGE_INDEX
+# ---------------------------------------------------------------------------
+#
+# Historically each per-dataset extractor hardcoded its own (start, end) PDF
+# page constants, with no cross-check against the canonical PAGE_INDEX table.
+# In v0.27.4 this surfaced a real data-loss bug: extract_equipment.py was
+# 0-indexed where the other three were 1-indexed, and its end constant was
+# off by one — silently dropping PDF page 74 (Services / Lifestyle /
+# Spellcasting Services tables) on every build.
+#
+# This test pins all four extractors (equipment, spells, magic_items,
+# conditions) against PAGE_INDEX so the next drift fails CI instead of
+# disappearing into hand-curated workaround data.
+
+
+@pytest.mark.parametrize(
+    ("module_path", "start_attr", "end_attr", "page_index_key"),
+    [
+        (
+            "srd_builder.extract.datasets.extract_equipment",
+            "EQUIPMENT_START_PAGE",
+            "EQUIPMENT_END_PAGE",
+            "equipment",
+        ),
+        (
+            "srd_builder.extract.datasets.extract_spells",
+            "SPELL_START_PAGE",
+            "SPELL_END_PAGE",
+            "spell_descriptions",
+        ),
+        (
+            "srd_builder.extract.datasets.extract_magic_items",
+            "MAGIC_ITEMS_START_PAGE",
+            "MAGIC_ITEMS_END_PAGE",
+            "magic_items",
+        ),
+        (
+            "srd_builder.extract.datasets.extract_conditions",
+            "CONDITION_START_PAGE",
+            "CONDITION_END_PAGE",
+            "appendix_ph_a_conditions",
+        ),
+    ],
+)
+def test_extractor_page_constants_agree_with_page_index(
+    module_path: str,
+    start_attr: str,
+    end_attr: str,
+    page_index_key: str,
+) -> None:
+    """Each extractor's (START, END) constants must match PAGE_INDEX[key].
+
+    All four extractors use the 1-indexed PDF page convention. If a constant
+    drifts (e.g. someone re-introduces the 0-indexed mistake or trims a page
+    by accident), this test fails before the bug ships.
+    """
+    import importlib
+
+    from srd_builder.utils.page_index import PAGE_INDEX
+
+    module = importlib.import_module(module_path)
+    start = getattr(module, start_attr)
+    end = getattr(module, end_attr)
+    expected = PAGE_INDEX[page_index_key]["pages"]
+
+    assert start == expected["start"], (
+        f"{module_path}.{start_attr} = {start} "
+        f"but PAGE_INDEX[{page_index_key!r}].start = {expected['start']}"
+    )
+    assert end == expected["end"], (
+        f"{module_path}.{end_attr} = {end} "
+        f"but PAGE_INDEX[{page_index_key!r}].end = {expected['end']}"
+    )

@@ -27,9 +27,14 @@ from ...utils.context_tracker import ContextTracker
 
 logger = logging.getLogger(__name__)
 
-# Equipment section pages (0-indexed)
-EQUIPMENT_START_PAGE = 61  # Page 62
-EQUIPMENT_END_PAGE = 72  # Page 73
+# Equipment section pages (1-indexed PDF pages, matching utils.page_index.PAGE_INDEX["equipment"]).
+# These values agree with PAGE_INDEX as of v0.27.4; the audit test
+# tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index
+# fails if they drift.
+EQUIPMENT_START_PAGE = 62  # PDF page 62 (chapter title "Equipment")
+EQUIPMENT_END_PAGE = (
+    74  # PDF page 74 (last page with Services / Lifestyle / Spellcasting Services tables)
+)
 
 # Font patterns for section detection
 SECTION_HEADER_SIZE = 18.0
@@ -70,8 +75,8 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
     tracker = ContextTracker(initial_category="gear")
 
     try:
-        # Process equipment pages
-        for page_num in range(EQUIPMENT_START_PAGE, EQUIPMENT_END_PAGE + 1):
+        # Process equipment pages (constants are 1-indexed; convert for fitz)
+        for page_num in range(EQUIPMENT_START_PAGE - 1, EQUIPMENT_END_PAGE):
             page = doc[page_num]
             page_items = _extract_page_equipment(page, page_num, tracker, warnings)
             equipment_items.extend(page_items)
