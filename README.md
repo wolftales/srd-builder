@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.26.2`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.27.0`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -267,7 +267,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.26.2** — structural cleanup of attempt #2: `extraction/` renamed to `extract/` (bespoke extractors grouped under `extract/datasets/`); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; `RULESETS` registry replaces the single-`DATA_SOURCE` constant; `ruleset` parameter threaded through every parser, assembler, and extractor that stamps `"source"`; `source` field normalized from `"SRD 5.1"` to canonical `"SRD_CC_v5.1"` across all datasets.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.0** — hand-curated data retirement: `lineage_targets.py` (326 lines) and `spell_class_targets.py` (917 lines, the largest hand-curated surface in the project) deleted and replaced by live PDF extractors `extract_lineages.py` and `extract_spell_classes.py` — both built on `utils.pdf_probe`. The spell-class extractor produces a byte-perfect 778-for-778 match against the retired hand-curated lists. `class_targets.py` got a reproducer probe (all 33 keywords found — DISPUTED in PROVENANCE, retirement deferred). `clean_spell_record()` now takes an explicit `spell_classes_map=` kwarg. Net: ~1,244 lines of hand-curated data deleted, +62 test assertions.
 
 Key milestones:
 
@@ -279,6 +279,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.27.0** — Hand-curated data retirement: `lineage_targets.py` (326 lines) replaced by live `extract_lineages.py` (P1); `spell_class_targets.py` (917 lines, byte-perfect 778-for-778 parity) replaced by `extract_spell_classes.py` (P2); `class_targets.py` reproducer added — text fully extractable, **DISPUTED** in PROVENANCE, retirement deferred (richer structural payload) (P3); `clean_spell_record()` now takes explicit `spell_classes_map=` kwarg; ~1,244 lines of hand-curated data deleted; +62 new test assertions
 - **v0.26.2** — Structural cleanup of attempt #2: `extraction/` → `extract/` (table engine + bespoke extractors unified); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; shared prose utilities moved to `utils/prose.py`; workspace dirname literals swept into constants; `RULESETS` registry introduced (replaces lone `DATA_SOURCE`); `ruleset` parameter threaded through every parser/assembler/extractor; `source` field normalized to canonical `"SRD_CC_v5.1"` (was `"SRD 5.1"`); `stamp_source()` helper centralizes source stamping; `bump_version.py` fixed to thread `ruleset` through fixture regen
 - **v0.26.1** — `utils/pdf_probe.py` shared PDF text-probe primitive (`open_pdf`, `page_text`, `normalize_whitespace`, `srd_page_to_pdf_index`); second reproducer test for spell-class lists pp. 105–113 (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
 - **v0.26.0** — Generated schema exemplars in bundle (one per schema, replaces `docs/templates/`); `docs/PROVENANCE.md` registry of hand-curated data sources with reason codes; `tests/test_pdf_provenance.py` reproducer test framework (first finding: lineage "PDF corrupted" claim is FALSE under pymupdf 1.27.x); dead `extraction/reference_data.py` removed (−625 net lines)
