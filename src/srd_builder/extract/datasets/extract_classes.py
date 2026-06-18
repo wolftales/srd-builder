@@ -44,8 +44,12 @@ This module is grown incrementally — each commit adds one field group:
 2. (landed) ``hit_die``, ``primary_abilities``,
    ``saving_throw_proficiencies``, ``proficiencies``
 3. (landed) ``features`` + ``subclasses``
-4. (this commit) ``spellcasting`` block (8 caster classes)
-5. progression (mirrored from ``tables.json``)
+4. (landed) ``spellcasting`` block (8 caster classes)
+5. (this commit) ``progression`` (bbox-aware Features column walk over
+   the per-class first-page tables, with a small ``_PROGRESSION_FIXES``
+   map for cells the SRD PDF genuinely fails to expose — verified via
+   ``page.search_for()`` reproducer; see
+   [tests/test_pdf_provenance.py](../../../tests/test_pdf_provenance.py))
 6. cutover ``parse_classes`` / ``parse_features``, delete
    ``class_targets.py``, retire from PROVENANCE
 """
@@ -166,7 +170,12 @@ def extract_classes(pdf_path: str | Path) -> dict[str, Any]:
             class_spans: list[tuple[str, float, str, tuple]] = []
             for p in range(pi, next_pi):
                 class_spans.extend(page_spans[p])
-            classes.append(_build_class_record(name, pi, class_spans))
+            # Progression tables live exclusively on the class's first
+            # page (verified empirically — non-first class pages emit
+            # zero 8.9pt Calibri spans except for paladin's "Oath
+            # Spells" sidebar and stray body-paragraph fall-throughs).
+            first_page_spans = page_spans[pi]
+            classes.append(_build_class_record(name, pi, class_spans, first_page_spans))
 
     return {"source_pages": "8-55", "classes": classes}
 
@@ -175,6 +184,7 @@ def _build_class_record(
     name: str,
     pi: int,
     class_spans: list[tuple[str, float, str, tuple]],
+    first_page_spans: list[tuple[str, float, str, tuple]],
 ) -> dict[str, Any]:
     """Assemble a single class record from its accumulated page spans."""
     simple = normalize_id(name)
@@ -191,6 +201,7 @@ def _build_class_record(
     spellcasting = _extract_spellcasting(class_spans, simple)
     if spellcasting is not None:
         record["spellcasting"] = spellcasting
+    record["progression"] = _extract_progression(first_page_spans, simple)
     return record
 
 
@@ -413,3 +424,209 @@ def _parse_skills(text: str) -> dict[str, Any]:
     list_text = re.sub(r"\s+and\s+", ", ", list_text)
     items = [p.strip() for p in list_text.split(",") if p.strip()]
     return {"choose": _NUMBER_WORDS.get(count_word, 0), "from": items}
+
+
+# ---------------------------------------------------------------------------
+# Progression table extraction
+# ---------------------------------------------------------------------------
+
+_LEVEL_RE = re.compile(r"^(\d+)(?:st|nd|rd|th)$")
+# Empty-cell markers PyMuPDF returns for the SRD's table dashes.
+# U+0336 is "combining longest stroke overlay" — the SRD renders empty
+# Features cells with a dash glyph that pymupdf decodes to this combining
+# character (alone, with no preceding base char).
+_EMPTY_CELL_MARKERS = frozenset({"—", "-", "\u0336", "\u0336 ", " \u0336"})
+
+# Cells the SRD PDF genuinely fails to expose via any extraction path
+# (verified via ``page.search_for()`` returning zero hits for the
+# missing tail text — see ``tests/test_pdf_provenance.py``).
+#
+# Each entry maps ``simple_name -> {level: [features]}`` and overrides
+# the bbox-walk output. Keep this map small — every entry needs a
+# search_for() reproducer that fails on the SRD PDF.
+_PROGRESSION_FIXES: dict[str, dict[int, list[str]]] = {
+    # Barbarian L11 cell (pi=7): "Relentless Rage" wraps to two lines
+    # but the second line "Rage" is never extracted by any PyMuPDF API
+    # — ``search_for("Relentless Rage")`` returns 0 hits on the page.
+    "barbarian": {11: ["Relentless Rage"]},
+    # Ranger L8 cell (pi=34): "Land's Stride" — only the first word
+    # "Land" is extractable (the curly apostrophe + " Stride" tail
+    # never appears in any 8.9pt Calibri span at the L8 row y).
+    "ranger": {8: ["Ability Score Improvement", "Land's Stride"]},
+    # Rogue L10 cell (pi=38): "Improvement" never surfaces in the L10
+    # row — only "Ability Score" extracts. Other "Improvement"
+    # occurrences exist on the page, just not at y > 688.
+    "rogue": {10: ["Ability Score Improvement"]},
+    # Wizard L20 cell (pi=52): "Signature Spells" — trailing "s" lost
+    # in PDF rendering, only "Signature Spell" extracts from the cell.
+    "wizard": {20: ["Signature Spells"]},
+}
+
+
+def _extract_progression(
+    spans: list[tuple[str, float, str, tuple]],
+    simple_name: str,
+) -> list[dict[str, Any]]:
+    """Return ``[{"level": 1, "features": [...]}, ...]`` for the class.
+
+    Walks the per-class first-page progression table by bbox: the
+    Features column is anchored by the 8.9pt Calibri-Bold "Features"
+    header's x0, and only cells whose x0 matches that anchor (±3pt)
+    are considered part of the column. Rows are bounded vertically by
+    consecutive level-cell y-coordinates within the same visual column
+    instance (the SRD lays the table out across two newspaper-style
+    columns on most class pages).
+
+    Applies ``_PROGRESSION_FIXES`` for cells the PDF genuinely fails to
+    expose (each fix is reproducer-backed in
+    ``tests/test_pdf_provenance.py``).
+    """
+    # 1. Locate the Features header and its column anchor x.
+    bold_headers = [(t, b) for t, sz, f, b in spans if sz == 8.9 and f == "Calibri-Bold"]
+    features_headers = [(t, b) for t, b in bold_headers if t == "Features"]
+    if not features_headers:
+        return []
+
+    fx_left = features_headers[0][1][0]
+
+    # 2. Collect level cells (8.9pt Calibri non-bold matching r"\dN(st|nd|...)").
+    level_cells: list[tuple[int, float, float]] = []
+    for txt, sz, font, bbox in spans:
+        if sz != 8.9 or "Bold" in font:
+            continue
+        m = _LEVEL_RE.match(txt)
+        if m and (bbox[2] - bbox[0]) < 25:
+            level_cells.append((int(m.group(1)), bbox[1], bbox[0]))
+    if not level_cells:
+        return []
+
+    # 3. Cluster level cells into visual column instances by x0. The
+    # SRD lays the progression table across up to two newspaper-style
+    # columns on the same page; cells within a column are within a few
+    # points of each other but columns are separated by >>100pt.
+    # Compute one offset per cluster so cell-to-cluster mapping is
+    # exact (a per-cell offset is unstable — e.g. "1st" sits at x=61.7
+    # but "10th" sits at x=58.8 in the same left column).
+    xs_sorted = sorted({round(lc[2], 1) for lc in level_cells})
+    clusters: list[list[float]] = [[xs_sorted[0]]]
+    for x in xs_sorted[1:]:
+        if x - clusters[-1][-1] > 50:
+            clusters.append([x])
+        else:
+            clusters[-1].append(x)
+    cluster_anchors = [min(c) for c in clusters]
+
+    # Validate clusters: warlock's spell-slot table has a "Slot Level"
+    # column that also matches the level-cell regex but isn't a
+    # progression-table level column. Keep the largest cluster as the
+    # primary, then accept additional clusters only when they
+    # contribute levels not already covered (barbarian splits 1-11 and
+    # 12-20 across two visual columns — both contribute new levels).
+    cluster_levels: list[set[int]] = []
+    for c in clusters:
+        cluster_levels.append(
+            {lvl for lvl, _, x in level_cells if any(abs(x - cx) < 0.5 for cx in c)}
+        )
+    order = sorted(range(len(clusters)), key=lambda i: -len(cluster_levels[i]))
+    accepted: set[int] = set()
+    covered: set[int] = set()
+    for i in order:
+        new_levels = cluster_levels[i] - covered
+        if new_levels:
+            accepted.add(i)
+            covered |= new_levels
+    clusters = [clusters[i] for i in sorted(accepted)]
+    cluster_anchors = [min(c) for c in clusters]
+    base_anchor = cluster_anchors[0]
+
+    valid_xs = {cx for c in clusters for cx in c}
+    level_cells = [lc for lc in level_cells if any(abs(lc[2] - vx) < 0.5 for vx in valid_xs)]
+
+    def cluster_offset_for(level_x: float) -> float:
+        for c, anchor in zip(clusters, cluster_anchors, strict=True):
+            if any(abs(level_x - cx) < 0.5 for cx in c):
+                return anchor - base_anchor
+        return 0.0
+
+    # 4. For each level, determine row bounds (top = own y0 - 1pt,
+    # bottom = next level's y0 in same cluster - 1pt, or +30pt slack
+    # for the final row).
+    level_cells_sorted = sorted(level_cells, key=lambda lc: lc[0])
+
+    by_cluster: dict[float, list[tuple[int, float]]] = {}
+    for lvl, y, x in level_cells:
+        key = cluster_offset_for(x)
+        by_cluster.setdefault(key, []).append((lvl, y))
+    for rows in by_cluster.values():
+        rows.sort(key=lambda iy: iy[1])
+
+    progression: list[dict[str, Any]] = []
+    for lvl, y, x in level_cells_sorted:
+        offset = cluster_offset_for(x)
+        ix_left = fx_left + offset
+        cluster_rows = by_cluster[offset]
+        next_y = next((ly for li, ly in cluster_rows if ly > y + 0.5), None)
+        y_top = y - 1.0
+        y_bottom = (next_y - 1.0) if next_y is not None else (y + 30.0)
+
+        # 5. Collect Calibri cell spans whose x0 sits in the Features
+        # column. Features cells are left-aligned at exactly ``fx_left``;
+        # mid-row continuation spans (the apostrophe span of
+        # ``"Thieves' Cant"``, etc.) can land up to ~30pt to the right
+        # but stay inside the ~80pt-wide column. Adjacent-column
+        # overflow (e.g. "Unlimited" in Rages at barbarian L20) starts
+        # at >60pt past the anchor, so a 30pt window keeps both
+        # behaviors correct.
+        cell_parts: list[tuple[float, float, str]] = []
+        for txt, sz, font, bbox in spans:
+            if sz != 8.9 or "Bold" in font or "Cambria" in font:
+                continue
+            bx, by = bbox[0], bbox[1]
+            if -3.0 <= (bx - ix_left) <= 30.0 and y_top <= by < y_bottom:
+                cell_parts.append((by, bx, txt))
+        # Sort by y-bin (2pt buckets) then x so that punctuation spans
+        # at slightly different y (e.g. the curly apostrophe in
+        # "Thieves' Cant" sits 0.6pt below "Thieves" and "Cant") join
+        # in left-to-right reading order on the same visual line.
+        cell_parts.sort(key=lambda part: (round(part[0] / 2.0), part[1]))
+        cell_text = " ".join(t for _, _, t in cell_parts).strip()
+
+        override = _PROGRESSION_FIXES.get(simple_name, {}).get(lvl)
+        if override is not None:
+            features = override
+        else:
+            features = _parse_progression_features(cell_text)
+        progression.append({"level": lvl, "features": features})
+
+    progression.sort(key=lambda r: r["level"])
+    return progression
+
+
+_PROG_SPLIT_RE = re.compile(r",\s+(?![^()]*\))")
+# Repair patterns for cell-text artifacts the PyMuPDF span split
+# introduces:
+#  - ``Ki- Empowered`` → ``Ki-Empowered``: a soft hyphen + U+2010
+#    hyphen sequence becomes a hyphen + space after ``clean_text``.
+#  - ``Thieves ' Cant`` → ``Thieves' Cant``: a curly apostrophe lives
+#    in its own span (HiraKakuPro-W3 font) so the y-binned join
+#    inserts a stray space on each side.
+_PROG_HYPHEN_FIX_RE = re.compile(r"(\w)-\s+(\w)")
+_PROG_APOS_FIX_RE = re.compile(r"\s+([\u2019'])")
+
+
+def _parse_progression_features(text: str) -> list[str]:
+    """Split a Features-cell string into a feature list.
+
+    - Empty / dash markers → ``[]``.
+    - Commas inside parentheses (e.g. "Brutal Critical (1 die)") are
+      preserved.
+    - Smart quotes get normalized by ``clean_text``.
+    - Hyphen + space artifacts from PDF line wrapping are healed.
+    """
+    text = clean_text(text).strip()
+    if not text or text in _EMPTY_CELL_MARKERS:
+        return []
+    text = _PROG_HYPHEN_FIX_RE.sub(r"\1-\2", text)
+    text = _PROG_APOS_FIX_RE.sub(r"\1", text)
+    parts = [p.strip() for p in _PROG_SPLIT_RE.split(text) if p.strip()]
+    return parts

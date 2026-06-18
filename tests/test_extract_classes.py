@@ -119,3 +119,22 @@ def test_spellcasting_matches_snapshot(extracted_classes: list[dict], expected: 
             f"{expected['name']} should NOT have a spellcasting block, got "
             f"{ex.get('spellcasting')!r}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Step 5 — progression (per-class first-page progression table walk)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("expected", CLASS_DATA, ids=lambda c: c["name"])
+def test_progression_matches_snapshot(extracted_classes: list[dict], expected: dict) -> None:
+    ex = next(c for c in extracted_classes if c["name"] == expected["name"])
+    assert ex["progression"] == expected["progression"]
+
+
+def test_progression_covers_all_20_levels_for_every_class(
+    extracted_classes: list[dict],
+) -> None:
+    for c in extracted_classes:
+        levels = [row["level"] for row in c["progression"]]
+        assert levels == list(range(1, 21)), f"{c['name']} progression missing levels: got {levels}"

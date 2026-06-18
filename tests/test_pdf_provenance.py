@@ -426,3 +426,64 @@ def test_poison_descriptions_extract_all_14_sections_cleanly() -> None:
     assert doc.get("_meta", {}).get("warnings", []) == [], (
         f"Poison description extractor produced warnings: {doc['_meta']['warnings']}"
     )
+
+
+def test_class_progression_truncations_are_real() -> None:
+    """The class progression tables on pages 8, 35, 39, and 54 of the
+    SRD 5.1 PDF have specific cells whose text is genuinely not
+    extractable via any PyMuPDF API. This test pins those truncations
+    so the manual entries in
+    ``src/srd_builder/extract/datasets/extract_classes._PROGRESSION_FIXES``
+    stay reproducer-backed.
+
+    If any of these ``search_for`` calls starts returning a hit at the
+    expected y-coordinate, the matching ``_PROGRESSION_FIXES`` entry
+    can be retired.
+    """
+    _require_pdf_and_fitz()
+    import fitz
+
+    doc = fitz.open(str(SRD_5_1_PDF))
+    try:
+        # Barbarian L11 cell at pi=7 shows "Relentless" but the second
+        # line "Rage" is absent. ``search_for("Relentless Rage")``
+        # returns zero hits anywhere on the page.
+        assert len(doc[7].search_for("Relentless Rage")) == 0, (
+            "Barbarian L11 'Relentless Rage' became extractable — "
+            "_PROGRESSION_FIXES['barbarian'][11] override can be dropped."
+        )
+
+        # Ranger L8 cell at pi=34: "Land's Stride" — only the first
+        # word "Land" extracts; the curly-apostrophe + " Stride" tail
+        # never appears in any span at the L8 row y (~400-415).
+        ranger = doc[34]
+        lands_stride_hits = ranger.search_for("Land's Stride")
+        row_band = [h for h in lands_stride_hits if 395 < h.y0 < 420]
+        assert not row_band, (
+            "Ranger L8 'Land's Stride' became extractable in the row — "
+            "_PROGRESSION_FIXES['ranger'][8] override can be dropped."
+        )
+
+        # Rogue L10 cell at pi=38: "Improvement" never surfaces at
+        # y>688 (the L10 row sits at y≈688; "Improvement" appears
+        # elsewhere on the page but not in that cell).
+        rogue = doc[38]
+        improv_in_l10 = [h for h in rogue.search_for("Improvement") if h.y0 > 688]
+        assert not improv_in_l10, (
+            "Rogue L10 'Improvement' became extractable — "
+            "_PROGRESSION_FIXES['rogue'][10] override can be dropped."
+        )
+
+        # Wizard L20 cell at pi=52: "Signature Spells" — the trailing
+        # "s" is missing from the L20 cell; "Signature Spell"
+        # (singular) extracts. The full plural phrase has zero hits in
+        # the table area (y < 500).
+        wizard = doc[52]
+        sig_spells_plural = wizard.search_for("Signature Spells")
+        table_band = [h for h in sig_spells_plural if h.y0 < 500]
+        assert not table_band, (
+            "Wizard L20 'Signature Spells' became extractable in the "
+            "table row — _PROGRESSION_FIXES['wizard'][20] override can be dropped."
+        )
+    finally:
+        doc.close()
