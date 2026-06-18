@@ -1,10 +1,22 @@
 """Manual poison descriptions.
 
-KNOWN LIMITATION: The SRD PDF has corrupted text on pages 204-205 where poison
-descriptions are located. Text extraction returns garbled characters instead of
-readable text. These descriptions were manually transcribed as a temporary solution.
+PROVENANCE: see docs/PROVENANCE.md — "poison_descriptions.py" entry.
+The original "PDF text is corrupted" claim was DISPUTED in v0.27.1 by
+tests/test_pdf_provenance.py::test_poison_pages_are_extractable_after_whitespace_normalization
+which shows all 14 poison names and standard mechanic keywords appear
+in pages 204–205 after whitespace normalization. The text is fine.
 
-TODO: Replace with automated extraction when a better PDF source is available.
+What still blocks retirement is the upstream *prose section splitter*
+used by parse_poison_description_records, not PDF readability:
+  * 'assassin's blood' is dropped entirely (the U+2019 fancy apostrophe
+    in the heading defeats the section detector)
+  * 'malice' description absorbs ~2000 chars from neighboring sections
+  * 'torpor' description absorbs ~3700 chars
+
+parse_poisons_table.py already prefers POISON_DESCRIPTIONS over the
+live extractor and falls back to the live extractor otherwise, so once
+the section splitter is fixed this file can be deleted with no other
+code change.
 """
 
 POISON_DESCRIPTIONS = {

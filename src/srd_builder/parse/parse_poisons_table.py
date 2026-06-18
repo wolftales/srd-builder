@@ -3,8 +3,13 @@
 This module takes raw poison table rows from table extraction
 and returns individual poison items (equipment-style records).
 
-KNOWN LIMITATION: Poison descriptions are manually maintained in
-data/poison_descriptions_manual.py due to corrupted PDF text on pages 204-205.
+KNOWN LIMITATION (DISPUTED v0.27.1): Poison descriptions are merged in
+from rulesets/srd_5_1/poison_descriptions.py. The PDF "corruption"
+claim is disproven — see docs/PROVENANCE.md and the reproducer test
+in tests/test_pdf_provenance.py. The real blocker is bugs in the
+upstream prose section splitter (drops `assassin's blood`, over-greedy
+on `malice` and `torpor`); once those are fixed the manual file can be
+deleted.
 """
 
 from __future__ import annotations

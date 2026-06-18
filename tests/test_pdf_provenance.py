@@ -257,3 +257,98 @@ def test_class_pages_are_extractable_after_whitespace_normalization() -> None:
         f"{page_range['end']} after whitespace normalization:\n  - "
         + "\n  - ".join(missing_sections)
     )
+
+
+def test_poison_pages_are_extractable_after_whitespace_normalization() -> None:
+    """SRD 5.1 poison pages (204–205) ARE extractable, despite the
+    "corrupted text on pages 204-205" claim in
+    src/srd_builder/rulesets/srd_5_1/poison_descriptions.py.
+
+    Fourth hand-curated "PDF corruption" claim in the codebase, fourth
+    one to fail under reproducer scrutiny. Same era, same author as
+    lineage_targets (retired v0.27.0 P1), spell_class_targets
+    (retired v0.27.0 P2), and class_targets (DISPUTED v0.27.0 P3).
+
+    This probe asserts that (a) all 14 SRD poison names, (b) the
+    standard mechanic keywords (DC numbers, "Constitution saving
+    throw", duration phrases), and (c) the opening section title
+    "Poisons" appear in pages 204–205 after the standard whitespace
+    normalization. They do — every one.
+
+    **However, retirement is NOT a straight cutover.** The live
+    `parse_poison_description_records` pipeline already exists and runs,
+    but the upstream prose section-splitter has bugs:
+
+    - The "assassin's blood" entry is dropped entirely (the fancy
+      apostrophe U+2019 in the heading appears to defeat the section
+      detector).
+    - The `malice` description absorbs ~2000 extra characters from
+      neighboring sections.
+    - The `torpor` description absorbs ~3700 extra characters.
+
+    Until the section splitter is fixed, the hand-curated
+    POISON_DESCRIPTIONS map remains correct behavior. PROVENANCE marks
+    the entry **DISPUTED** with this test as the truth probe; retirement
+    is gated on fixing the section splitter, not on PDF readability.
+    """
+    _require_pdf_and_fitz()
+    from srd_builder.utils.pdf_probe import (
+        open_pdf,
+        pages_text,
+        srd_page_to_pdf_index,
+    )
+
+    pdf_start = srd_page_to_pdf_index(204)
+    pdf_end = srd_page_to_pdf_index(205)
+    pdf_indices = range(pdf_start, pdf_end + 1)
+
+    expected_poison_names = [
+        "Assassin",  # 'Assassin's Blood' — fancy apostrophe in PDF
+        "Burnt Othur Fumes",
+        "Crawler Mucus",
+        "Drow Poison",
+        "Essence of Ether",
+        "Malice",
+        "Midnight Tears",
+        "Oil of Taggit",
+        "Pale Tincture",
+        "Purple Worm Poison",
+        "Serpent Venom",
+        "Torpor",
+        "Truth Serum",
+        "Wyvern Poison",
+    ]
+    expected_mechanics = [
+        "DC 10",
+        "DC 13",
+        "DC 15",
+        "DC 17",
+        "DC 19",
+        "Constitution saving throw",
+        "poison damage",
+        "1 minute",
+        "1 hour",
+        "24 hours",
+    ]
+    expected_sections = ["Poisons"]
+
+    with open_pdf(SRD_5_1_PDF) as doc:
+        all_text = "\n".join(pages_text(doc, pdf_indices).values())
+
+    missing_poisons = [p for p in expected_poison_names if p not in all_text]
+    missing_mechanics = [m for m in expected_mechanics if m not in all_text]
+    missing_sections = [s for s in expected_sections if s not in all_text]
+
+    assert not missing_poisons, (
+        "Poison names not found in pages 204–205 after whitespace "
+        "normalization:\n  - " + "\n  - ".join(missing_poisons)
+    )
+    assert not missing_mechanics, (
+        "Poison mechanics keywords not found in pages 204–205 after "
+        "whitespace normalization (body text may genuinely be "
+        "unreadable):\n  - " + "\n  - ".join(missing_mechanics)
+    )
+    assert not missing_sections, (
+        "Poison section header not found in pages 204–205 after "
+        "whitespace normalization:\n  - " + "\n  - ".join(missing_sections)
+    )

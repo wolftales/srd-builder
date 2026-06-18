@@ -67,18 +67,18 @@ this file is the *current state*.
 | Notes | Detection rules: 13.9pt GillSans-SemiBold = class header (`Bard Spells`, …, `Wizard Spells`); 12pt G-SB = level header (skipped); 9.8pt Cambria = spell name (`normalize_id` applied). 18pt G-SB "Spell Lists" and 10.5–11.0pt page-number/footer runs are skipped. `clean_spell_record()` now takes an explicit `spell_classes_map=` keyword (default `None` → no `classes` field attached) instead of importing a module-level lookup. |
 | Downstream | `dist/srd_5_1/spells.json` (every record's `classes` field, attached by `postprocess/spells.py`) |
 
-### `poison_descriptions_manual.py` — POISON_DESCRIPTIONS
+### `poison_descriptions.py` — POISON_DESCRIPTIONS
 
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](../src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) |
-| Scope | Prose + DC + damage for all 14 SRD poisons |
-| Reason | `pdf_corruption` |
+| Scope | Prose + DC + damage for all 14 SRD poisons (~109 lines) |
+| Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (v0.27.1) shows pages 204–205 are fully extractable after whitespace normalization |
 | PDF pages | 204–205 |
-| Last verified | (in-file TODO; no reproducer yet) |
-| Reproducer | **TODO** — promote in-file comment to a runtime test (good template — wiring already supports extraction fallback) |
+| Last verified | v0.27.1 |
+| Reproducer | [tests/test_pdf_provenance.py::test_poison_pages_are_extractable_after_whitespace_normalization](../tests/test_pdf_provenance.py) |
+| Notes | Fourth "PDF corruption" claim in the codebase, fourth to fail under reproducer scrutiny. Same era/author as lineage_targets (retired v0.27.0 P1), spell_class_targets (retired v0.27.0 P2), and class_targets (DISPUTED v0.27.0 P3). All 14 poison names, all 5 DC values, and standard mechanic keywords appear in pages 204–205 after whitespace normalization. **However, retirement is gated on fixing the prose section splitter, not on PDF readability.** The live `parse_poison_description_records` pipeline already exists and runs, but produces three concrete bugs: (1) the `assassin's blood` entry is dropped entirely — the U+2019 fancy apostrophe in the heading defeats the section detector; (2) the `malice` description absorbs ~2000 extra characters from neighboring sections; (3) the `torpor` description absorbs ~3700 extra characters. Until the section splitter is fixed, the hand-curated POISON_DESCRIPTIONS map remains the correct production behavior. `parse_poisons_table.py` already prefers manual descriptions and falls back to extracted ones, so the moment the splitter is fixed the manual file can be deleted with no other code change. |
 | Downstream | `dist/srd_5_1/poisons.json` |
-| Notes | Already wired with the right shape: `parse_poisons_table.py` prefers manual descriptions but falls back to extracted ones, so dropping the manual file the moment extraction works requires no other change. |
 
 ### `equipment_extended.py` — EXTENDED_EQUIPMENT
 
