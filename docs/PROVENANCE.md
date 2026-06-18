@@ -25,6 +25,42 @@ this file is the *current state*.
 | `derived_lookup_table` | Calculated from game rules; not extracted. Belongs in rules dataset, not the dataset it currently lives in. | Migrated to rules dataset. |
 | `alias` / `common_name` | Augmentation layer on top of source. Does not overwrite source field. | (No removal — permanent augmentation.) |
 
+## Status at a glance
+
+8 historical hand-curated sources. 3 retired in the v0.27.x line.
+1 disputed-but-live (extraction-ready, parser-gated). 4 awaiting
+reproducer (low-priority — small / inferred / structural).
+
+| Source | Lines | Status | Reproducer | Live extractor | Quality vs. legacy | Blocker |
+| --- | ---: | --- | --- | --- | --- | --- |
+| `lineage_targets.py` | 326 | ✅ **RETIRED v0.27.0 P1** | ✓ | [`extract_lineages.py`](../src/srd_builder/extract/datasets/extract_lineages.py) | **Better** — caught one transcription error (`Lightfoot Halfling` → `Lightfoot`) | — |
+| `spell_class_targets.py` | 917 | ✅ **RETIRED v0.27.0 P2** | ✓ | [`extract_spell_classes.py`](../src/srd_builder/extract/datasets/extract_spell_classes.py) | **Equivalent** — 778-for-778 byte-perfect parity across all 8 caster classes | — |
+| `class_targets.py` | 763 | ✅ **RETIRED v0.27.2 P3** | ✓ | [`extract_classes.py`](../src/srd_builder/extract/datasets/extract_classes.py) | **Better** — caught one transcription error (Monk L4 ordering); 4 silently-fabricated cells now reproducer-pinned overrides | — |
+| `poison_descriptions.py` | 129 | 🟡 **DISPUTED, LIVE** (extractor works) | ✓ | [`parse_poison_descriptions.py`](../src/srd_builder/parse/parse_poison_descriptions.py) returns clean 14/14 | **Equivalent on prose, blocked on damage** | `parse_poisons_table.py` damage-formula parser doesn't recognise "taking X poison damage on a failed save" phrasing used by 4 of 14 poisons |
+| `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
+| `equipment_packs.py` | 323 | ⬜ **LIVE** | **TODO** | none | (Unverified — p. 70 pack table likely extractable; pre-v1.0 audit) | No reproducer yet |
+| `equipment_descriptions.py` | 398 | ⬜ **LIVE** | **TODO** | none | (Unverified — pp. 66–68 prose likely extractable like other prose sections) | No reproducer yet |
+| `extract_equipment.py` page constants | 2 | ⬜ **LIVE** (constants) | **TODO** | N/A — would be replaced by TOC lookup | — | `scripts/verify_pdf_sections.py` + `Document.get_toc()` adoption |
+
+### What "Better" means here
+
+For each retired module the new extractor is **higher quality** than the
+legacy constant on every axis we can measure:
+
+| Axis | Legacy `*_targets.py` | Live `extract_*.py` |
+| --- | --- | --- |
+| Reproducibility against new PDF revisions | Manual re-transcription | Re-runs automatically |
+| Audit trail for PDF ↔ dataset deltas | None (silent) | Reproducer-pinned (`page.search_for()`) per override |
+| Detection of upstream PDF changes | Drifts silently | Tests fail loudly |
+| Drift between legacy data and PDF source | 2 confirmed transcription errors found during retirement (`Lightfoot Halfling`, Monk L4 order); 4 cells in `class_targets` silently filled in letters the PDF doesn't contain | Each deviation lives in a typed override dict (`_PROGRESSION_FIXES`) backed by a failing-on-mismatch reproducer |
+| Schema-shape parity | (was the source of truth) | Byte-for-byte equivalent shape consumed by the same downstream `parse_*`/`postprocess_*` modules; verified by snapshot tests |
+
+For `poison_descriptions.py` the prose extractor reaches the same
+parity bar (14/14 clean), but the dataset still ships the legacy file
+because the *separate* damage-formula parser doesn't yet handle the
+delayed-damage phrasing. That blocker is unrelated to extraction
+quality — it's an unfinished parser feature.
+
 ## Registry
 
 ### `class_targets.py` — CLASS_DATA  *(retired in v0.27.x P3)*
@@ -73,7 +109,7 @@ this file is the *current state*.
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/rulesets/srd_5_1/poison_descriptions.py](../src/srd_builder/rulesets/srd_5_1/poison_descriptions.py) |
-| Scope | Prose + DC + damage for all 14 SRD poisons (~109 lines) |
+| Scope | Prose + DC + damage for all 14 SRD poisons (~129 lines) |
 | Reason | **DISPUTED** — original claim was `pdf_corruption`, but verification (v0.27.1) shows pages 204–205 are fully extractable after whitespace normalization |
 | PDF pages | 204–205 |
 | Last verified | v0.27.1 |
@@ -140,23 +176,22 @@ this file is the *current state*.
   should carry an optional `_provenance` block (TODO: promote
   `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
 
-## Status snapshot (v0.27.x P3)
+## Cumulative finding (v0.26.0 → v0.27.2)
 
-- 8 registered sources (historical), 3 retired (`lineage_targets`,
-  `spell_class_targets`, `class_targets`)
-- 1 disputed but live (`poison_descriptions` — extraction works;
-  delayed-damage parser still blocks)
-- 4 awaiting reproducer
+Four "PDF text is corrupted" claims were made by the original
+hand-curated modules. All four have been disproven by mechanical
+reproducer tests under pymupdf 1.27.x with standard whitespace
+normalization (see [`utils.pdf_probe`](../src/srd_builder/utils/pdf_probe.py)):
 
-### Cumulative finding (v0.26.0 → v0.27.x)
+| Claim | Disproven in | Outcome |
+| --- | --- | --- |
+| Lineages corrupted (pp. 3–7) | v0.26.0 | Retired in v0.27.0 P1 |
+| Spell-lists corrupted (pp. 105–113) | v0.26.1 | Retired in v0.27.0 P2 |
+| Class pages corrupted (pp. 8–55) | v0.27.0 P3 (probe) | Retired in v0.27.2 P3 (cutover) |
+| Poison pages corrupted (pp. 204–205) | v0.27.1 | Extractor lands; full retirement gated on damage-formula parser |
 
-The lineage reproducer (v0.26.0), the spell-class reproducer (v0.26.1),
-and the class-pages reproducer (v0.27.0 P3) **all** disprove the
-"PDF text is corrupted" claim under pymupdf 1.27.x with standard
-whitespace normalization (see `utils.pdf_probe`). All three of the
-hand-curated modules that used the corruption rationale have now been
-replaced by extractors built on top of `utils.pdf_probe` + `PAGE_INDEX`:
-`extract_lineages.py` (v0.27.0 P1), `extract_spell_classes.py`
-(v0.27.0 P2), and `extract_classes.py` (v0.27.x P3, five-step pipeline
-discovery → hit_die/abilities/proficiencies → features/subclasses →
-spellcasting → bbox-aware progression walk).
+Net result of the v0.27.x line: ~2,000 lines of hand-curated Python
+data deleted, 2 silent transcription errors corrected, 4 silently-
+fabricated cell values now pinned by reproducer tests. The "PDF
+corrupted" rationale should be treated as a hypothesis until a
+reproducer fails — see `AGENTS.md` § *PDF extraction discipline*.
