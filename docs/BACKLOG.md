@@ -247,6 +247,16 @@ unification principle.
 
 ### Phase B — `tests/fixtures/known_truths.json` (depends on Phase A)
 
+> **✅ DONE 2026-06-19** (commit forthcoming). Design hardened after
+> discovering CI has a structural inability to verify dist (no PDF, no
+> build). Final design: known_truths is a **release-gate** test, not a
+> CI test. `pytest tests/test_known_truths.py` is invoked inside
+> `scripts/release_check.sh` and skips with a loud message when run
+> outside a built tree. 37 truths spanning all 16 datasets, all passing.
+> Datasets covered: ability_scores, classes, conditions, damage_types,
+> diseases, equipment, features, lineages, magic_items, monsters,
+> poisons, rules, skills, spells, tables, weapon_properties.
+
 - Hand-curate ~30 facts spanning all 16 datasets: "Fireball is
   3rd-level evocation, 8d6 fire"; "Goblin AC is 15"; "Barbarian hit die
   is d12"; "Acid damage type id is `acid`".

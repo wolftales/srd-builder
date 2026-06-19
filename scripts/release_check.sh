@@ -77,4 +77,9 @@ if command -v jq &> /dev/null; then
   done
 fi
 
+# Known-truths gate: pins hand-curated field values on specific records so
+# silent parser drift (e.g., "Fireball is now level 4") fails the release.
+# Skipped in CI by design (no PDF -> no build -> no dist); enforced here.
+pytest tests/test_known_truths.py -q
+
 echo "Release check passed for ${RULESET} in ${OUT_DIR}."

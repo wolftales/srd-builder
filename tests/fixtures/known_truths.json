@@ -1,0 +1,421 @@
+{
+  "_meta": {
+    "purpose": "Hand-curated facts that must survive every build. Each truth pins a small number of fields on a specific shipped record so that silent parser drift (e.g., 'Fireball is now level 4' or 'Goblin AC dropped to 14') fails loudly at release-gate time. Run via tests/test_known_truths.py. Requires a built dist/<ruleset>/; the test skips with a loud message when dist is absent (e.g., in CI, which does not have the PDF).",
+    "source": "SRD 5.1 (D&D 5e SRD CC v5.1)",
+    "ruleset": "srd_5_1",
+    "field_semantics": "Each declared field must match exactly (==). Lists compare by equality; scalars compare by ==. Nested objects can be pinned by including their full expected value."
+  },
+  "datasets": {
+    "ability_scores": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "ability:strength",
+          "fields": {
+            "abbreviation": "STR",
+            "name": "Strength",
+            "page": 76,
+            "simple_name": "strength"
+          }
+        },
+        {
+          "id": "ability:charisma",
+          "fields": {
+            "abbreviation": "CHA",
+            "name": "Charisma",
+            "page": 78
+          }
+        }
+      ]
+    },
+    "skills": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "skill:athletics",
+          "fields": {
+            "ability": "strength",
+            "ability_id": "ability:strength",
+            "name": "Athletics",
+            "page": 76
+          }
+        },
+        {
+          "id": "skill:perception",
+          "fields": {
+            "ability": "wisdom",
+            "ability_id": "ability:wisdom",
+            "name": "Perception",
+            "page": 78
+          }
+        }
+      ]
+    },
+    "damage_types": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "damage:acid",
+          "fields": {
+            "name": "Acid",
+            "simple_name": "acid"
+          }
+        },
+        {
+          "id": "damage:fire",
+          "fields": {
+            "name": "Fire",
+            "simple_name": "fire"
+          }
+        }
+      ]
+    },
+    "weapon_properties": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "weapon_property:finesse",
+          "fields": {
+            "name": "Finesse",
+            "page": 147
+          }
+        },
+        {
+          "id": "weapon_property:two_handed",
+          "fields": {
+            "name": "Two-Handed",
+            "page": 147
+          }
+        }
+      ]
+    },
+    "conditions": {
+      "container_key": "conditions",
+      "truths": [
+        {
+          "id": "condition:blinded",
+          "fields": {
+            "name": "Blinded",
+            "page": 358
+          }
+        },
+        {
+          "id": "condition:prone",
+          "fields": {
+            "name": "Prone",
+            "page": 358
+          }
+        },
+        {
+          "id": "condition:exhaustion",
+          "fields": {
+            "name": "Exhaustion",
+            "page": 358
+          }
+        }
+      ]
+    },
+    "spells": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "spell:fireball",
+          "fields": {
+            "level": 3,
+            "school": "evocation",
+            "name": "Fireball",
+            "page": 144,
+            "classes": [
+              "sorcerer",
+              "wizard"
+            ]
+          }
+        },
+        {
+          "id": "spell:cure_wounds",
+          "fields": {
+            "level": 1,
+            "school": "evocation",
+            "name": "Cure Wounds",
+            "page": 132
+          }
+        },
+        {
+          "id": "spell:magic_missile",
+          "fields": {
+            "level": 1,
+            "school": "evocation",
+            "name": "Magic Missile",
+            "page": 161,
+            "classes": [
+              "sorcerer",
+              "wizard"
+            ]
+          }
+        }
+      ]
+    },
+    "classes": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "class:barbarian",
+          "fields": {
+            "name": "Barbarian",
+            "hit_die": "d12",
+            "primary_abilities": [
+              "strength"
+            ],
+            "saving_throw_proficiencies": [
+              "strength",
+              "constitution"
+            ]
+          }
+        },
+        {
+          "id": "class:wizard",
+          "fields": {
+            "name": "Wizard",
+            "hit_die": "d6",
+            "primary_abilities": [
+              "intelligence"
+            ],
+            "saving_throw_proficiencies": [
+              "intelligence",
+              "wisdom"
+            ]
+          }
+        }
+      ]
+    },
+    "lineages": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "lineage:elf",
+          "fields": {
+            "name": "Elf",
+            "size": "Medium",
+            "speed": 30,
+            "languages": [
+              "Common",
+              "Elvish"
+            ]
+          }
+        },
+        {
+          "id": "lineage:dwarf",
+          "fields": {
+            "name": "Dwarf",
+            "size": "Medium",
+            "speed": 25,
+            "languages": [
+              "Common",
+              "Dwarvish"
+            ]
+          }
+        }
+      ]
+    },
+    "monsters": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "monster:goblin",
+          "fields": {
+            "name": "Goblin",
+            "size": "Small",
+            "type": "humanoid (goblinoid)",
+            "alignment": "neutral evil",
+            "challenge_rating": 0.25,
+            "xp_value": 50,
+            "hit_dice": "2d6"
+          }
+        },
+        {
+          "id": "monster:adult_red_dragon",
+          "fields": {
+            "name": "Adult Red Dragon",
+            "size": "Huge",
+            "type": "dragon",
+            "challenge_rating": 17,
+            "xp_value": 18000
+          }
+        },
+        {
+          "id": "monster:ancient_red_dragon",
+          "fields": {
+            "name": "Ancient Red Dragon",
+            "size": "Gargantuan",
+            "challenge_rating": 24,
+            "xp_value": 62000
+          }
+        },
+        {
+          "id": "monster:basilisk",
+          "fields": {
+            "name": "Basilisk",
+            "type": "monstrosity",
+            "challenge_rating": 3,
+            "xp_value": 700
+          }
+        }
+      ]
+    },
+    "equipment": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "item:longsword",
+          "fields": {
+            "name": "Longsword",
+            "category": "weapon",
+            "sub_category": "martial-melee",
+            "proficiency": "martial",
+            "weight_lb": 3.0,
+            "page": 65
+          }
+        },
+        {
+          "id": "item:chain_mail",
+          "fields": {
+            "name": "Chain mail",
+            "category": "armor",
+            "sub_category": "heavy",
+            "stealth_disadvantage": true,
+            "strength_req": 13,
+            "weight_lb": 55.0,
+            "page": 63
+          }
+        }
+      ]
+    },
+    "magic_items": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "magic_item:bag_of_holding",
+          "fields": {
+            "name": "Bag of Holding",
+            "rarity": "uncommon",
+            "requires_attunement": false,
+            "type": "Wondrous item",
+            "page": 210
+          }
+        },
+        {
+          "id": "magic_item:cloak_of_protection",
+          "fields": {
+            "name": "Cloak of Protection",
+            "rarity": "uncommon",
+            "requires_attunement": true,
+            "type": "Wondrous item",
+            "page": 214
+          }
+        },
+        {
+          "id": "magic_item:vorpal_sword",
+          "fields": {
+            "name": "Vorpal Sword",
+            "rarity": "legendary",
+            "requires_attunement": true,
+            "type": "Weapon",
+            "page": 248
+          }
+        }
+      ]
+    },
+    "diseases": {
+      "container_key": "diseases",
+      "truths": [
+        {
+          "id": "disease:cackle_fever",
+          "fields": {
+            "name": "Cackle Fever"
+          }
+        },
+        {
+          "id": "disease:sewer_plague",
+          "fields": {
+            "name": "Sewer Plague"
+          }
+        },
+        {
+          "id": "disease:sight_rot",
+          "fields": {
+            "name": "Sight Rot"
+          }
+        }
+      ]
+    },
+    "poisons": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "poison:assassins_blood",
+          "fields": {
+            "poison_type": "ingested",
+            "simple_name": "assassins_blood"
+          }
+        },
+        {
+          "id": "poison:drow_poison",
+          "fields": {
+            "simple_name": "drow_poison"
+          }
+        }
+      ]
+    },
+    "features": {
+      "container_key": "features",
+      "truths": [
+        {
+          "id": "feature:barbarian:rage",
+          "fields": {
+            "name": "Rage",
+            "owner_id": "class:barbarian",
+            "page": 8
+          }
+        },
+        {
+          "id": "feature:wizard:spellcasting",
+          "fields": {
+            "name": "Spellcasting",
+            "owner_id": "class:wizard"
+          }
+        }
+      ]
+    },
+    "rules": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "rule:advantage_and_disadvantage",
+          "fields": {
+            "name": "Advantage and Disadvantage",
+            "category": "Using Ability Scores",
+            "page": 76
+          }
+        }
+      ]
+    },
+    "tables": {
+      "container_key": "items",
+      "truths": [
+        {
+          "id": "table:ability_scores_and_modifiers",
+          "fields": {
+            "name": "Ability Scores and Modifiers",
+            "category": "character_creation"
+          }
+        },
+        {
+          "id": "table:barbarian_progression",
+          "fields": {
+            "name": "The Barbarian"
+          }
+        }
+      ]
+    }
+  }
+}
