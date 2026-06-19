@@ -17,9 +17,8 @@ EXTRACTOR_VERSION: Final = "0.4.0"
 # Per-ruleset identity registry.
 #
 # A ruleset has multiple identifiers serving different consumers:
-# - id              — programmatic slug. Used as the --ruleset CLI arg,
-#                     filesystem dir name (rulesets/<id>/, dist/<id>/),
-#                     and Python package path (srd_builder.rulesets.<id>).
+# - id              — programmatic slug. Used as the --ruleset CLI arg
+#                     and filesystem dir name (rulesets/<id>/, dist/<id>/).
 # - source_id       — canonical upstream identifier. Stamped on every
 #                     record's "source" field. Matches the official
 #                     download filename root (e.g. SRD_CC_v5.1).
@@ -31,9 +30,7 @@ EXTRACTOR_VERSION: Final = "0.4.0"
 # To add a ruleset (e.g. SRD 5.2.1):
 #   1. Add an entry below.
 #   2. Create rulesets/<id>/ holding the PDF.
-#   3. Create src/srd_builder/rulesets/<id>/ holding any
-#      ruleset-specific Python data (mirroring srd_5_1).
-#   4. Run: python -m srd_builder.build --ruleset <id> ...
+#   3. Run: python -m srd_builder.build --ruleset <id> ...
 RULESETS: Final[dict[str, dict[str, str]]] = {
     "srd_5_1": {
         "id": "srd_5_1",

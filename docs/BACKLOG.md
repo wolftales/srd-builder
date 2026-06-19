@@ -287,11 +287,11 @@ D as v0.28.2.
 
 ---
 
-## Active: Cruft cleanup (small, drive-by)
+## Completed: Cruft cleanup (drive-by, 2026-06-19)
 
-Captured during the 2026-06-19 audit. Roughly ~50 lines of dead code +
-two empty directories. No version bump required — no shipped-data
-changes. Ship as one REMOVE commit.
+> **✅ DONE.** Captured during the 2026-06-19 audit, shipped as a single
+> REMOVE commit alongside this BACKLOG closeout. No version bump (no
+> shipped-data changes). Items closed:
 
 - **Dead code: `TABLES_APPENDIX` + `get_tables_toc()`** in
   [src/srd_builder/utils/page_index.py](../src/srd_builder/utils/page_index.py)
@@ -299,18 +299,20 @@ changes. Ship as one REMOVE commit.
   formatter function. **Zero callers in the codebase.** The actual
   `dist/tables.json` is built by extraction (`TARGET_TABLES` engine
   config + `TableExtractor`), not from this hand-maintained list.
+  **Deleted.**
 - **Empty cruft package: `src/srd_builder/rulesets/`** — `__init__.py`
   (empty) plus `srd_5_1/__init__.py` (one-line "hardcoded targets -
   legacy tech debt" docstring on an otherwise empty module). Nothing
   imports `srd_builder.rulesets.*`. Vestigial scaffold from the v0.26.2
   multi-ruleset refactor. The actual `rulesets/` directory the build
   uses is a top-level sibling of `src/`, not this nested Python package.
+  **Deleted.**
 - **Stale comments in
   [src/srd_builder/constants.py](../src/srd_builder/constants.py)** —
-  the `RULESETS` registry docstring references `srd_builder.rulesets.<id>`
-  and instructs new-ruleset adders to create
-  `src/srd_builder/rulesets/<id>/`. Should be removed when the empty
-  package above is removed.
+  the `RULESETS` registry docstring referenced `srd_builder.rulesets.<id>`
+  and instructed new-ruleset adders to create
+  `src/srd_builder/rulesets/<id>/`. **Fixed** (references removed; step
+  3 collapsed into step 2).
 
 ---
 
