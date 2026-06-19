@@ -37,7 +37,7 @@ this file is the *current state*.
 | `spell_class_targets.py` | 917 | ✅ **RETIRED v0.27.0 P2** | ✓ | [`extract_spell_classes.py`](../src/srd_builder/extract/datasets/extract_spell_classes.py) | **Equivalent** — 778-for-778 byte-perfect parity across all 8 caster classes | — |
 | `class_targets.py` | 763 | ✅ **RETIRED v0.27.2 P3** | ✓ | [`extract_classes.py`](../src/srd_builder/extract/datasets/extract_classes.py) | **Better** — caught one transcription error (Monk L4 ordering); 4 silently-fabricated cells now reproducer-pinned overrides | — |
 | `poison_descriptions.py` | 129 | ✅ **RETIRED v0.27.3** | ✓ | [`parse_poison_descriptions.py`](../src/srd_builder/parse/parse_poison_descriptions.py) returns clean 14/14 with byte-perfect description/save/damage parity | **Equivalent** — 14/14 perfect match against legacy POISON_DESCRIPTIONS dict | — |
-| `equipment_extended.py` | 167 | ⬜ **LIVE** (augmentation) | N/A (not in SRD) | N/A — items are author-invented to keep pack cross-references resolvable | — | Promote `_note` → structured `_provenance` block per BACKLOG proposal 2 |
+| `equipment_extended.py` | 167 | ✅ **LIVE** (augmentation, structured provenance since v0.27.7) | N/A (not in SRD) | N/A — items are author-invented to keep pack and monster cross-references resolvable | Every record now carries a typed `_provenance` block (`source`, `reason`, `referenced_by`, `module`, `estimates`) instead of free-text `_note`; schema bumped to `equipment.schema.json` 2.2.0 | — |
 | `equipment_packs.py` | 323 | ✅ **RETIRED v0.27.5 P6** | ✓ | [`extract_equipment_packs.py`](../src/srd_builder/extract/datasets/extract_equipment_packs.py) | **Equivalent** — 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) against the retired EQUIPMENT_PACKS literal | — |
 | `equipment_descriptions.py` | 398 | ✅ **RETIRED v0.27.6 P7** | ✓ | [`extract_equipment_descriptions.py`](../src/srd_builder/extract/datasets/extract_equipment_descriptions.py) | **Better** — 69/69 items recovered with PDF-truth corrections: 2 page-attribution fixes (`item:antitoxin-vial` p.67→p.66, `item:arcane-focus` p.67→p.66) and 6 description-content additions (parenthetical cross-references and table mentions that the curated literal had editorially stripped, now restored) | — |
 | `extract_equipment.py` page constants | 2 | ✅ **RESOLVED v0.27.4** | ✓ | Constants harmonized to 1-indexed; PDF page 74 (Services / Lifestyle tables) now extracted | Bug-fix — 8 dropped rows recovered | — |
@@ -122,12 +122,12 @@ a failed save"` phrasing.
 | Field | Value |
 | --- | --- |
 | Path | [src/srd_builder/assemble/equipment_extended.py](../src/srd_builder/assemble/equipment_extended.py) |
-| Scope | ~12 items referenced in equipment packs but not in any SRD equipment table; *inferred* costs/weights |
+| Scope | 9 items referenced in equipment packs (8) or monster stat blocks (1) but not in any SRD equipment table; *inferred* costs/weights for pack-referenced items, placeholder cost (0 gp) for the monster-referenced `item:natural_armor` |
 | Reason | `cross_reference_glue` |
 | PDF pages | (none — items are not in SRD) |
-| Last verified | 2026-06-17 |
-| Reproducer | N/A (records flagged in source by `_note` field; should be promoted to structured `_provenance` block per BACKLOG.md proposal 2) |
-| Downstream | `dist/srd_5_1/equipment.json` (12 records with `_note`) |
+| Last verified | 2026-06-18 (v0.27.7) |
+| Provenance block | Every record carries a typed `_provenance` block per BACKLOG proposal 2: `{source: "inferred", reason: "pack_cross_reference" \| "monster_cross_reference", referenced_by: <pack name or surface>, module: "equipment_extended.py", estimates: ["cost", "weight"] \| []}`. The `ExtendedProvenance` TypedDict pins the shape statically; the `equipment.schema.json` 2.2.0 `_provenance` property pins it at the JSON layer. Pinned by [tests/test_equipment_extended_provenance.py](../tests/test_equipment_extended_provenance.py) (5 tests: uniform shape, valid reasons, pack-items estimate cost+weight, natural_armor estimates nothing, `get_extended_equipment` preserves provenance). |
+| Downstream | `dist/srd_5_1/equipment.json` (9 records with `_provenance`) |
 
 ### `equipment_packs.py` — EQUIPMENT_PACKS  *(retired in v0.27.5)*
 
@@ -177,8 +177,10 @@ a failed save"` phrasing.
   `tests/test_pdf_provenance.py`. The test skips gracefully when the PDF
   is not present (CI / container builds).
 - Records emitted from `cross_reference_glue` or `pdf_missing` sources
-  should carry an optional `_provenance` block (TODO: promote
-  `equipment_extended.py`'s `_note` field per BACKLOG proposal 2).
+  carry a structured `_provenance` block (`source`, `reason`,
+  `referenced_by`, `module`, `estimates`). Pinned for
+  `equipment_extended.py` in v0.27.7 via the `ExtendedProvenance`
+  TypedDict + `equipment.schema.json` 2.2.0 `_provenance` property.
 
 ## Cumulative finding (v0.26.0 → v0.27.5)
 
