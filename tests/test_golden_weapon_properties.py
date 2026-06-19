@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_weapon_properties import parse_weapon_properties
-from srd_builder.postprocess import clean_weapon_property_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -17,7 +17,7 @@ def test_weapon_properties_dataset_golden(assert_golden_matches) -> None:
     expected_path = Path("tests/fixtures/srd_5_1/normalized/weapon_properties.json")
 
     parsed = parse_weapon_properties("srd_5_1")
-    processed = [clean_weapon_property_record(wp) for wp in parsed]
+    processed = clean_records(parsed, "weapon_property")
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("weapon_property")),

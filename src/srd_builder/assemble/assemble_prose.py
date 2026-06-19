@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 from ..extract.extraction_metadata import TABLES
-from ..postprocess import clean_condition_record, clean_disease_record
+from ..postprocess.engine import clean_records
 from ..utils.metadata import meta_block
 from ..utils.prose import ProseExtractor
 
@@ -66,11 +66,11 @@ def assemble_prose_dataset(
     # Parse into structured records using provided parser
     parsed_records = parser_func(raw_data["sections"], ruleset)
 
-    # Postprocess: normalize IDs and polish text
-    if dataset_name == "conditions":
-        parsed_records = [clean_condition_record(r) for r in parsed_records]
-    elif dataset_name == "diseases":
-        parsed_records = [clean_disease_record(r) for r in parsed_records]
+    # Postprocess: normalize IDs and polish text via config-driven engine.
+    if dataset_name in {"conditions", "diseases"}:
+        # Dataset name is plural; engine config key is singular.
+        config_key = dataset_name[:-1]
+        parsed_records = clean_records(parsed_records, config_key)
 
     # Sort by name
     parsed_records.sort(key=lambda r: r.get("name", ""))

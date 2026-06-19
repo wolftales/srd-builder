@@ -129,8 +129,11 @@ and the schema exemplars.
    `extraction_metadata.py`). PDF-text primitives live in
    [src/srd_builder/utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py).
 2. **Parse** — `src/srd_builder/parse/parse_<dataset>.py` maps raw text into typed records.
-3. **Postprocess** — `src/srd_builder/postprocess/engine.py` drives `DATASET_CONFIGS` for
-   normalization (whitespace, ID stamping, sorting, alias resolution).
+3. **Postprocess** — `src/srd_builder/postprocess/engine.py` drives `DATASET_CONFIGS`
+   (in `configs.py`) to normalize 12 of the 16 datasets declaratively (id stamping,
+   whitespace polish, nested-field cleaning). The 4 remaining datasets — monsters,
+   spells, equipment, rules — keep custom per-record cleaners because they carry
+   real domain logic or take extra kwargs the engine cannot model.
 4. **Assemble** — `src/srd_builder/assemble/` builds the cross-dataset `index.json`.
 5. **Validate** — `src/srd_builder/validate.py` runs every dataset against its JSON Schema
    (`schemas/<dataset>.schema.json`) using `Draft202012Validator`.
@@ -240,7 +243,7 @@ srd-builder/
 │   │   ├── table_targets.py      # Hand-curated table targets
 │   │   └── datasets/             # Per-dataset PDF extractors (extract_*.py)
 │   ├── parse/                    # parse_<dataset>.py
-│   ├── postprocess/              # engine.py + DATASET_CONFIGS
+│   ├── postprocess/              # engine.py + DATASET_CONFIGS (12 datasets) + 4 custom modules
 │   ├── assemble/                 # Cross-dataset indexer
 │   ├── rulesets/srd_5_1/         # Per-ruleset hand-curated Python data (class/lineage/spell targets)
 │   └── utils/                    # pdf_probe, page_index, metadata, prose, helpers
@@ -287,6 +290,7 @@ Key milestones:
 - **v0.27.x** — Hand-curated data retirement (lineages, spell-class lists, classes, poisons, equipment packs/descriptions); provenance hardening
 - **v0.28.0** — Data-integrity foundation (exemplar CI gate, known-truths gate, hyphenation fixes, round-trip page audit)
 - **v0.28.1** — Table id naming consistency (`table:adventuring_gear`)
+- **v0.29.0** — Postprocess engine consolidation: 12 datasets migrated to config-driven engine; 4 keep custom cleaners
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License

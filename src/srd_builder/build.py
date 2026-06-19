@@ -58,21 +58,12 @@ from .parse.parse_spells import parse_spell_records
 from .parse.parse_tables import parse_single_table
 from .parse.parse_weapon_properties import parse_weapon_properties
 from .postprocess import (
-    clean_ability_score_record,
-    clean_class_record,
-    clean_damage_type_record,
     clean_equipment_record,
-    clean_feature_record,
-    clean_lineage_record,
-    clean_magic_item_record,
     clean_monster_record,
-    clean_poison_record,
     clean_rule_record,
-    clean_skill_record,
     clean_spell_record,
-    clean_table_record,
-    clean_weapon_property_record,
 )
+from .postprocess.engine import clean_records
 from .utils.metadata import (
     DATASET_TO_SCHEMA,
     generate_meta_json,
@@ -194,9 +185,7 @@ def _write_datasets(  # noqa: PLR0913
 
     # Write magic items (v0.16.0)
     # Parse extracts structure, postprocess normalizes (following modular pattern)
-    processed_magic_items = (
-        [clean_magic_item_record(item) for item in magic_items] if magic_items else []
-    )
+    processed_magic_items = clean_records(magic_items, "magic_item") if magic_items else []
 
     magic_items_doc = wrap_with_meta(
         {"items": processed_magic_items},
@@ -210,7 +199,7 @@ def _write_datasets(  # noqa: PLR0913
 
     # Write tables (v0.7.0)
     # Postprocess: normalize IDs and polish text
-    processed_tables = [clean_table_record(t) for t in tables] if tables else None
+    processed_tables = clean_records(tables, "table") if tables else None
     if processed_tables:
         # Sort tables by page number (document/TOC order)
         def get_sort_page(table: dict[str, Any]) -> int:
@@ -258,7 +247,7 @@ def _write_datasets(  # noqa: PLR0913
 
     # Write lineages (v0.8.0)
     # Postprocess: normalize IDs and polish text
-    processed_lineages = [clean_lineage_record(lin) for lin in lineages] if lineages else None
+    processed_lineages = clean_records(lineages, "lineage") if lineages else None
     if processed_lineages:
         lineages_doc = wrap_with_meta(
             {"items": processed_lineages},
@@ -272,7 +261,7 @@ def _write_datasets(  # noqa: PLR0913
 
     # Write classes (v0.8.2)
     # Postprocess: normalize IDs and polish text
-    processed_classes = [clean_class_record(c) for c in classes] if classes else None
+    processed_classes = clean_records(classes, "class") if classes else None
     if processed_classes:
         classes_doc = wrap_with_meta(
             {"items": processed_classes},
@@ -288,7 +277,7 @@ def _write_datasets(  # noqa: PLR0913
     # Atomic reference dataset: 6 core D&D ability scores
     # Static data from SRD pages 76-78, no PDF extraction required
     processed_ability_scores = (
-        [clean_ability_score_record(a) for a in ability_scores] if ability_scores else None
+        clean_records(ability_scores, "ability_score") if ability_scores else None
     )
     if processed_ability_scores:
         ability_scores_doc = wrap_with_meta(
@@ -304,9 +293,7 @@ def _write_datasets(  # noqa: PLR0913
     # Write damage_types (v0.20.0)
     # Atomic reference dataset: 13 canonical D&D damage types
     # Static data from SRD page 97, no PDF extraction required
-    processed_damage_types = (
-        [clean_damage_type_record(dt) for dt in damage_types] if damage_types else None
-    )
+    processed_damage_types = clean_records(damage_types, "damage_type") if damage_types else None
     if processed_damage_types:
         damage_types_doc = wrap_with_meta(
             {"items": processed_damage_types},
@@ -321,7 +308,7 @@ def _write_datasets(  # noqa: PLR0913
     # Write skills (v0.20.0)
     # Atomic reference dataset: 18 D&D 5e skills
     # Static data from SRD pages 76-79, no PDF extraction required
-    processed_skills = [clean_skill_record(s) for s in skills] if skills else None
+    processed_skills = clean_records(skills, "skill") if skills else None
     if processed_skills:
         skills_doc = wrap_with_meta(
             {"items": processed_skills},
@@ -337,9 +324,7 @@ def _write_datasets(  # noqa: PLR0913
     # Atomic reference dataset: 11 D&D 5e weapon properties
     # Static data from SRD page 147, no PDF extraction required
     processed_weapon_properties = (
-        [clean_weapon_property_record(wp) for wp in weapon_properties]
-        if weapon_properties
-        else None
+        clean_records(weapon_properties, "weapon_property") if weapon_properties else None
     )
     if processed_weapon_properties:
         weapon_properties_doc = wrap_with_meta(
@@ -1311,7 +1296,7 @@ def build(  # noqa: C901
                 )
 
                 # Postprocess: normalize IDs and polish text
-                processed_poisons = [clean_poison_record(p) for p in parsed_poisons]
+                processed_poisons = clean_records(parsed_poisons, "poison")
 
                 # Wrap as items array with proper _meta
                 poisons_doc = wrap_with_meta(
@@ -1326,7 +1311,7 @@ def build(  # noqa: C901
     # Build features document (v0.11.0)
     if all_features:
         # Postprocess: normalize IDs and polish text
-        processed_features_list = [clean_feature_record(f) for f in all_features]
+        processed_features_list = clean_records(all_features, "feature")
         features_doc = wrap_with_meta(
             {"features": processed_features_list},
             ruleset=ruleset,

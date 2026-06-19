@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_conditions import parse_condition_records
-from srd_builder.postprocess import clean_condition_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -22,7 +22,7 @@ def test_condition_dataset_matches_normalized_fixture(assert_golden_matches) -> 
     parsed = parse_condition_records(sections, "srd_5_1")
 
     # Postprocess: normalize IDs and polish text
-    processed = [clean_condition_record(c) for c in parsed]
+    processed = clean_records(parsed, "condition")
 
     # Wrap with metadata
     document = {

@@ -34,6 +34,8 @@ class RecordConfig:
         text_fields: Top-level string fields to polish
         text_arrays: Top-level list fields where each element is text to polish
         nested_structures: Dict of field → subfields, for lists of dicts
+        normalize_existing_id: When True, re-normalize the suffix of an
+            already-present id (for datasets whose parse stage emits ids).
         custom_transform: Optional function for dataset-specific logic
     """
 
@@ -42,6 +44,7 @@ class RecordConfig:
     text_fields: list[str] = field(default_factory=list)
     text_arrays: list[str] = field(default_factory=list)
     nested_structures: dict[str, list[str]] = field(default_factory=dict)
+    normalize_existing_id: bool = False
     custom_transform: Callable[[dict[str, Any]], dict[str, Any]] | None = None
 
 
@@ -89,16 +92,36 @@ DATASET_CONFIGS = {
         id_prefix="class",
         text_fields=["description", "hit_die_description"],
         text_arrays=["equipment"],
-        nested_structures={
-            "proficiencies.armor": [],
-            "proficiencies.weapons": [],
-            "proficiencies.tools": [],
-            "proficiencies.saving_throws": [],
-            "proficiencies.skills": [],
-        },
     ),
-    # NOTE: Monster, spell, equipment, magic_item, rule configs
-    # would go here once we migrate those modules to engine
+    # Atomic-reference datasets: parse stage emits ids; engine only
+    # re-normalizes the suffix and polishes the description array.
+    "ability_score": RecordConfig(
+        id_prefix="ability",
+        text_arrays=["description"],
+        normalize_existing_id=True,
+    ),
+    "damage_type": RecordConfig(
+        id_prefix="damage",
+        text_arrays=["description"],
+        normalize_existing_id=True,
+    ),
+    "skill": RecordConfig(
+        id_prefix="skill",
+        text_arrays=["description"],
+        normalize_existing_id=True,
+    ),
+    "weapon_property": RecordConfig(
+        id_prefix="weapon_property",
+        text_arrays=["description"],
+        normalize_existing_id=True,
+    ),
+    "magic_item": RecordConfig(
+        id_prefix="magic_item",
+        text_fields=["attunement_requirements"],
+        text_arrays=["description"],
+    ),
+    # NOTE: monsters, rules, spells, equipment keep their custom
+    # postprocess modules (real domain logic or extra kwargs).
 }
 
 
@@ -133,6 +156,15 @@ def _clean_class_proficiencies(cls: dict[str, Any]) -> dict[str, Any]:
     return cls
 
 
+def _strip_magic_item_name(item: dict[str, Any]) -> dict[str, Any]:
+    """Strip trailing periods from magic item names (cosmetic fix)."""
+    name = item.get("name")
+    if isinstance(name, str):
+        item["name"] = name.rstrip(".")
+    return item
+
+
 # Attach custom transforms to configs
 DATASET_CONFIGS["table"].custom_transform = _clean_table_rows
 DATASET_CONFIGS["class"].custom_transform = _clean_class_proficiencies
+DATASET_CONFIGS["magic_item"].custom_transform = _strip_magic_item_name

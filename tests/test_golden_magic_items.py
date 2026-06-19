@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_magic_items import parse_magic_items
-from srd_builder.postprocess import clean_magic_item_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -22,8 +22,8 @@ def test_magic_items_dataset_matches_normalized_fixture(assert_golden_matches) -
     magic_items_raw = json.loads(raw_path.read_text(encoding="utf-8"))
     # parse_magic_items extracts structure, returns dicts without IDs/normalization
     parsed = parse_magic_items({"items": magic_items_raw}, "srd_5_1")
-    # clean_magic_item_record applies normalization (IDs, text polish)
-    processed = [clean_magic_item_record(item) for item in parsed]
+    # clean_records applies normalization (IDs, text polish)
+    processed = clean_records(parsed, "magic_item")
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("magic_item")),

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from srd_builder.postprocess import clean_table_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -36,7 +36,7 @@ def test_table_dataset_matches_normalized_fixture(assert_golden_matches) -> None
         parsed.append(record)
 
     # Postprocess: normalize IDs and polish text
-    processed = [clean_table_record(t) for t in parsed]
+    processed = clean_records(parsed, "table")
 
     # Wrap with metadata
     document = {

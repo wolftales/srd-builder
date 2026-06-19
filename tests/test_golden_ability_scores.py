@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_ability_scores import parse_ability_scores
-from srd_builder.postprocess import clean_ability_score_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -17,7 +17,7 @@ def test_ability_scores_dataset_golden(assert_golden_matches) -> None:
     expected_path = Path("tests/fixtures/srd_5_1/normalized/ability_scores.json")
 
     parsed = parse_ability_scores("srd_5_1")
-    processed = [clean_ability_score_record(a) for a in parsed]
+    processed = clean_records(parsed, "ability_score")
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("ability_score")),

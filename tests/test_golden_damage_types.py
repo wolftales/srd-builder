@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_damage_types import parse_damage_types
-from srd_builder.postprocess import clean_damage_type_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -17,7 +17,7 @@ def test_damage_types_dataset_golden(assert_golden_matches) -> None:
     expected_path = Path("tests/fixtures/srd_5_1/normalized/damage_types.json")
 
     parsed = parse_damage_types("srd_5_1")
-    processed = [clean_damage_type_record(dt) for dt in parsed]
+    processed = clean_records(parsed, "damage_type")
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("damage_type")),

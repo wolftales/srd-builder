@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_lineages import _build_lineage_record
-from srd_builder.postprocess import clean_lineage_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -22,7 +22,7 @@ def test_lineage_dataset_matches_normalized_fixture(assert_golden_matches) -> No
     parsed = [_build_lineage_record(ld) for ld in lineage_data]
 
     # Postprocess: normalize IDs and polish text
-    processed = [clean_lineage_record(lin) for lin in parsed]
+    processed = clean_records(parsed, "lineage")
 
     # Wrap with metadata
     document = {

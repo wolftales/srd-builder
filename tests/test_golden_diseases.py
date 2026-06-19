@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_diseases import parse_disease_records
-from srd_builder.postprocess import clean_disease_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -22,7 +22,7 @@ def test_disease_dataset_matches_normalized_fixture(assert_golden_matches) -> No
     parsed = parse_disease_records(sections, "srd_5_1")
 
     # Postprocess: normalize IDs and polish text
-    processed = [clean_disease_record(d) for d in parsed]
+    processed = clean_records(parsed, "disease")
 
     # Wrap with metadata
     document = {

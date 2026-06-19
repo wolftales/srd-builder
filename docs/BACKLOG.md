@@ -457,7 +457,14 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
    to accurately describe the hybrid: engine drives 12 datasets,
    custom modules drive 4 (monsters/rules/spells/equipment).
 7. Run full test suite + build verification.
-8. Ship as v0.29.0 (minor bump — consumer-visible if anyone imports
+8. **Quality gate (acceptance criterion):** run
+   `scripts/audit_dataset_quality.py` and `scripts/quality_report.py`
+   on the dist output before and after the migration. Output must be
+   equivalent or strictly better — no regression in record counts,
+   completeness, schema validation, or quality metrics. Byte-identical
+   JSON for the 12 migrated datasets is the target; any diff must be a
+   documented improvement (e.g., a dead-code bug the engine fixes).
+9. Ship as v0.29.0 (minor bump — consumer-visible if anyone imports
    `srd_builder.postprocess.conditions.clean_condition_record`
    directly; JSON output unchanged).
 
@@ -474,6 +481,25 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
   `dataset → {schema, extract_config, parse_strategy, postprocess_config}`
   is the architectural endgame. Premature until Phase 1 + Phase 3 ship
   and we can see what the per-stage configs actually look like.
+- **Cross-stage naming consistency** — rename `extract/extractor.py` →
+  `extract/engine.py` so the config-driven dispatcher has the same
+  filename in every stage that uses the pattern (`extract/engine.py`,
+  `postprocess/engine.py`, eventually `parse/engine.py`). Pure rename
+  + import update; defer until Phase 1 lands so the diff is small and
+  the consistency story is undeniable.
+- **Unify the two assembly code paths** — 12 datasets flow through
+  `build._write_datasets` (parse → engine → wrap_with_meta → write),
+  while `conditions` / `diseases` / `poisons` / `features` arrive at
+  `_write_datasets` as pre-built `{_meta, items|conditions|...}` docs
+  constructed earlier in `build.py` (poisons/features) or in
+  `assemble.assemble_prose` (conditions/diseases). The split is
+  historical, not principled, and shows up as inconsistent fixture
+  keys (`items` vs the dataset name) and divergent error handling.
+  Goal: every dataset should follow the same parse → engine → wrap
+  shape and write through one helper. Likely a small refactor once
+  Phase 1 ships and the engine is the canonical postprocess entry
+  point — but worth its own ticket so it doesn't blur the engine
+  consolidation diff.
 
 ### Phase D follow-on — Original entry (kept for history)
 

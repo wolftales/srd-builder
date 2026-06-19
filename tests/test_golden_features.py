@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from srd_builder.postprocess import clean_feature_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.postprocess.ids import normalize_id
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
@@ -43,7 +43,7 @@ def test_feature_dataset_matches_normalized_fixture(assert_golden_matches) -> No
             }
         )
 
-    processed = [clean_feature_record(f) for f in parsed]
+    processed = clean_records(parsed, "feature")
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("features")),

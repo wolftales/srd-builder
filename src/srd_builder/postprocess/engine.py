@@ -51,6 +51,9 @@ def clean_record(
     if "id" not in record:
         if "simple_name" in record:
             record["id"] = f"{config.id_prefix}:{record['simple_name']}"
+    elif config.normalize_existing_id and ":" in record["id"]:
+        prefix, suffix = record["id"].split(":", 1)
+        record["id"] = f"{prefix}:{normalize_id(suffix)}"
 
     # 3. Polish top-level text fields
     for field in config.text_fields:

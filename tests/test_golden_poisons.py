@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from srd_builder.parse.parse_poisons_table import parse_poisons_table
-from srd_builder.postprocess import clean_poison_record
+from srd_builder.postprocess.engine import clean_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -23,7 +23,7 @@ def test_poison_dataset_matches_normalized_fixture(assert_golden_matches) -> Non
     parsed = parse_poisons_table(poisons_table, "srd_5_1", descriptions=poison_descriptions)
 
     # Postprocess: normalize IDs and polish text
-    processed = [clean_poison_record(p) for p in parsed]
+    processed = clean_records(parsed, "poison")
 
     # Wrap with metadata
     document = {"_meta": meta_block("srd_5_1", read_schema_version("poison")), "items": processed}
