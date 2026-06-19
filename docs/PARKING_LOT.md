@@ -180,13 +180,15 @@ Inconsistent. Worth normalizing during the v1.0 polish pass.
 
 ### JSON Field Ordering & Consistency
 
-**Status:** Low priority
+**Status:** Promoted to **BACKLOG § v0.30.0 Schema-consistency sweep** (2026-06-19)
 
 Dataset shapes are inconsistent: most use `{"_meta": ..., "items": [...]}` but
 `conditions`, `diseases`, and `features` use the dataset name as the array key
-(e.g. `{"conditions": [...]}`). The inventory builder handles both. Worth
-standardizing on `items` everywhere as a v1.0 polish item — but it's a
-breaking change for any consumer that hardcodes the legacy keys.
+(e.g. `{"conditions": [...]}`). Also identified during the v0.29.2 review: the
+`_meta` block itself is inconsistent — `conditions`/`diseases` carry richer
+provenance fields (`pdf_sha256`, `source_pages`, `extraction_warnings`, etc.)
+that the other 14 datasets don't. Both inconsistencies are scoped into the
+v0.30.0 plan as a single coordinated migration window for downstream consumers.
 
 ### Index.json Quality Enhancements
 

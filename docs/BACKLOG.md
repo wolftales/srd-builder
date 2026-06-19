@@ -488,15 +488,27 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
   `postprocess/engine.py`, eventually `parse/engine.py`). Single
   import site updated (`extract/__init__.py`); README + ARCHITECTURE
   references updated.
-- **Unify the two assembly code paths** — ✅ PARTIALLY DONE in **v0.29.2**.
-  Inline `poisons_doc` / `features_doc` construction in `build.py::build_dataset()`
-  moved into `_write_datasets`; 14 of 16 datasets now share one path
-  (`clean_records → wrap_with_meta → write`). The remaining split is
-  principled: `conditions` and `diseases` stay on
-  `assemble.assemble_prose_dataset` because they carry richer
-  PDF-section `_meta` (warnings, page anchors) the simple datasets
-  don't have. The remaining inconsistency is at the **dist-output-key
-  level**, not the code-path level — see next bullet.
+- **Unify the two assembly code paths** — ⚠️ PARTIALLY DONE in **v0.29.2**;
+  the remaining split is **historical, not principled** (corrected
+  2026-06-19). Inline `poisons_doc` / `features_doc` construction in
+  `build.py::build_dataset()` moved into `_write_datasets`; 14 of 16
+  datasets now share one path (`clean_records → wrap_with_meta → write`).
+  `conditions` and `diseases` still flow through
+  `assemble.assemble_prose_dataset` and ship a richer `_meta` block
+  (`dataset`, `source_pages`, `description`, `pdf_sha256`,
+  `{output_key}_count`, `extraction_warnings`) that the other 14
+  datasets don't get. **Initially justified as a principled split**
+  ("prose datasets need the richer meta"); on review that's wrong —
+  every PDF-extracted dataset (equipment, spells, monsters, magic items,
+  lineages, classes, features, poisons, ability scores, damage types,
+  skills, weapon properties, tables, rules) would benefit from the same
+  provenance fields. The split is an artifact of which two modules
+  happened to be the first ones generalized when `assemble_prose_dataset`
+  was introduced; the older modules predate the pattern and never got
+  migrated. **Fix:** lift the prose `_meta` shape onto all 16 datasets
+  (additive, non-breaking) and collapse the two code paths once the
+  shape is uniform. Tracked as the **`_meta` block normalization**
+  bullet in the v0.30.0 plan below.
 - **Normalize dist output keys to `items` across all 16 datasets**
   (v0.30.0 candidate) — `features.json` ships `{"_meta", "features": [...]}`
   and the two prose datasets ship `{"_meta", "conditions"|"diseases": [...]}`,
@@ -509,6 +521,141 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
   the fixture-key handling in `tests/test_engine_postprocess.py` and
   `tests/test_validate_references.py`; bump schema versions for
   `features` and the two prose datasets.
+
+## Active: v0.30.0 — Schema-consistency sweep (Blackmoor migration window)
+
+> **Goal.** A single coordinated breaking-change release so downstream
+> consumers (Blackmoor first) have **one migration** to absorb instead
+> of three or four trickling out as patch releases. Every item below
+> is consumer-visible at the dataset JSON layer; collectively they
+> close the long-standing "inconsistent shape" complaint that's been
+> sitting in PARKING_LOT ("JSON Field Ordering & Consistency") since
+> the v0.10 era.
+
+### Phase 1 — `_meta` block normalization (additive, safe-to-ship-first)
+
+All 16 datasets adopt the same `_meta` shape, currently only on
+`conditions` and `diseases`:
+
+| Field                  | Source                                       | Today (14 simple) | Today (2 prose) |
+| ---------------------- | -------------------------------------------- | :---------------: | :-------------: |
+| `source`               | `RULESETS[ruleset].source_id`                |        ✅         |       ✅        |
+| `ruleset_version`      | `RULESETS[ruleset].ruleset_version`          |        ✅         |       ✅        |
+| `schema_version`       | per-dataset                                  |        ✅         |       ✅        |
+| `generated_by`         | `srd-builder vX.Y.Z`                         |        ✅         |       ✅        |
+| `build_report`         | `./build_report.json`                        |        ✅         |       ✅        |
+| `dataset`              | dataset name                                 |        ❌         |       ✅        |
+| `source_pages`         | start–end page range from `PAGE_INDEX`       |        ❌         |       ✅        |
+| `description`          | from `TABLES` config                         |        ❌         |       ✅        |
+| `pdf_sha256`           | hash of source PDF                           |        ❌         |       ✅        |
+| `item_count`           | `len(items)`                                 |        ❌         |       ✅        |
+| `extraction_warnings`  | per-record parser warnings (`[]` if clean)   |        ❌         |       ✅        |
+
+**Why first:** purely additive at the JSON layer. Any consumer that
+reads `doc["_meta"]["source"]` keeps working unchanged. Lets us validate
+the shape against Blackmoor before any breaking change lands.
+
+**Implementation:** extend `utils.metadata.wrap_with_meta` to accept the
+additional kwargs and emit them when supplied; thread `pdf_sha256` /
+`source_pages` / `extraction_warnings` through `_write_datasets` for
+the 14 simple datasets (most already have these values available
+upstream). For datasets with no extraction warnings, emit `[]`.
+
+**Could ship alone as v0.29.3 if Blackmoor wants the provenance fields
+before the breaking changes.** Otherwise bundle into v0.30.0.
+
+### Phase 2 — Output-key normalization (breaking)
+
+All 16 datasets ship `{"_meta": ..., "items": [...]}`. Affected files:
+
+- `features.json`: `{"features": [...]}` → `{"items": [...]}`
+- `conditions.json`: `{"conditions": [...]}` → `{"items": [...]}`
+- `diseases.json`: `{"diseases": [...]}` → `{"items": [...]}`
+
+Bumps `schemas/features.schema.json`, `schemas/condition.schema.json`,
+`schemas/disease.schema.json` (top-level `items` array required).
+
+**Migration note for Blackmoor:** the only change is the key name;
+record shape inside the array is unchanged.
+
+### Phase 3 — Duplicate-id resolution (breaking IDs)
+
+The 22 `duplicate_id` audit findings break into two classes that need
+different fixes:
+
+**Rules (19 findings) — same name, different content. Disambiguate.**
+
+Example: `rule:strength` collides between p78 (a one-line
+`"Athletics"` skill-grouping stub under the Strength heading) and p79
+(the actual Strength ability description). Fix by including section
+context in the id, e.g. `rule:ability_scores/strength` and
+`rule:skills/strength`. The duplicates list:
+
+```
+rule:ability_scores_and_modifiers  (2x)
+rule:strength                       (2x)
+rule:dexterity                      (2x)
+rule:intelligence                   (2x)
+rule:wisdom                         (2x)
+rule:charisma                       (2x)
+rule:attack_rolls_and_damage        (2x)
+rule:initiative                     (2x)
+rule:hit_points                     (2x)
+rule:spellcasting_ability           (3x)
+rule:saving_throws                  (2x)
+rule:time                           (2x)
+rule:movement                       (2x)
+rule:speed                          (2x)
+rule:travel_pace                    (4x)
+rule:difficult_terrain              (2x)
+rule:reactions                      (2x)
+rule:attack_rolls                   (2x)
+rule:range                          (2x)
+```
+
+Likely the cleanest fix is to namespace by parent section:
+`rule:{section_simple_name}/{name_simple}` (mirrors how `tables/skills`
+already disambiguate by category).
+
+**Tables (3 findings) — same name, identical content extracted twice.
+Deduplicate.**
+
+`table:lifestyle_expenses`, `table:food_drink_lodging`, `table:services`
+all appear once in the equipment chapter (pp72-74) and again in the
+appendix (pp157-159) with byte-identical rows. Fix by suppressing the
+appendix copies during extraction (the chapter copies are the
+canonical source). Reduces `tables.json` from 19 to 16 records.
+
+### Phase 4 — Code-path collapse (refactor, follows Phase 1)
+
+Once Phase 1 makes `_meta` uniform, the only remaining difference
+between the simple path and the prose path is *who extracts the
+records from the PDF*. Refactor: `_write_datasets` becomes the single
+write path; `assemble_prose_dataset` becomes a parser that returns
+`(records, pdf_sha256, warnings)` and is called from `_write_datasets`
+like any other parser. Closes the open "Unify the two assembly code
+paths" bullet completely.
+
+### Suggested ship order
+
+1. **v0.29.3** — Phase 1 alone (additive). Lets Blackmoor consume the
+   provenance fields immediately without taking the breaking changes.
+2. **v0.30.0** — Phases 2 + 3 + 4 together (single breaking release).
+3. **v0.30.x** — Round-trip xfail fixes (page-field drift in
+   `weapon_properties` / `tables` / `skills` — already in BACKLOG),
+   source-derivation marker (PARKING_LOT), and any Blackmoor feedback.
+
+### Out of scope for v0.30.0 (already deferred / parked)
+
+- Item Variants & Magic Items architecture (PARKING_LOT — needs second
+  ruleset or real consumer pain point).
+- Sentient Magic Items as Rules content (PARKING_LOT).
+- Combined spell indexes (PARKING_LOT — low priority).
+- `terminology.aliases` shape (PARKING_LOT — wait for second ruleset).
+- Container capacity hardcoded fallback (PARKING_LOT — 5/13 records).
+- Equipment table cross-references as structured field (PARKING_LOT).
+- Field grouping / nested objects (the v2.0 "data model restructure"
+  item on ROADMAP).
 
 ### Phase D follow-on — Original entry (kept for history)
 
