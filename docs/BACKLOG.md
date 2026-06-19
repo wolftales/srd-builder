@@ -636,10 +636,74 @@ write path; `assemble_prose_dataset` becomes a parser that returns
 like any other parser. Closes the open "Unify the two assembly code
 paths" bullet completely.
 
+### Phase 5 — Multi-system extensibility seams (additive, future-proofing)
+
+> **Context.** srd-builder is D&D 5e + D&D "One" (2024) focused for
+> the near-term, but the vision is to support other game-system SRDs
+> later (Pathfinder 2e, ORC-licensed content, Cypher, etc.). A 2026-06-19
+> schema audit (`docs/ARCHITECTURE.md § Schema Stability Tiers`) found
+> the structure is sound but several schemas are *accidentally
+> D&D-shaped* in ways that would force breaking changes when a second
+> system lands. Phase 5 adds **three minimal additive seams** now so
+> future multi-system work is additive instead of a v2.0 breaking
+> sweep. The bigger restructures (hoist D&D-specifics into
+> `system_specific:` subobjects, convert enums to registry lookups)
+> are explicitly deferred until a real second game system is in hand
+> to validate the abstraction against — premature design without a
+> concrete second consumer almost always picks the wrong joints.
+
+**5.1 `game_system` field in `_meta`** (additive, trivial).
+Distinguishes *which game system* from *which printing/source*. Today
+`_meta.source` conflates both (`"SRD_CC_v5.1"` implicitly means D&D
+5e). After Phase 5.1, a downstream multi-game consumer can load both
+`dnd5e/spells.json` and `pf2e/spells.json` without parsing the source
+string. Implementation: add `game_system: str` to the `RULESETS`
+entries in `src/srd_builder/constants.py`; thread through
+`utils.metadata.meta_block()` / `wrap_with_meta()`; emit on every
+dataset's `_meta`. Initial values: `dnd5e` for `srd_5_1`, `dnd5e` for
+`srd_5_2_1` (both One D&D and 5e share the same game system; the
+ruleset distinguishes printing/edition).
+
+**5.2 Optional `system:` prefix on record IDs** (opt-in via RULESETS
+flag, default off). Current IDs are `spell:fireball`,
+`monster:goblin`, etc. — a second game system would collide. Adding a
+`RULESETS[ruleset].id_prefix: str | None` field, defaulting to `None`
+(no prefix, preserves all current IDs), lets a future Pathfinder
+ruleset set `id_prefix="pf2e"` and emit `pf2e:spell:fireball`. The
+SRD 5.1 / One D&D rulesets stay on the unprefixed form (no breakage
+for Blackmoor or any other current consumer). Implementation:
+extend `postprocess/engine.py::clean_record` to honor the prefix when
+constructing IDs; document in ARCHITECTURE.md that consumers
+should not assume IDs are `{type}:{name}` — they may be
+`{system}:{type}:{name}` in multi-system bundles.
+
+**5.3 Schema Stability Tiers documentation** (no code, just docs).
+Add a table to `docs/ARCHITECTURE.md` marking each of the 15 schemas
+as Green / Yellow / Red:
+
+| Tier | Meaning | Schemas (as of 2026-06-19) |
+| ---- | ------- | -------------------------- |
+| **Green** | System-agnostic; reusable across game systems with zero changes | `condition`, `damage_type`, `weapon_property`, `rule`, `table` |
+| **Yellow** | Light D&D-isms in enums (currency, rarity, poison-types, save-ability) but structure generalizes | `equipment`, `magic_item`, `disease`, `poison`, `ability_score` |
+| **Red** | Heavy D&D mechanics baked into required fields and enum constraints; second game system will need to fork or restructure | `spell` (Vancian levels 0–9, 8 schools, 8 caster classes), `monster` (AC/HP shape, six-ability block, D&D senses, CR), `class` (hit_die `d6\|d8\|d10\|d12`, exactly-2 saves, INT/WIS/CHA spellcasters), `lineage` (size `Small\|Medium` only, six-ability modifiers), `skill` (six-ability mapping), `features` (`owner_id` pattern hard-codes `class\|lineage`) |
+
+Sets the maintainer/consumer contract: Green schemas are stable for
+multi-system reuse; Red schemas should be expected to fork or carry a
+`system_specific:` subobject when a non-D&D system lands.
+
+**Explicitly deferred (audit recommendations 4.3 / 4.4 / 4.5):** hoist
+D&D-specific fields into `system_specific:` subobjects on Red
+schemas, convert hard `enum` constraints to registry lookups, expand
+`wrap_with_meta()` with optional `system_specific_meta` kwarg. These
+are right in the abstract but the joints are guessable only with a
+concrete second game system in front of you. Park until then.
+
 ### Suggested ship order
 
 1. **v0.29.3** — Phase 1 alone (additive). Lets Blackmoor consume the
    provenance fields immediately without taking the breaking changes.
+   *Optionally bundle Phase 5 here as well — all of Phase 5 is also
+   purely additive, and it's cheap to ship together with Phase 1.*
 2. **v0.30.0** — Phases 2 + 3 + 4 together (single breaking release).
 3. **v0.30.x** — Round-trip xfail fixes (page-field drift in
    `weapon_properties` / `tables` / `skills` — already in BACKLOG),
