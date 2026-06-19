@@ -298,14 +298,61 @@ in `postprocess/text.py::_HYPHEN_LINE_BREAK_RE`, run to fixed point in
 both `clean_text()` and `polish_text()`. Audit pattern broadened to
 match. See the `hyphenation_artifact` line above for details.
 
-### Phase D — Round-trip PDF sampling (independent, lower priority)
+### Phase D — Round-trip PDF sampling — ✅ DONE 2026-06-19
 
-- New `tests/test_round_trip_pdf.py`: for each dataset, sample 5 records,
-  look up their `page` field, render that page via
-  `pdf_probe.get_page_text()`, assert the parsed `name` or `text` field
-  appears as substring.
-- Catches silent parser drift where extractor produces output not
-  actually in the PDF.
+Shipped as [tests/test_round_trip_pdf.py](../tests/test_round_trip_pdf.py).
+For each shipped dataset, samples the first 5 records (sorted by id),
+looks up each record's `page` field, renders the corresponding PDF page
+via `utils.pdf_probe`, and asserts the record's `name` appears as a
+substring within ±1 page of the declared page.
+
+Design:
+- **Sampling:** deterministic (first 5 by id), not random — reproducible
+  failures matter more than coverage breadth for a smoke test.
+- **Matching field:** `name` only (`name`-with-`text`-fallback was
+  considered and deferred to keep the false-positive floor at zero).
+- **Tolerance:** ±1 page — the `page` field is the heading page, which
+  the SRD often places one page before the actual subheading body;
+  >±1 = real bug.
+- **Skip behavior:** mirrors `tests/test_pdf_provenance.py` — skips
+  loudly when the PDF or pymupdf is absent (CI / container builds).
+- **Dataset scope:** all 15 datasets with a `page` field. `lineages` is
+  excluded (its records carry no `page` by design).
+
+Result: 12 datasets pass cleanly. 3 surface real page-field drift and
+ship as `xfail` (test passes today, removes the marker when fixed):
+
+- **`skills`** — 1/5 fails. `Athletics` declared p76, body on p78.
+- **`tables`** — 2/5 fail. `Ability Scores and Modifiers` declared p7
+  but body on p76; `Adventure Gear` not found by name anywhere.
+  Likely stale TOC-derived page numbers in the tables extractor.
+- **`weapon_properties`** — 5/5 fail. All 11 records claim p147 but
+  the weapon-property prose is elsewhere. Looks like a single hardcoded
+  page constant.
+
+These three drift cases are the natural follow-on backlog item
+("Page-field drift in skills/tables/weapon_properties") — see below.
+
+### Phase D follow-on — Fix page-field drift surfaced by round-trip test
+
+Three datasets ship `xfail` in `tests/test_round_trip_pdf.py`. Each is
+a small parser-side fix:
+
+- **`weapon_properties`** (5/5 records misplaced) — find and replace the
+  hardcoded `page = 147` in the weapon-properties extractor with the
+  actual page where each property's prose appears. Likely the highest-
+  impact fix of the three because it's a systematic 11-record bug.
+- **`tables`** (2/5 records misplaced) — `table:ability_scores_and_modifiers`
+  is recorded at p7 (lineages section) but appears on p76; investigate
+  whether the table-extractor is consulting a stale TOC. `Adventure Gear`
+  needs name-vs-PDF-prose investigation (the table header may differ).
+- **`skills`** (1/5 records off by two) — `Athletics` at p76→p78 looks
+  like the skill is on a different page than its section header. May be
+  endemic to all skills (check the other 17 records, not just the first
+  5 sampled).
+
+When each is fixed, drop the `xfail` mark in
+`tests/test_round_trip_pdf.py::_XFAIL_DATASETS` and re-run the test.
 
 **Suggested order:** A → B → C → D. Ship A+B as v0.28.0; C as v0.28.1;
 D as v0.28.2.
