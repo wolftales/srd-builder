@@ -12,7 +12,7 @@
     "adventure_gear": {
       "parser": "parse_adventure_gear_table",
       "pages": [
-        69
+        68
       ]
     },
     "armor": {

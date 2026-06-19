@@ -71,8 +71,8 @@ def test_weapon_properties_have_required_fields() -> None:
         # Verify ID format
         assert prop["id"].startswith("weapon_property:")
 
-        # Verify page number (all from SRD page 147)
-        assert prop["page"] == 147
+        # Verify page number (Weapon Properties section spans SRD pp.64-65)
+        assert prop["page"] in (64, 65)
 
         # Verify source
         assert prop["source"] == "SRD_CC_v5.1"

@@ -37,7 +37,7 @@
             "ability": "strength",
             "ability_id": "ability:strength",
             "name": "Athletics",
-            "page": 76
+            "page": 78
           }
         },
         {
@@ -77,14 +77,14 @@
           "id": "weapon_property:finesse",
           "fields": {
             "name": "Finesse",
-            "page": 147
+            "page": 64
           }
         },
         {
           "id": "weapon_property:two_handed",
           "fields": {
             "name": "Two-Handed",
-            "page": 147
+            "page": 65
           }
         }
       ]

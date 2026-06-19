@@ -2,7 +2,7 @@
   "raw_tables": [
     {
       "name": "Ability Scores and Modifiers",
-      "page": 7,
+      "page": 76,
       "headers": [],
       "rows": [
         [
@@ -72,10 +72,11 @@
       ]
     },
     {
-      "name": "Adventure Gear",
+      "name": "Adventuring Gear",
       "page": [
-        69
+        68
       ],
+      "simple_name": "adventure_gear",
       "headers": [],
       "rows": [
         [

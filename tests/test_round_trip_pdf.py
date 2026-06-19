@@ -25,19 +25,6 @@ Scope decisions:
     container builds without the SRD bundle).
   - **Dataset scope:** all 15 datasets with a ``page`` field. ``lineages``
     is excluded because its records carry no ``page`` field by design.
-
-Known drift (xfail today, real backlog items):
-  - ``skills`` — 1/5 sampled fails (``Athletics`` declared p76, body on
-    p78). Off-by-two from section header.
-  - ``tables`` — 2/5 fail with large drift (``Ability Scores and
-    Modifiers`` declared p7 but body on p76; ``Adventure Gear`` not
-    found anywhere by name). Suggests stale TOC-derived page numbers.
-  - ``weapon_properties`` — 5/5 fail. All 11 records claim p147 but the
-    weapon-property prose is elsewhere. Looks like a single hardcoded
-    page constant.
-
-The xfail markers exist so this test ships green; remove them when the
-underlying page-field assignment is fixed.
 """
 
 from __future__ import annotations
@@ -71,11 +58,7 @@ _DATASETS: list[tuple[str, str]] = [
     ("weapon_properties", "items"),
 ]
 
-_XFAIL_DATASETS = {
-    "skills": "Athletics declared p76, body on p78 (page-field drift)",
-    "tables": "Multiple records have stale TOC-derived page numbers",
-    "weapon_properties": "All 11 records hardcoded to p147; body is elsewhere",
-}
+_XFAIL_DATASETS: dict[str, str] = {}
 
 
 def _params() -> list[pytest.param]:

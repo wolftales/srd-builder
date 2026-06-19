@@ -333,7 +333,43 @@ ship as `xfail` (test passes today, removes the marker when fixed):
 These three drift cases are the natural follow-on backlog item
 ("Page-field drift in skills/tables/weapon_properties") — see below.
 
-### Phase D follow-on — Fix page-field drift surfaced by round-trip test
+### Phase D follow-on — Fix page-field drift surfaced by round-trip test — ✅ DONE 2026-06-19
+
+All three xfail datasets in `tests/test_round_trip_pdf.py` are now fixed
+and ship green. `_XFAIL_DATASETS` is empty; round-trip test now covers
+all 15 page-bearing datasets without exception.
+
+- **`weapon_properties`** ✅ — all 11 records hardcoded to `page=147`
+  (apparently a PHB print-page reference, not SRD PDF page). Updated to
+  actual SRD locations: ammunition + finesse → p64; heavy, light,
+  loading, range, reach, special, thrown, two_handed, versatile → p65.
+  Module docstring corrected from "page 147" to "pages 64-65"; golden
+  test `test_weapon_properties_have_required_fields` relaxed from
+  `page == 147` to `page in (64, 65)`.
+- **`tables`** ✅ — two fixes in `extract/table_targets.py`:
+  (1) `table:ability_scores_and_modifiers` had `page=7` referencing the
+  Characters chapter; the actual table is in Chapter 7 (Using Ability
+  Scores) on p76. (2) `table:adventure_gear` was misnamed — PDF heading
+  is "Adventur**ing** Gear" and is on p68, not "Adventure Gear" on p69.
+  `id` and `simple_name` preserved as `adventure_gear` to avoid breaking
+  downstream cross-references; only `name` and `page` corrected. Updated
+  `tests/fixtures/expected_table_pages.json`, `raw/tables.json` (added
+  `simple_name` to keep id stable through postprocess), and
+  `normalized/tables.json`. `test_golden_tables.py` extended to forward
+  `id`/`simple_name` from raw when present (mirrors real extraction
+  where TARGET_TABLES hardcodes these).
+- **`skills`** ✅ — single-line fix in `parse_skills.py`: Athletics had
+  `page=76` but the skill description body is on p78. Audit confirmed
+  this was an isolated typo, not endemic — the other 17 skills all
+  point at their actual SRD pages (77/78/79).
+
+`known_truths.json` updated for the affected ids (`skill:athletics`,
+`weapon_property:finesse`, `weapon_property:two_handed`) so the Phase B
+release gate stays consistent.
+
+Test suite: 643 passed / 19 skipped / 0 xfailed (was 640 / 19 / 3).
+
+### Phase D follow-on — Original entry (kept for history)
 
 Three datasets ship `xfail` in `tests/test_round_trip_pdf.py`. Each is
 a small parser-side fix:

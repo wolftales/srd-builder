@@ -20,15 +20,20 @@ def test_table_dataset_matches_normalized_fixture(assert_golden_matches) -> None
     # Simulate parse_single_table output
     parsed = []
     for rt in raw_tables:
-        parsed.append(
-            {
-                "name": rt["name"],
-                "page": rt["page"],
-                "source": "SRD_CC_v5.1",
-                "headers": rt["headers"],
-                "rows": rt["rows"],
-            }
-        )
+        record = {
+            "name": rt["name"],
+            "page": rt["page"],
+            "source": "SRD_CC_v5.1",
+            "headers": rt["headers"],
+            "rows": rt["rows"],
+        }
+        # Real extraction hardcodes id/simple_name in TARGET_TABLES; mirror
+        # that here so renames of `name` don't drift the canonical id.
+        if "simple_name" in rt:
+            record["simple_name"] = rt["simple_name"]
+        if "id" in rt:
+            record["id"] = rt["id"]
+        parsed.append(record)
 
     # Postprocess: normalize IDs and polish text
     processed = [clean_table_record(t) for t in parsed]
