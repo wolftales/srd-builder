@@ -7,7 +7,18 @@
   "casting": {
     "time": "example time",
     "range": {
-      "type": "self"
+      "type": "self",
+      "distance": {
+        "value": 0,
+        "unit": "feet"
+      },
+      "area": {
+        "shape": "radius",
+        "size": {
+          "value": 0,
+          "unit": "feet"
+        }
+      }
     },
     "ritual": false
   },
@@ -18,10 +29,49 @@
   "components": {
     "verbal": false,
     "somatic": false,
-    "material": false
+    "material": false,
+    "material_description": "example material_description"
   },
   "description": [
     "example description"
   ],
-  "page": 1
+  "page": 1,
+  "aliases": [
+    "example aliases"
+  ],
+  "classes": [
+    "bard"
+  ],
+  "effects": {
+    "damage": {
+      "dice": "1d8",
+      "type": "acid",
+      "type_id": "example"
+    },
+    "healing": {
+      "dice": "1d8"
+    },
+    "save": {
+      "ability": "strength",
+      "on_success": "none",
+      "ability_id": "ability:example"
+    },
+    "attack": {
+      "type": "melee_spell"
+    },
+    "area": {
+      "shape": "sphere",
+      "size": 0,
+      "unit": "feet"
+    },
+    "conditions": [
+      "example"
+    ]
+  },
+  "scaling": {
+    "type": "slot",
+    "formula": "example formula",
+    "base_level": 1
+  },
+  "source": "example source"
 }

@@ -5,7 +5,8 @@
   "columns": [
     {
       "name": "example name",
-      "type": "string"
+      "type": "string",
+      "description": "example description"
     }
   ],
   "rows": [
@@ -13,5 +14,11 @@
       "example rows"
     ]
   ],
-  "page": 1
+  "page": 1,
+  "aliases": [
+    "example aliases"
+  ],
+  "section": "example section",
+  "category": "character_creation",
+  "notes": "example notes"
 }

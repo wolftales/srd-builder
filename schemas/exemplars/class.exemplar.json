@@ -19,16 +19,59 @@
     ],
     "tools": [
       "example tools"
-    ]
+    ],
+    "skills": {
+      "choose": 0,
+      "from": [
+        "example from"
+      ]
+    }
   },
   "features": [
     "example features"
   ],
   "progression": [
     {
-      "level": 1
+      "level": 1,
+      "features": [
+        "example features"
+      ],
+      "proficiency_bonus": 2,
+      "class_specific": {}
     }
   ],
   "source": "example source",
-  "page": 1
+  "page": 1,
+  "aliases": [
+    "example aliases"
+  ],
+  "equipment": {
+    "options": [
+      "example options"
+    ]
+  },
+  "subclasses": [
+    "subclass:example"
+  ],
+  "spellcasting": {
+    "ability": "intelligence",
+    "spell_list": "example spell_list",
+    "cantrips_known": [
+      1
+    ],
+    "spells_known": [
+      1
+    ]
+  },
+  "tables_referenced": [
+    "table:example"
+  ],
+  "extraction_metadata": {
+    "source_pages": [
+      1
+    ],
+    "section": "example section",
+    "extraction_date": "2026-01-01",
+    "extraction_notes": "example extraction_notes"
+  }
 }

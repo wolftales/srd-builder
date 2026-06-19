@@ -6,5 +6,11 @@
     "example description"
   ],
   "page": 1,
-  "source": "example source"
+  "source": "example source",
+  "aliases": [
+    "example aliases"
+  ],
+  "examples": [
+    "example examples"
+  ]
 }

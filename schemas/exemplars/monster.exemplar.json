@@ -3,11 +3,34 @@
   "name": "example name",
   "simple_name": "example",
   "armor_class": {
-    "value": 0
+    "value": 0,
+    "type": "example type",
+    "type_id": "example",
+    "notes": "example notes"
   },
   "hit_points": 0,
   "ability_scores": {
     "strength": {
+      "value": 1,
+      "modifier": 1
+    },
+    "dexterity": {
+      "value": 1,
+      "modifier": 1
+    },
+    "constitution": {
+      "value": 1,
+      "modifier": 1
+    },
+    "intelligence": {
+      "value": 1,
+      "modifier": 1
+    },
+    "wisdom": {
+      "value": 1,
+      "modifier": 1
+    },
+    "charisma": {
       "value": 1,
       "modifier": 1
     }
@@ -18,7 +41,73 @@
       "simple_name": "example",
       "description": [
         "example description"
-      ]
+      ],
+      "attack_bonus": 1,
+      "damage": [
+        {
+          "dice": "1d8",
+          "type": "example type",
+          "type_id": "example"
+        }
+      ],
+      "dc": {
+        "dc_value": 0,
+        "dc_type": "example dc_type",
+        "dc_type_id": "ability:example",
+        "success_type": "none"
+      },
+      "range": {
+        "reach": 0,
+        "normal": 0,
+        "long": 0
+      }
+    }
+  ],
+  "aliases": [
+    "example aliases"
+  ],
+  "speed": {
+    "walk": 0,
+    "swim": 0,
+    "fly": 0,
+    "burrow": 0,
+    "climb": 0,
+    "hover": false,
+    "notes": "example notes"
+  },
+  "senses": {
+    "passive_perception": 0,
+    "darkvision": 0,
+    "blindsight": 0,
+    "tremorsense": 0,
+    "truesight": 0,
+    "notes": "example notes"
+  },
+  "damage_resistances": [
+    {
+      "type": "example type",
+      "type_id": "example",
+      "conditions": "example conditions"
+    }
+  ],
+  "damage_immunities": [
+    {
+      "type": "example type",
+      "type_id": "example",
+      "conditions": "example conditions"
+    }
+  ],
+  "damage_vulnerabilities": [
+    {
+      "type": "example type",
+      "type_id": "example",
+      "conditions": "example conditions"
+    }
+  ],
+  "condition_immunities": [
+    {
+      "name": "example name",
+      "condition_id": "condition:example"
     }
   ]
 }

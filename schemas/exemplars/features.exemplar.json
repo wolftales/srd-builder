@@ -5,5 +5,7 @@
   "owner_id": "class:example",
   "page": 1,
   "source": "example source",
-  "text": "example text"
+  "text": "example text",
+  "summary": "example summary",
+  "level_acquired": 1
 }

@@ -6,5 +6,19 @@
     "example effects"
   ],
   "source": "example source",
-  "page": 1
+  "page": 1,
+  "aliases": [
+    "example aliases"
+  ],
+  "summary": "example summary",
+  "special_rules": [
+    "example special_rules"
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "effect": "example effect"
+    }
+  ],
+  "_meta": {}
 }

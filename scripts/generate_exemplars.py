@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Generate one valid exemplar instance per schema in schemas/.
 
-Each exemplar is a minimal JSON record that satisfies the schema's required
-properties. The output serves three independent purposes:
+Each exemplar is a JSON record that satisfies the schema and exercises
+every declared property (required AND optional), so authors can see the
+full possible shape of a record rather than the bare minimum that passes
+validation. The output serves three independent purposes:
 
-1. Homebrew authoring templates (replaces docs/templates/).
+1. Homebrew authoring templates (what a single record looks like).
 2. Known-truths fixture baseline for data-integrity audits.
-3. Schema round-trip smoke test — every schema must validate its own exemplar.
+3. Schema round-trip smoke test — every schema must validate its own
+   exemplar (enforced in CI via `tests/test_exemplars_validate.py`).
 
 Usage:
     python scripts/generate_exemplars.py                # writes schemas/exemplars/*.json
@@ -34,8 +37,12 @@ _PATTERN_EXAMPLES: dict[str, str] = {
     r"^[a-z][a-z0-9_]*$": "example",
     r"^[a-z0-9_]+$": "example",
     r"^[a-z_]+$": "example",
+    r"^[a-z_:]+$": "example",
     r"^[A-Z]{3}$": "STR",
     r"^d(6|8|10|12)$": "d8",
+    r"^\d+d\d+$": "1d8",
+    r"^\d+d\d+(\+\d+)?$": "1d8",
+    r"^\d+d\d+(\s*[+\-]\s*\d+)?$": "1d8",
     r"^[a-z][a-z0-9\s-]*$": "example",
     r"^[a-z0-9_:]+$": "example",
     r"^(class|lineage):[a-z0-9_]+$": "class:example",
@@ -66,9 +73,16 @@ def _example_for_property(prop: dict[str, Any], name: str = "") -> Any:
     if "const" in prop:
         return prop["const"]
     if "oneOf" in prop:
-        return _example_for_property(prop["oneOf"][0], name)
+        # Merge the chosen branch with the parent so the branch inherits
+        # parent-level keys like `type` (e.g. parent says `type: object`,
+        # branch declares only `required`/`properties`).
+        branch = {**prop, **prop["oneOf"][0]}
+        branch.pop("oneOf", None)
+        return _example_for_property(branch, name)
     if "anyOf" in prop:
-        return _example_for_property(prop["anyOf"][0], name)
+        branch = {**prop, **prop["anyOf"][0]}
+        branch.pop("anyOf", None)
+        return _example_for_property(branch, name)
 
     prop_type = prop.get("type")
     if isinstance(prop_type, list):
@@ -96,33 +110,31 @@ def _example_for_property(prop: dict[str, Any], name: str = "") -> Any:
 
 
 def _build_object(schema: dict[str, Any]) -> dict[str, Any]:
-    """Build a minimal object satisfying ``required`` of ``schema``."""
+    """Build an object satisfying ``required`` of ``schema``, plus every
+    optional declared property. The goal is to show authors the full
+    possible shape, not just the minimum that passes validation."""
     result: dict[str, Any] = {}
     properties = schema.get("properties", {})
-    for req_name in schema.get("required", []):
-        prop = properties.get(req_name, {})
-        result[req_name] = _example_for_property(prop, req_name)
+    required = list(schema.get("required", []))
+    optional = [name for name in properties if name not in required]
+    # Required first (preserves field ordering authors expect), then optional.
+    for prop_name in required + optional:
+        prop = properties.get(prop_name, {})
+        result[prop_name] = _example_for_property(prop, prop_name)
     min_props = schema.get("minProperties", 0)
-    if min_props and len(result) < min_props:
-        # Borrow optional `properties` to fill the gap.
-        for opt_name, opt_schema in properties.items():
+    if min_props and len(result) < min_props and "patternProperties" in schema:
+        for i, (pat, sub) in enumerate(schema["patternProperties"].items()):
             if len(result) >= min_props:
                 break
-            if opt_name in result:
-                continue
-            result[opt_name] = _example_for_property(opt_schema, opt_name)
-        # Or fall back to patternProperties.
-        if len(result) < min_props and "patternProperties" in schema:
-            for i, (pat, sub) in enumerate(schema["patternProperties"].items()):
-                if len(result) >= min_props:
-                    break
-                key = _example_for_pattern(pat) or f"k{i}"
-                result[key] = _example_for_property(sub, key)
+            key = _example_for_pattern(pat) or f"k{i}"
+            result[key] = _example_for_property(sub, key)
     return result
 
 
 def build_exemplar(schema: dict[str, Any]) -> dict[str, Any]:
-    """Return a minimal valid instance for ``schema``."""
+    """Return a valid instance for ``schema`` exercising every declared
+    property (required and optional). Validates against the schema before
+    returning to the caller."""
     return _build_object(schema)
 
 

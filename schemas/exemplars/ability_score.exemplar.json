@@ -7,5 +7,8 @@
     "example description"
   ],
   "page": 1,
-  "source": "example source"
+  "source": "example source",
+  "skills": [
+    "skill:example"
+  ]
 }
