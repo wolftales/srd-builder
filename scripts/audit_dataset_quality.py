@@ -55,8 +55,14 @@ FOOTER_RE = re.compile(r"System Reference Document", re.IGNORECASE)
 # `â€` prefixes smart-quote / em-dash mojibake; `Ã` followed by upper-half byte
 # is the latin-1 mis-decode of a 2-byte UTF-8 sequence.
 MOJIBAKE_RE = re.compile(r"â€|Ã[\xa0-\xbf]")
-# Soft-hyphenated line break that survived as ``light- ning`` / ``con- tinue``.
-HYPHENATION_RE = re.compile(r"[A-Za-z]{2,}-\s+[a-z]+")
+# Hyphenated compound broken by PDF line wrap that survived as
+# ``light- ning`` / ``con- tinue`` / ``10- foot`` / ``Two- Headed`` /
+# ``PH- A``. Mirrors the fix in postprocess/text.py
+# (_HYPHEN_LINE_BREAK_RE) so regressions surface with the same signal.
+HYPHENATION_RE = re.compile(
+    r"(\w+)-\s+(?!(?:and|or|but|nor)\b)(\w+)",
+    re.IGNORECASE,
+)
 # Alphabetic run > 20 chars — almost always a missing space between two words.
 WORD_RUNON_RE = re.compile(r"\b[A-Za-z]{21,}\b")
 TEXT_FIELDS = ("text", "description", "summary")

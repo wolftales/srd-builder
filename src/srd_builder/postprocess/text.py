@@ -13,15 +13,34 @@ _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ regains spent legendary actions[^.]*\.\s*", re.IGNORECASE),
 ]
 
-# PDF line-wrap inside a hyphenated compound: ``two-\nhanded`` survives
-# whitespace normalization as ``two- handed`` and must be re-joined to
-# ``two-handed``. Matches the audit signature in
-# scripts/audit_dataset_quality.py (HYPHENATION_RE). Suspended-hyphen
-# constructions like ``long- and short-range`` are excluded by requiring
-# the trailing token to not be a coordinating conjunction; in practice
-# the current dist contains zero such cases (see Phase C audit), but the
-# guard is cheap insurance against future drift.
-_HYPHEN_LINE_BREAK_RE = re.compile(r"([A-Za-z]{2,})-\s+(?!(?:and|or|but|nor)\b)([a-z]+)")
+# PDF line-wrap inside any hyphenated compound: ``two-\nhanded``,
+# ``10-\nfoot``, ``Two-\nHeaded``, ``PH-\nA`` all survive whitespace
+# normalization as ``leader- follower`` and must be re-joined. Covers
+# letter-letter (``two-handed``), digit-letter (``10-foot``),
+# letter-digit (``foot-by-5``), letter-Letter (``Two-Headed``,
+# ``Sure-Footed``), and letter-single (``PH-A`` appendix refs).
+# Suspended-hyphen constructions like ``long- and short-range`` or
+# ``5- and 10-foot`` are excluded by refusing follower tokens in the
+# coordinating-conjunction set; re.IGNORECASE catches title-case
+# variants for defensive depth (the SRD only uses lowercase forms).
+# Survey across all 16 datasets in dist showed zero false positives
+# for this broader pattern.
+_HYPHEN_LINE_BREAK_RE = re.compile(
+    r"(\w+)-\s+(?!(?:and|or|but|nor)\b)(\w+)",
+    re.IGNORECASE,
+)
+
+
+def _stitch_hyphen_line_breaks(text: str) -> str:
+    # Run to fixed point: chained dimensional expressions like
+    # ``3- foot- by- 5- foot`` only resolve fully when overlapping
+    # matches are re-scanned (``re.sub`` consumes the whole match per
+    # substitution and does not rewind).
+    while True:
+        replaced = _HYPHEN_LINE_BREAK_RE.sub(r"\1-\2", text)
+        if replaced == text:
+            return text
+        text = replaced
 
 
 def clean_text(text: str) -> str:
@@ -67,7 +86,7 @@ def clean_text(text: str) -> str:
 
     # Normalize all whitespace sequences to single space
     text = re.sub(r"\s+", " ", text)
-    text = _HYPHEN_LINE_BREAK_RE.sub(r"\1-\2", text)
+    text = _stitch_hyphen_line_breaks(text)
     return text.strip()
 
 
@@ -93,7 +112,7 @@ def polish_text(text: str | None) -> str | None:
     cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1 \2 \3", cleaned)
     cleaned = cleaned.replace("keepsgoing", "keeps going")
     cleaned = re.sub(r"\s+", " ", cleaned)
-    cleaned = _HYPHEN_LINE_BREAK_RE.sub(r"\1-\2", cleaned)
+    cleaned = _stitch_hyphen_line_breaks(cleaned)
     cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
     cleaned = cleaned.strip()
     return cleaned

@@ -111,3 +111,35 @@ def test_clean_text_stitches_pdf_line_break_hyphens() -> None:
 
 def test_clean_text_preserves_suspended_hyphen() -> None:
     assert clean_text("pre- or post-combat") == "pre- or post-combat"
+
+
+def test_polish_text_stitches_digit_letter_compounds() -> None:
+    # Dimensional / temporal compounds: ``10- foot``, ``6- second``,
+    # ``24- hour``. PDF line wrap splits these the same way as letter-
+    # letter compounds.
+    assert polish_text("a 10- foot radius") == "a 10-foot radius"
+    assert polish_text("a 6- second span of time") == "a 6-second span of time"
+    assert polish_text("over a 24- hour period") == "over a 24-hour period"
+
+
+def test_polish_text_stitches_dimensional_chains() -> None:
+    # ``foot- by- 5- foot`` is the worst-case multi-token PDF dimensional
+    # expression. After stitching both letter-letter and letter-digit /
+    # digit-letter, it collapses to ``foot-by-5-foot``.
+    assert polish_text("a 3- foot- by- 5- foot window") == "a 3-foot-by-5-foot window"
+
+
+def test_polish_text_stitches_title_case_compounds() -> None:
+    # Monster trait names: ``Two-Headed``, ``Sure-Footed``.
+    assert polish_text("Two- Headed") == "Two-Headed"
+    assert polish_text("Sure- Footed") == "Sure-Footed"
+
+
+def test_polish_text_stitches_single_letter_appendix_refs() -> None:
+    # ``PH-A`` is the appendix reference in the SRD rules dataset.
+    assert polish_text("see appendix PH- A") == "see appendix PH-A"
+
+
+def test_polish_text_preserves_suspended_hyphen_with_digit_leader() -> None:
+    # ``5- and 10-foot`` is the digit-leader form of the suspended hyphen.
+    assert polish_text("a 5- and 10-foot cone") == "a 5- and 10-foot cone"
