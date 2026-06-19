@@ -77,9 +77,210 @@ entry (`equipment_extended.py` cross-reference glue) after v0.27.6
 retired the last extractable hand-curated module
 (`equipment_descriptions.py`).
 
+### Test infrastructure follow-on (v0.27.7-era)
+
+- **Golden fixture-version drift** — RESOLVED commit `8808222` (no
+  version bump; test-infra only). The 16 golden tests compared rendered
+  JSON against on-disk fixtures by byte-equality including
+  `_meta.generated_by`, so every package version bump silently broke all
+  16 goldens until each fixture was manually re-pinned. Introduced
+  `assert_golden_matches` pytest fixture in
+  [tests/conftest.py](../tests/conftest.py) that compares both documents
+  as parsed JSON dicts, overlaying `_meta.generated_by` so version drift
+  no longer triggers data-fidelity failures. Version sync stays covered
+  by [tests/test_version_consistency.py](../tests/test_version_consistency.py).
+  Test count: 580 passed, 19 skipped, 0 failed (was 563/17/19).
+
+---
+
+## Active: Extractor consolidation (attempt #4)
+
+> **Honest framing.** Attempts 1–3 produced the engine in
+> [src/srd_builder/extract/patterns.py](../src/srd_builder/extract/patterns.py)
+> (7 config-driven pattern types: `standard_grid`, `split_column`,
+> `text_region`, `multipage_text_region`, `prose_section`, `calculated`,
+> `reference`) and the consolidated `extract/` namespace. The plan to
+> move the bespoke per-dataset extractors into `extract/_legacy/`
+> awaiting migration to the engine was **only partially right** — and
+> we then proceeded to add five new bespoke extractors
+> (`extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py`,
+> `extract_equipment_packs.py`, `extract_equipment_descriptions.py`)
+> alongside the original seven across v0.27.x without migrating any to
+> the engine. The previous BACKLOG framing ("legacy awaiting migration")
+> stopped being true the moment we stopped feeding new files through
+> the engine. Calling them "legacy" was aspirational; reality is that
+> [extract/datasets/](../src/srd_builder/extract/datasets/) is the LIVE
+> home of all 13 per-dataset extractors.
+
+### Why this matters (the sustainability argument)
+
+Every per-dataset bespoke file we ship doubles in cost when SRD 5.2.1
+lands as a second ruleset. 13 files × N rulesets is unbounded growth.
+The goal of attempt #4 is: **when SRD 5.2.1 lands, the per-dataset
+config changes (page numbers, section headers, table targets, font
+fingerprints) but engine code does not**. If we cannot articulate that
+in one paragraph, the design is not done.
+
+### Current state (audit 2026-06-19)
+
+13 files in [extract/datasets/](../src/srd_builder/extract/datasets/),
+all LIVE (12 imported by `build.py`; `extract_conditions` wired through
+`parse_conditions` + tests). Internal quality tiers:
+
+| Tier | Files | Uses `pdf_probe` | Notes |
+| --- | --- | --- | --- |
+| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py` | ✅ `open_pdf` + `page_text` | v0.27.5–v0.27.6 |
+| Mixed | `extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py` | ⚠️ `normalize_whitespace` only; still raw `fitz.open()` | v0.27.0–v0.27.2 |
+| `ProseExtractor` framework | `extract_conditions.py` | ✅ (via `utils.prose`) | Higher abstraction |
+| Pre-`pdf_probe` (legacy) | `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_monsters.py`, `extract_spells.py` | ❌ raw `fitz.open()` | **7 files violating AGENTS.md rule** |
+
+All 7 raw-`fitz` files legitimately extract from PDF (walk pages, produce
+raw JSON, no fabricated content). The problem is mechanism, not output:
+they bypass `pdf_probe`'s deterministic-output and hidden-doc-lifecycle
+guarantees, and they are not registered as engine pattern configs.
+
+### Proposed approach (gradual, one extractor per release)
+
+Forced big-bang migration is what failed attempts 1–3. The pattern that
+worked in v0.27.x retirements was **pick one target, factor its
+uniqueness, ship it, then the next**. Apply the same here:
+
+1. Each release picks ONE bespoke extractor.
+2. Identify the shape — does it map to an existing engine `pattern_type`,
+   or does it need a new one (e.g., `font_fingerprint_walk` for monster
+   stat blocks; `bbox_cursor_walk` for class progression tables)?
+3. Add the pattern type to [patterns.py](../src/srd_builder/extract/patterns.py)
+   if needed; add the dataset's config to
+   [extraction_metadata.py](../src/srd_builder/extract/extraction_metadata.py).
+4. Delete the bespoke file.
+5. Pin parity (byte-perfect against pre-migration raw JSON, same way
+   v0.27.5 P6 / v0.27.6 P7 did).
+
+**Suggested order (cheapest → hardest):** `extract_pdf_metadata.py` (no
+data shape, just doc metadata) → `extract_rules.py` (simple prose pages)
+→ `extract_equipment.py` (table-grid, already overlaps engine domain) →
+`extract_magic_items.py` → `extract_features.py` → `extract_spells.py` →
+`extract_monsters.py` (largest, most unique shape, do last).
+
+### Parse-layer consolidation (forward-looking, not v0.28.0 scope)
+
+The same framework lesson should apply to [parse/](../src/srd_builder/parse/):
+~15 modules each doing record-walking, prose-normalizing, id-synthesizing,
+cross-reference-resolving in their own shape. Possible pattern types for
+a parse engine: `record_walker`, `table_row_mapper`, `prose_narrator_stripper`,
+`cross_reference_resolver`, `schema_stamp_normalizer`, `id_synthesizer`.
+
+Do NOT start parse consolidation until extract consolidation has migrated
+at least 3–4 datasets and the pattern is proven. The hard part is not
+the design; it is resisting "this one is different, I will just write
+it bespoke" for every dataset.
+
+### Bottom line
+
+We do not want multiple different approaches to extracting and later
+parsing SRD sections. One approach (config-driven engine + pattern
+types). Treat every new bespoke file as a regression on that goal.
+
+---
+
+## Active: v0.28.0 — Data integrity foundation
+
+Builds on the engine-already-exists fact above: the data-integrity work
+should produce artifacts (exemplars, known_truths, audit codes) that
+multiple datasets share, instead of bespoke checks per dataset. Same
+unification principle.
+
+### Phase A — Schema → exemplar generator (foundation for B and the docs/templates issue)
+
+- New `scripts/generate_exemplars.py`: walks `schemas/*.schema.json`,
+  for each schema constructs a minimal valid example exercising every
+  required field plus one optional, validates the result against its
+  own schema with `jsonschema`, writes to
+  `dist/<ruleset>/exemplars/<dataset>.example.json`.
+- Replaces hand-written [docs/templates/](templates/) (5 stale exemplars
+  vs. 16 schemas; spell template still pinned to `v1.3.0`).
+- Drops the 5 hand-written templates; the generated set ships in the
+  bundle next to `schemas/`.
+- Wins three-for-one: homebrew authoring template + known_truths baseline
+  pattern + schema round-trip smoke test (every schema must validate its
+  own exemplar via `jsonschema.validate`). Build once, consume thrice.
+
+### Phase B — `tests/fixtures/known_truths.json` (depends on Phase A)
+
+- Hand-curate ~30 facts spanning all 16 datasets: "Fireball is
+  3rd-level evocation, 8d6 fire"; "Goblin AC is 15"; "Barbarian hit die
+  is d12"; "Acid damage type id is `acid`".
+- New `tests/test_known_truths.py` walks the file and asserts each fact
+  against `dist/srd_5_1/*.json`.
+- Single test file = single regression-catch point for "did we silently
+  break a thing humans actually look up".
+
+### Phase C — Audit codes (independent of A/B)
+
+Extend [scripts/quality_report.py](../scripts/quality_report.py) (or add
+`scripts/audit_dataset_quality.py`) with:
+
+- `non_ascii_in_text` — mojibake regex; allow smart quotes / em-dashes /
+  bullets, flag `â€™` style.
+- `hyphenation_artifact` — `\b\w+-\s\w+\b` catches `light- ning` /
+  `con- tinue`.
+- `word_boundary_loss` — alphabetic tokens >20 chars catches
+  `fireballyou` from a missing newline.
+- `unknown_word` — `pyspellchecker` over item NAMES only (not body —
+  too many fantasy terms), extended dictionary loads class / monster /
+  spell / item names. Output for human review, not auto-fail.
+
+Each adds a row to the existing quality report; no schema/dataset shape
+changes.
+
+### Phase D — Round-trip PDF sampling (independent, lower priority)
+
+- New `tests/test_round_trip_pdf.py`: for each dataset, sample 5 records,
+  look up their `page` field, render that page via
+  `pdf_probe.get_page_text()`, assert the parsed `name` or `text` field
+  appears as substring.
+- Catches silent parser drift where extractor produces output not
+  actually in the PDF.
+
+**Suggested order:** A → B → C → D. Ship A+B as v0.28.0; C as v0.28.1;
+D as v0.28.2.
+
+---
+
+## Active: Cruft cleanup (small, drive-by)
+
+Captured during the 2026-06-19 audit. Roughly ~50 lines of dead code +
+two empty directories. No version bump required — no shipped-data
+changes. Ship as one REMOVE commit.
+
+- **Dead code: `TABLES_APPENDIX` + `get_tables_toc()`** in
+  [src/srd_builder/utils/page_index.py](../src/srd_builder/utils/page_index.py)
+  — ~30 lines of hand-curated table-name/page/category tuples + ~20-line
+  formatter function. **Zero callers in the codebase.** The actual
+  `dist/tables.json` is built by extraction (`TARGET_TABLES` engine
+  config + `TableExtractor`), not from this hand-maintained list.
+- **Empty cruft package: `src/srd_builder/rulesets/`** — `__init__.py`
+  (empty) plus `srd_5_1/__init__.py` (one-line "hardcoded targets -
+  legacy tech debt" docstring on an otherwise empty module). Nothing
+  imports `srd_builder.rulesets.*`. Vestigial scaffold from the v0.26.2
+  multi-ruleset refactor. The actual `rulesets/` directory the build
+  uses is a top-level sibling of `src/`, not this nested Python package.
+- **Stale comments in
+  [src/srd_builder/constants.py](../src/srd_builder/constants.py)** —
+  the `RULESETS` registry docstring references `srd_builder.rulesets.<id>`
+  and instructs new-ruleset adders to create
+  `src/srd_builder/rulesets/<id>/`. Should be removed when the empty
+  package above is removed.
+
 ---
 
 ## Data integrity / extraction confidence
+
+> **See also `## Active: v0.28.0 — Data integrity foundation` above** —
+> Phases A–D crystallize the v0.28.x release shape from items below
+> (`known_truths.json` becomes Phase B; the audit codes become Phase C;
+> round-trip sampling becomes Phase D). The text below is the broader
+> superset; the v0.28.0 plan is what is actually scheduled.
 
 Goal: build justified confidence that what we extracted matches the PDF source,
 beyond the count-based + cross-reference checks we have today.
@@ -268,6 +469,12 @@ distinguish the two.
 
 ### Re-extraction candidates (remove the crutch, don't just declare it)
 
+> **✅ ALL DONE.** All three candidates below shipped during v0.27.x:
+> `spell_class_targets.py` retired v0.27.0 P2 (778-for-778 byte-perfect
+> parity); `class_targets.py` retired v0.27.2 P3 (5-step pipeline, 240
+> rows × 12 classes); `lineage_targets.py` retired v0.27.0 P1
+> (font-fingerprint walk). Section retained for history.
+
 Some hand-curated sources may exist because *earlier* extraction tooling
 couldn't handle them, not because the PDF is genuinely unreadable. With
 the newer PyMuPDF capabilities (font/coord-aware extraction, table-rect
@@ -337,6 +544,17 @@ left artifacts in the codebase:
 
 ### Naming inconsistency: `extract/` vs `extraction/`
 
+> **PARTIALLY SHIPPED v0.26.2; superseded by `## Active: Extractor
+> consolidation (attempt #4)` above.** Step 1 of the cutover (rename
+> `extraction/` → `extract/`) shipped. Steps 2–4 (`_legacy/` directory,
+> deprecation notes, forced migration of bespoke extractors) **did NOT
+> ship and should not**. The bespoke extractors in `extract/datasets/`
+> are LIVE, not legacy — five new ones were added there during v0.27.x
+> retirement work. The replacement plan is the attempt #4 framing above:
+> gradual migration to the existing 7-pattern-type engine, one extractor
+> per release, with new pattern types added as needed. Original text
+> retained below for history.
+
 Two sibling directories at the same pipeline layer with confusingly similar
 names, doing different shapes of the same job:
 
@@ -365,6 +583,29 @@ pipeline phase.
    not as a forced refactor).
 
 ### Misplaced data and config files
+
+> **OUTCOME (2026-06-19 audit).** Most rows of the original 7-home table
+> below are now resolved by v0.27.x retirements:
+>
+> - `CLASS_DATA`, `LINEAGE_DATA`, `SPELL_CLASSES` — modules **DELETED**
+>   (extracted live in v0.27.0–v0.27.2).
+> - `poison_descriptions_manual.py` — **DELETED** (v0.27.3).
+> - `EQUIPMENT_PACKS`, `EQUIPMENT_DESCRIPTIONS` — **DELETED**
+>   (v0.27.5–v0.27.6).
+> - `EXTENDED_EQUIPMENT` — still in `assemble/equipment_extended.py`,
+>   now carries typed `_provenance` (v0.27.7) and is the single
+>   remaining LIVE PROVENANCE entry. Documented, not misplaced.
+> - `TARGET_TABLES` — moved from `scripts/` to `extract/table_targets.py`
+>   in v0.26.2 (correct location: engine config alongside engine).
+> - `DATASET_CONFIGS`, `PATTERN_TYPES`, `PAGE_INDEX` — unchanged,
+>   correct locations.
+>
+> The per-ruleset directory layout proposal (`rulesets/<id>/data/` +
+> `rulesets/<id>/config/`) did **NOT** ship. Not needed yet: there is
+> only one ruleset. When SRD 5.2.1 lands, revisit — but the audit above
+> shows the actual data has consolidated, so the per-ruleset split may
+> be smaller than originally feared. Original 7-home framing retained
+> below for history.
 
 Hand-curated data and engine config are scattered across **five**
 different homes with no organizing principle:
