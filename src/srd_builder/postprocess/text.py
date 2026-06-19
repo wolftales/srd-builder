@@ -13,6 +13,16 @@ _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ regains spent legendary actions[^.]*\.\s*", re.IGNORECASE),
 ]
 
+# PDF line-wrap inside a hyphenated compound: ``two-\nhanded`` survives
+# whitespace normalization as ``two- handed`` and must be re-joined to
+# ``two-handed``. Matches the audit signature in
+# scripts/audit_dataset_quality.py (HYPHENATION_RE). Suspended-hyphen
+# constructions like ``long- and short-range`` are excluded by requiring
+# the trailing token to not be a coordinating conjunction; in practice
+# the current dist contains zero such cases (see Phase C audit), but the
+# guard is cheap insurance against future drift.
+_HYPHEN_LINE_BREAK_RE = re.compile(r"([A-Za-z]{2,})-\s+(?!(?:and|or|but|nor)\b)([a-z]+)")
+
 
 def clean_text(text: str) -> str:
     """Clean up common text encoding issues.
@@ -57,6 +67,7 @@ def clean_text(text: str) -> str:
 
     # Normalize all whitespace sequences to single space
     text = re.sub(r"\s+", " ", text)
+    text = _HYPHEN_LINE_BREAK_RE.sub(r"\1-\2", text)
     return text.strip()
 
 
@@ -82,6 +93,7 @@ def polish_text(text: str | None) -> str | None:
     cleaned = re.sub(r"(\d+d\d+)\s*([+-])\s*(\d+)", r"\1 \2 \3", cleaned)
     cleaned = cleaned.replace("keepsgoing", "keeps going")
     cleaned = re.sub(r"\s+", " ", cleaned)
+    cleaned = _HYPHEN_LINE_BREAK_RE.sub(r"\1-\2", cleaned)
     cleaned = re.sub(r"([.!?])([A-Z])", r"\1 \2", cleaned)
     cleaned = cleaned.strip()
     return cleaned

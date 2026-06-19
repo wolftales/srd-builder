@@ -9,6 +9,7 @@ from srd_builder.postprocess import (
     standardize_challenge,
     structure_defenses,
 )
+from srd_builder.postprocess.text import clean_text
 
 
 def test_normalize_id_idempotent() -> None:
@@ -87,3 +88,26 @@ def test_standardize_challenge_handles_fraction_and_numeric() -> None:
 def test_polish_text_cleans_spacing_and_dice() -> None:
     text = "H  it:  10 (2d6 +  3)--and   keepsgoing."
     assert polish_text(text) == "Hit: 10 (2d6 + 3)—and keeps going."
+
+
+def test_polish_text_stitches_pdf_line_break_hyphens() -> None:
+    # Compound words broken across PDF lines come through whitespace
+    # normalization as ``word- word`` and must be re-joined.
+    assert polish_text("a two- handed weapon") == "a two-handed weapon"
+    assert polish_text("for well- being") == "for well-being"
+    assert polish_text("Strength- based attack") == "Strength-based attack"
+
+
+def test_polish_text_preserves_suspended_hyphen() -> None:
+    # ``long- and short-range`` is intentional grammar, not a line break.
+    assert polish_text("long- and short-range") == "long- and short-range"
+
+
+def test_clean_text_stitches_pdf_line_break_hyphens() -> None:
+    # Same fix applies at the clean_text layer (spells flow through here).
+    assert clean_text("a foot-\nradius sphere") == "a foot-radius sphere"
+    assert clean_text("a one- word command") == "a one-word command"
+
+
+def test_clean_text_preserves_suspended_hyphen() -> None:
+    assert clean_text("pre- or post-combat") == "pre- or post-combat"

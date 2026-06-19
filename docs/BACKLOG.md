@@ -276,14 +276,23 @@ with three of the four spec'd codes:
 - ✅ `hyphenation_artifact` — `[A-Za-z]{2,}-\s+[a-z]+` catches PDF soft-hyphen
   line breaks (`two- handed`, `well- being`, `5th- level`). **151 real
   findings** in current dist — all genuine PDF stitching bugs, none false
-  positives.
+  positives. **FIXED 2026-06-19** in `postprocess/text.py`: same regex (with
+  suspended-hyphen guard for `and`/`or`/`but`/`nor`) applied in both
+  `clean_text()` and `polish_text()` after whitespace normalization. Covers
+  all four affected datasets (spells via `clean_text`; features, monsters,
+  rules via `polish_text`). Post-fix audit: 0 hyphenation findings. Residual:
+  digit-letter line-stitching like `15- foot- radius` (now `15- foot-radius`)
+  is not addressed by this fix; it's a smaller follow-up requiring a
+  broader pattern that handles number-letter boundaries.
 - ✅ `word_boundary_loss` — `\b[A-Za-z]{21,}\b` for run-on tokens
   (`fireballyou`). 0 findings on current dist (clean).
 - ⏳ `unknown_word` — deferred. Needs `pyspellchecker` dep + extended
   dictionary built from all dataset names to avoid noise. Standalone task.
 
 The 151 hyphenation findings are the next backlog item — fix the extractor's
-line-stitching pass, not the audit.
+line-stitching pass, not the audit. **✅ DONE 2026-06-19** — see fix note
+on the `hyphenation_artifact` line above. Open follow-up: digit-letter
+line-stitching (e.g. `15- foot- radius`) not covered by this pass.
 
 ### Phase D — Round-trip PDF sampling (independent, lower priority)
 
