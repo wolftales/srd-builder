@@ -112,6 +112,46 @@ retired the last extractable hand-curated module
 > [extract/datasets/](../src/srd_builder/extract/datasets/) is the LIVE
 > home of all 13 per-dataset extractors.
 
+### Reframe: `extract/datasets/` is the pattern registry, not a graveyard
+
+The earlier sustainability argument made it sound like the goal is to
+*empty* [extract/datasets/](../src/srd_builder/extract/datasets/). It
+isn't. The right end state is for the directory to **stay**, with one
+file per dataset, but each file shrinks to a slim declarative config
+that binds to the engine:
+
+```python
+# extract/datasets/extract_pdf_metadata.py (illustrative target shape)
+from srd_builder.extract import engine
+from srd_builder.extract.patterns import extract_by_config
+
+DATASET_CONFIG = {
+    "pattern_type": "document_metadata",
+    "fields": ["title", "creator", "page_count", "fingerprint"],
+}
+
+def extract_pdf_metadata(pdf_path: str) -> dict:
+    return extract_by_config(pdf_path, DATASET_CONFIG)
+```
+
+In that end state:
+
+- **`extract/datasets/`** becomes the **pattern registry** — one file
+  per dataset, declarative, easy to diff, easy to audit. The directory
+  having 13–20 files is a *feature*, not a smell, because each file is
+  ~30–60 lines of config rather than ~300–800 lines of bespoke
+  PDF-walking logic.
+- **`extract/patterns.py`** (+ engine) is where logic gravitates. New
+  dataset shapes add a new `pattern_type`; existing shapes reuse one.
+- **SRD 5.2.1** = a sibling directory of config files (or per-ruleset
+  config overrides) and possibly one or two new pattern types. Engine
+  code does not change. This is what makes attempt #4 worth doing.
+
+The migration steps below ("pick one extractor, factor its uniqueness,
+ship it, then the next") are how each file *gets* to that slim shape.
+We are not deleting files; we are converting bespoke walkers into
+pattern bindings.
+
 ### Why this matters (the sustainability argument)
 
 Every per-dataset bespoke file we ship doubles in cost when SRD 5.2.1
