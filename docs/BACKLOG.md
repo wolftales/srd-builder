@@ -369,6 +369,112 @@ release gate stays consistent.
 
 Test suite: 643 passed / 19 skipped / 0 xfailed (was 640 / 19 / 3).
 
+---
+
+## Active: v0.29.0 — Postprocess engine consolidation (Phase 1)
+
+> **Status:** Planned 2026-06-19. Decision: finish the prototyped
+> `postprocess/engine.py` rather than delete it. This is the same
+> "config-driven dispatcher" idiom already proven in `extract/`
+> (`extractor.py` + `extraction_metadata.TABLES` + `patterns.py`)
+> being landed at the postprocess stage. See
+> [docs/ARCHITECTURE.md § Config-Driven Engine Pattern](../docs/ARCHITECTURE.md)
+> for the cross-stage architectural picture.
+
+### Context
+
+The 19 currently-skipped tests in
+[tests/test_engine_postprocess.py](../tests/test_engine_postprocess.py)
+gate an experimental config-driven postprocess engine
+([src/srd_builder/postprocess/engine.py](../src/srd_builder/postprocess/engine.py)
++ [configs.py](../src/srd_builder/postprocess/configs.py)) that was
+prototyped to replace the 16 per-dataset postprocess modules with one
+declarative engine driven by `DATASET_CONFIGS`. The refactor was never
+finished — production still calls per-dataset `clean_*_record`
+functions, the engine sits idle, and the test suite gates it under a
+module-level `pytestmark.skip(reason="Engine is WIP …")`.
+
+### Why finish it (not delete it)
+
+The 12 boilerplate-heavy postprocess modules each do the same five
+things — ensure `simple_name`, ensure `id`, polish text fields, polish
+text arrays, polish nested-struct fields — in ~30-50 lines apiece.
+Engine + 5-line config replaces them cleanly. The other 4 modules
+(`monsters`, `rules`, `spells`, `equipment`) contain real domain
+logic (legendary-action parsing, ability-modifier derivation, action
+structures, statblock cleanup) that doesn't reduce to declarative
+config and stays custom.
+
+Net effect of Phase 1: ~400 lines deleted from `postprocess/`,
+19 skips become passes, the README/PKG-INFO architecture claim
+("engine.py drives DATASET_CONFIGS for normalization") stops being
+a lie, future-SRD support for the boilerplate-heavy datasets becomes
+"add a config entry" instead of "write another module."
+
+### Scope (Phase 1)
+
+**In scope — migrate to engine via `DATASET_CONFIGS` entry:**
+
+- `postprocess/poisons.py` (35 lines) — 4-line config
+- `postprocess/diseases.py` (44 lines) — 5-line config
+- `postprocess/conditions.py` (44 lines) — 5-line config
+- `postprocess/features.py` (39 lines) — 4-line config
+- `postprocess/lineages.py` (52 lines) — 8-line config (nested traits)
+- `postprocess/tables.py` (48 lines) — config + small `_clean_table_rows`
+- `postprocess/classes.py` (56 lines) — config + small `_clean_class_proficiencies`
+- `postprocess/ability_scores.py` (28 lines) — 3-line config
+- `postprocess/damage_types.py` (28 lines) — 3-line config
+- `postprocess/skills.py` (28 lines) — 3-line config
+- `postprocess/weapon_properties.py` (28 lines) — 3-line config
+- `postprocess/magic_items.py` (47 lines) — config + small custom transform
+
+**Out of scope — keep as custom modules:**
+
+- `postprocess/monsters.py` (370 lines) — legendary parsing, ability
+  modifiers, action structures, defense restructuring
+- `postprocess/rules.py` (123 lines) — chapter/section custom logic
+- `postprocess/spells.py` (62 lines) — takes external `spell_classes_map=`
+  kwarg; non-trivial constructor
+- `postprocess/equipment.py` (53 lines) — small but takes pack/description
+  kwargs and applies them across record types
+
+### Tasks
+
+1. Audit the 12 target modules for any behavior the current engine
+   config schema doesn't express. Extend `RecordConfig` only if a real
+   gap exists (don't pre-emptively add knobs).
+2. Add config entries to `DATASET_CONFIGS` for the 7 not yet covered
+   (`ability_scores`, `damage_types`, `skills`, `weapon_properties`,
+   `magic_items`, and confirm `classes`/`features` are accurate).
+3. Wire engine into `build.py` for the 12 migrated datasets. Keep
+   per-dataset calls for the 4 custom ones.
+4. Delete the 12 migrated per-dataset postprocess modules. Update
+   `__init__.py` re-exports.
+5. Remove `pytestmark.skip` from
+   [tests/test_engine_postprocess.py](../tests/test_engine_postprocess.py).
+   Fix any fixture-format drift surfaced when the 19 tests run for real.
+6. Update [README.md](../README.md) and PKG-INFO architecture section
+   to accurately describe the hybrid: engine drives 12 datasets,
+   custom modules drive 4 (monsters/rules/spells/equipment).
+7. Run full test suite + build verification.
+8. Ship as v0.29.0 (minor bump — consumer-visible if anyone imports
+   `srd_builder.postprocess.conditions.clean_condition_record`
+   directly; JSON output unchanged).
+
+### Out of scope (Phase 2 + Phase 3 — separate decisions later)
+
+- **Phase 2** — consider migrating `spells`/`equipment` to engine via
+  richer `custom_transform`. Small wins; not urgent.
+- **Phase 3** — apply the same config-driven idiom to `parse/`. Bigger
+  investment (parse is where each dataset's logic differs most), higher
+  risk. Do NOT start until Phase 1 has been in production for at least
+  a release. See also "Parse-layer consolidation" notes in the
+  Extractor-consolidation section above.
+- **Per-dataset registry** — a single registry mapping
+  `dataset → {schema, extract_config, parse_strategy, postprocess_config}`
+  is the architectural endgame. Premature until Phase 1 + Phase 3 ship
+  and we can see what the per-stage configs actually look like.
+
 ### Phase D follow-on — Original entry (kept for history)
 
 Three datasets ship `xfail` in `tests/test_round_trip_pdf.py`. Each is

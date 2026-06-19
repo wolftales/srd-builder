@@ -140,6 +140,85 @@ Extract (PDF → Raw JSON) → Parse (Structure) → Postprocess (Normalize) →
 - Monolithic datasets (magic_items, tables) should be refactored to extract normalization logic into `postprocess/` modules
 - Future datasets must use modular pattern from the start
 
+---
+
+## Config-Driven Engine Pattern
+
+A recurring architectural pattern across the build pipeline: **a per-dataset
+configuration dictionary + a dispatcher that reads the configuration and
+delegates to pluggable handlers**. The same idiom solves the same problem at
+multiple stages, but each stage gets its own engine because the operations
+are stage-specific.
+
+### Stages and their engines
+
+| Stage | Engine | Config registry | Pluggable handlers | Status |
+|-------|--------|-----------------|---------------------|--------|
+| `extract/` | [extractor.py](../src/srd_builder/extract/extractor.py) | [extraction_metadata.TABLES](../src/srd_builder/extract/extraction_metadata.py) | [patterns.py](../src/srd_builder/extract/patterns.py) (`split_column`, etc.) | ✅ In production |
+| `parse/` | _none_ | _none_ | _none_ — per-dataset modules | 📋 Phase 3 (future) |
+| `postprocess/` | [engine.py](../src/srd_builder/postprocess/engine.py) | [configs.DATASET_CONFIGS](../src/srd_builder/postprocess/configs.py) | `RecordConfig.custom_transform` (escape hatch) | 🔄 Phase 1 (v0.29.0) |
+| `assemble/` | _none_ | _none_ | _none_ — orchestration only | n/a |
+
+### The pattern, in one paragraph
+
+For a given pipeline stage, declare what each dataset needs as a config
+entry in a single registry (e.g. `extraction_metadata.TABLES["ability_scores_and_modifiers"]`
+or `DATASET_CONFIGS["condition"]`). The engine reads the registry, applies
+the common processing steps to every dataset uniformly, and falls back to a
+pluggable handler (pattern type, custom transform) only where the dataset
+genuinely needs custom logic. Most datasets need only a config entry; a small
+minority need a config entry plus a small handler.
+
+### Why this pattern, not per-dataset modules
+
+- **Less duplicated code.** The 12 boilerplate-heavy postprocess modules
+  do the same 5 operations in ~30-50 lines each. One engine + 12 5-line
+  configs is materially less code than 12 near-identical modules.
+- **One place to fix shared logic.** A bug in `polish_text()` or
+  `normalize_id()` was already one fix; a bug in the *pattern of applying
+  those utilities* (e.g. "polish nested struct fields") becomes one fix
+  too, instead of 12.
+- **Declarative additions for new SRDs.** Adding SRD 5.2.1 or Pathfinder
+  for the boilerplate-heavy datasets becomes "add a config entry" instead
+  of "write another module". Complex datasets (monsters, rules, spells,
+  equipment) still need per-ruleset modules because they have real
+  domain differences across rulesets.
+- **Proven elsewhere in this codebase.** The `extract/` stage has used this
+  exact pattern since v0.9.5 for table extraction. It works.
+
+### When NOT to use the engine
+
+The engine is for boilerplate consolidation. Use a custom per-dataset
+module when:
+
+- The processing has irreducible domain logic that doesn't reduce to
+  declarative config (e.g. monster legendary-action parsing, statblock
+  cleanup, ability-modifier derivation).
+- The function signature differs (extra kwargs like
+  `spell_classes_map=`, `equipment_packs=`, etc.).
+- The dataset is the *only* one of its shape (one-off transforms don't
+  need a registry).
+
+Currently 4 of the 16 postprocess datasets stay custom for these reasons:
+`monsters` (370 lines), `rules` (123 lines), `spells` (62 lines, takes
+`spell_classes_map=`), `equipment` (53 lines, takes pack/description
+kwargs).
+
+### Phases
+
+- **Phase 1 (v0.29.0)** — migrate the 12 boilerplate-heavy postprocess
+  modules to `DATASET_CONFIGS`. Keep 4 custom modules. Un-skip the 19
+  engine tests. See [docs/BACKLOG.md § v0.29.0](BACKLOG.md) for the
+  task list.
+- **Phase 2 (deferred)** — consider migrating `spells`/`equipment` via
+  richer `custom_transform`. Small wins; not urgent.
+- **Phase 3 (deferred until Phase 1 proves itself)** — apply the same
+  idiom to `parse/`. Bigger investment; defer until at least one
+  release cycle of Phase 1 in production.
+- **Endgame (much later)** — a single per-dataset registry tying
+  `dataset → {schema, extract_config, parse_strategy, postprocess_config}`.
+  Premature until Phase 1 + Phase 3 ship.
+
 ## Pipeline Architecture
 
 **Target Modular Pattern (all datasets):**
