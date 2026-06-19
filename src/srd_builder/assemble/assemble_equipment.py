@@ -48,7 +48,7 @@ EQUIPMENT_TABLES = [
     "armor",
     "weapons",
     "tools",
-    "adventure_gear",
+    "adventuring_gear",
     "container_capacity",
     "mounts_and_other_animals",
     "food_drink_lodging",
@@ -106,7 +106,7 @@ def assemble_equipment_from_tables(
             items = _assemble_weapons(table, source)
         elif simple_name == "tools":
             items = _assemble_tools(table, source)
-        elif simple_name == "adventure_gear":
+        elif simple_name == "adventuring_gear":
             items = _assemble_adventure_gear(table, container_capacities, source)
         elif simple_name == "container_capacity":
             # Already processed for cross-reference, skip item creation
@@ -557,7 +557,7 @@ def _assemble_adventure_gear(
             "page": page,
             "source": source,
             "is_magic": False,
-            "source_table": "adventure_gear",
+            "source_table": "adventuring_gear",
             "row_index": row_index,
         }
 

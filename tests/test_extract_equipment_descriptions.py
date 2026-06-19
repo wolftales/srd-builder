@@ -360,7 +360,7 @@ def test_extract_equipment_descriptions_meta_block() -> None:
     meta = result["_meta"]
     assert meta["descriptions_extracted"] == 69
     assert meta["pages_processed"] == [63, 66, 67, 68, 70, 71, 73]
-    assert meta["sections"] == ["armor", "adventure_gear", "tools", "lifestyle"]
+    assert meta["sections"] == ["armor", "adventuring_gear", "tools", "lifestyle"]
     assert "extractor_version" in meta
 
 

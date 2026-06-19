@@ -46,7 +46,7 @@ class ItemDescription(TypedDict):
 # 0-indexed pymupdf document.
 _SECTIONS: list[tuple[str, list[int]]] = [
     ("armor", [63]),
-    ("adventure_gear", [66, 67, 68]),
+    ("adventuring_gear", [66, 67, 68]),
     ("tools", [70, 71]),
     ("lifestyle", [73]),
 ]
@@ -208,7 +208,7 @@ _SUBSECTION_TERMINATORS: dict[str, tuple[str, ...]] = {
         # After Plate (last armor item) the table repeats: "Armor Armor Cost..."
         "Armor Armor Cost",
     ),
-    "adventure_gear": (
+    "adventuring_gear": (
         # Page footer / running header on p.68 after Torch (last item)
         "Adventuring Gear",
     ),
@@ -303,7 +303,7 @@ def extract_equipment_descriptions(pdf_path: Path) -> dict[str, Any]:
                 "extractor_version": str,
                 "descriptions_extracted": int,
                 "pages_processed": [63, 66, 67, 68, 70, 71, 73],
-                "sections": ["armor", "adventure_gear", "tools", "lifestyle"],
+                "sections": ["armor", "adventuring_gear", "tools", "lifestyle"],
             },
         }
     """

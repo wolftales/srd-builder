@@ -71,7 +71,7 @@ TABLES: dict[str, dict[str, Any]] = {
         "confirmed": True,  # Extraction verified working
         "validation": {"expected_rows": 16},
     },
-    "adventure_gear": {
+    "adventuring_gear": {
         "pattern_type": "split_column",
         "source": "srd",
         "pages": [69],

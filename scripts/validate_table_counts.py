@@ -23,7 +23,7 @@ EXPECTED_COUNTS = {
     # Equipment tables (TEXT_PARSED)
     "armor": 13,  # 3 light + 6 medium + 4 heavy
     "weapons": 37,  # 14 simple + 23 martial
-    "adventure_gear": 103,  # Includes all detail rows (categories expand count)
+    "adventuring_gear": 103,  # Includes all detail rows (categories expand count)
     "tools": 38,  # Artisan's tools + gaming sets + musical instruments (with categories)
     "mounts_and_other_animals": 8,  # Note: Some entries may be multiline
     "tack_harness_vehicles": 14,  # Note: Expected ~17, but extraction finds 14

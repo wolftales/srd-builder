@@ -97,7 +97,7 @@ def test_equipment_tables_present(tables_raw):
     equipment_tables = [
         "armor",
         "weapons",
-        "adventure_gear",
+        "adventuring_gear",
         "tools",
         "mounts_and_other_animals",
         "services",

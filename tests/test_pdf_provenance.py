@@ -728,7 +728,7 @@ def _page_text_normalized(pdf_page_1_indexed: int) -> str:
 # structural level and no item-by-item probe will help.
 _EQUIPMENT_DESCRIPTION_SECTION_ANCHORS: list[tuple[str, int, str]] = [
     # (section_label, pdf_page_1_indexed, heading_with_trailing_period)
-    ("adventure_gear", 66, "Acid."),
+    ("adventuring_gear", 66, "Acid."),
     ("tools", 71, "Disguise Kit."),
     ("armor", 63, "Padded."),
     ("lifestyle", 73, "Wretched."),
@@ -771,12 +771,12 @@ def test_equipment_descriptions_section_anchor_extractable(
 # that a parser anchored on `^[A-Z][A-Za-z ’,()]+\.\s` can lift the prose.
 _EQUIPMENT_DESCRIPTION_ITEM_PROBES: list[tuple[str, int, str, str]] = [
     # adventure gear — pp. 66–68
-    ("adventure_gear", 66, "Acid.", "splash the contents of this vial"),
-    ("adventure_gear", 66, "Antitoxin.", "saving throws against poison for 1 hour"),
-    ("adventure_gear", 67, "Ball Bearings.", "spill these tiny metal balls"),
-    ("adventure_gear", 67, "Caltrops.", "stop moving this turn"),
-    ("adventure_gear", 68, "Manacles.", "DC 20 Dexterity check"),
-    ("adventure_gear", 68, "Spyglass.", "twice their size"),
+    ("adventuring_gear", 66, "Acid.", "splash the contents of this vial"),
+    ("adventuring_gear", 66, "Antitoxin.", "saving throws against poison for 1 hour"),
+    ("adventuring_gear", 67, "Ball Bearings.", "spill these tiny metal balls"),
+    ("adventuring_gear", 67, "Caltrops.", "stop moving this turn"),
+    ("adventuring_gear", 68, "Manacles.", "DC 20 Dexterity check"),
+    ("adventuring_gear", 68, "Spyglass.", "twice their size"),
     # tools — p. 71
     ("tools", 71, "Disguise Kit.", "pouch of cosmetics, hair dye"),
     ("tools", 71, "Forgery Kit.", "small box contains a variety"),

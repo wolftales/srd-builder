@@ -241,8 +241,8 @@ TARGET_TABLES: list[TableTarget] = [
         "notes": "Currency conversion rates (CP/SP/EP/GP/PP)",
     },
     {
-        "id": "table:adventure_gear",
-        "simple_name": "adventure_gear",
+        "id": "table:adventuring_gear",
+        "simple_name": "adventuring_gear",
         "name": "Adventuring Gear",
         "page": [68],
         "section": "Chapter 5: Equipment",
