@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.28.0`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.28.1`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -267,10 +267,11 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.28.0** — Data-integrity foundation (Phases A+B+C+D): (A) `scripts/generate_exemplars.py` now fills optional schema fields and is wired into CI as a safety net so any future schema change that breaks consumer-facing exemplars fails the build; (B) `tests/test_known_truths.py` ships a hand-curated release gate of ~30 cross-dataset facts (e.g. Fireball 3rd-level evocation 8d6 fire, Goblin AC 15, Barbarian d12 hit die) so a silent regression on data humans actually look up fails a single test; (C) `scripts/audit_dataset_quality.py` gained three new audit codes — `non_ascii_in_text`, `hyphenation_artifact`, `word_boundary_loss` — and surfaced 151 real hyphenation bugs in shipped prose; (C-fix) `postprocess/text.py::_HYPHEN_LINE_BREAK_RE` stitches PDF line-break hyphens at fixed point in both `clean_text()` and `polish_text()`, with a suspended-hyphen guard for `and`/`or`/`but`/`nor`, covering letter-letter, digit-letter, Title-Case, and single-letter cases; the audit pattern was broadened to the same regex so future regressions surface on the same signal; (D) new `tests/test_round_trip_pdf.py` samples 5 records per dataset and asserts each record's `name` appears within ±1 page of its declared `page` field in the PDF — 12 datasets pass cleanly, 3 (`skills`, `tables`, `weapon_properties`) are `xfail(strict=False)` with reasons documenting real page-field drift to fix in a follow-on; closes BACKLOG "v0.28.0 Data integrity foundation".
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history.
 
 Key milestones:
-
+- **v0.1.0** — Foundation (infrastructure & tooling)
+- **v0.2.0** — End-to-End Pipeline (fixture-based validation)
 - **v0.3.0–v0.7.x** — PDF extraction + structured field parsing
 - **v0.9.x** — Equipment + reference tables + class progressions
 - **v0.14.0** — Conditions, diseases, madness, poisons (deterministic prose pipeline)
@@ -278,22 +279,14 @@ Key milestones:
 - **v0.16.0** — Magic items dataset (240 items)
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
-- **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
-- **v0.28.0** — Data-integrity foundation (Phases A+B+C+D): (A) exemplar generator fills optional fields + CI safety net; (B) `tests/test_known_truths.py` cross-dataset release gate (~30 hand-curated facts); (C) `audit_dataset_quality.py` gains `non_ascii_in_text` / `hyphenation_artifact` / `word_boundary_loss` codes — surfaced 151 hyphenation bugs, then fixed in `postprocess/text.py` with a fixed-point stitcher (covers letter-letter, digit-letter, Title-Case, single-letter; suspended-hyphen guard for `and`/`or`/`but`/`nor`) applied in both `clean_text()` and `polish_text()`; audit regex broadened to the same pattern; (D) new `tests/test_round_trip_pdf.py` samples 5 records per dataset and asserts `name` appears within ±1 page of declared `page` field — 12 datasets pass cleanly, 3 (`skills`, `tables`, `weapon_properties`) `xfail` with documented page-field drift as follow-on backlog
-- **v0.27.7** — `equipment_extended.py` provenance hardening (BACKLOG proposal 2): free-text `_note` replaced by typed `_provenance` block (`source`, `reason`, `referenced_by`, `module`, `estimates`); `ExtendedProvenance` TypedDict + `equipment.schema.json` 2.2.0 `_provenance` property + 5-test pin in `tests/test_equipment_extended_provenance.py`; the previous `_note` field was silently violating `additionalProperties: false`; closes the last open follow-up in PROVENANCE / BACKLOG; v0.27.x line complete; 563 passed
-- **v0.27.6** — `equipment_descriptions.py` retired (P7 cutover): 398-line `*_DESCRIPTIONS` literals replaced by live `extract_equipment_descriptions.py`; section-aware concatenation + Title-Case heading regex with lowercase-glue alternation + 69-entry dispatch table + subsection-terminator slicing yield 69-for-69 recovery; surfaced 6 silently-stripped description phrases and 2 incorrect curated `page` fields as drift in the retired literal; `assemble_equipment_from_tables` takes `equipment_descriptions=` kwarg; v0.27.x retirement line totals ~2,856 lines deleted across 6 modules; PROVENANCE 3 → 1 active; 558 passed (73 new assertions)
-- **v0.27.5** — `equipment_packs.py` retired (P6 cutover): 323-line `EQUIPMENT_PACKS` literal replaced by live `extract_equipment_packs.py`; pack-header regex + `_PHRASE_TO_ITEM` resolution table + trailing-rope sentence handling yield 7-for-7 byte-perfect parity (name, cost_gp, description, contents); curly-apostrophe normalized to ASCII at output; `assemble_equipment_from_tables` takes `equipment_packs=` kwarg; closes v0.27.x retirement line at ~2,458 lines deleted; PROVENANCE 4 → 3 active; 485 passed
-- **v0.27.4** — Equipment page-constants drift fixed + cross-extractor audit: `EQUIPMENT_START_PAGE` / `EQUIPMENT_END_PAGE` harmonized from 0-indexed `61`–`72` to 1-indexed `62`–`74` (matching `PAGE_INDEX["equipment"]`); 8 silently-dropped rows from PDF page 74 (Services / Lifestyle tables) now extracted; new parametrized audit test `test_extractor_page_constants_agree_with_page_index` pins all 4 per-dataset extractors against canonical `PAGE_INDEX`; +4 new test assertions (464 passed)
-- **v0.27.3** — `poison_descriptions.py` retired (P4 cutover): 129-line hand-curated `POISON_DESCRIPTIONS` replaced by live `parse_poison_descriptions.py`; damage regex extended to `tak(?:es?|ing)` unblocks 4 delayed-damage poisons; description header strip + `type_id` emit yield 14/14 byte-perfect parity; PROVENANCE shrinks 5 → 4; v0.27.x line concludes at ~2,135 lines deleted
-- **v0.27.2** — `class_targets.py` retired (P3 cutover): five-step `extract_classes.py` replaces the 763-line hand-curated `CLASS_DATA`; `parse_classes()` / `parse_features()` take `class_data=` kwargs; bbox-aware progression walk handles newspaper layouts + duplicate columns + apostrophe/hyphen heals; 4 genuinely-unextractable cells reproducer-pinned
-- **v0.27.1** — Prose section splitter fix + poison probe: `clean_text` smart-quote substitution repaired (was source-mangled no-op); `split_by_known_headers` gained `start_marker=` to skip preamble tables; `malice`/`torpor` no longer absorb ~2000/~3700 extra chars; `"Assassin's Blood"` restored to poison `known_headers`; dead U+2019 key in `POISON_DESCRIPTIONS` renamed; live poison extractor now returns clean 14/14; 4th "PDF corruption" claim disproven with reproducer
-- **v0.27.0** — Hand-curated data retirement: `lineage_targets.py` (326 lines) replaced by live `extract_lineages.py` (P1); `spell_class_targets.py` (917 lines, byte-perfect 778-for-778 parity) replaced by `extract_spell_classes.py` (P2); `class_targets.py` reproducer added — text fully extractable, **DISPUTED** in PROVENANCE, retirement deferred (richer structural payload) (P3); `clean_spell_record()` now takes explicit `spell_classes_map=` kwarg; ~1,244 lines of hand-curated data deleted; +62 new test assertions
-- **v0.26.2** — Structural cleanup of attempt #2: `extraction/` → `extract/` (table engine + bespoke extractors unified); hand-curated ruleset Python data consolidated under `src/srd_builder/rulesets/srd_5_1/`; shared prose utilities moved to `utils/prose.py`; workspace dirname literals swept into constants; `RULESETS` registry introduced (replaces lone `DATA_SOURCE`); `ruleset` parameter threaded through every parser/assembler/extractor; `source` field normalized to canonical `"SRD_CC_v5.1"` (was `"SRD 5.1"`); `stamp_source()` helper centralizes source stamping; `bump_version.py` fixed to thread `ruleset` through fixture regen
-- **v0.26.1** — `utils/pdf_probe.py` shared PDF text-probe primitive (`open_pdf`, `page_text`, `normalize_whitespace`, `srd_page_to_pdf_index`); second reproducer test for spell-class lists pp. 105–113 (`SPELL_CLASSES` corruption claim DISPROVEN); BACKLOG ticket for v0.26.2 structural cleanup of `extract/` vs `extraction/` and ruleset-data home
-- **v0.26.0** — Generated schema exemplars in bundle (one per schema, replaces `docs/templates/`); `docs/PROVENANCE.md` registry of hand-curated data sources with reason codes; `tests/test_pdf_provenance.py` reproducer test framework (first finding: lineage "PDF corrupted" claim is FALSE under pymupdf 1.27.x); dead `extraction/reference_data.py` removed (−625 net lines)
-- **v0.25.0** — Owner-qualified feature IDs (`feature:{owner_simple_name}:{name}` + `owner_id` field); equipment IDs normalized through `normalize_id` (no more hyphens); audit clean on cross-refs + bad-id-format
-- **v0.24.0** — Data-quality audit script; footer/control-char/damage-type fixes; `meta.json.datasets` block collapses files/inventory/extraction_status
-- **v0.23.0** — Bundle README auto-generation, full schema coverage, inventory manifest, repo cleanup
+- **v0.22.x** — Editable install fixes; dynamic package version
+- **v0.23.0** — Bundle README auto-generation, schema coverage, inventory manifest
+- **v0.24.0** — Data-quality audit; footer/control-char/damage-type fixes
+- **v0.25.0** — Owner-qualified feature IDs; normalized equipment IDs
+- **v0.26.x** — Schema exemplars in bundle; PROVENANCE registry; PDF reproducer framework; `extract/` consolidation
+- **v0.27.x** — Hand-curated data retirement (lineages, spell-class lists, classes, poisons, equipment packs/descriptions); provenance hardening
+- **v0.28.0** — Data-integrity foundation (exemplar CI gate, known-truths gate, hyphenation fixes, round-trip page audit)
+- **v0.28.1** — Table id naming consistency (`table:adventuring_gear`)
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License
