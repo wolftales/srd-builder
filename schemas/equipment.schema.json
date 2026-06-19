@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "version": "2.1.0",
-  "last_modified": "2026-06-17",
+  "version": "2.2.0",
+  "last_modified": "2026-06-18",
   "title": "SRD 5.1 Equipment Item",
   "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",
@@ -348,6 +348,54 @@
     "_meta": {
       "type": "object",
       "description": "INTERNAL: Builder metadata (timestamps, notes)"
+    },
+    "_provenance": {
+      "type": "object",
+      "description": "Structured provenance for non-PDF-extracted records (see src/srd_builder/assemble/equipment_extended.py). Allows consumers to distinguish inferred items from SRD-extracted ones.",
+      "required": [
+        "source",
+        "reason",
+        "referenced_by",
+        "module",
+        "estimates"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "inferred"
+          ],
+          "description": "Origin classification. Currently only 'inferred' is emitted."
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "pack_cross_reference",
+            "monster_cross_reference"
+          ],
+          "description": "Why this record exists outside the SRD equipment tables."
+        },
+        "referenced_by": {
+          "type": "string",
+          "description": "Pack name or referencing surface (e.g. \"Burglar's Pack\", \"monster_stat_blocks\")."
+        },
+        "module": {
+          "type": "string",
+          "description": "Source module that owns this record (e.g. 'equipment_extended.py')."
+        },
+        "estimates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "cost",
+              "weight"
+            ]
+          },
+          "description": "Which numeric fields were estimated rather than extracted."
+        }
+      }
     }
   }
 }
