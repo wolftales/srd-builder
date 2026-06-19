@@ -63,6 +63,7 @@ def assemble_equipment_from_tables(
     ruleset: str,
     *,
     equipment_packs: list[dict[str, Any]] | None = None,
+    equipment_descriptions: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     """Assemble equipment items from normalized tables.
 
@@ -73,6 +74,10 @@ def assemble_equipment_from_tables(
             ``extract_equipment_packs(pdf_path)["packs"]``. When ``None``,
             no pack records are added to the output (build.py is
             responsible for threading this through; tests can omit it).
+        equipment_descriptions: Pre-extracted prose descriptions from
+            ``extract_equipment_descriptions(pdf_path)["descriptions"]``.
+            When ``None``, items are returned without ``description``
+            fields.
 
     Returns:
         List of equipment item dictionaries
@@ -150,8 +155,9 @@ def assemble_equipment_from_tables(
     )
     equipment_items.extend(pack_items)
 
-    # Add descriptions to items (from prose sections)
-    _add_item_descriptions(equipment_items)
+    # Add descriptions to items (from page-66-73 extractor — see
+    # src/srd_builder/extract/datasets/extract_equipment_descriptions.py).
+    _add_item_descriptions(equipment_items, equipment_descriptions)
 
     logger.info(
         f"Assembled {len(equipment_items)} equipment items "
@@ -1146,23 +1152,32 @@ def _add_extended_equipment(
     return added_items
 
 
-def _add_item_descriptions(items: list[dict[str, Any]]) -> None:
+def _add_item_descriptions(
+    items: list[dict[str, Any]],
+    descriptions: list[dict[str, Any]] | None,
+) -> None:
     """Add prose descriptions to equipment items.
 
     Mutates items in place by adding 'description' field where available.
 
     Args:
         items: List of equipment items
+        descriptions: Pre-extracted description records from
+            ``extract_equipment_descriptions(...)["descriptions"]``. When
+            ``None``, no descriptions are added (caller is responsible
+            for threading the extractor output through; tests that
+            don't care about prose can omit it).
     """
-    from .equipment_descriptions import get_description_lookup
+    if descriptions is None:
+        return
 
-    descriptions = get_description_lookup()
+    lookup = {entry["item_id"]: entry["description"] for entry in descriptions}
     added_count = 0
 
     for item in items:
         item_id = item.get("id")
-        if item_id in descriptions:
-            item["description"] = descriptions[item_id]
+        if item_id in lookup:
+            item["description"] = lookup[item_id]
             added_count += 1
 
     logger.info(f"Added descriptions to {added_count} items")

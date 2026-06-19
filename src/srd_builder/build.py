@@ -24,6 +24,9 @@ from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMA
 from .extract import extract_tables_to_json
 from .extract.datasets.extract_classes import extract_classes
 from .extract.datasets.extract_equipment import extract_equipment
+from .extract.datasets.extract_equipment_descriptions import (
+    extract_equipment_descriptions,
+)
 from .extract.datasets.extract_equipment_packs import extract_equipment_packs
 from .extract.datasets.extract_features import extract_class_features, extract_lineage_traits
 from .extract.datasets.extract_lineages import extract_lineages
@@ -855,6 +858,31 @@ def _load_raw_equipment(raw_dir: Path) -> list[dict[str, Any]]:
     return []
 
 
+def _extract_equipment_pdf_data(
+    ruleset: str,
+) -> tuple[list[dict[str, Any]] | None, list[dict[str, Any]] | None]:
+    """Run the page-70 packs extractor and the page-63/66-68/70-71/73
+    descriptions extractor for the given ruleset.
+
+    Returns ``(packs, descriptions)``; both are ``None`` when the
+    ruleset's source PDF is not present (e.g., CI fixtures that
+    omit the rulebook). Centralized here so build() stays under the
+    PLR0915 statement-count threshold.
+
+    See:
+      - ``src/srd_builder/extract/datasets/extract_equipment_packs.py`` (v0.27.5)
+      - ``src/srd_builder/extract/datasets/extract_equipment_descriptions.py`` (v0.27.6)
+    """
+    ruleset_dir = Path("rulesets") / ruleset
+    pdf_files = sorted(ruleset_dir.glob("*.pdf"))
+    if not pdf_files:
+        return None, None
+    pdf_path = pdf_files[0]
+    packs = extract_equipment_packs(pdf_path)["packs"]
+    descriptions = extract_equipment_descriptions(pdf_path)["descriptions"]
+    return packs, descriptions
+
+
 def _extract_raw_spells(raw_dir: Path, ruleset_dir: Path) -> Path | None:
     """Extract spells from PDF if present.
 
@@ -1108,18 +1136,18 @@ def build(  # noqa: C901
     parsed_equipment = []
     if "equipment" not in skip_datasets:
         if parsed_tables:
-            # Equipment packs are extracted from PDF page 70 (v0.27.5 — see
-            # src/srd_builder/extract/datasets/extract_equipment_packs.py;
-            # retired hand-curated EQUIPMENT_PACKS literal).
-            equipment_packs = None
-            ruleset_dir = Path("rulesets") / ruleset
-            pdf_files = sorted(ruleset_dir.glob("*.pdf"))
-            if pdf_files:
-                equipment_packs = extract_equipment_packs(pdf_files[0])["packs"]
+            # Equipment packs (v0.27.5) and item descriptions (v0.27.6)
+            # are extracted from the PDF directly; both helpers return
+            # ``None`` when the SRD PDF is absent (e.g., in CI fixtures
+            # without the source rulebook).
+            equipment_packs, equipment_descriptions = _extract_equipment_pdf_data(ruleset)
 
             # New table-based assembly (v0.9.9 Part 2)
             parsed_equipment = assemble_equipment_from_tables(
-                parsed_tables, ruleset, equipment_packs=equipment_packs
+                parsed_tables,
+                ruleset,
+                equipment_packs=equipment_packs,
+                equipment_descriptions=equipment_descriptions,
             )
         else:
             # Fallback to old PyMuPDF extraction if no tables available
