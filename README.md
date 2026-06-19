@@ -124,10 +124,10 @@ and the schema exemplars.
 
 **Pipeline (per-dataset):**
 
-1. **Extract** — `src/srd_builder/extract/` (per-dataset PDF extractors) and
-   `src/srd_builder/extraction/` (the table-extraction engine: `extractor.py`, `patterns.py`,
-   `extraction_metadata.py`). PDF-text primitives live in
-   [src/srd_builder/utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py).
+1. **Extract** — `src/srd_builder/extract/` hosts both layers: the config-driven
+   table-extraction engine (`engine.py`, `patterns.py`, `extraction_metadata.py`)
+   and the per-dataset PDF extractors under `extract/datasets/`. PDF-text
+   primitives live in [src/srd_builder/utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py).
 2. **Parse** — `src/srd_builder/parse/parse_<dataset>.py` maps raw text into typed records.
 3. **Postprocess** — `src/srd_builder/postprocess/engine.py` drives `DATASET_CONFIGS`
    (in `configs.py`) to normalize 12 of the 16 datasets declaratively (id stamping,
@@ -238,7 +238,7 @@ srd-builder/
 │   ├── validate_references.py    # Cross-dataset reference auditor
 │   ├── constants.py              # Versioned/static builder constants
 │   ├── extract/                  # Table engine + bespoke per-dataset extractors
-│   │   ├── extractor.py          # Table-extraction engine
+│   │   ├── engine.py             # Config-driven table-extraction engine
 │   │   ├── patterns.py           # Table-extraction patterns
 │   │   ├── table_targets.py      # Hand-curated table targets
 │   │   └── datasets/             # Per-dataset PDF extractors (extract_*.py)

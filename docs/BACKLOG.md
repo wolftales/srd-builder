@@ -481,12 +481,13 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
   `dataset → {schema, extract_config, parse_strategy, postprocess_config}`
   is the architectural endgame. Premature until Phase 1 + Phase 3 ship
   and we can see what the per-stage configs actually look like.
-- **Cross-stage naming consistency** — rename `extract/extractor.py` →
-  `extract/engine.py` so the config-driven dispatcher has the same
+- **Cross-stage naming consistency** — ✅ DONE in **v0.29.1**.
+  `extract/extractor.py` renamed to `extract/engine.py` (via `git mv`,
+  history preserved) so the config-driven dispatcher has the same
   filename in every stage that uses the pattern (`extract/engine.py`,
-  `postprocess/engine.py`, eventually `parse/engine.py`). Pure rename
-  + import update; defer until Phase 1 lands so the diff is small and
-  the consistency story is undeniable.
+  `postprocess/engine.py`, eventually `parse/engine.py`). Single
+  import site updated (`extract/__init__.py`); README + ARCHITECTURE
+  references updated.
 - **Unify the two assembly code paths** — 12 datasets flow through
   `build._write_datasets` (parse → engine → wrap_with_meta → write),
   while `conditions` / `diseases` / `poisons` / `features` arrive at

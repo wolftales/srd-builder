@@ -154,7 +154,7 @@ are stage-specific.
 
 | Stage | Engine | Config registry | Pluggable handlers | Status |
 |-------|--------|-----------------|---------------------|--------|
-| `extract/` | [extractor.py](../src/srd_builder/extract/extractor.py) | [extraction_metadata.TABLES](../src/srd_builder/extract/extraction_metadata.py) | [patterns.py](../src/srd_builder/extract/patterns.py) (`split_column`, etc.) | ✅ In production |
+| `extract/` | [engine.py](../src/srd_builder/extract/engine.py) | [extraction_metadata.TABLES](../src/srd_builder/extract/extraction_metadata.py) | [patterns.py](../src/srd_builder/extract/patterns.py) (`split_column`, etc.) | ✅ In production |
 | `parse/` | _none_ | _none_ | _none_ — per-dataset modules | 📋 Phase 3 (future) |
 | `postprocess/` | [engine.py](../src/srd_builder/postprocess/engine.py) | [configs.DATASET_CONFIGS](../src/srd_builder/postprocess/configs.py) | `RecordConfig.custom_transform` (escape hatch) | 🔄 Phase 1 (v0.29.0) |
 | `assemble/` | _none_ | _none_ | _none_ — orchestration only | n/a |
