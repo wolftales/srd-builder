@@ -265,23 +265,25 @@ unification principle.
 - Single test file = single regression-catch point for "did we silently
   break a thing humans actually look up".
 
-### Phase C — Audit codes (independent of A/B)
+### Phase C — Audit codes (independent of A/B) — ✅ DONE 2026-06-19 (3 of 4)
 
-Extend [scripts/quality_report.py](../scripts/quality_report.py) (or add
-`scripts/audit_dataset_quality.py`) with:
+Extended [scripts/audit_dataset_quality.py](../scripts/audit_dataset_quality.py)
+with three of the four spec'd codes:
 
-- `non_ascii_in_text` — mojibake regex; allow smart quotes / em-dashes /
-  bullets, flag `â€™` style.
-- `hyphenation_artifact` — `\b\w+-\s\w+\b` catches `light- ning` /
-  `con- tinue`.
-- `word_boundary_loss` — alphabetic tokens >20 chars catches
-  `fireballyou` from a missing newline.
-- `unknown_word` — `pyspellchecker` over item NAMES only (not body —
-  too many fantasy terms), extended dictionary loads class / monster /
-  spell / item names. Output for human review, not auto-fail.
+- ✅ `non_ascii_in_text` — `MOJIBAKE_RE = â€|Ã[\xa0-\xbf]`. Catches the
+  UTF-8 → windows-1252 / latin-1 mis-decode family. 0 findings on current
+  dist (clean).
+- ✅ `hyphenation_artifact` — `[A-Za-z]{2,}-\s+[a-z]+` catches PDF soft-hyphen
+  line breaks (`two- handed`, `well- being`, `5th- level`). **151 real
+  findings** in current dist — all genuine PDF stitching bugs, none false
+  positives.
+- ✅ `word_boundary_loss` — `\b[A-Za-z]{21,}\b` for run-on tokens
+  (`fireballyou`). 0 findings on current dist (clean).
+- ⏳ `unknown_word` — deferred. Needs `pyspellchecker` dep + extended
+  dictionary built from all dataset names to avoid noise. Standalone task.
 
-Each adds a row to the existing quality report; no schema/dataset shape
-changes.
+The 151 hyphenation findings are the next backlog item — fix the extractor's
+line-stitching pass, not the audit.
 
 ### Phase D — Round-trip PDF sampling (independent, lower priority)
 

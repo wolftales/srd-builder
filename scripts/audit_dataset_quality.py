@@ -17,6 +17,9 @@ Checks (grouped by severity):
   warning
     - bad_id_format           id does not match ``^[a-z][a-z0-9_]*(:[a-z0-9_]+)+$``
     - missing_reference       cross-dataset id not resolved (e.g. feature_id)
+    - non_ascii_in_text       mojibake (e.g. ``â€™``) in a prose field
+    - hyphenation_artifact    soft-hyphen split (``light- ning``) not re-joined
+    - word_boundary_loss      run-on token >20 chars suggesting missing space
 
 Exit codes:
   0  no findings of the selected severity or higher (default: none required)
@@ -48,6 +51,14 @@ SEVERITY_ORDER = {"info": 0, "warning": 1, "critical": 2}
 ID_RE = re.compile(r"^[a-z][a-z0-9_]*(:[a-z0-9_]+)+$")
 CONTROL_RE = re.compile(r"[\t\r\xa0]")
 FOOTER_RE = re.compile(r"System Reference Document", re.IGNORECASE)
+# Mojibake markers from UTF-8 mis-decoded as windows-1252 / latin-1.
+# `â€` prefixes smart-quote / em-dash mojibake; `Ã` followed by upper-half byte
+# is the latin-1 mis-decode of a 2-byte UTF-8 sequence.
+MOJIBAKE_RE = re.compile(r"â€|Ã[\xa0-\xbf]")
+# Soft-hyphenated line break that survived as ``light- ning`` / ``con- tinue``.
+HYPHENATION_RE = re.compile(r"[A-Za-z]{2,}-\s+[a-z]+")
+# Alphabetic run > 20 chars — almost always a missing space between two words.
+WORD_RUNON_RE = re.compile(r"\b[A-Za-z]{21,}\b")
 TEXT_FIELDS = ("text", "description", "summary")
 
 
@@ -169,6 +180,71 @@ def check_footer_leakage(dataset: str, items: list[dict[str, Any]]) -> Iterable[
                     break
 
 
+def _walk_text_fields(item: dict[str, Any]) -> Iterator[tuple[str, str]]:
+    """Yield (field_label, text) for every prose string in TEXT_FIELDS,
+    including monster/class ``actions[*].description``."""
+    for field in TEXT_FIELDS:
+        for text in _iter_text(item.get(field)):
+            yield field, text
+    for action in item.get("actions", []) or []:
+        if not isinstance(action, dict):
+            continue
+        aname = action.get("name", "?")
+        for text in _iter_text(action.get("description")):
+            yield f"action {aname!r}.description", text
+
+
+def check_non_ascii_in_text(dataset: str, items: list[dict[str, Any]]) -> Iterable[Finding]:
+    """Flag mojibake sequences (UTF-8 mis-decoded as windows-1252 / latin-1)."""
+    for item in items:
+        rid = item.get("id") if isinstance(item.get("id"), str) else None
+        for label, text in _walk_text_fields(item):
+            match = MOJIBAKE_RE.search(text)
+            if match:
+                yield Finding(
+                    severity="warning",
+                    dataset=dataset,
+                    code="non_ascii_in_text",
+                    detail=f"{label}: mojibake near {match.group(0)!r}",
+                    item_id=rid,
+                )
+                break
+
+
+def check_hyphenation_artifact(dataset: str, items: list[dict[str, Any]]) -> Iterable[Finding]:
+    """Flag PDF soft-hyphen splits that never got re-joined (``light- ning``)."""
+    for item in items:
+        rid = item.get("id") if isinstance(item.get("id"), str) else None
+        for label, text in _walk_text_fields(item):
+            match = HYPHENATION_RE.search(text)
+            if match:
+                yield Finding(
+                    severity="warning",
+                    dataset=dataset,
+                    code="hyphenation_artifact",
+                    detail=f"{label}: {match.group(0)!r}",
+                    item_id=rid,
+                )
+                break
+
+
+def check_word_boundary_loss(dataset: str, items: list[dict[str, Any]]) -> Iterable[Finding]:
+    """Flag alphabetic run-on tokens (>20 chars) that suggest a missing space."""
+    for item in items:
+        rid = item.get("id") if isinstance(item.get("id"), str) else None
+        for label, text in _walk_text_fields(item):
+            match = WORD_RUNON_RE.search(text)
+            if match:
+                yield Finding(
+                    severity="warning",
+                    dataset=dataset,
+                    code="word_boundary_loss",
+                    detail=f"{label}: {match.group(0)!r}",
+                    item_id=rid,
+                )
+                break
+
+
 def _collect_ids(items: list[dict[str, Any]]) -> set[str]:
     return {item["id"] for item in items if isinstance(item.get("id"), str)}
 
@@ -282,6 +358,9 @@ def audit(dist_dir: Path) -> tuple[list[Finding], dict[str, int]]:
         findings.extend(check_ids(dataset, items))
         findings.extend(check_control_chars(dataset, items))
         findings.extend(check_footer_leakage(dataset, items))
+        findings.extend(check_non_ascii_in_text(dataset, items))
+        findings.extend(check_hyphenation_artifact(dataset, items))
+        findings.extend(check_word_boundary_loss(dataset, items))
     findings.extend(check_cross_references(distributions))
     findings.extend(check_inventory(dist_dir, counts))
     return findings, counts
