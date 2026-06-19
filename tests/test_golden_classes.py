@@ -7,7 +7,7 @@ from srd_builder.postprocess import clean_class_record
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
-def test_class_dataset_matches_normalized_fixture() -> None:
+def test_class_dataset_matches_normalized_fixture(assert_golden_matches) -> None:
     """Test that parse + postprocess produces expected normalized output."""
     raw_path = Path("tests/fixtures/srd_5_1/raw/classes.json")
     expected_path = Path("tests/fixtures/srd_5_1/normalized/classes.json")
@@ -42,6 +42,4 @@ def test_class_dataset_matches_normalized_fixture() -> None:
     }
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
-    expected = expected_path.read_text(encoding="utf-8")
-
-    assert rendered == expected, "Class dataset output doesn't match normalized fixture"
+    assert_golden_matches(rendered, expected_path)

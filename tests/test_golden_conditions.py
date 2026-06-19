@@ -8,7 +8,7 @@ from srd_builder.postprocess import clean_condition_record
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
-def test_condition_dataset_matches_normalized_fixture() -> None:
+def test_condition_dataset_matches_normalized_fixture(assert_golden_matches) -> None:
     """Test that parse + postprocess produces expected normalized output."""
     raw_path = Path("tests/fixtures/srd_5_1/raw/conditions.json")
     expected_path = Path("tests/fixtures/srd_5_1/normalized/conditions.json")
@@ -31,6 +31,4 @@ def test_condition_dataset_matches_normalized_fixture() -> None:
     }
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
-    expected = expected_path.read_text(encoding="utf-8")
-
-    assert rendered == expected, "Condition dataset output doesn't match normalized fixture"
+    assert_golden_matches(rendered, expected_path)

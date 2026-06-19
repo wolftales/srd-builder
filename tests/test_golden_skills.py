@@ -8,7 +8,7 @@ from srd_builder.postprocess import clean_skill_record
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
-def test_skills_dataset_golden() -> None:
+def test_skills_dataset_golden(assert_golden_matches) -> None:
     """Verify skills dataset matches expected output.
 
     Unlike other datasets, skills is static data (no raw fixture needed).
@@ -25,8 +25,7 @@ def test_skills_dataset_golden() -> None:
     }
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
-    expected = expected_path.read_text(encoding="utf-8")
-    assert rendered == expected
+    assert_golden_matches(rendered, expected_path)
 
 
 def test_skills_count() -> None:

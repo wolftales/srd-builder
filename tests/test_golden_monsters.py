@@ -8,7 +8,7 @@ from srd_builder.postprocess import clean_monster_record
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
-def test_monster_dataset_matches_normalized_fixture() -> None:
+def test_monster_dataset_matches_normalized_fixture(assert_golden_matches) -> None:
     raw_path = Path("tests/fixtures/srd_5_1/raw/monsters.json")
     expected_path = Path("tests/fixtures/srd_5_1/normalized/monsters.json")
 
@@ -19,5 +19,4 @@ def test_monster_dataset_matches_normalized_fixture() -> None:
     document = {"_meta": meta_block("srd_5_1", read_schema_version("monster")), "items": processed}
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
-    expected = expected_path.read_text(encoding="utf-8")
-    assert rendered == expected
+    assert_golden_matches(rendered, expected_path)
