@@ -292,6 +292,7 @@ Key milestones:
 - **v0.28.1** — Table id naming consistency (`table:adventuring_gear`)
 - **v0.29.0** — Postprocess engine consolidation: 12 datasets migrated to config-driven engine; 4 keep custom cleaners
 - **v0.29.1** — Cross-stage naming consistency: `extract/extractor.py` renamed to `extract/engine.py`
+- **v0.29.2** — Assembly code-path unification: 14 of 16 datasets share one write path; 2 prose datasets keep their richer `_meta` path
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License

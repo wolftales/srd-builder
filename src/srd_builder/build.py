@@ -118,10 +118,10 @@ def _write_datasets(  # noqa: PLR0913
     damage_types: list[dict[str, Any]] | None = None,
     skills: list[dict[str, Any]] | None = None,
     weapon_properties: list[dict[str, Any]] | None = None,
-    conditions: dict[str, Any] | None = None,  # Prose dataset document
-    diseases: dict[str, Any] | None = None,  # Prose dataset document
-    poisons: dict[str, Any] | None = None,  # Prose dataset document
-    features: dict[str, Any] | None = None,  # Prose dataset document
+    conditions: dict[str, Any] | None = None,  # Prose dataset doc (built by assemble_prose)
+    diseases: dict[str, Any] | None = None,  # Prose dataset doc (built by assemble_prose)
+    poison_records: list[dict[str, Any]] | None = None,  # Raw records; engine cleans + wraps here
+    feature_records: list[dict[str, Any]] | None = None,  # Raw records; engine cleans + wraps here
     rules: list[dict[str, Any]] | None = None,
     spell_classes_map: dict[str, list[str]] | None = None,
 ) -> None:
@@ -359,25 +359,34 @@ def _write_datasets(  # noqa: PLR0913
         processed_diseases = diseases.get("diseases", [])
 
     # Write poisons (v0.11.0)
-    # Poisons is a single table record (like madness tables)
-    processed_poisons = None
-    if poisons:
+    # Poisons items derived from the poisons table + descriptions in the caller;
+    # cleaned and wrapped here so the path matches the 12 simple engine datasets.
+    processed_poisons = clean_records(poison_records, "poison") if poison_records else None
+    if processed_poisons:
+        poisons_doc = wrap_with_meta(
+            {"items": processed_poisons},
+            ruleset=ruleset,
+            schema_version=read_schema_version("poison"),
+        )
         (dist_data_dir / "poisons.json").write_text(
-            _render_json(poisons),
+            _render_json(poisons_doc),
             encoding="utf-8",
         )
-        # Extract just the items list for indexing
-        processed_poisons = poisons.get("items", [])
 
     # Write features (v0.11.0)
-    processed_features = None
-    if features:
+    # features.json uses the "features" top-level key (not "items") for
+    # historical reasons; the inconsistency is tracked as a v0.30.0 candidate.
+    processed_features = clean_records(feature_records, "feature") if feature_records else None
+    if processed_features:
+        features_doc = wrap_with_meta(
+            {"features": processed_features},
+            ruleset=ruleset,
+            schema_version=read_schema_version("features"),
+        )
         (dist_data_dir / "features.json").write_text(
-            _render_json(features),
+            _render_json(features_doc),
             encoding="utf-8",
         )
-        # Extract just the features list for indexing
-        processed_features = features.get("features", [])
 
     # Write rules (v0.17.0)
     # Parse extracts structure, postprocess normalizes (following modular pattern)
@@ -1203,8 +1212,9 @@ def build(  # noqa: C901
     # (pdf_files already resolved above for lineage extraction)
 
     # Extract features (v0.11.0)
-    # Features come from PDF extraction: class features + lineage traits
-    features_doc = None
+    # Features come from PDF extraction: class features + lineage traits.
+    # all_features is passed as a raw list into _write_datasets, which handles
+    # clean_records + wrap_with_meta in one unified path with the simple datasets.
     if pdf_files and "features" not in skip_datasets:
         try:
             print(f"Extracting features from {pdf_files[0].name}...")
@@ -1245,10 +1255,7 @@ def build(  # noqa: C901
     # Build prose datasets
     conditions_doc = None
     diseases_doc = None
-    poison_descriptions_by_name = {}
-
-    # Poisons items come from table + descriptions (table itself goes to tables.json)
-    poisons_doc = None
+    poison_descriptions_by_name: dict[str, dict[str, Any]] = {}
 
     if pdf_files:
         for dataset_name, parser_func in prose_parsers.items():
@@ -1279,9 +1286,11 @@ def build(  # noqa: C901
         except Exception as exc:
             print(f"⚠️ PDF metadata extraction failed: {exc}")
 
-    # Build poison items from table + descriptions (tables themselves go to tables.json)
+    # Parse poison items from table + descriptions (tables themselves go to tables.json).
+    # clean_records + wrap_with_meta happen inside _write_datasets so the path
+    # matches the 12 simple engine datasets.
+    parsed_poisons: list[dict[str, Any]] | None = None
     if parsed_tables:
-        # Build poison items from table + descriptions
         poisons_table = None
         for table in parsed_tables:
             if table.get("simple_name") == "poisons":
@@ -1290,33 +1299,15 @@ def build(  # noqa: C901
 
         if poisons_table:
             try:
-                # Parse poison table into individual item records (equipment-style)
                 parsed_poisons = parse_poisons_table(
                     poisons_table, ruleset, descriptions=poison_descriptions_by_name
                 )
-
-                # Postprocess: normalize IDs and polish text
-                processed_poisons = clean_records(parsed_poisons, "poison")
-
-                # Wrap as items array with proper _meta
-                poisons_doc = wrap_with_meta(
-                    {"items": processed_poisons},
-                    ruleset=ruleset,
-                    schema_version=read_schema_version("poison"),
-                )
-                print(f"✓ Parsed {len(processed_poisons)} poison items")
+                print(f"✓ Parsed {len(parsed_poisons)} poison items")
             except Exception as exc:
                 print(f"⚠️ Poison item parsing failed: {exc}")
 
-    # Build features document (v0.11.0)
-    if all_features:
-        # Postprocess: normalize IDs and polish text
-        processed_features_list = clean_records(all_features, "feature")
-        features_doc = wrap_with_meta(
-            {"features": processed_features_list},
-            ruleset=ruleset,
-            schema_version=read_schema_version("features"),
-        )
+    # all_features is already a raw record list; cleaning + wrapping happens in
+    # _write_datasets alongside the 12 simple engine datasets.
 
     _write_datasets(
         ruleset=ruleset,
@@ -1334,8 +1325,8 @@ def build(  # noqa: C901
         weapon_properties=parsed_weapon_properties if parsed_weapon_properties else None,
         conditions=conditions_doc if conditions_doc else None,
         diseases=diseases_doc if diseases_doc else None,
-        poisons=poisons_doc if poisons_doc else None,
-        features=features_doc if features_doc else None,
+        poison_records=parsed_poisons if parsed_poisons else None,
+        feature_records=all_features if all_features else None,
         rules=parsed_rules if parsed_rules else None,
         spell_classes_map=spell_classes_map or None,
     )

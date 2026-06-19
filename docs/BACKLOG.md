@@ -488,19 +488,27 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
   `postprocess/engine.py`, eventually `parse/engine.py`). Single
   import site updated (`extract/__init__.py`); README + ARCHITECTURE
   references updated.
-- **Unify the two assembly code paths** — 12 datasets flow through
-  `build._write_datasets` (parse → engine → wrap_with_meta → write),
-  while `conditions` / `diseases` / `poisons` / `features` arrive at
-  `_write_datasets` as pre-built `{_meta, items|conditions|...}` docs
-  constructed earlier in `build.py` (poisons/features) or in
-  `assemble.assemble_prose` (conditions/diseases). The split is
-  historical, not principled, and shows up as inconsistent fixture
-  keys (`items` vs the dataset name) and divergent error handling.
-  Goal: every dataset should follow the same parse → engine → wrap
-  shape and write through one helper. Likely a small refactor once
-  Phase 1 ships and the engine is the canonical postprocess entry
-  point — but worth its own ticket so it doesn't blur the engine
-  consolidation diff.
+- **Unify the two assembly code paths** — ✅ PARTIALLY DONE in **v0.29.2**.
+  Inline `poisons_doc` / `features_doc` construction in `build.py::build_dataset()`
+  moved into `_write_datasets`; 14 of 16 datasets now share one path
+  (`clean_records → wrap_with_meta → write`). The remaining split is
+  principled: `conditions` and `diseases` stay on
+  `assemble.assemble_prose_dataset` because they carry richer
+  PDF-section `_meta` (warnings, page anchors) the simple datasets
+  don't have. The remaining inconsistency is at the **dist-output-key
+  level**, not the code-path level — see next bullet.
+- **Normalize dist output keys to `items` across all 16 datasets**
+  (v0.30.0 candidate) — `features.json` ships `{"_meta", "features": [...]}`
+  and the two prose datasets ship `{"_meta", "conditions"|"diseases": [...]}`,
+  while the other 13 simple datasets ship `{"_meta", "items": [...]}`.
+  This is a consumer-visible breaking change (downstream tooling that
+  reads `doc["features"]` would have to switch to `doc["items"]`), so
+  it's a major-version-bump-worthy ticket rather than a silent cleanup.
+  When done: drop the per-dataset `output_key` knob in
+  `_write_datasets` and the special-case `"features"` branch; update
+  the fixture-key handling in `tests/test_engine_postprocess.py` and
+  `tests/test_validate_references.py`; bump schema versions for
+  `features` and the two prose datasets.
 
 ### Phase D follow-on — Original entry (kept for history)
 
