@@ -210,7 +210,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.27.5`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.27.6`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -219,8 +219,8 @@ srd-builder uses two version numbers:
 Bump the package version with:
 
 ```bash
-python scripts/bump_version.py 0.27.5          # commit + tag locally
-python scripts/bump_version.py 0.27.5 --no-commit   # preview only
+python scripts/bump_version.py 0.27.6          # commit + tag locally
+python scripts/bump_version.py 0.27.6 --no-commit   # preview only
 ```
 
 See [docs/ARCHITECTURE.md § Version Management](docs/ARCHITECTURE.md) for the policy.
@@ -267,7 +267,7 @@ srd-builder/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.5** — `equipment_packs.py` retired (P6 cutover): 323-line hand-curated `EQUIPMENT_PACKS` literal replaced by live `extract_equipment_packs.py`. Parser walks PDF page 70 with a pack-header regex (`{Name}'s Pack (N gp).`) and a section-end sentinel (`Tools\nA tool helps`), splits each `Includes …` clause on `, ` / ` and ` boundaries, and resolves each token through a small typed `_PHRASE_TO_ITEM` table mapping the SRD's exact prose phrase to a stable `item_id` and a quantity rule. Trailing "50 feet of hempen rope" sentence handled; curly-apostrophe (U+2019) normalized to ASCII at output. 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) vs. retired literal. `assemble_equipment_from_tables` now takes an `equipment_packs=` kwarg; `build.py` calls `extract_equipment_packs()` once and threads the result. Closes the v0.27.x retirement line at ~2,458 lines deleted; PROVENANCE shrinks 4 → 3 active entries; +21 new test assertions (485 passed).
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full history. **Latest release: v0.27.6** — `equipment_descriptions.py` retired (P7 cutover): 398-line hand-curated `*_DESCRIPTIONS` literals (4 TypedDict lists across armor / adventure_gear / tools / lifestyle, 69 entries total) replaced by live `extract_equipment_descriptions.py`. Parser walks the four sections (armor p.63, adventure_gear pp.66–68, tools pp.70–71, lifestyle p.73) by concatenating each section's pages into a single normalized string, finding heading candidates with a Title-Case regex that allows lowercase glue words `and`/`or`/`of` in the middle, filtering through a 69-entry `_HEADING_TO_ITEM_ID` dispatch table, and slicing each item's body up to either the next resolving heading or one of four known subsection terminators (`Heavy Armor`, `Self-Sufficiency`, `Mounts and Vehicles`, `Adventuring Gear`). Normalization handles soft-hyphen runs, curly U+2019, page-footer text, and line-wrap em-dash spacing. 69-for-69 recovery; the new extractor surfaced 6 description-content phrases the curated literal had silently stripped and 2 incorrect curated `page` fields (`item:antitoxin-vial`, `item:arcane-focus` are p.66, not p.67). `assemble_equipment_from_tables` now takes an `equipment_descriptions=` kwarg; `build.py` calls `extract_equipment_descriptions()` via the new `_extract_equipment_pdf_data` helper alongside the v0.27.5 packs extractor. Pinned by 73 assertions including a 69-row parametrized per-item snapshot. PROVENANCE registry now down to 1 active hand-curated entry (`equipment_extended.py` cross-reference glue, no SRD source); the v0.27.x retirement line totals ~2,856 lines deleted across 6 hand-curated modules.
 
 Key milestones:
 
@@ -279,6 +279,7 @@ Key milestones:
 - **v0.17.0** — Rules dataset (172 rules, 7 chapters)
 - **v0.18.0–v0.21.0** — Modular refactor, postprocess engine, cross-reference validation
 - **v0.22.x** — Editable install + macOS `UF_HIDDEN` fixes; dynamic package version
+- **v0.27.6** — `equipment_descriptions.py` retired (P7 cutover): 398-line `*_DESCRIPTIONS` literals replaced by live `extract_equipment_descriptions.py`; section-aware concatenation + Title-Case heading regex with lowercase-glue alternation + 69-entry dispatch table + subsection-terminator slicing yield 69-for-69 recovery; surfaced 6 silently-stripped description phrases and 2 incorrect curated `page` fields as drift in the retired literal; `assemble_equipment_from_tables` takes `equipment_descriptions=` kwarg; v0.27.x retirement line totals ~2,856 lines deleted across 6 modules; PROVENANCE 3 → 1 active; 558 passed (73 new assertions)
 - **v0.27.5** — `equipment_packs.py` retired (P6 cutover): 323-line `EQUIPMENT_PACKS` literal replaced by live `extract_equipment_packs.py`; pack-header regex + `_PHRASE_TO_ITEM` resolution table + trailing-rope sentence handling yield 7-for-7 byte-perfect parity (name, cost_gp, description, contents); curly-apostrophe normalized to ASCII at output; `assemble_equipment_from_tables` takes `equipment_packs=` kwarg; closes v0.27.x retirement line at ~2,458 lines deleted; PROVENANCE 4 → 3 active; 485 passed
 - **v0.27.4** — Equipment page-constants drift fixed + cross-extractor audit: `EQUIPMENT_START_PAGE` / `EQUIPMENT_END_PAGE` harmonized from 0-indexed `61`–`72` to 1-indexed `62`–`74` (matching `PAGE_INDEX["equipment"]`); 8 silently-dropped rows from PDF page 74 (Services / Lifestyle tables) now extracted; new parametrized audit test `test_extractor_page_constants_agree_with_page_index` pins all 4 per-dataset extractors against canonical `PAGE_INDEX`; +4 new test assertions (464 passed)
 - **v0.27.3** — `poison_descriptions.py` retired (P4 cutover): 129-line hand-curated `POISON_DESCRIPTIONS` replaced by live `parse_poison_descriptions.py`; damage regex extended to `tak(?:es?|ing)` unblocks 4 delayed-damage poisons; description header strip + `type_id` emit yield 14/14 byte-perfect parity; PROVENANCE shrinks 5 → 4; v0.27.x line concludes at ~2,135 lines deleted

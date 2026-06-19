@@ -46,11 +46,36 @@ silent data-loss bug closed:
   the retired `EQUIPMENT_PACKS` literal. `assemble_equipment_from_tables`
   now takes an `equipment_packs=` kwarg; `build.py` calls
   `extract_equipment_packs()` once and threads the result.
+- **P7 — `equipment_descriptions.py` (398 lines, v0.27.6)** — replaced by
+  [src/srd_builder/extract/datasets/extract_equipment_descriptions.py](src/srd_builder/extract/datasets/extract_equipment_descriptions.py).
+  Parser walks four sections (armor p.63, adventure_gear pp.66–68, tools
+  pp.70–71, lifestyle p.73) by concatenating each section's pages into a
+  single normalized string, finding heading candidates with a Title-Case
+  regex that allows lowercase glue words `and`/`or`/`of` in the middle
+  (required to recover `block-and-tackle`, `case-map-or-scroll`,
+  `potion-of-healing`), filtering through a 69-entry
+  `_HEADING_TO_ITEM_ID` dispatch table, and slicing each item's body up
+  to either the next resolving heading or one of four known subsection
+  terminators (`Heavy Armor`, `Self-Sufficiency`, `Mounts and Vehicles`,
+  `Adventuring Gear`). Normalization handles four PDF artifacts:
+  soft-hyphen runs (`-\xad‐‑` → `-`) inside compound words, curly
+  U+2019 → ASCII, page-footer text (`System Reference Document 5.1 N`)
+  stripped to keep cross-page descriptions clean, and line-wrap em-dash
+  spacing closed. 69-for-69 recovery; the new extractor surfaced 6
+  description-content phrases the curated literal had silently stripped
+  (book "described later", gaming-set / holy-symbol / musical-instrument
+  table refs, pouch "described earlier", artisans-tools table mention)
+  and 2 incorrect curated `page` fields (`item:antitoxin-vial`,
+  `item:arcane-focus` are p. 66, not p. 67). `assemble_equipment_from_tables`
+  now takes an `equipment_descriptions=` kwarg; `build.py` calls
+  `extract_equipment_descriptions()` via the new `_extract_equipment_pdf_data`
+  helper alongside the v0.27.5 packs extractor. Pinned by 73 assertions
+  including a 69-row parametrized per-item snapshot.
 
-Result: `PROVENANCE.md` registry shrank from 8 → 3 active hand-curated
-entries. The remaining LIVE entries are equipment-related
-(`equipment_extended.py` cross-reference glue, `equipment_descriptions.py`)
-— lower-priority work awaiting reproducers.
+Result: `PROVENANCE.md` registry shrank from 8 → 1 active hand-curated
+entry (`equipment_extended.py` cross-reference glue) after v0.27.6
+retired the last extractable hand-curated module
+(`equipment_descriptions.py`).
 
 ---
 
@@ -133,7 +158,7 @@ v0.27.x P3 after `class_targets.py` was retired. `LIVE` = imported by
 | ~~`src/srd_builder/extraction/reference_data.py`~~ | **DELETED v0.26.0** | (was `REFERENCE_TABLES` lookup) | — | Removed in v0.26.0; −625 net lines. Listed here for history. |
 | [src/srd_builder/assemble/equipment_extended.py](src/srd_builder/assemble/equipment_extended.py) | **LIVE** — `assemble_equipment.py:1081` | ~12 items "referenced in equipment packs but not in SRD equipment tables" with *inferred* costs/weights | "Estimated costs/weights based on similar items to maintain referential integrity" | These items are **not in the SRD** at all — they are author-invented to keep equipment-pack cross-references resolvable. This is the kind of *augmentation* the user noted as a legitimate use case. Promote `_note` to structured `_provenance` so consumers can filter inferred vs. extracted. |
 | ~~[src/srd_builder/assemble/equipment_packs.py](src/srd_builder/assemble/equipment_packs.py)~~ | **DELETED v0.27.5 P6** | (was 7 equipment packs with item-by-item contents — item_id, quantity — plus costs and prose, 323 lines) | "Extracted from SRD 5.1 page 70" — actually transcribed into a Python literal; **DISPROVEN** (page 70 prose fully extractable). Replaced by [src/srd_builder/extract/datasets/extract_equipment_packs.py](src/srd_builder/extract/datasets/extract_equipment_packs.py). 7-for-7 byte-perfect parity (name, cost_gp, description, contents item_id + quantity) vs. retired literal. Pinned by [tests/test_pdf_provenance.py](tests/test_pdf_provenance.py) `test_equipment_packs_pdf_page_70_*` (15 assertions) and [tests/test_equipment_packs.py](tests/test_equipment_packs.py) (11 tests including end-to-end integration). Listed here for history. |
-| [src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py) | **LIVE** (DISPUTED) — `assemble_equipment.py:1104` | 4 hand-curated TypedDict lists: `ADVENTURE_GEAR_DESCRIPTIONS` (42 entries, pp. 66–68), `TOOLS_DESCRIPTIONS` (9 entries, pp. 70–71), `ARMOR_DESCRIPTIONS` (12 entries, p. 63), `LIFESTYLE_DESCRIPTIONS` (6 entries, p. 73). 69 entries / ~398 lines total. | "Documented in the SRD" — but transcribed not extracted. Reproducer added 2026-06-18 ([tests/test_pdf_provenance.py](tests/test_pdf_provenance.py) `test_equipment_descriptions_section_anchor_extractable[×4]` + `test_equipment_descriptions_item_signature_extractable[×13]`) confirms every section's first heading and 13 representative item-heading + signature-phrase probes are recoverable from PDF page text under standard whitespace normalization. The PDF carries soft-hyphen artifacts (`-\xad‐‑`) inside compound words that the parser will need to normalize. Parser pending. | Same pattern as packs — bold-headed prose blocks, parser anchors on `{Heading}.\u00a0` regex. Curated `page` field is partially wrong (reproducer caught `Antitoxin` on PDF p. 66, not p. 67 as curated claims) — parser will correct in place. |
+| ~~[src/srd_builder/assemble/equipment_descriptions.py](src/srd_builder/assemble/equipment_descriptions.py)~~ | **DELETED v0.27.6 P7** | (was 4 hand-curated TypedDict lists: `ADVENTURE_GEAR_DESCRIPTIONS` (42 entries, pp. 66–68), `TOOLS_DESCRIPTIONS` (9 entries, pp. 70–71), `ARMOR_DESCRIPTIONS` (12 entries, p. 63), `LIFESTYLE_DESCRIPTIONS` (6 entries, p. 73). 69 entries / ~398 lines total) | "Documented in the SRD" — actually transcribed not extracted; **DISPROVEN** by v0.27.5 reproducer ([tests/test_pdf_provenance.py](tests/test_pdf_provenance.py) `test_equipment_descriptions_section_anchor_extractable[×4]` + `test_equipment_descriptions_item_signature_extractable[×13]`). Replaced by [src/srd_builder/extract/datasets/extract_equipment_descriptions.py](src/srd_builder/extract/datasets/extract_equipment_descriptions.py) — section-aware concatenation + Title-Case heading regex with lowercase-glue alternation + 69-entry `_HEADING_TO_ITEM_ID` dispatch + subsection-terminator slicing + soft-hyphen / curly-apostrophe / page-footer / em-dash normalization. 69-for-69 recovery; surfaced 6 silently-stripped description phrases and 2 incorrect curated `page` fields (`item:antitoxin-vial`, `item:arcane-focus` are p. 66, not p. 67). Pinned by [tests/test_extract_equipment_descriptions.py](tests/test_extract_equipment_descriptions.py) (73 assertions, 69 of which are parametrized per-item snapshots). `assemble_equipment_from_tables` now takes an `equipment_descriptions=` kwarg; `build.py` calls `extract_equipment_descriptions()` once via the `_extract_equipment_pdf_data` helper that also wraps the v0.27.5 packs extractor. Listed here for history. |
 | [src/srd_builder/extract/datasets/extract_equipment.py](src/srd_builder/extract/datasets/extract_equipment.py) (lines 30–35) | **FIXED v0.27.4** | (was `EQUIPMENT_START_PAGE = 61`, `EQUIPMENT_END_PAGE = 72` — 0-indexed; end-1 silently dropped PDF page 74) | Harmonized to 1-indexed `62`–`74` matching `PAGE_INDEX["equipment"]`. Pinned by [tests/test_pdf_provenance.py::test_extractor_page_constants_agree_with_page_index](tests/test_pdf_provenance.py) (parametrized across all 4 extractors). | Listed here for history. |
 
 ### Spectrum of legitimate exceptions vs. pollution
