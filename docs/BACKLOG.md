@@ -735,10 +735,14 @@ concrete second game system in front of you. Park until then.
 1. **v0.29.3** — ✅ **SHIPPED.** Phase 1 (`_meta` normalization) +
    Phase 5 (multi-system seams). All additive; safe for Blackmoor to
    consume immediately without taking any breaking changes.
-2. **v0.30.0** — Phases 2 + 3 + 4 together (single breaking release).
-3. **v0.30.x** — Round-trip xfail fixes (page-field drift in
-   `weapon_properties` / `tables` / `skills` — already in BACKLOG),
-   source-derivation marker (PARKING_LOT), and any Blackmoor feedback.
+2. **v0.30.0** — ✅ **SHIPPED.** Phases 2 + 3 + 4 together (single
+   breaking release; commits `ea4620c`, `3dc9f81`, `f046fd9`, tag
+   `v0.30.0`).
+3. **v0.30.x** — Blackmoor feedback (when it arrives) and any
+   downstream-surfaced fixes. The round-trip xfail trio that was
+   previously planned here already shipped in commit `cdcb70a` (see
+   Phase D follow-on below)—`_XFAIL_DATASETS` is empty and all 15
+   round-trip tests pass green.
 
 ### Out of scope for v0.30.0 (already deferred / parked)
 
@@ -752,29 +756,28 @@ concrete second game system in front of you. Park until then.
 - Field grouping / nested objects (the v2.0 "data model restructure"
   item on ROADMAP).
 
-### Phase D follow-on — Original entry (kept for history)
+### Phase D follow-on — ✅ SHIPPED (commit `cdcb70a`, pre-v0.30.0)
 
-Three datasets ship `xfail` in `tests/test_round_trip_pdf.py`. Each is
-a small parser-side fix:
+All three datasets that shipped `xfail` in
+[tests/test_round_trip_pdf.py](../tests/test_round_trip_pdf.py) were
+fixed in a single commit:
 
-- **`weapon_properties`** (5/5 records misplaced) — find and replace the
-  hardcoded `page = 147` in the weapon-properties extractor with the
-  actual page where each property's prose appears. Likely the highest-
-  impact fix of the three because it's a systematic 11-record bug.
-- **`tables`** (2/5 records misplaced) — `table:ability_scores_and_modifiers`
-  is recorded at p7 (lineages section) but appears on p76; investigate
-  whether the table-extractor is consulting a stale TOC. `Adventure Gear`
-  needs name-vs-PDF-prose investigation (the table header may differ).
-- **`skills`** (1/5 records off by two) — `Athletics` at p76→p78 looks
-  like the skill is on a different page than its section header. May be
-  endemic to all skills (check the other 17 records, not just the first
-  5 sampled).
+- **`weapon_properties`** — all 11 records had `page: 147` (a PHB
+  print-page reference, not an SRD PDF page). Updated to actual SRD
+  locations: `ammunition` + `finesse` → p64; `heavy` / `light` /
+  `loading` / `range` / `reach` / `special` / `thrown` / `two_handed` /
+  `versatile` → p65. Module docstring corrected; assertion in
+  `test_weapon_properties_have_required_fields` relaxed from
+  `page == 147` to `page in (64, 65)`.
+- **`tables`** — two fixes in `extract/table_targets.py`:
+  `table:ability_scores_and_modifiers` p7 → p76 (was pointing at the
+  lineages section, not the actual table); `Adventure Gear` name/page
+  alignment.
+- **`skills`** — `Athletics` p76 → p78 fixed; the drift was
+  per-skill, not endemic to all 18 records.
 
-When each is fixed, drop the `xfail` mark in
-`tests/test_round_trip_pdf.py::_XFAIL_DATASETS` and re-run the test.
-
-**Suggested order:** A → B → C → D. Ship A+B as v0.28.0; C as v0.28.1;
-D as v0.28.2.
+`_XFAIL_DATASETS` is now empty and the round-trip test covers all 15
+page-bearing datasets without exception.
 
 ---
 
