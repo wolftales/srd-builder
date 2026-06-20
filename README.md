@@ -295,6 +295,7 @@ Key milestones:
 - **v0.29.2** — Assembly code-path unification: 14 of 16 datasets share one write path; 2 prose datasets keep their richer `_meta` path
 - **v0.29.3** — `_meta` block normalization + multi-system extensibility seams: all 16 datasets share the same enriched `_meta` (adds `game_system`, `dataset`, `source_pages`, `description`, `pdf_sha256`, `item_count`, `extraction_warnings`); `RULESETS` gains `game_system` + optional `id_prefix` so a future Pathfinder/Cypher ruleset can be added additively
 - **v0.30.0** — Schema-consistency sweep (single Blackmoor migration window, breaking): `features.json`/`conditions.json`/`diseases.json` flip from per-dataset top-level keys to the canonical `{"items": [...]}` envelope; legacy `{key}_count` aliases dropped from `_meta`; all 19 rule duplicate IDs resolved via section-namespacing (`rule:{section}/{name}`) + collection-level dedupe; 3 appendix-duplicate tables (`lifestyle_expenses`, `food_drink_lodging`, `services`) suppressed; `assemble_prose_dataset` collapsed onto the single write path; audit goes 22 critical → 0 (0 critical / 0 warning / 0 info)
+- **v0.31.0** — Extract-consolidation track opens: `extract_pdf_metadata.py` migrated to `pdf_probe.open_pdf()` + `page_text()` (AGENTS.md PDF discipline rule); legacy-tier extractor count drops 7 → 6; output byte-identical to v0.30.0
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License
