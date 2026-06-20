@@ -406,6 +406,74 @@ Text cleanup (smart-quote normalization, whitespace, encoding fixes) lives in [s
 
 ---
 
+## PDF Primitives Library (`utils/`)
+
+Every PDF mechanic with a clean `(inputs, config) → output` shape lives
+in `src/srd_builder/utils/`. Modules under `extract/datasets/` are
+**orchestration**: they pick which primitives to invoke, in what order,
+with which dataset-specific predicates and constants. They do not
+re-implement geometry, span iteration, table cleanup, page
+concatenation, or hashing.
+
+This is the codified discipline behind the "lift the mechanic, not the
+caller" round of refactors. The engine (`extract/patterns/`) is one
+such primitive — a config-driven orchestrator — not a tier above the
+others.
+
+### Current primitive inventory
+
+| Module | Helper | Shape |
+|--------|--------|-------|
+| `utils/pdf_probe.py` | `open_pdf`, `page_text`, `pages_text`, `page_dict` | basic page-text access |
+| `utils/pdf_probe.py` | `normalize_whitespace` | SRD tab/CR/nbsp → single space |
+| `utils/pdf_probe.py` | `pdf_sha256` | file-hash for provenance |
+| `utils/pdf_probe.py` | `concat_pages_with_offsets` | multi-page text + reverse-index |
+| `utils/pdf_probe.py` | `offset_to_page` | reverse-map char offset → page |
+| `utils/pdf_layout.py` | `iter_page_spans` | flat span iteration over a page dict |
+| `utils/pdf_layout.py` | `span_matches_predicate` | declarative font/size/flag filter |
+| `utils/pdf_layout.py` | `find_in_lookahead` | bounded forward scan with stop condition |
+| `utils/pdf_layout.py` | `cluster_values_by_gap` | 1-D greedy clustering by gap threshold |
+| `utils/pdf_layout.py` | `extract_columnar_spans`, `merge_spans_into_lines` | column-aware extraction + line merging |
+| `utils/pdf_layout.py` | `merge_bboxes`, `color_to_rgb`, `determine_column`, `is_bold`, `is_italic` | small geometry/flag helpers |
+| `utils/pdf_tables.py` | `clean_and_split_header` | normalize `table.extract()` rows + detect header |
+| `utils/prose.py` | `clean_text`, `normalize_apostrophes` | shared text-cleanup primitives |
+| `utils/page_index.py` | `PAGE_INDEX`, `pdf_index_for`, etc. | 1-indexed SRD page label → PDF index map |
+| `utils/context_tracker.py` | `ContextTracker` | running section/subsection state across pages |
+| `extract/patterns/` | engine + pattern handlers | config-driven extraction orchestrator |
+
+### When to lift into `utils/`
+
+A function belongs in `utils/` when it has all of:
+
+1. A clean shape: well-defined `(inputs, config) → output`, no hidden global state.
+2. PDF-shape generic: depends on PyMuPDF objects, span dicts, or
+   primitive geometry — not on what a "monster" or "spell" is.
+3. Dataset-specific work (predicates, keyword sets, regex) is supplied
+   by the caller, not baked in.
+
+The 2-caller rule applies to **inventing new abstractions**, not to
+**naming what is already there**. If the mechanic is already shaped
+like a primitive but currently has one caller, lift it — the next
+extractor benefits, and even the single caller reads cleaner with the
+named operation. This was the principle behind the
+`find_in_lookahead`, `cluster_values_by_gap`,
+`concat_pages_with_offsets`, and `clean_and_split_header` lifts: each
+had exactly one caller at lift time.
+
+### When to leave it in the dataset
+
+Keep code in `extract/datasets/` when it embodies dataset-specific
+knowledge that doesn't factor cleanly: monster-name fingerprints,
+heading-to-id maps, column-name keyword sets, subsection terminator
+lists, irregular table layouts. A predicate function passed to
+`span_matches_predicate` lives in the dataset; the predicate runner
+lives in `utils/`. Negated multi-OR conditions (e.g. classes' inline
+`sz != 8.9 or "Bold" in font or "Cambria" in font` checks) stay inline
+because the positive-AND predicate shape would obscure them rather
+than help.
+
+---
+
 ## Schema Stability Tiers
 
 Adopted in v0.29.3 (Phase 5.3) to give consumers and future contributors a single place to see *how D&D-5e-specific* each schema is. This matters because srd-builder will eventually scaffold other tabletop SRDs (e.g. Pathfinder 2e, Cypher System) and the cost of adding a new game system is dominated by how many constraints have to be widened in the **Red-tier** schemas below.
