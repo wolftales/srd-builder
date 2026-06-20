@@ -297,6 +297,7 @@ Key milestones:
 - **v0.30.0** — Schema-consistency sweep (single Blackmoor migration window, breaking): `features.json`/`conditions.json`/`diseases.json` flip from per-dataset top-level keys to the canonical `{"items": [...]}` envelope; legacy `{key}_count` aliases dropped from `_meta`; all 19 rule duplicate IDs resolved via section-namespacing (`rule:{section}/{name}`) + collection-level dedupe; 3 appendix-duplicate tables (`lifestyle_expenses`, `food_drink_lodging`, `services`) suppressed; `assemble_prose_dataset` collapsed onto the single write path; audit goes 22 critical → 0 (0 critical / 0 warning / 0 info)
 - **v0.31.0** — Extract-consolidation track opens: `extract_pdf_metadata.py` migrated to `pdf_probe.open_pdf()` + `page_text()` (AGENTS.md PDF discipline rule); legacy-tier extractor count drops 7 → 6; output byte-identical to v0.30.0
 - **v0.32.0** — Extract-consolidation P2: `extract_rules.py` migrated to `pdf_probe.open_pdf()` + new `pdf_probe.page_dict()` helper (font/bbox/span metadata); legacy-tier count drops 6 → 5; output byte-identical (3086 span blocks unchanged)
+- **v0.33.0** — Extract-consolidation P3: `extract_equipment.py` migrated to `pdf_probe.open_pdf()` (minimum-diff lifecycle swap; `find_tables()` + font-anchored section tracking unchanged); legacy-tier count drops 5 → 4; output byte-identical (119 items unchanged)
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License

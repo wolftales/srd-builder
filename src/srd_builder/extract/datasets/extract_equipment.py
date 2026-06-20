@@ -20,10 +20,11 @@ import re
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF (kept for fitz.Page type hints only; doc lifecycle goes through pdf_probe)
 
 from ...constants import EXTRACTOR_VERSION
 from ...utils.context_tracker import ContextTracker
+from ...utils.pdf_probe import open_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -68,13 +69,12 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
 
     logger.info(f"Extracting equipment from {pdf_path}")
 
-    doc = fitz.open(pdf_path)
     equipment_items: list[dict[str, Any]] = []
     warnings: list[str] = []
 
     tracker = ContextTracker(initial_category="gear")
 
-    try:
+    with open_pdf(pdf_path) as doc:
         # Process equipment pages (constants are 1-indexed; convert for fitz)
         for page_num in range(EQUIPMENT_START_PAGE - 1, EQUIPMENT_END_PAGE):
             page = doc[page_num]
@@ -82,9 +82,6 @@ def extract_equipment(pdf_path: Path) -> dict[str, Any]:
             equipment_items.extend(page_items)
 
         logger.info(f"Extracted {len(equipment_items)} equipment items")
-
-    finally:
-        doc.close()
 
     return {
         "equipment": equipment_items,
