@@ -12,10 +12,11 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import fitz
+import fitz  # kept for fitz.Page type hints only; doc lifecycle goes through pdf_probe
 
 try:
     from ...constants import EXTRACTOR_VERSION
+    from ...utils.pdf_probe import open_pdf
 except ImportError:
     # Running as script
     import sys
@@ -23,6 +24,7 @@ except ImportError:
 
     sys.path.insert(0, str(Path(__file__).parents[2]))
     from srd_builder.constants import EXTRACTOR_VERSION
+    from srd_builder.utils.pdf_probe import open_pdf
 
 # Magic Items section pages (from PAGE_INDEX - see src/srd_builder/utils/page_index.py)
 # TODO: Consider importing from PAGE_INDEX['magic_items']['pages'] to centralize
@@ -78,11 +80,10 @@ def extract_magic_items(pdf_path: Path) -> dict[str, Any]:
     pdf_bytes = pdf_path.read_bytes()
     pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
-    doc = fitz.open(pdf_path)
     items: list[dict[str, Any]] = []
     warnings: list[str] = []
 
-    try:
+    with open_pdf(pdf_path) as doc:
         # Extract items from each page
         for page_num in range(config.page_start - 1, config.page_end):
             page_items = _extract_page_items(doc[page_num], page_num + 1, config)
@@ -95,9 +96,6 @@ def extract_magic_items(pdf_path: Path) -> dict[str, Any]:
             warnings.append(
                 f"Only extracted {len(items)} items, expected at least {config.expected_item_count_min}"
             )
-
-    finally:
-        doc.close()
 
     return {
         "items": items,
