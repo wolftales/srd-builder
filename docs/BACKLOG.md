@@ -74,25 +74,49 @@ config changes (page numbers, section headers, table targets, font
 fingerprints) but engine code does not**. If we cannot articulate that
 in one paragraph, the design is not done.
 
-### Current state (audit 2026-06-19)
+### Current state (audit 2026-06-20)
 
 13 files in [extract/datasets/](../src/srd_builder/extract/datasets/),
 all LIVE (12 imported by `build.py`; `extract_conditions` wired through
-`parse_conditions` + tests). Internal quality tiers:
+`parse_conditions` + tests). **Zero are bound to the engine.** Calling
+`pdf_probe.open_pdf()` vs `fitz.open()` is a lifecycle convention; it
+is NOT engine binding and does not move any extractor toward the slim
+`DATASET_CONFIG + extract_by_config()` end state above.
 
-| Tier | Files | Uses `pdf_probe` | Notes |
-| --- | --- | --- | --- |
-| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_spells.py`, `extract_monsters.py` | ✅ `open_pdf` + `page_text` / `page_dict` (lifecycle managed; `find_tables` / `page.get_text("dict")` calls still ride on managed pages) | v0.27.5–v0.27.6, v0.31.0–v0.37.0 |
-| Mixed | `extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py` | ⚠️ `normalize_whitespace` only; still raw `fitz.open()` | v0.27.0–v0.27.2 |
-| `ProseExtractor` framework | `extract_conditions.py` | ✅ (via `utils.prose`) | Higher abstraction |
-| Pre-`pdf_probe` (legacy) | _(none)_ | n/a | **0 files — extract-consolidation track complete** |
+#### Lifecycle convention (cosmetic)
 
-The extract-consolidation track is complete: every dataset extractor
-that opens a PDF now goes through `pdf_probe.open_pdf()`. The three
-"mixed" files (`extract_lineages.py`, `extract_classes.py`,
-`extract_spell_classes.py`) still call `fitz.open()` directly but only
-use `normalize_whitespace`; they are out of scope for the lifecycle
-consolidation and tracked separately.
+| Uses `pdf_probe` for `open()` | Files |
+| --- | --- |
+| ✅ | `extract_pdf_metadata` (v0.31.0), `extract_rules` (v0.32.0), `extract_equipment` (v0.33.0), `extract_magic_items` (v0.34.0), `extract_features` (v0.35.0), `extract_spells` (v0.36.0), `extract_monsters` (v0.37.0), `extract_equipment_descriptions` (v0.27.6), `extract_equipment_packs` (v0.27.5) |
+| ⚠️ raw `fitz.open()` but uses `normalize_whitespace` | `extract_lineages` (v0.27.0), `extract_classes` (v0.27.x), `extract_spell_classes` (v0.27.0) |
+| ✅ via `utils.prose` framework | `extract_conditions` |
+
+#### Engine binding (substantive — the actual goal)
+
+| Bound to `extract_by_config()` | Files |
+| --- | --- |
+| ❌ | **all 13** |
+
+The v0.31–v0.37 release series moved the lifecycle column for 7 files
+and left the binding column unchanged. The v0.27.x retirements
+(`class_targets`, `lineage_targets`, `spell_class_targets`,
+`poison_descriptions`, `equipment_packs`, `equipment_descriptions`)
+replaced hand-curated data with new bespoke extractors, also unbound.
+**The engine has had zero new bindings since the original 7 pattern
+types were built.**
+
+#### Shape inventory (input to engine-binding design)
+
+| Shape | Files | Engine fit |
+| --- | --- | --- |
+| Doc-level regex | `extract_pdf_metadata` | None — would need `document_metadata` pattern type |
+| Font-stamped span dump | `extract_rules` | None — needs `font_span_section` pattern type |
+| PyMuPDF `find_tables()` + section tracking | `extract_equipment` | Closest to `standard_grid` but needs font-anchored section state |
+| Font-fingerprint walk over single-page items | `extract_magic_items`, `extract_features`, `extract_equipment_descriptions` | None — needs `font_fingerprint_walk` pattern type |
+| Font-fingerprint walk + cross-page state | `extract_spells`, `extract_monsters` | Extension of the above with carry-over / boundary detection |
+| `normalize_whitespace`-only PDF read | `extract_lineages`, `extract_classes`, `extract_spell_classes` | Possibly `prose_section` with target-list config |
+| Packs-config + ID synthesis | `extract_equipment_packs` | Possibly `reference` |
+| `ProseExtractor` framework | `extract_conditions` | Already abstracted (different framework) |
 
 ### Proposed approach (gradual, one extractor per release)
 
@@ -111,39 +135,37 @@ uniqueness, ship it, then the next**. Apply the same here:
 5. Pin parity (byte-perfect against pre-migration raw JSON, same way
    v0.27.5 P6 / v0.27.6 P7 did).
 
-**Suggested order (cheapest → hardest):** ~~`extract_pdf_metadata.py`~~
-(✅ shipped v0.31.0 — pdf_probe migration only; doc-level metadata
-shape does not fit the table-shaped engine, kept as a slim pdf_probe
-consumer) → ~~`extract_rules.py`~~ (✅ shipped v0.32.0 — pdf_probe
-migration only; emits font-stamped span blocks for downstream parser
-consumption, not a `RawTable`, so engine binding deferred. Added
-`pdf_probe.page_dict()` helper as the shared primitive for any future
-extractor that needs font/bbox metadata) → ~~`extract_equipment.py`~~
-(✅ shipped v0.33.0 — pdf_probe lifecycle migration only; existing
-engine `pattern_type`s don't model the font-anchored section tracking
-required here, deferred until 1–2 more table extractors land and a
-shared `font_anchored_table_walk` pattern is obvious) →
-~~`extract_magic_items.py`~~ (✅ shipped v0.34.0 — pdf_probe lifecycle
-migration only; font-fingerprint walk over GillSans-SemiBold item
-names + Cambria-Italic metadata + multi-page item merging is its own
-shape, not a `RawTable`, so engine binding deferred) →
-~~`extract_features.py`~~ (✅ shipped v0.35.0 — pdf_probe lifecycle
-migration only; two entry points `extract_class_features` (pages
-8–55) and `extract_lineage_traits` (pages 3–7) walk
-GillSans-SemiBold 13.9pt class-feature headers and Cambria-BoldItalic
-9.8pt lineage-trait headers; not a `RawTable`, so engine binding
-deferred) → ~~`extract_spells.py`~~ (✅ shipped v0.36.0 — pdf_probe
-lifecycle migration only; 319 spells over pages 114–194 with
-GillSans-SemiBold 12pt names + Cambria-Italic level/school +
-Cambria-Bold field labels + Cambria-BoldItalic higher-levels block +
-cross-page carry-over state; same font-fingerprint shape, not a
-`RawTable`, engine binding deferred) →
-~~`extract_monsters.py`~~ (✅ shipped v0.37.0 — pdf_probe lifecycle
-migration only; 317 monsters over pages 261–403 with Calibri-Bold
-12pt monster names + Calibri-Italic size/type lines +
-Calibri-BoldItalic trait names + column detection +
-cross-page boundary detection; not a `RawTable`, engine binding
-deferred). **Track complete — zero files left in the legacy tier.**
+**Honest framing.** Of the seven `pdf_probe` lifecycle migrations in
+v0.31.0–v0.37.0, only v0.31.0 (`extract_pdf_metadata`) and v0.32.0
+(`extract_rules` + new `page_dict()` helper) had any structural value;
+v0.33.0–v0.37.0 were one-line `fitz.open` → `open_pdf` swaps with
+byte-identical output and no engine binding work. Each of those five
+commit messages wrote "engine binding deferred until a shared
+font-anchored pattern emerges" while never actually looking for that
+pattern. The pattern is right there in the shape inventory above:
+three extractors (`extract_magic_items`, `extract_features`,
+`extract_equipment_descriptions`) share single-page font-fingerprint
+walks; two more (`extract_spells`, `extract_monsters`) extend that
+shape with cross-page state. That is what the proposed
+`font_fingerprint_walk` pattern type would absorb.
+
+**Concrete first step (not yet scheduled — design pass needed).** Read
+`extract_magic_items`, `extract_features`, and `extract_equipment_descriptions`
+side-by-side and write down the actual common shape:
+
+1. What configuration does each extractor's font walk need? (header
+   font + size + page range + record-end signal)
+2. What is the shared record envelope? (`name`, `page` / `pages`,
+   `description_blocks`, optional `metadata_blocks` / `header_blocks`)
+3. What does the new `pattern_type` config look like? Sketch in
+   [extraction_metadata.py](../src/srd_builder/extract/extraction_metadata.py).
+4. What return type does the engine need to support? Today's
+   `RawTable` is row/column-shaped; this pattern produces lists of
+   records. Either widen `extract_by_config` or give it a sibling.
+
+Output is a design doc + one proof binding (probably
+`extract_equipment_descriptions` — the smallest of the three). Only
+*then* ship it, and only as one release.
 
 ### Parse-layer consolidation (forward-looking)
 
