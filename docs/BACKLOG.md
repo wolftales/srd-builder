@@ -82,12 +82,12 @@ all LIVE (12 imported by `build.py`; `extract_conditions` wired through
 
 | Tier | Files | Uses `pdf_probe` | Notes |
 | --- | --- | --- | --- |
-| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_equipment.py`, `extract_magic_items.py` | ✅ `open_pdf` + `page_text` / `page_dict` (lifecycle managed; `find_tables` / `page.get_text("dict")` calls still ride on managed pages) | v0.27.5–v0.27.6, v0.31.0–v0.34.0 |
+| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py` | ✅ `open_pdf` + `page_text` / `page_dict` (lifecycle managed; `find_tables` / `page.get_text("dict")` calls still ride on managed pages) | v0.27.5–v0.27.6, v0.31.0–v0.35.0 |
 | Mixed | `extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py` | ⚠️ `normalize_whitespace` only; still raw `fitz.open()` | v0.27.0–v0.27.2 |
 | `ProseExtractor` framework | `extract_conditions.py` | ✅ (via `utils.prose`) | Higher abstraction |
-| Pre-`pdf_probe` (legacy) | `extract_features.py`, `extract_monsters.py`, `extract_spells.py` | ❌ raw `fitz.open()` | **3 files violating AGENTS.md rule** |
+| Pre-`pdf_probe` (legacy) | `extract_monsters.py`, `extract_spells.py` | ❌ raw `fitz.open()` | **2 files violating AGENTS.md rule** |
 
-All 3 raw-`fitz` files legitimately extract from PDF (walk pages, produce
+All 2 raw-`fitz` files legitimately extract from PDF (walk pages, produce
 raw JSON, no fabricated content). The problem is mechanism, not output:
 they bypass `pdf_probe`'s deterministic-output and hidden-doc-lifecycle
 guarantees, and they are not registered as engine pattern configs.
@@ -125,7 +125,12 @@ shared `font_anchored_table_walk` pattern is obvious) →
 migration only; font-fingerprint walk over GillSans-SemiBold item
 names + Cambria-Italic metadata + multi-page item merging is its own
 shape, not a `RawTable`, so engine binding deferred) →
-`extract_features.py` → `extract_spells.py` →
+~~`extract_features.py`~~ (✅ shipped v0.35.0 — pdf_probe lifecycle
+migration only; two entry points `extract_class_features` (pages
+8–55) and `extract_lineage_traits` (pages 3–7) walk
+GillSans-SemiBold 13.9pt class-feature headers and Cambria-BoldItalic
+9.8pt lineage-trait headers; not a `RawTable`, so engine binding
+deferred) → `extract_spells.py` →
 `extract_monsters.py` (largest, most unique shape, do last).
 
 ### Parse-layer consolidation (forward-looking)

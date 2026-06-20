@@ -15,8 +15,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF
+import fitz  # kept for fitz.Page type hints only; doc lifecycle goes through pdf_probe
 
+from srd_builder.utils.pdf_probe import open_pdf
 from srd_builder.utils.prose import clean_text
 
 
@@ -31,17 +32,14 @@ def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
         Dict with extracted features metadata including raw feature text
     """
     pdf_path = Path(pdf_path)
-    pdf = fitz.open(pdf_path)
-
     all_features = []
     warnings: list[str] = []
 
-    for page_num in pages:
-        page = pdf[page_num - 1]  # PyMuPDF uses 0-indexed
-        features = _extract_features_from_page(page, page_num)
-        all_features.extend(features)
-
-    pdf.close()
+    with open_pdf(pdf_path) as pdf:
+        for page_num in pages:
+            page = pdf[page_num - 1]  # PyMuPDF uses 0-indexed
+            features = _extract_features_from_page(page, page_num)
+            all_features.extend(features)
 
     return {
         "source_pages": f"{min(pages)}-{max(pages)}",
