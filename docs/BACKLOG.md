@@ -82,12 +82,12 @@ all LIVE (12 imported by `build.py`; `extract_conditions` wired through
 
 | Tier | Files | Uses `pdf_probe` | Notes |
 | --- | --- | --- | --- |
-| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py` | ✅ `open_pdf` + `page_text` | v0.27.5–v0.27.6, v0.31.0 |
+| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py` | ✅ `open_pdf` + `page_text` / `page_dict` | v0.27.5–v0.27.6, v0.31.0, v0.32.0 |
 | Mixed | `extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py` | ⚠️ `normalize_whitespace` only; still raw `fitz.open()` | v0.27.0–v0.27.2 |
 | `ProseExtractor` framework | `extract_conditions.py` | ✅ (via `utils.prose`) | Higher abstraction |
-| Pre-`pdf_probe` (legacy) | `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_rules.py`, `extract_monsters.py`, `extract_spells.py` | ❌ raw `fitz.open()` | **6 files violating AGENTS.md rule** |
+| Pre-`pdf_probe` (legacy) | `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_monsters.py`, `extract_spells.py` | ❌ raw `fitz.open()` | **5 files violating AGENTS.md rule** |
 
-All 6 raw-`fitz` files legitimately extract from PDF (walk pages, produce
+All 5 raw-`fitz` files legitimately extract from PDF (walk pages, produce
 raw JSON, no fabricated content). The problem is mechanism, not output:
 they bypass `pdf_probe`'s deterministic-output and hidden-doc-lifecycle
 guarantees, and they are not registered as engine pattern configs.
@@ -112,8 +112,12 @@ uniqueness, ship it, then the next**. Apply the same here:
 **Suggested order (cheapest → hardest):** ~~`extract_pdf_metadata.py`~~
 (✅ shipped v0.31.0 — pdf_probe migration only; doc-level metadata
 shape does not fit the table-shaped engine, kept as a slim pdf_probe
-consumer) → `extract_rules.py` (simple prose pages) →
-`extract_equipment.py` (table-grid, already overlaps engine domain) →
+consumer) → ~~`extract_rules.py`~~ (✅ shipped v0.32.0 — pdf_probe
+migration only; emits font-stamped span blocks for downstream parser
+consumption, not a `RawTable`, so engine binding deferred. Added
+`pdf_probe.page_dict()` helper as the shared primitive for any future
+extractor that needs font/bbox metadata) → `extract_equipment.py`
+(table-grid, already overlaps engine domain) →
 `extract_magic_items.py` → `extract_features.py` → `extract_spells.py` →
 `extract_monsters.py` (largest, most unique shape, do last).
 

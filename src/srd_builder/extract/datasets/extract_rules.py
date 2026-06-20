@@ -14,6 +14,7 @@ from typing import Any
 
 from ...constants import EXTRACTOR_VERSION
 from ...utils.page_index import PAGE_INDEX
+from ...utils.pdf_probe import open_pdf, page_dict
 
 # Rules chapters from PAGE_INDEX (Phase 1 scope - v0.17.0)
 RULES_SECTIONS = [
@@ -63,16 +64,11 @@ def extract_rules(pdf_path: Path) -> dict[str, Any]:
     pdf_bytes = pdf_path.read_bytes()
     pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
-    # Import here to avoid circular dependency
-    import fitz
-
-    doc = fitz.open(pdf_path)
     text_blocks: list[dict[str, Any]] = []
     sections: list[dict[str, Any]] = []
     warnings: list[str] = []
 
-    try:
-        # Extract text from each rules section
+    with open_pdf(pdf_path) as doc:
         for section_name in config.sections:
             section_info = PAGE_INDEX.get(section_name)
             if not section_info:
@@ -82,11 +78,10 @@ def extract_rules(pdf_path: Path) -> dict[str, Any]:
             page_start = section_info["pages"]["start"]
             page_end = section_info["pages"]["end"]
 
-            # Extract text blocks from this section
             section_blocks = []
-            for page_num in range(page_start - 1, page_end):  # fitz uses 0-indexed pages
-                page = doc[page_num]
-                page_blocks = _extract_page_text_blocks(page, page_num + 1)
+            for page_num in range(page_start - 1, page_end):  # 0-indexed PDF pages
+                raw_page = page_dict(doc, page_num)
+                page_blocks = _extract_page_text_blocks(raw_page, page_num + 1)
                 section_blocks.extend(page_blocks)
                 text_blocks.extend(page_blocks)
 
@@ -98,9 +93,6 @@ def extract_rules(pdf_path: Path) -> dict[str, Any]:
                     "block_count": len(section_blocks),
                 }
             )
-
-    finally:
-        doc.close()
 
     # Calculate total pages processed
     total_pages = sum(
@@ -125,23 +117,19 @@ def extract_rules(pdf_path: Path) -> dict[str, Any]:
     }
 
 
-def _extract_page_text_blocks(page: Any, page_num: int) -> list[dict[str, Any]]:
-    """Extract text blocks from a single page with font metadata.
+def _extract_page_text_blocks(page_dict_obj: dict[str, Any], page_num: int) -> list[dict[str, Any]]:
+    """Extract text blocks from a single page's structured dict with font metadata.
 
     Args:
-        page: PyMuPDF page object
-        page_num: Page number (1-indexed)
+        page_dict_obj: Output of ``pdf_probe.page_dict(doc, pdf_index)``
+        page_num: Page number (1-indexed) to stamp onto each block
 
     Returns:
         List of text blocks with font metadata
     """
     blocks: list[dict[str, Any]] = []
 
-    # Extract text with font information
-    # dict["blocks"] contains blocks, each block contains lines
-    page_dict = page.get_text("dict", flags=0)
-
-    for block_idx, block in enumerate(page_dict.get("blocks", [])):
+    for block_idx, block in enumerate(page_dict_obj.get("blocks", [])):
         # Skip image blocks
         if block.get("type") != 0:  # 0 = text block
             continue

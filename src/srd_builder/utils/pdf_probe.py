@@ -70,6 +70,18 @@ def pages_text(
     return {idx: page_text(doc, idx, normalize=normalize) for idx in pdf_indices}
 
 
+def page_dict(doc: fitz.Document, pdf_index: int, *, flags: int = 0) -> dict:
+    """Return PyMuPDF's structured "dict" output for a page (0-based index).
+
+    Used by extractors that need font/bbox/span metadata in addition to
+    plain text (e.g. font-fingerprint walks for rules and stat blocks).
+    The default ``flags=0`` matches the legacy call sites; pass a
+    PyMuPDF ``TEXT_*`` flag set to opt into ligature/whitespace
+    preservation.
+    """
+    return doc.load_page(pdf_index).get_text("dict", flags=flags)
+
+
 def srd_page_to_pdf_index(srd_page: int) -> int:
     """Convert a 1-based SRD page number to a 0-based PyMuPDF index.
 
