@@ -112,11 +112,111 @@ types were built.**
 | Doc-level regex | `extract_pdf_metadata` | None — would need `document_metadata` pattern type |
 | Font-stamped span dump | `extract_rules` | None — needs `font_span_section` pattern type |
 | PyMuPDF `find_tables()` + section tracking | `extract_equipment` | Closest to `standard_grid` but needs font-anchored section state |
-| Font-fingerprint walk over single-page items | `extract_magic_items`, `extract_features`, `extract_equipment_descriptions` | None — needs `font_fingerprint_walk` pattern type |
-| Font-fingerprint walk + cross-page state | `extract_spells`, `extract_monsters` | Extension of the above with carry-over / boundary detection |
+| Font-fingerprint walk over single-page items | `extract_magic_items`, `extract_features` | None — needs `font_fingerprint_walk` pattern type *(see design-pass finding below)* |
+| Regex walk over pre-concatenated section text | `extract_equipment_descriptions` | Closer to `prose_section` than to the font-fingerprint walks above |
+| Font-fingerprint walk + cross-page state | `extract_spells`, `extract_monsters` | Extension of font-fingerprint walk (not yet inspected in depth) |
 | `normalize_whitespace`-only PDF read | `extract_lineages`, `extract_classes`, `extract_spell_classes` | Possibly `prose_section` with target-list config |
 | Packs-config + ID synthesis | `extract_equipment_packs` | Possibly `reference` |
 | `ProseExtractor` framework | `extract_conditions` | Already abstracted (different framework) |
+
+### Design-pass finding (2026-06-20)
+
+Read `extract_magic_items`, `extract_features`, and
+`extract_equipment_descriptions` side-by-side. Earlier framing called
+all three candidates for a shared `font_fingerprint_walk` pattern
+type. Reality:
+
+- **`extract_magic_items`** and **`extract_features`** share the
+  font-fingerprint shape. Both iterate page → block → line → span,
+  detect headers by font name + size (+ optional flags), close the
+  current record on the next header, and emit per-record dicts.
+- **`extract_equipment_descriptions` does not.** It pre-concatenates
+  all pages in a section into one normalized string, then walks
+  regex matches (`_HEADING_RE`) over that string, filtered by a
+  dict lookup (`_HEADING_TO_ITEM_ID`). No font matching, no
+  span/block traversal. Its closer engine sibling is `prose_section`,
+  not a font-fingerprint walk.
+
+**What the two real candidates actually share:**
+
+- Page iteration → `block / line / span` traversal.
+- Header detection by `(font_substring, font_size, tolerance)` on the
+  first span of a line.
+- Record boundary = next header (with end-of-page or
+  end-of-range as terminators).
+
+**What differs even between those two:**
+
+| Dimension | `extract_magic_items` | `extract_features` |
+| --- | --- | --- |
+| Header fingerprints | 1 (GillSans-SemiBold 12pt) | 2 (GillSans-SemiBold 13.9pt class-feature + Cambria-BoldItalic 9.8pt lineage-trait) |
+| Body grouping | Font-split into `metadata_blocks` (Cambria-Italic) + `description_blocks` (rest); spans preserved, not concatenated | Single bucket, concatenated string with `clean_text()` pass |
+| Multi-line header continuation | Yes (joins lines ending in "and"/"or"/"of"/...) | No |
+| Cross-page record merging | Yes, post-pass: merges item if `len(description) < 20` and no metadata | No (each page independent) |
+| Structural-text filter | No | Yes (`_is_structural_text()` drops page numbers, table headers, etc.) |
+
+**Engine return-type problem.** `extract_by_config()` returns
+`RawTable` (row/column shape: `headers`, `rows: list[list[...]]`).
+Font-fingerprint walks emit **lists of records** (per-item dicts), not
+table rows. A binding requires either (a) widening
+`extract_by_config()` to a `RawTable | RawRecordList` union, or
+(b) adding a sibling `extract_records_by_config()` and routing the new
+pattern types through it. Decision belongs in the pattern design.
+
+**Sketch of minimum config schema** (not yet implemented):
+
+```python
+DATASET_CONFIG = {
+    "pattern_type": "font_fingerprint_walk",
+    "pages": (206, 253),  # inclusive; or {"start_const": ..., "end_const": ...}
+    "header_fingerprints": [
+        {
+            "font_substring": "GillSans-SemiBold",
+            "size": 12.0,
+            "size_tolerance": 0.5,
+            "role": "record_name",
+        },
+        # second fingerprint optional (features has two; magic_items has one)
+    ],
+    "body_grouping": "single_bucket",      # or "font_split"
+    "body_split_fingerprints": {           # only if body_grouping == "font_split"
+        "metadata": {"font_substring": "Cambria-Italic"},
+    },
+    "merge_partial_records": False,        # magic_items=True, features=False
+    "filter_structural_text": False,       # features=True, magic_items=False
+    "multi_line_header": False,            # magic_items=True, features=False
+}
+```
+
+**Honest ROI assessment.** A `font_fingerprint_walk` pattern type would
+have **two confirmed callers** (`extract_magic_items`,
+`extract_features`), not the 3–5 that earlier BACKLOG framing implied.
+`extract_spells` and `extract_monsters` are *probable* additional
+callers under cross-page extension but neither has been inspected at
+this depth. **Two callers is the ROI threshold** — below it, bespoke
+is honest; above it, the pattern type pays for itself. This is right
+at the edge.
+
+**Recommended next step (single release, real work).** Pick ONE of:
+
+1. **Prototype path.** Implement `font_fingerprint_walk` against
+   `extract_features` first (simpler — one entry point, no cross-page
+   merge, no font-split body). If the binding is clean, do
+   `extract_magic_items` as the second binding and learn whether the
+   config schema generalizes. If it doesn't, revert and document why.
+   *Estimated scope: design + 1 binding + parity test in one focused
+   session. NOT a release; the release is the second binding when the
+   schema is proven.*
+2. **Defer path.** Accept that 2 confirmed callers is below the
+   pattern-type threshold for now. Mark the design pass complete, file
+   the config sketch for reference, and move on to other v1.0 work.
+   Revisit if/when `extract_spells` or `extract_monsters` get inspected
+   at the same depth and add 1–2 more confirmed callers.
+
+The "shared font-anchored pattern emerges" hand-waving in v0.33–v0.37
+is now closed: the pattern was specified above, and the answer to
+"does it justify a pattern type yet?" is "marginally — pick path 1 or
+path 2 deliberately."
 
 ### Proposed approach (gradual, one extractor per release)
 
