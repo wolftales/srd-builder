@@ -368,18 +368,17 @@ def test_poison_descriptions_extract_all_14_sections_cleanly() -> None:
     sections at description-shaped lengths.
     """
     _require_pdf_and_fitz()
-    from srd_builder.assemble.assemble_prose import assemble_prose_dataset
+    from srd_builder.assemble.assemble_prose import extract_prose_records
     from srd_builder.parse.parse_poison_descriptions import (
         parse_poison_description_records,
     )
 
-    doc = assemble_prose_dataset(
+    items, _warnings = extract_prose_records(
         "poison_descriptions",
         SRD_5_1_PDF,
         parse_poison_description_records,
         "srd_5_1",
     )
-    items = doc.get("poison_descriptions", doc.get("items", []))
 
     expected_simple_names = {
         "assassins_blood",
@@ -423,9 +422,7 @@ def test_poison_descriptions_extract_all_14_sections_cleanly() -> None:
         missing_save
     )
 
-    assert doc.get("_meta", {}).get("warnings", []) == [], (
-        f"Poison description extractor produced warnings: {doc['_meta']['warnings']}"
-    )
+    assert _warnings == [], f"Poison description extractor produced warnings: {_warnings}"
 
 
 def test_class_progression_truncations_are_real() -> None:

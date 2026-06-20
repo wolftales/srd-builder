@@ -18,7 +18,7 @@ from typing import Any
 
 from . import __version__
 from .assemble.assemble_equipment import assemble_equipment_from_tables
-from .assemble.assemble_prose import assemble_prose_dataset
+from .assemble.assemble_prose import extract_prose_records
 from .assemble.indexer import build_indexes
 from .constants import DIST_DIRNAME, EXEMPLARS_DIRNAME, RULESETS_DIRNAME, SCHEMAS_DIRNAME
 from .extract import extract_tables_to_json
@@ -39,7 +39,6 @@ from .extract.datasets.extract_spell_classes import (
     extract_spell_classes,
 )
 from .extract.datasets.extract_spells import extract_spells
-from .extract.extraction_metadata import TABLES
 from .parse.parse_ability_scores import parse_ability_scores
 from .parse.parse_classes import parse_classes
 from .parse.parse_conditions import parse_condition_records
@@ -143,8 +142,10 @@ def _write_datasets(  # noqa: PLR0913
     damage_types: list[dict[str, Any]] | None = None,
     skills: list[dict[str, Any]] | None = None,
     weapon_properties: list[dict[str, Any]] | None = None,
-    conditions: dict[str, Any] | None = None,  # Prose dataset doc (built by assemble_prose)
-    diseases: dict[str, Any] | None = None,  # Prose dataset doc (built by assemble_prose)
+    conditions: list[dict[str, Any]] | None = None,  # Cleaned records; wrapped here
+    conditions_warnings: list[str] | None = None,
+    diseases: list[dict[str, Any]] | None = None,  # Cleaned records; wrapped here
+    diseases_warnings: list[str] | None = None,
     poison_records: list[dict[str, Any]] | None = None,  # Raw records; engine cleans + wraps here
     feature_records: list[dict[str, Any]] | None = None,  # Raw records; engine cleans + wraps here
     rules: list[dict[str, Any]] | None = None,
@@ -157,6 +158,7 @@ def _write_datasets(  # noqa: PLR0913
         records: list[dict[str, Any]],
         *,
         top_key: str = "items",
+        extraction_warnings: list[str] | None = None,
     ) -> dict[str, Any]:
         """Wrap ``records`` in the enriched _meta envelope (v0.29.3 Phase 1)."""
         return wrap_with_meta(
@@ -168,7 +170,7 @@ def _write_datasets(  # noqa: PLR0913
             description=_DATASET_DESCRIPTIONS.get(dataset),
             pdf_sha256=pdf_sha256,
             item_count=len(records),
-            extraction_warnings=[],
+            extraction_warnings=extraction_warnings or [],
         )
 
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
@@ -341,26 +343,35 @@ def _write_datasets(  # noqa: PLR0913
             encoding="utf-8",
         )
 
-    # Write conditions
-    # Conditions arrive as a fully assembled document from assemble_prose; the
-    # top-level array key is "items" as of v0.30.0 Phase 2 (was "conditions").
+    # Write conditions (v0.30.0 phase 4: same write path as every other dataset).
     processed_conditions = None
     if conditions:
+        conditions_doc = _enriched(
+            "conditions",
+            "condition",
+            conditions,
+            extraction_warnings=conditions_warnings,
+        )
         (dist_data_dir / "conditions.json").write_text(
-            _render_json(conditions),
+            _render_json(conditions_doc),
             encoding="utf-8",
         )
-        processed_conditions = conditions.get("items", [])
+        processed_conditions = conditions
 
-    # Write diseases
-    # Same shape contract as conditions: "items" at top level since v0.30.0.
+    # Write diseases (v0.30.0 phase 4: same write path as every other dataset).
     processed_diseases = None
     if diseases:
+        diseases_doc = _enriched(
+            "diseases",
+            "disease",
+            diseases,
+            extraction_warnings=diseases_warnings,
+        )
         (dist_data_dir / "diseases.json").write_text(
-            _render_json(diseases),
+            _render_json(diseases_doc),
             encoding="utf-8",
         )
-        processed_diseases = diseases.get("items", [])
+        processed_diseases = diseases
 
     # Write poisons (v0.11.0)
     # Poisons items derived from the poisons table + descriptions in the caller;
@@ -1248,23 +1259,26 @@ def build(  # noqa: C901
     }
 
     # Build prose datasets
-    conditions_doc = None
-    diseases_doc = None
+    conditions_records: list[dict[str, Any]] | None = None
+    conditions_warnings: list[str] | None = None
+    diseases_records: list[dict[str, Any]] | None = None
+    diseases_warnings: list[str] | None = None
     poison_descriptions_by_name: dict[str, dict[str, Any]] = {}
 
     if pdf_files:
         for dataset_name, parser_func in prose_parsers.items():
             try:
-                doc = assemble_prose_dataset(dataset_name, pdf_files[0], parser_func, ruleset)
-                # Assign to appropriate variable
+                records, warnings = extract_prose_records(
+                    dataset_name, pdf_files[0], parser_func, ruleset
+                )
                 if dataset_name == "conditions":
-                    conditions_doc = doc
+                    conditions_records = records
+                    conditions_warnings = warnings
                 elif dataset_name == "diseases":
-                    diseases_doc = doc
+                    diseases_records = records
+                    diseases_warnings = warnings
                 elif dataset_name == "poison_descriptions":
-                    # Build lookup map for merging with poison table data
-                    output_key = TABLES[dataset_name].get("output_key", "items")
-                    for desc in doc.get(output_key, []):
+                    for desc in records:
                         simple_name = desc.get("simple_name")
                         if simple_name:
                             poison_descriptions_by_name[simple_name] = desc
@@ -1328,8 +1342,10 @@ def build(  # noqa: C901
         damage_types=parsed_damage_types if parsed_damage_types else None,
         skills=parsed_skills if parsed_skills else None,
         weapon_properties=parsed_weapon_properties if parsed_weapon_properties else None,
-        conditions=conditions_doc if conditions_doc else None,
-        diseases=diseases_doc if diseases_doc else None,
+        conditions=conditions_records if conditions_records else None,
+        conditions_warnings=conditions_warnings,
+        diseases=diseases_records if diseases_records else None,
+        diseases_warnings=diseases_warnings,
         poison_records=parsed_poisons if parsed_poisons else None,
         feature_records=all_features if all_features else None,
         rules=parsed_rules if parsed_rules else None,
