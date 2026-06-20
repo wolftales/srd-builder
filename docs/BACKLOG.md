@@ -96,15 +96,18 @@ is NOT engine binding and does not move any extractor toward the slim
 | Bound | Files |
 | --- | --- |
 | ✅ via `extract_records_by_config()` (`font_fingerprint_walk`) | `extract_features` (commit 9e9f06f), `extract_magic_items` (commit 0badf2f) |
-| ❌ | the remaining 11 |
+| ✅ via `extract_records_by_config()` (`font_stateful_walk`) | `extract_spells` (commit 1689edc) |
+| ❌ | the remaining 10 |
 
-**Current score: 2/13.** The v0.31–v0.37 release series moved the
-lifecycle column for 7 files and left the binding column at 0/13. The
-design pass below opened in 391a6bc, prototype landed in 9e9f06f
-(`extract_features`), schema-generalization test landed in 0badf2f
-(`extract_magic_items` — bound on first try, byte-identical output).
-The two confirmed design-pass candidates are both bound. Further
-bindings need their own shape analysis (see "Remaining shapes" below).
+**Current score: 3/13.** Design pass (commit 391a6bc) → prototype
+(commit 9e9f06f, `extract_features`) → schema-generalization test
+(commit 0badf2f, `extract_magic_items`, bound first try) → sibling
+pattern type (commit 1689edc, `extract_spells` via
+`font_stateful_walk`). `extract_monsters` was the next candidate
+considered and declined at the 2-caller threshold (see
+"Monsters: option 3" below). The remaining 10 extractors haven't
+been inspected at the same depth and would each need their own
+design pass.
 
 #### Shape inventory (input to engine-binding design)
 
@@ -254,8 +257,88 @@ actions, legendary actions are all distinct sections).
    the remaining 11 either get their own design passes or stay
    bespoke deliberately.
 
-No path picked yet. Pick when the next release is being scoped, not
-in between.
+### Spells: option 2 executed (2026-06-20)
+
+`font_stateful_walk` shipped in commit `1689edc`. New engine
+vocabulary: header fingerprint + ordered span rules with
+`{match, guard, action}` semantics, sentinel-resolved attach dicts
+(`$bold_from_font`, `$italic_from_font`), per-rule
+`check_state_transitions_after`, `carry_if` page-boundary predicate,
+`merge_nameless_into_previous` post-pass, `keep_if` final filter.
+
+Binding result: `extract_spells` shrunk 370 → 190 lines; 319 spells,
+byte-identical to v0.36.0 baseline (`70df0558…`). Engine binding
+count: **2/13 → 3/13**.
+
+One engine bug surfaced during the binding: state transitions
+initially ran after every rule's append, which caused the
+`"Duration:"` label (a Cambria-Bold field label) to fire the
+`header → description` transition before the duration value arrived,
+sending that value into the wrong bucket. The original code only
+checks transitions after the default-rule append; the engine now
+exposes per-rule `check_state_transitions_after` and the spells
+config sets it on the default rule only.
+
+### Monsters: option 3 (2026-06-20)
+
+`extract_monsters` was read at the same depth as spells (631 lines).
+Decision: **leave bespoke**. Justification:
+
+Unique primitives not used by any other extractor in the codebase:
+
+- **Bbox + column-aware spans.** Spans carry `bbox`, `column`
+  (0/1/2 from x-coord vs midpoint), and `color` in addition to
+  font/size. No other extractor needs columnar reading order.
+- **Cross-page pre-accumulation, then boundary detection.** All
+  spans from all pages are sorted by `(page, column, y, x)` first,
+  THEN walked for monster boundaries. The other three bindings walk
+  per-page and merge after.
+- **Y-coordinate line merging.** Spans within 2pt Y and matching
+  font/size are merged into a single logical line before any
+  pattern matching. The engine's existing line iteration uses
+  PyMuPDF's native line grouping.
+- **Lookahead validation.** A `Calibri-Bold` 12pt line is only
+  accepted as a monster name if a `Calibri-Italic` line containing
+  a size keyword (Tiny/Small/Medium/Large/Huge/Gargantuan) appears
+  within 30pt vertical distance.
+- **Reject-list header guard.** Stat-field tokens (`Speed`, `STR`,
+  `Armor Class`, …) and section headers (`Actions`, `Reactions`,
+  `Legendary Actions`) must be excluded from the header match even
+  when font + size match.
+
+Cost to bind: a new `font_columnar_walk` pattern type would need
+~250 lines of engine code (column detection, reading-order sort,
+cross-page accumulation, line merger, lookahead validator, reject
+list). It would have **one caller**. None of the remaining 10
+extractors deal with bbox-aware columnar layouts; most are
+table-shaped (already handled by `standard_grid`) or
+whitespace-normalized prose. Binding monsters at this point
+*increases* total complexity rather than reducing it.
+
+This is the BACKLOG's own 2-caller threshold cutting cleanly: a
+new pattern type for a single caller is the wrong tradeoff,
+exactly as documented above. Stopping is the deliberate choice,
+not the avoidance pattern v0.33–v0.37 fell into — the design pass
+was done, the engine was extended once, the engine was extended
+again into a sibling pattern, and the next candidate failed the
+threshold for honest reasons.
+
+### Stopping point (2026-06-20)
+
+Final score: **3/13 bound** (features, magic_items, spells).
+Remaining 10:
+
+- `extract_monsters` — bespoke by deliberate choice (above).
+- `extract_pdf_metadata`, `extract_rules`, `extract_equipment`,
+  `extract_equipment_descriptions`, `extract_equipment_packs`,
+  `extract_classes`, `extract_lineages`, `extract_spell_classes`,
+  `extract_conditions` — separate design passes if/when needed.
+  No claim is made here about whether they would benefit; they
+  haven't been inspected at the same depth.
+
+The "remaining shapes" question is closed for this session. Future
+bindings need their own design-pass entry, not a presumed extension
+of the work landed here.
 
 ### Proposed approach (gradual, one extractor per release)
 
