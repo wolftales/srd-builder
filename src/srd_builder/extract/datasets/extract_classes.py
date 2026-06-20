@@ -63,7 +63,7 @@ from typing import Any
 import fitz  # PyMuPDF
 
 from srd_builder.postprocess.ids import normalize_id
-from srd_builder.utils.pdf_layout import cluster_values_by_gap
+from srd_builder.utils.pdf_layout import cluster_values_by_gap, iter_page_spans
 from srd_builder.utils.pdf_probe import normalize_whitespace
 from srd_builder.utils.prose import clean_text
 
@@ -207,20 +207,18 @@ def _build_class_record(
 
 
 def _collect_spans(page: fitz.Page) -> list[tuple[str, float, str, tuple]]:
-    """Flatten the page into ``(text, size, font, bbox)`` tuples in order."""
-    spans: list[tuple[str, float, str, tuple]] = []
-    for block in page.get_text("dict")["blocks"]:
-        if "lines" not in block:
-            continue
-        for line in block["lines"]:
-            for span in line["spans"]:
-                txt = normalize_whitespace(span["text"])
-                if not txt:
-                    continue
-                spans.append(
-                    (txt, round(span.get("size", 0), 1), span.get("font", ""), span["bbox"])
-                )
-    return spans
+    """Flatten the page into ``(text, size, font, bbox)`` tuples in order.
+
+    Delegates the block/line/span walk to ``iter_page_spans``; this
+    module's only added work is the per-span ``normalize_whitespace``
+    pass + empty-text filter + tuple shape that the rest of
+    ``extract_classes`` already consumes.
+    """
+    return [
+        (txt, round(span.get("size", 0), 1), span.get("font", ""), span["bbox"])
+        for span in iter_page_spans(page.get_text("dict"))
+        if (txt := normalize_whitespace(span["text"]))
+    ]
 
 
 def _extract_field_labels(
