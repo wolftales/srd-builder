@@ -9,7 +9,6 @@ Phase: v0.3.0 - Raw extraction only (no field parsing)
 
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,7 +23,7 @@ from ...utils.pdf_layout import (
     extract_columnar_spans,
     merge_spans_into_lines,
 )
-from ...utils.pdf_probe import open_pdf
+from ...utils.pdf_probe import open_pdf, pdf_sha256
 
 # Extraction tolerances. Y/font-size tolerances are imported from utils.pdf_layout
 # (kept re-exported here so existing call sites referencing them via this module
@@ -93,7 +92,7 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
         config = ExtractionConfig()
 
     # Calculate PDF hash for determinism
-    pdf_hash = _calculate_pdf_hash(pdf_path)
+    pdf_hash = pdf_sha256(pdf_path)
 
     monsters: list[RawMonster] = []
     extraction_warnings: list[str] = []
@@ -391,22 +390,6 @@ def _monster_to_dict(monster: RawMonster) -> dict[str, Any]:
         "markers": monster.markers,
         "warnings": monster.warnings,
     }
-
-
-def _calculate_pdf_hash(pdf_path: Path) -> str:
-    """Calculate SHA-256 hash of PDF for determinism.
-
-    Args:
-        pdf_path: Path to PDF file
-
-    Returns:
-        Hex string of SHA-256 hash
-    """
-    sha256 = hashlib.sha256()
-    with open(pdf_path, "rb") as f:
-        for chunk in iter(lambda: f.read(8192), b""):
-            sha256.update(chunk)
-    return sha256.hexdigest()
 
 
 def main() -> None:

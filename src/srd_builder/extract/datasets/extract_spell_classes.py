@@ -27,6 +27,7 @@ from typing import Any
 import fitz
 
 from srd_builder.postprocess.ids import normalize_id
+from srd_builder.utils.pdf_layout import is_bold as span_is_bold
 from srd_builder.utils.pdf_probe import normalize_whitespace
 
 SPELL_LIST_PAGES_PDF_INDICES = range(104, 113)  # SRD pages 105-113
@@ -90,7 +91,7 @@ def extract_spell_classes(pdf_path: str | Path) -> dict[str, Any]:
                             continue
                         size = round(span.get("size", 0), 1)
                         font = span.get("font", "")
-                        is_bold = bool(span.get("flags", 0) & 16)
+                        is_bold = span_is_bold(span.get("flags", 0))
 
                         # 13.9pt G-SB = class header
                         if is_bold and "GillSans" in font and 13.5 <= size <= 14.5:

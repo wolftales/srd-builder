@@ -7,14 +7,14 @@ Outputs verbatim text with font metadata for downstream parsing.
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from ...constants import EXTRACTOR_VERSION
 from ...utils.page_index import PAGE_INDEX
-from ...utils.pdf_probe import open_pdf, page_dict
+from ...utils.pdf_layout import is_bold, is_italic
+from ...utils.pdf_probe import open_pdf, page_dict, pdf_sha256
 
 # Rules chapters from PAGE_INDEX (Phase 1 scope - v0.17.0)
 RULES_SECTIONS = [
@@ -61,8 +61,7 @@ def extract_rules(pdf_path: Path) -> dict[str, Any]:
     config = ExtractionConfig()
 
     # Calculate PDF hash for provenance
-    pdf_bytes = pdf_path.read_bytes()
-    pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+    pdf_hash = pdf_sha256(pdf_path)
 
     text_blocks: list[dict[str, Any]] = []
     sections: list[dict[str, Any]] = []
@@ -157,8 +156,8 @@ def _extract_page_text_blocks(page_dict_obj: dict[str, Any], page_num: int) -> l
                         "font_name": font_name,
                         "font_size": round(font_size, 1),
                         "font_flags": font_flags,
-                        "is_bold": bool(font_flags & 16),  # Flag 16 = bold
-                        "is_italic": bool(font_flags & 2),  # Flag 2 = italic
+                        "is_bold": is_bold(font_flags),
+                        "is_italic": is_italic(font_flags),
                         "bbox": {
                             "x0": round(bbox[0], 1),
                             "y0": round(bbox[1], 1),

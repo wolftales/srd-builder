@@ -20,6 +20,7 @@ numbers via utils.page_index.PAGE_INDEX, which is 1-based.
 
 from __future__ import annotations
 
+import hashlib
 import re
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -88,3 +89,12 @@ def srd_page_to_pdf_index(srd_page: int) -> int:
     SRD page 1 (the legal/title page) is PDF index 0.
     """
     return srd_page - 1
+
+
+def pdf_sha256(pdf_path: Path, *, chunk_size: int = 8192) -> str:
+    """Return hex SHA-256 of ``pdf_path`` for provenance/determinism stamps."""
+    sha256 = hashlib.sha256()
+    with open(pdf_path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(chunk_size), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()

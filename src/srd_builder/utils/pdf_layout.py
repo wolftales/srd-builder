@@ -32,6 +32,21 @@ import fitz
 Y_COORDINATE_TOLERANCE = 2.0
 FONT_SIZE_TOLERANCE = 0.5
 
+# PyMuPDF span flag bits. Mirrored as public constants so callers don't
+# repeat the magic numbers; see PyMuPDF docs for the full bitfield.
+SPAN_FLAG_ITALIC = 2**1  # 2
+SPAN_FLAG_BOLD = 2**4  # 16
+
+
+def is_bold(flags: int) -> bool:
+    """True if the PyMuPDF span ``flags`` bitfield marks the span as bold."""
+    return bool(flags & SPAN_FLAG_BOLD)
+
+
+def is_italic(flags: int) -> bool:
+    """True if the PyMuPDF span ``flags`` bitfield marks the span as italic."""
+    return bool(flags & SPAN_FLAG_ITALIC)
+
 
 def color_to_rgb(color_int: int) -> list[int]:
     """Convert a PyMuPDF packed color integer into [r, g, b]."""

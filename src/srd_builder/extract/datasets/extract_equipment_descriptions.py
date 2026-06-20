@@ -25,6 +25,7 @@ from typing import Any, TypedDict
 
 from srd_builder.utils.page_index import PAGE_INDEX
 from srd_builder.utils.pdf_probe import open_pdf, page_text
+from srd_builder.utils.prose import normalize_apostrophes
 
 logger = logging.getLogger(__name__)
 
@@ -165,7 +166,6 @@ _HEADING_RE = re.compile(
 )
 
 
-_CURLY_APOS = "\u2019"
 # Sequence of 2+ hyphen-like characters (PDF soft hyphen U+00AD, hyphen
 # U+2010, non-breaking hyphen U+2011, ASCII '-') collapses to a single
 # ASCII hyphen. Singletons are preserved so legitimate hyphenated words
@@ -185,7 +185,7 @@ _PAGE_FOOTER_RE = re.compile(r"\s*System Reference Document 5\.1 \d+\s*")
 def _normalize(text: str) -> str:
     """Collapse soft-hyphen runs, normalize apostrophes + whitespace."""
     text = _SOFT_HYPHEN_RE.sub("-", text)
-    text = text.replace(_CURLY_APOS, "'")
+    text = normalize_apostrophes(text)
     text = _WHITESPACE_RE.sub(" ", text)
     text = _PAGE_FOOTER_RE.sub(" ", text)
     text = _EM_DASH_SPACE_RE.sub("—", text)

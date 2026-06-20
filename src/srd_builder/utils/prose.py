@@ -14,7 +14,24 @@ from typing import Any
 # Import shared text cleaning utility to avoid duplication
 from ..postprocess.text import clean_text
 
-__all__ = ["clean_text", "extract_bullet_points", "extract_table_by_pattern", "ProseExtractor"]
+__all__ = [
+    "clean_text",
+    "extract_bullet_points",
+    "extract_table_by_pattern",
+    "normalize_apostrophes",
+    "ProseExtractor",
+]
+
+
+def normalize_apostrophes(text: str) -> str:
+    """Replace curly single-quote characters with ASCII apostrophes.
+
+    SRD PDF text routinely contains U+2018/U+2019 (curly singles) where
+    downstream string comparisons expect ASCII ``'``. Use this on slices
+    where a full ``clean_text`` pass would be too aggressive (e.g. when
+    em-dashes or hyphenation must be preserved verbatim).
+    """
+    return text.replace("\u2018", "'").replace("\u2019", "'")
 
 
 def extract_bullet_points(text: str) -> list[str]:

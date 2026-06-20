@@ -64,8 +64,10 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
+from srd_builder.utils.pdf_layout import is_bold as span_is_bold
+from srd_builder.utils.pdf_layout import is_italic as span_is_italic
 from srd_builder.utils.pdf_probe import normalize_whitespace
-from srd_builder.utils.prose import clean_text
+from srd_builder.utils.prose import clean_text, normalize_apostrophes
 
 LINEAGE_PAGES_PDF_INDICES = range(2, 7)  # SRD pages 3-7 (PDF idx 2-6)
 
@@ -145,8 +147,8 @@ def _walk_lineage_pages(doc: fitz.Document) -> list[dict[str, Any]]:
                     size = round(span.get("size", 0), 1)
                     font = span.get("font", "")
                     flags = span.get("flags", 0)
-                    is_bold = bool(flags & 16)
-                    is_italic = bool(flags & 2)
+                    is_bold = span_is_bold(flags)
+                    is_italic = span_is_italic(flags)
                     role = _classify_span(
                         text=text,
                         size=size,
@@ -186,7 +188,7 @@ def _walk_lineage_pages(doc: fitz.Document) -> list[dict[str, Any]]:
                             continue
                         # clean_text() does not normalize U+2019 (right
                         # single quote) reliably, so handle it here.
-                        name = text.rstrip(".").replace("\u2019", "'")
+                        name = normalize_apostrophes(text.rstrip("."))
                         current_trait = {
                             "name": name,
                             "text": "",

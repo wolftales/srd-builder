@@ -34,6 +34,7 @@ from typing import Any, TypedDict
 
 from ...utils.page_index import PAGE_INDEX
 from ...utils.pdf_probe import open_pdf, page_text
+from ...utils.prose import normalize_apostrophes
 
 logger = logging.getLogger(__name__)
 
@@ -264,7 +265,7 @@ def extract_equipment_packs(pdf_path: Path) -> dict[str, Any]:
         # SRD prose uses a curly apostrophe (U+2019); downstream JSON has
         # historically used the straight ASCII form. Normalize at the
         # extraction boundary so consumers don't have to.
-        name = hdr.group("name").replace(_CURLY_APOS, "'")
+        name = normalize_apostrophes(hdr.group("name"))
         cost_gp = int(hdr.group("cost"))
         body_start = hdr.end()
         body_end = headers[i + 1].start() if i + 1 < len(headers) else len(text)

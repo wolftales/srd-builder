@@ -10,11 +10,11 @@ utils/prose.py for the framework components.
 
 from __future__ import annotations
 
-import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from srd_builder.utils.pdf_probe import pdf_sha256
 from srd_builder.utils.prose import ProseExtractor
 
 from ...constants import EXTRACTOR_VERSION
@@ -71,8 +71,7 @@ def extract_conditions(pdf_path: Path) -> dict[str, Any]:
     config = ExtractionConfig()
 
     # Calculate PDF hash for provenance
-    pdf_bytes = pdf_path.read_bytes()
-    pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+    pdf_hash = pdf_sha256(pdf_path)
 
     # Use ProseExtractor framework
     extractor = ProseExtractor(
