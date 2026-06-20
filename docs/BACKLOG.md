@@ -340,6 +340,73 @@ The "remaining shapes" question is closed for this session. Future
 bindings need their own design-pass entry, not a presumed extension
 of the work landed here.
 
+### Architecture pass (2026-06-20)
+
+After the three bindings landed, `extract/patterns.py` had grown to
+1648 lines holding 9 pattern engines plus 30 helpers in one module.
+Two follow-up refactors landed before stopping:
+
+**Phase 1 — split `patterns.py` into `extract/patterns/` package**
+(commit ce1d7ed). Mechanical refactor, no behavior change. One module
+per pattern engine plus `_shared.py` for cross-pattern helpers and
+`_types.py` for `RawTable`. Public surface
+(`RawTable`, `extract_by_config`, `extract_records_by_config`)
+re-exported from `__init__.py` so consumers are unchanged.
+
+  | file | lines |
+  |---|---|
+  | `__init__.py` (re-exports) | 24 |
+  | `_dispatch.py` (routing) | 119 |
+  | `_types.py` (`RawTable`) | 24 |
+  | `_shared.py` (span helpers) | 134 |
+  | `calculated.py` | 151 |
+  | `reference.py` | 49 |
+  | `split_column.py` | 175 |
+  | `text_region.py` | 147 |
+  | `multipage_text_region.py` | 123 |
+  | `standard_grid.py` | 80 |
+  | `prose_section.py` | 76 |
+  | `font_fingerprint_walk.py` | 350 |
+  | `font_stateful_walk.py` | 302 |
+
+**Phase 2 — lift bbox/column primitives to `utils/pdf_layout.py`**
+(commit a74f017). The two-column span extraction and Y-tolerance line
+merging that lived inline in `extract_monsters` are domain-neutral
+PDF layout helpers. Moved to a dedicated utility:
+
+  - `color_to_rgb(int) -> [r, g, b]`
+  - `merge_bboxes(b1, b2)`
+  - `determine_column(x, *, midpoint)`
+  - `extract_columnar_spans(page, page_num, *, column_midpoint, header_size_min)`
+  - `merge_spans_into_lines(spans, *, y_tolerance, size_tolerance)`
+
+`extract_monsters` consumes these instead of carrying its own copies
+(631 → 442 lines, -189). Future column-aware extractors can reuse the
+primitives without copying ~190 lines.
+
+**Phase 3 — re-evaluated monsters binding (2026-06-20)**
+With `pdf_layout` extracted, the remaining bespoke logic in
+`extract_monsters` is: boundary detection, stat-field reject list,
+and the size/type lookahead validation. Binding to
+`font_fingerprint_walk` would require two new engine capabilities:
+
+1. `reject_list` predicate on header detection — ~10 lines, genuinely
+   general (the "this looks like a header but is actually a stat-field
+   keyword" problem is plausible elsewhere).
+2. `lookahead_validation` action — ~40 lines in engine, plus config
+   schema. Only `extract_monsters` currently needs this: "confirm
+   header X only if a span matching fingerprint Y appears within
+   N points of Y-distance."
+
+The 2-caller threshold applies: `lookahead_validation` is a 1-caller
+need and the binding cannot work without it. Decision: leave
+`extract_monsters` bespoke. The `reject_list` addition is also held
+until a second caller surfaces — adding it now for one caller would
+just be a smaller version of the same theater pattern.
+
+Final score after architecture pass: **3/13 bound, 442-line bespoke
+monsters file (down from 631) consuming shared bbox primitives.**
+
 ### Proposed approach (gradual, one extractor per release)
 
 Forced big-bang migration is what failed attempts 1–3. The pattern that
