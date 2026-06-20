@@ -22,6 +22,7 @@ Supported Pattern Types:
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -117,6 +118,40 @@ def extract_by_config(
 
     else:
         raise ValueError(f"Unknown pattern_type '{pattern_type}' for {simple_name}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RECORD-SHAPED EXTRACTION (sibling to extract_by_config)
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# extract_by_config() returns RawTable (row/column shape). Some extractors
+# produce lists of dict records instead (per-item, per-feature, per-monster).
+# extract_records_by_config() is the routing entry point for those.
+
+
+def extract_records_by_config(
+    pdf_path: str,
+    pages: list[int],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Record-shaped extraction (lists of dicts) based on config's pattern_type.
+
+    Sibling to extract_by_config(); used by pattern types that emit per-record
+    dicts rather than tabular rows.
+
+    Routes:
+    - font_fingerprint_walk → _extract_font_fingerprint_walk()
+    """
+    pattern_type = config.get("pattern_type")
+    if not pattern_type:
+        raise ValueError("Record-shaped config missing required 'pattern_type' field")
+
+    if pattern_type == "font_fingerprint_walk":
+        return _extract_font_fingerprint_walk(pdf_path, pages, config)
+
+    raise ValueError(
+        f"Unknown record-shaped pattern_type '{pattern_type}' (known: font_fingerprint_walk)"
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -851,3 +886,153 @@ def _extract_prose_section(
         confirmed=config.get("confirmed", False),
         source="srd",
     )
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# RECORD-SHAPED ENGINES (called via extract_records_by_config)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Default structural-text filter patterns (page footers, page numbers, common
+# in-class table titles). Extractors can override via config["structural_patterns"].
+_DEFAULT_STRUCTURAL_PATTERNS = (
+    r"^System Reference Document",
+    r"^\d+$",
+    r"^The [A-Z][a-z]+ Table",
+    r"^Level\s+Proficiency",
+    r"^Spell Slots per Spell Level",
+)
+
+# PyMuPDF span flag bits.
+_SPAN_FLAG_ITALIC = 2**1
+_SPAN_FLAG_BOLD = 2**4
+
+
+def _span_matches_fingerprint(span: dict[str, Any], fp: dict[str, Any]) -> bool:
+    """Test a single span against a header fingerprint config."""
+    text = span["text"].strip()
+    if len(text) < fp.get("min_text_len", 1):
+        return False
+    if fp.get("require_trailing_period", False) and not text.endswith("."):
+        return False
+
+    size = span.get("size", 0)
+    if not (fp["size_min"] <= size <= fp["size_max"]):
+        return False
+
+    font = span.get("font", "")
+    if fp["font_substring"] not in font:
+        return False
+
+    flags = span.get("flags", 0)
+    if fp.get("require_bold", False) and not (flags & _SPAN_FLAG_BOLD):
+        return False
+    if fp.get("require_italic", False) and not (flags & _SPAN_FLAG_ITALIC):
+        return False
+
+    return True
+
+
+def _resolve_body_cleanup(name: str | None) -> Any:
+    """Resolve a body_cleanup config name to a callable. None → identity."""
+    if name is None:
+        return lambda s: s
+    if name == "clean_text":
+        from ..utils.prose import clean_text
+
+        return clean_text
+    raise ValueError(f"Unknown body_cleanup '{name}'")
+
+
+def _extract_font_fingerprint_walk(
+    pdf_path: str,
+    pages: list[int],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """Walk pages span-by-span, detect record headers by font fingerprint.
+
+    Config schema:
+        {
+            "pattern_type": "font_fingerprint_walk",
+            "header_fingerprints": [
+                {
+                    "font_substring": "GillSans",
+                    "size_min": 13.5,
+                    "size_max": 14.5,
+                    "require_bold": True,
+                    "require_italic": False,         # optional, default False
+                    "min_text_len": 2,
+                    "require_trailing_period": False, # optional, default False
+                    "strip_trailing_period_from_name": False, # optional
+                },
+                # ...additional fingerprints OR'd together as header signals
+            ],
+            "body_grouping": "single_bucket_concat",  # only mode supported in prototype
+            "body_cleanup": "clean_text",              # or None
+            "filter_structural": True,                  # default False
+            "structural_patterns": [...],               # optional override
+            "page_reset_record": True,                  # default True (no cross-page state)
+        }
+
+    Returns:
+        list[dict] with one record per detected header. Each record dict has
+        keys "name", "text", "page".
+    """
+    from pathlib import Path
+
+    from ..utils.pdf_probe import open_pdf
+
+    fingerprints = config["header_fingerprints"]
+    if not fingerprints:
+        raise ValueError("font_fingerprint_walk requires at least one header_fingerprints entry")
+
+    filter_structural = config.get("filter_structural", False)
+    structural_re_list = [
+        re.compile(p) for p in (config.get("structural_patterns") or _DEFAULT_STRUCTURAL_PATTERNS)
+    ]
+    body_cleanup = _resolve_body_cleanup(config.get("body_cleanup"))
+    page_reset_record = config.get("page_reset_record", True)
+
+    def _is_structural(text: str) -> bool:
+        return any(rx.match(text) for rx in structural_re_list)
+
+    records: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+
+    with open_pdf(Path(pdf_path)) as pdf:
+        for page_num in pages:
+            if page_reset_record and current is not None:
+                records.append(current)
+                current = None
+
+            page = pdf[page_num - 1]
+            for block in page.get_text("dict")["blocks"]:
+                if "lines" not in block:
+                    continue
+                for line in block["lines"]:
+                    for span in line["spans"]:
+                        text = span["text"].strip()
+                        matched_fp: dict[str, Any] | None = None
+                        for fp in fingerprints:
+                            if _span_matches_fingerprint(span, fp):
+                                matched_fp = fp
+                                break
+
+                        if matched_fp is not None:
+                            if current is not None:
+                                records.append(current)
+                            name = text
+                            if matched_fp.get("strip_trailing_period_from_name", False):
+                                name = name.rstrip(".")
+                            current = {"name": name, "text": "", "page": page_num}
+                        elif current is not None and text:
+                            if filter_structural and _is_structural(text):
+                                continue
+                            current["text"] += text + " "
+
+    if current is not None:
+        records.append(current)
+
+    for r in records:
+        r["text"] = body_cleanup(r["text"].strip())
+
+    return records

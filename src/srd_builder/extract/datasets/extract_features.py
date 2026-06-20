@@ -5,20 +5,52 @@ This module extracts feature descriptions from:
 - Lineage sections (pages 3-7): Racial traits like Darkvision, Lucky, etc.
 
 Feature Pattern:
-- Feature headers: 13.9pt GillSans-SemiBold (e.g., "Rage", "Darkvision")
-- Feature text: Regular text until next header or section break
+- Class feature headers: 13.9pt GillSans-SemiBold (e.g., "Rage")
+- Lineage trait headers: 9.8pt Cambria-BoldItalic ending with "." (e.g., "Darkvision.")
+
+This is the first binding of the engine's `font_fingerprint_walk` pattern type
+(prototype). See docs/BACKLOG.md "Design-pass finding" for the design context.
 """
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Any
 
-import fitz  # kept for fitz.Page type hints only; doc lifecycle goes through pdf_probe
+from srd_builder.extract.patterns import extract_records_by_config
 
-from srd_builder.utils.pdf_probe import open_pdf
-from srd_builder.utils.prose import clean_text
+# Shared engine config: detect either class-feature OR lineage-trait headers
+# in a single walk. The two fingerprints are OR'd; whichever matches first
+# wins for that span.
+DATASET_CONFIG: dict[str, Any] = {
+    "pattern_type": "font_fingerprint_walk",
+    "header_fingerprints": [
+        # Class feature: 13.9pt GillSans-SemiBold, bold, min length 2
+        # (len>=2 keeps short feature names like the monk's "Ki").
+        {
+            "font_substring": "GillSans",
+            "size_min": 13.5,
+            "size_max": 14.5,
+            "require_bold": True,
+            "min_text_len": 2,
+        },
+        # Lineage trait: 9.8pt Cambria-BoldItalic, must end with "."
+        # (the period is the structural signal; strip it from the record name).
+        {
+            "font_substring": "Cambria",
+            "size_min": 9.5,
+            "size_max": 10.5,
+            "require_bold": True,
+            "require_italic": True,
+            "min_text_len": 4,
+            "require_trailing_period": True,
+            "strip_trailing_period_from_name": True,
+        },
+    ],
+    "body_grouping": "single_bucket_concat",
+    "body_cleanup": "clean_text",
+    "filter_structural": True,
+}
 
 
 def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
@@ -31,146 +63,19 @@ def extract_features(pdf_path: str | Path, pages: list[int]) -> dict[str, Any]:
     Returns:
         Dict with extracted features metadata including raw feature text
     """
-    pdf_path = Path(pdf_path)
-    all_features = []
-    warnings: list[str] = []
-
-    with open_pdf(pdf_path) as pdf:
-        for page_num in pages:
-            page = pdf[page_num - 1]  # PyMuPDF uses 0-indexed
-            features = _extract_features_from_page(page, page_num)
-            all_features.extend(features)
-
+    records = extract_records_by_config(str(pdf_path), pages, DATASET_CONFIG)
     return {
         "source_pages": f"{min(pages)}-{max(pages)}",
-        "features": all_features,
-        "extraction_warnings": warnings,
+        "features": records,
+        "extraction_warnings": [],
     }
 
 
-def _extract_features_from_page(page: fitz.Page, page_num: int) -> list[dict[str, Any]]:
-    """Extract features from a single PDF page.
-
-    Looks for feature headers in two formats:
-    - Class features: 13.9pt GillSans-SemiBold (Rage, Spellcasting)
-    - Lineage traits: 9.8pt Cambria-BoldItalic (Darkvision., Stonecunning.)
-
-    Args:
-        page: PyMuPDF page object
-        page_num: Page number for metadata
-
-    Returns:
-        List of feature dicts with name, text, page
-    """
-    blocks = page.get_text("dict")["blocks"]
-    features = []
-    current_feature = None
-
-    for block in blocks:
-        if "lines" not in block:
-            continue
-
-        for line in block["lines"]:
-            # Check each span for feature headers
-            for span in line["spans"]:
-                text = span["text"].strip()
-                size = span.get("size", 0)
-                font = span.get("font", "")
-                flags = span.get("flags", 0)
-                is_bold = bool(flags & 2**4)
-                is_italic = bool(flags & 2**1)
-
-                # Class feature header: 13.9pt GillSans-SemiBold
-                # len>=2 keeps short feature names like the monk's "Ki".
-                is_class_feature = (
-                    is_bold and "GillSans" in font and 13.5 <= size <= 14.5 and len(text) >= 2
-                )
-
-                # Lineage trait header: 9.8pt Cambria-BoldItalic ending with "."
-                is_trait = (
-                    is_bold
-                    and is_italic
-                    and "Cambria" in font
-                    and 9.5 <= size <= 10.5
-                    and text.endswith(".")
-                    and len(text) > 3
-                )
-
-                if is_class_feature or is_trait:
-                    # Save previous feature if exists
-                    if current_feature:
-                        features.append(current_feature)
-
-                    # Start new feature (remove trailing period for traits)
-                    feature_name = text.rstrip(".")
-                    current_feature = {
-                        "name": feature_name,
-                        "text": "",
-                        "page": page_num,
-                    }
-
-                # Accumulate description text for current feature
-                elif current_feature and text:
-                    # Skip table headers and other structural elements
-                    if not _is_structural_text(text):
-                        current_feature["text"] += text + " "
-
-    # Save last feature
-    if current_feature:
-        features.append(current_feature)
-
-    # Clean up text
-    for feature in features:
-        feature["text"] = clean_text(feature["text"].strip())
-
-    return features
-
-
-def _is_structural_text(text: str) -> bool:
-    """Check if text is structural (headers, page numbers, etc.) not content.
-
-    Args:
-        text: Text to check
-
-    Returns:
-        True if text should be skipped
-    """
-    structural_patterns = [
-        r"^System Reference Document",
-        r"^\d+$",  # Page numbers
-        r"^The [A-Z][a-z]+ Table",  # Table titles
-        r"^Level\s+Proficiency",  # Table headers
-        r"^Spell Slots per Spell Level",
-    ]
-
-    for pattern in structural_patterns:
-        if re.match(pattern, text):
-            return True
-
-    return False
-
-
 def extract_class_features(pdf_path: str | Path) -> dict[str, Any]:
-    """Extract all class features from PDF pages 8-55.
-
-    Args:
-        pdf_path: Path to SRD PDF
-
-    Returns:
-        Dict with class features
-    """
-    # Pages 8-55 contain all 12 classes
+    """Extract all class features from PDF pages 8-55."""
     return extract_features(pdf_path, list(range(8, 56)))
 
 
 def extract_lineage_traits(pdf_path: str | Path) -> dict[str, Any]:
-    """Extract all lineage traits from PDF pages 3-7.
-
-    Args:
-        pdf_path: Path to SRD PDF
-
-    Returns:
-        Dict with lineage traits
-    """
-    # Pages 3-7 contain all lineages
+    """Extract all lineage traits from PDF pages 3-7."""
     return extract_features(pdf_path, list(range(3, 8)))
