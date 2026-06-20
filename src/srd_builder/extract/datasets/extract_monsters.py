@@ -21,6 +21,7 @@ from ...utils.pdf_layout import (
     FONT_SIZE_TOLERANCE,
     Y_COORDINATE_TOLERANCE,
     extract_columnar_spans,
+    find_in_lookahead,
     merge_spans_into_lines,
     span_matches_predicate,
 )
@@ -266,37 +267,25 @@ def _has_size_type_line_following(
     Returns:
         True if validated by following size/type line
     """
-    if current_index >= len(lines) - 1:
-        return False
+    size_keywords = {"Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"}
+    size_type_predicate = {"font_exact": config.size_type_font}
 
-    current_line = lines[current_index]
-    current_y = current_line["bbox"][1]  # Top Y coordinate
+    def is_size_type_line(line: dict[str, Any]) -> bool:
+        if not span_matches_predicate(line, size_type_predicate):
+            return False
+        return any(keyword in line["text"] for keyword in size_keywords)
 
-    # Look ahead up to 30pt Y-distance for size/type line
-    for i in range(current_index + 1, min(current_index + 20, len(lines))):
-        next_line = lines[i]
-        next_y = next_line["bbox"][1]
+    def exceeds_vertical_gap(anchor: dict[str, Any], candidate: dict[str, Any]) -> bool:
+        return candidate["bbox"][1] - anchor["bbox"][1] > MAX_VERTICAL_GAP
 
-        # Stop if we've gone too far vertically
-        if next_y - current_y > MAX_VERTICAL_GAP:
-            break
-
-        # Check if this is a size/type line (Calibri-Italic with size keywords)
-        if span_matches_predicate(next_line, {"font_exact": config.size_type_font}):
-            size_keywords = {
-                "Tiny",
-                "Small",
-                "Medium",
-                "Large",
-                "Huge",
-                "Gargantuan",
-            }
-            text_lower = next_line["text"]
-            if any(keyword in text_lower for keyword in size_keywords):
-                return True
-
-    # No size/type line found - might still be valid, but less confident
-    return False
+    match = find_in_lookahead(
+        lines,
+        current_index,
+        validator=is_size_type_line,
+        max_items=19,
+        stop_when=exceeds_vertical_gap,
+    )
+    return match is not None
 
 
 def _looks_like_monster_name(text: str) -> bool:

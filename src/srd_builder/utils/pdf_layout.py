@@ -25,6 +25,7 @@ plus a "spans" list with the originals.
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from typing import Any
 
 import fitz
@@ -105,6 +106,41 @@ def span_matches_predicate(span: dict[str, Any], predicate: dict[str, Any]) -> b
     if predicate.get("require_italic", False) and not (flags & SPAN_FLAG_ITALIC):
         return False
     return True
+
+
+def find_in_lookahead(
+    items: Sequence[dict[str, Any]],
+    anchor_index: int,
+    validator: Callable[[dict[str, Any]], bool],
+    *,
+    max_items: int = 20,
+    stop_when: Callable[[dict[str, Any], dict[str, Any]], bool] | None = None,
+) -> int | None:
+    """Scan forward from ``items[anchor_index + 1]`` for the first item that
+    passes ``validator``. Return its index, or ``None`` if no match is
+    found within the lookahead window.
+
+    ``max_items`` caps how many candidates are examined. ``stop_when``
+    receives ``(anchor, candidate)`` and may terminate the scan early
+    (e.g. when geometric distance exceeds a threshold). Both predicates
+    are called per candidate; ``stop_when`` is checked first.
+
+    The function makes no assumptions about item shape beyond what the
+    caller's predicates need. Useful for anchor + following-token
+    validation patterns (e.g. monster-name → size/type line lookahead)
+    that scan a flat line/span sequence.
+    """
+    if anchor_index < 0 or anchor_index >= len(items) - 1:
+        return None
+    anchor = items[anchor_index]
+    end = min(anchor_index + 1 + max_items, len(items))
+    for i in range(anchor_index + 1, end):
+        candidate = items[i]
+        if stop_when is not None and stop_when(anchor, candidate):
+            return None
+        if validator(candidate):
+            return i
+    return None
 
 
 def color_to_rgb(color_int: int) -> list[int]:
