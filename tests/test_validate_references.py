@@ -29,7 +29,7 @@ def test_valid_damage_type_refs():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": []},
+        "features": {"items": []},
         "rules": {"items": []},
     }
 
@@ -64,7 +64,7 @@ def test_invalid_damage_type_refs():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": []},
+        "features": {"items": []},
         "rules": {"items": []},
     }
 
@@ -100,7 +100,7 @@ def test_backward_compat_full_id():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": []},
+        "features": {"items": []},
         "rules": {"items": []},
     }
 
@@ -133,7 +133,7 @@ def test_missing_feature_ref():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": [{"id": "feature:rage"}]},  # missing unarmored_defense
+        "features": {"items": [{"id": "feature:rage"}]},  # missing unarmored_defense
         "rules": {"items": []},
     }
 
@@ -167,7 +167,7 @@ def test_validate_all_returns_false_on_errors():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": []},
+        "features": {"items": []},
         "rules": {"items": []},
     }
 
@@ -194,7 +194,7 @@ def test_validate_all_returns_true_on_success():
         "conditions": {"items": []},
         "diseases": {"items": []},
         "poisons": {"items": []},
-        "features": {"features": []},
+        "features": {"items": []},
         "rules": {"items": []},
     }
 

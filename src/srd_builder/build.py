@@ -340,26 +340,26 @@ def _write_datasets(  # noqa: PLR0913
             encoding="utf-8",
         )
 
-    # Write conditions (v0.10.0)
-    # Conditions are already fully normalized by build_conditions, no additional cleaning needed
+    # Write conditions
+    # Conditions arrive as a fully assembled document from assemble_prose; the
+    # top-level array key is "items" as of v0.30.0 Phase 2 (was "conditions").
     processed_conditions = None
     if conditions:
-        # Conditions come as a complete document with _meta already included
         (dist_data_dir / "conditions.json").write_text(
             _render_json(conditions),
             encoding="utf-8",
         )
-        # Extract just the conditions list for indexing
-        processed_conditions = conditions.get("conditions", [])
+        processed_conditions = conditions.get("items", [])
 
-    # Write diseases (v0.11.0)
+    # Write diseases
+    # Same shape contract as conditions: "items" at top level since v0.30.0.
     processed_diseases = None
     if diseases:
         (dist_data_dir / "diseases.json").write_text(
             _render_json(diseases),
             encoding="utf-8",
         )
-        processed_diseases = diseases.get("diseases", [])
+        processed_diseases = diseases.get("items", [])
 
     # Write poisons (v0.11.0)
     # Poisons items derived from the poisons table + descriptions in the caller;
@@ -372,12 +372,12 @@ def _write_datasets(  # noqa: PLR0913
             encoding="utf-8",
         )
 
-    # Write features (v0.11.0)
-    # features.json uses the "features" top-level key (not "items") for
-    # historical reasons; the inconsistency is tracked as a v0.30.0 candidate.
+    # Write features
+    # As of v0.30.0 Phase 2, features.json uses the canonical "items" top-level
+    # key like the other 13 simple datasets (was "features" historically).
     processed_features = clean_records(feature_records, "feature") if feature_records else None
     if processed_features:
-        features_doc = _enriched("features", "features", processed_features, top_key="features")
+        features_doc = _enriched("features", "features", processed_features)
         (dist_data_dir / "features.json").write_text(
             _render_json(features_doc),
             encoding="utf-8",

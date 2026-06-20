@@ -38,7 +38,7 @@ class ReferenceValidator:
         }
         self.feature_ids = {
             feat["id"]
-            for feat in self.datasets.get("features", {}).get("features", [])
+            for feat in self.datasets.get("features", {}).get("items", [])
             if "id" in feat
         }
         self.equipment_ids = {

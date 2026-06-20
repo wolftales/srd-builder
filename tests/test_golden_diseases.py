@@ -24,10 +24,11 @@ def test_disease_dataset_matches_normalized_fixture(assert_golden_matches) -> No
     # Postprocess: normalize IDs and polish text
     processed = clean_records(parsed, "disease")
 
-    # Wrap with metadata
+    # Wrap with metadata. As of v0.30.0 Phase 2, the top-level array key is
+    # "items" for every dataset (was "diseases" here historically).
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("disease")),
-        "diseases": processed,
+        "items": processed,
     }
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"

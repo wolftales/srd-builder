@@ -47,7 +47,7 @@ def test_feature_dataset_matches_normalized_fixture(assert_golden_matches) -> No
 
     document = {
         "_meta": meta_block("srd_5_1", read_schema_version("features")),
-        "features": processed,
+        "items": processed,
     }
 
     rendered = json.dumps(document, indent=2, ensure_ascii=False) + "\n"
