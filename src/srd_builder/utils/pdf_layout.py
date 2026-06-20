@@ -25,7 +25,7 @@ plus a "spans" list with the originals.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
 import fitz
@@ -141,6 +141,38 @@ def find_in_lookahead(
         if validator(candidate):
             return i
     return None
+
+
+def cluster_values_by_gap(
+    values: Iterable[float],
+    *,
+    max_gap: float,
+) -> list[list[float]]:
+    """Group a flat set of numeric values into clusters where neighbors
+    within a cluster are at most ``max_gap`` apart.
+
+    Inputs are de-duplicated and sorted before clustering. Returns a list
+    of clusters (each a sorted ``list[float]``); empty input yields
+    ``[]``. The clustering is greedy on the sorted sequence: a new
+    cluster starts whenever the gap to the previous value exceeds
+    ``max_gap``.
+
+    Useful for detecting columns or rows from bbox coordinates where
+    intra-group spacing is small and inter-group spacing is large
+    (e.g. the left/right columns of a two-column SRD page where cells
+    within a column sit within a few points of each other but columns
+    are >>100pt apart).
+    """
+    sorted_unique = sorted(set(values))
+    if not sorted_unique:
+        return []
+    clusters: list[list[float]] = [[sorted_unique[0]]]
+    for v in sorted_unique[1:]:
+        if v - clusters[-1][-1] > max_gap:
+            clusters.append([v])
+        else:
+            clusters[-1].append(v)
+    return clusters
 
 
 def color_to_rgb(color_int: int) -> list[int]:

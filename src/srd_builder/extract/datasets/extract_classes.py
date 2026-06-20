@@ -63,6 +63,7 @@ from typing import Any
 import fitz  # PyMuPDF
 
 from srd_builder.postprocess.ids import normalize_id
+from srd_builder.utils.pdf_layout import cluster_values_by_gap
 from srd_builder.utils.pdf_probe import normalize_whitespace
 from srd_builder.utils.prose import clean_text
 
@@ -507,13 +508,10 @@ def _extract_progression(
     # Compute one offset per cluster so cell-to-cluster mapping is
     # exact (a per-cell offset is unstable — e.g. "1st" sits at x=61.7
     # but "10th" sits at x=58.8 in the same left column).
-    xs_sorted = sorted({round(lc[2], 1) for lc in level_cells})
-    clusters: list[list[float]] = [[xs_sorted[0]]]
-    for x in xs_sorted[1:]:
-        if x - clusters[-1][-1] > 50:
-            clusters.append([x])
-        else:
-            clusters[-1].append(x)
+    clusters = cluster_values_by_gap(
+        (round(lc[2], 1) for lc in level_cells),
+        max_gap=50,
+    )
     cluster_anchors = [min(c) for c in clusters]
 
     # Validate clusters: warlock's spell-slot table has a "Slot Level"
