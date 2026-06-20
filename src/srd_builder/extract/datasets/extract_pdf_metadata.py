@@ -9,11 +9,38 @@ The first page of the SRD PDF contains all the official metadata:
 This module extracts that metadata to populate meta.json accurately.
 """
 
+from __future__ import annotations
+
 import re
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF
+from srd_builder.utils.pdf_probe import open_pdf, page_text
+
+# Title + version: matches "System Reference Document 5.1". Run against
+# whitespace-normalized text because the PDF wraps the title across lines.
+_TITLE_RE = re.compile(r"System Reference Document\s+([\d.]+)")
+
+# License clause: 'Creative Commons Attribution 4.0 International License
+# ("CC-BY-4.0")'. Run against raw (un-normalized) page text — tolerant of
+# the embedded newlines, and the quoted shortcode survives intact.
+_LICENSE_RE = re.compile(
+    r'Creative Commons\s+Attribution\s+([\d.]+)\s+International License\s*\("([^"]+)"\)',
+)
+
+_LICENSE_URL_RE = re.compile(r"https://creativecommons\.org/licenses/by/[\d.]+/legalcode")
+
+_OFFICIAL_URL_RE = re.compile(r"https://dnd\.wizards\.com/resources/systems-reference-document")
+
+# Attribution paragraph: "This work includes material taken from … legalcode."
+# DOTALL because the paragraph spans multiple newlines in raw page text.
+_ATTRIBUTION_RE = re.compile(
+    r"(This work includes material taken from"
+    r".*?https://creativecommons\.org/licenses/by/[\d.]+/legalcode\.)",
+    re.DOTALL,
+)
+
+_WS_COLLAPSE = re.compile(r"\s+")
 
 
 def extract_pdf_metadata(pdf_path: Path) -> dict[str, Any]:
@@ -31,52 +58,39 @@ def extract_pdf_metadata(pdf_path: Path) -> dict[str, Any]:
         - official_url: Official document URL
         - attribution: Required attribution text
         - filename: PDF filename
+        - pdf_title / pdf_author / pdf_subject / pdf_creator /
+          pdf_producer / pdf_creation_date / pdf_mod_date:
+          Embedded XMP properties (empty strings for the shipped SRD,
+          which carries no XMP metadata; kept in the contract so callers
+          can rely on the keys being present).
     """
-    with fitz.open(pdf_path) as doc:
-        # Extract text from first page
-        first_page = doc[0]
-        page_text = first_page.get_text()
+    with open_pdf(pdf_path) as doc:
+        # Raw text preserves newlines for the DOTALL attribution match
+        # and the line-tolerant license/URL regexes.
+        raw_text = page_text(doc, 0, normalize=False)
+        # Normalized text for the title regex (the SRD wraps the title
+        # across lines, so a single-space form is what matches).
+        normalized = _WS_COLLAPSE.sub(" ", raw_text)
 
-        # Normalize whitespace for easier regex matching
-        normalized_text = re.sub(r"\s+", " ", page_text)
-
-        # Extract title and version from "System Reference Document 5.1"
-        title_match = re.search(r"System Reference Document\s+([\d.]+)", normalized_text)
+        title_match = _TITLE_RE.search(normalized)
         title = title_match.group(0) if title_match else None
         version = title_match.group(1) if title_match else None
 
-        # Extract license type
-        license_match = re.search(
-            r'Creative Commons\s+Attribution\s+([\d.]+)\s+International License\s*\("([^"]+)"\)',
-            page_text,
-        )
+        license_match = _LICENSE_RE.search(raw_text)
         license_type = license_match.group(2) if license_match else "CC-BY-4.0"
 
-        # Extract license URL
-        license_url_match = re.search(
-            r"https://creativecommons\.org/licenses/by/[\d.]+/legalcode", page_text
-        )
+        license_url_match = _LICENSE_URL_RE.search(raw_text)
         license_url = license_url_match.group(0) if license_url_match else None
 
-        # Extract official URL
-        official_url_match = re.search(
-            r"https://dnd\.wizards\.com/resources/systems-reference-document", page_text
-        )
+        official_url_match = _OFFICIAL_URL_RE.search(raw_text)
         official_url = official_url_match.group(0) if official_url_match else None
 
-        # Extract attribution text (the paragraph starting with "This work includes")
-        attribution_match = re.search(
-            r"(This work includes material taken from.*?https://creativecommons\.org/licenses/by/[\d.]+/legalcode\.)",
-            page_text,
-            re.DOTALL,
-        )
-        attribution = None
+        attribution: str | None = None
+        attribution_match = _ATTRIBUTION_RE.search(raw_text)
         if attribution_match:
-            # Clean up the attribution text (remove line breaks, extra spaces)
-            attribution = re.sub(r"\s+", " ", attribution_match.group(1)).strip()
+            attribution = _WS_COLLAPSE.sub(" ", attribution_match.group(1)).strip()
 
-        # Get PDF document properties
-        pdf_metadata = doc.metadata
+        pdf_doc_meta = doc.metadata
 
         return {
             "title": title,
@@ -86,14 +100,13 @@ def extract_pdf_metadata(pdf_path: Path) -> dict[str, Any]:
             "official_url": official_url,
             "attribution": attribution,
             "filename": pdf_path.name,
-            # Additional PDF properties
-            "pdf_title": pdf_metadata.get("title"),
-            "pdf_author": pdf_metadata.get("author"),
-            "pdf_subject": pdf_metadata.get("subject"),
-            "pdf_creator": pdf_metadata.get("creator"),
-            "pdf_producer": pdf_metadata.get("producer"),
-            "pdf_creation_date": pdf_metadata.get("creationDate"),
-            "pdf_mod_date": pdf_metadata.get("modDate"),
+            "pdf_title": pdf_doc_meta.get("title"),
+            "pdf_author": pdf_doc_meta.get("author"),
+            "pdf_subject": pdf_doc_meta.get("subject"),
+            "pdf_creator": pdf_doc_meta.get("creator"),
+            "pdf_producer": pdf_doc_meta.get("producer"),
+            "pdf_creation_date": pdf_doc_meta.get("creationDate"),
+            "pdf_mod_date": pdf_doc_meta.get("modDate"),
         }
 
 
