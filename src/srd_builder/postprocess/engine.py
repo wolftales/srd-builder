@@ -23,6 +23,8 @@ from .text import polish_text
 def clean_record(
     record: dict[str, Any],
     config: RecordConfig,
+    *,
+    ruleset_id_prefix: str | None = None,
 ) -> dict[str, Any]:
     """
     Normalize a record using configuration-driven approach.
@@ -38,6 +40,11 @@ def clean_record(
     Args:
         record: Raw record to normalize
         config: Configuration specifying how to normalize
+        ruleset_id_prefix: Optional ruleset-level namespace stamped in front
+            of the per-dataset id prefix. v0.29.3 Phase 5.2 multi-system
+            seam: when set (e.g. ``"pf2e"``), ids become
+            ``{ruleset_id_prefix}:{config.id_prefix}:{simple_name}``. None
+            preserves all current srd_5_1 ids unchanged.
 
     Returns:
         Normalized record (mutates in place, also returns for chaining)
@@ -48,11 +55,16 @@ def clean_record(
             record["simple_name"] = normalize_id(record[config.name_field])
 
     # 2. Ensure id
+    effective_prefix = (
+        f"{ruleset_id_prefix}:{config.id_prefix}" if ruleset_id_prefix else config.id_prefix
+    )
     if "id" not in record:
         if "simple_name" in record:
-            record["id"] = f"{config.id_prefix}:{record['simple_name']}"
+            record["id"] = f"{effective_prefix}:{record['simple_name']}"
     elif config.normalize_existing_id and ":" in record["id"]:
         prefix, suffix = record["id"].split(":", 1)
+        if ruleset_id_prefix and not prefix.startswith(f"{ruleset_id_prefix}:"):
+            prefix = f"{ruleset_id_prefix}:{prefix}"
         record["id"] = f"{prefix}:{normalize_id(suffix)}"
 
     # 3. Polish top-level text fields
@@ -86,6 +98,8 @@ def clean_record(
 def clean_records(
     records: list[dict[str, Any]],
     dataset_name: str,
+    *,
+    ruleset_id_prefix: str | None = None,
 ) -> list[dict[str, Any]]:
     """
     Batch process records using dataset-specific configuration.
@@ -93,6 +107,8 @@ def clean_records(
     Args:
         records: List of raw records
         dataset_name: Key in DATASET_CONFIGS
+        ruleset_id_prefix: Optional ruleset-level namespace forwarded to
+            :func:`clean_record`. See that function for semantics.
 
     Returns:
         List of normalized records
@@ -105,4 +121,4 @@ def clean_records(
         )
 
     config = DATASET_CONFIGS[dataset_name]
-    return [clean_record(r, config) for r in records]
+    return [clean_record(r, config, ruleset_id_prefix=ruleset_id_prefix) for r in records]

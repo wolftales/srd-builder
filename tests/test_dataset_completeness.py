@@ -68,6 +68,7 @@ def test_all_datasets_have_standard_meta_fields() -> None:
     standard_fields = [
         "source",
         "ruleset_version",
+        "game_system",
         "schema_version",
         "generated_by",
         "build_report",

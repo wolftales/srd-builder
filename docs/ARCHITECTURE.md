@@ -406,6 +406,32 @@ Text cleanup (smart-quote normalization, whitespace, encoding fixes) lives in [s
 
 ---
 
+## Schema Stability Tiers
+
+Adopted in v0.29.3 (Phase 5.3) to give consumers and future contributors a single place to see *how D&D-5e-specific* each schema is. This matters because srd-builder will eventually scaffold other tabletop SRDs (e.g. Pathfinder 2e, Cypher System) and the cost of adding a new game system is dominated by how many constraints have to be widened in the **Red-tier** schemas below.
+
+Tier definitions:
+
+| Tier | Meaning |
+|------|---------|
+| **Green** | System-agnostic. Fields and value spaces describe generic tabletop concepts (a damage type, a condition, a table row). Re-usable across systems with no schema edits. |
+| **Yellow** | Light D&D-isms. Mostly generic structurally, but a few enums or numeric ranges encode 5e assumptions. Adapting to another system requires widening enums but not restructuring records. |
+| **Red** | Heavy D&D coupling. Core fields encode 5e mechanics (Vancian spell levels 0-9, six-ability blocks, specific class structures). Supporting another system requires either per-system schema variants or non-trivial restructuring. |
+
+Current classification (15 schemas as of v0.29.3):
+
+| Tier | Schemas | Notes |
+|------|---------|-------|
+| **Green** (5) | `condition`, `damage_type`, `weapon_property`, `rule`, `table` | Pure structural shapes. `rule` carries free-form prose; `table` is a generic grid. |
+| **Yellow** (5) | `equipment`, `magic_item`, `disease`, `poison`, `ability_score` | Equipment categories and magic-item rarity ladders are 5e conventions; ability_score IDs are the canonical six but the *shape* is generic. |
+| **Red** (5) | `spell`, `monster`, `class`, `lineage`, `skill` + `features` | Spell levels (0-9), 8 schools, 8 caster classes; AC/HP/CR + six-ability stat block; `hit_die ∈ {d6,d8,d10,d12}` + exactly-2 saves; `size ∈ {Small,Medium}` + six-ability modifiers; skills are tied to the 5e ability list. |
+
+**Implication for multi-system support:** when adding a non-5e ruleset, Green schemas can be shared as-is, Yellow schemas need enum widening (typically additive, non-breaking for existing consumers), and Red schemas should be branched per game-system rather than over-generalized. The `game_system` field on each `_meta` block (v0.29.3 Phase 5.1) and the `id_prefix` seam on `clean_record` (Phase 5.2) exist precisely to make that branching mechanical rather than invasive.
+
+This table is informational; nothing in the build pipeline enforces a tier. It is reviewed when a schema changes — see [docs/BACKLOG.md](BACKLOG.md) for in-flight schema work.
+
+---
+
 ## Technology Choices
 
 ### PDF Extraction: PyMuPDF (fitz)

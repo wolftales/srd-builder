@@ -534,6 +534,13 @@ a lie, future-SRD support for the boilerplate-heavy datasets becomes
 
 ### Phase 1 — `_meta` block normalization (additive, safe-to-ship-first)
 
+> **Status:** ✅ **SHIPPED in v0.29.3.** All 16 datasets now ship the
+> unified provenance block (`game_system`, `dataset`, `source_pages`,
+> `description`, `pdf_sha256`, `item_count`, `extraction_warnings`).
+> Prose datasets (conditions, diseases) keep their legacy
+> `{key}_count` alias alongside the new `item_count`; that alias is
+> removed in Phase 2 below.
+
 All 16 datasets adopt the same `_meta` shape, currently only on
 `conditions` and `diseases`:
 
@@ -541,28 +548,29 @@ All 16 datasets adopt the same `_meta` shape, currently only on
 | ---------------------- | -------------------------------------------- | :---------------: | :-------------: |
 | `source`               | `RULESETS[ruleset].source_id`                |        ✅         |       ✅        |
 | `ruleset_version`      | `RULESETS[ruleset].ruleset_version`          |        ✅         |       ✅        |
+| `game_system`          | `RULESETS[ruleset].game_system`              |        ✅ (v0.29.3) |       ✅ (v0.29.3) |
 | `schema_version`       | per-dataset                                  |        ✅         |       ✅        |
 | `generated_by`         | `srd-builder vX.Y.Z`                         |        ✅         |       ✅        |
 | `build_report`         | `./build_report.json`                        |        ✅         |       ✅        |
-| `dataset`              | dataset name                                 |        ❌         |       ✅        |
-| `source_pages`         | start–end page range from `PAGE_INDEX`       |        ❌         |       ✅        |
-| `description`          | from `TABLES` config                         |        ❌         |       ✅        |
-| `pdf_sha256`           | hash of source PDF                           |        ❌         |       ✅        |
-| `item_count`           | `len(items)`                                 |        ❌         |       ✅        |
-| `extraction_warnings`  | per-record parser warnings (`[]` if clean)   |        ❌         |       ✅        |
+| `dataset`              | dataset name                                 |        ✅ (v0.29.3) |       ✅        |
+| `source_pages`         | derived from records' `page` field           |        ✅ (v0.29.3) |       ✅        |
+| `description`          | from `_DATASET_DESCRIPTIONS` / `TABLES`      |        ✅ (v0.29.3) |       ✅        |
+| `pdf_sha256`           | hash of source PDF                           |        ✅ (v0.29.3) |       ✅        |
+| `item_count`           | `len(items)`                                 |        ✅ (v0.29.3) |       ✅ (v0.29.3) |
+| `extraction_warnings`  | per-record parser warnings (`[]` if clean)   |        ✅ (v0.29.3) |       ✅        |
 
 **Why first:** purely additive at the JSON layer. Any consumer that
 reads `doc["_meta"]["source"]` keeps working unchanged. Lets us validate
 the shape against Blackmoor before any breaking change lands.
 
-**Implementation:** extend `utils.metadata.wrap_with_meta` to accept the
-additional kwargs and emit them when supplied; thread `pdf_sha256` /
-`source_pages` / `extraction_warnings` through `_write_datasets` for
-the 14 simple datasets (most already have these values available
-upstream). For datasets with no extraction warnings, emit `[]`.
-
-**Could ship alone as v0.29.3 if Blackmoor wants the provenance fields
-before the breaking changes.** Otherwise bundle into v0.30.0.
+**Implementation (shipped):** `utils.metadata.meta_block` and
+`wrap_with_meta` accept the additional kwargs and emit them when
+supplied; `_write_datasets` threads `pdf_sha256` / `source_pages` /
+`extraction_warnings` through for all 14 simple datasets via the
+`_enriched` helper closure. `derive_source_pages` handles the three
+record shapes (int, list, `extraction_metadata.source_pages`).
+`_DATASET_DESCRIPTIONS` is the canonical registry of short prose
+descriptions in `build.py`.
 
 ### Phase 2 — Output-key normalization (breaking)
 
@@ -638,6 +646,13 @@ paths" bullet completely.
 
 ### Phase 5 — Multi-system extensibility seams (additive, future-proofing)
 
+> **Status:** ✅ **SHIPPED in v0.29.3.** All three seams (5.1
+> `game_system`, 5.2 `id_prefix`, 5.3 Schema Stability Tiers doc) are
+> in place. The seams are inert for srd_5_1 (both rulesets are
+> `dnd5e`; `id_prefix` is `None` so all current IDs are preserved);
+> they exist so a future Pathfinder/Cypher/etc. ruleset can be added
+> additively without breaking changes.
+
 > **Context.** srd-builder is D&D 5e + D&D "One" (2024) focused for
 > the near-term, but the vision is to support other game-system SRDs
 > later (Pathfinder 2e, ORC-licensed content, Cypher, etc.). A 2026-06-19
@@ -700,10 +715,9 @@ concrete second game system in front of you. Park until then.
 
 ### Suggested ship order
 
-1. **v0.29.3** — Phase 1 alone (additive). Lets Blackmoor consume the
-   provenance fields immediately without taking the breaking changes.
-   *Optionally bundle Phase 5 here as well — all of Phase 5 is also
-   purely additive, and it's cheap to ship together with Phase 1.*
+1. **v0.29.3** — ✅ **SHIPPED.** Phase 1 (`_meta` normalization) +
+   Phase 5 (multi-system seams). All additive; safe for Blackmoor to
+   consume immediately without taking any breaking changes.
 2. **v0.30.0** — Phases 2 + 3 + 4 together (single breaking release).
 3. **v0.30.x** — Round-trip xfail fixes (page-field drift in
    `weapon_properties` / `tables` / `skills` — already in BACKLOG),

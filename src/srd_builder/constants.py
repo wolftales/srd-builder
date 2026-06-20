@@ -3,7 +3,7 @@
 Centralized constants used across multiple modules to avoid circular imports.
 """
 
-from typing import Final
+from typing import Any, Final
 
 # Package version: defined in __init__.py, imported from there
 # from . import __version__
@@ -26,12 +26,24 @@ EXTRACTOR_VERSION: Final = "0.4.0"
 # - edition_short   — user/UI short alias ("5e", "2014").
 # - ruleset_version — semver-ish ruleset version string ("5.1").
 # - pdf_filename    — expected raw PDF filename in rulesets/<id>/.
+# - game_system     — game-system identifier (v0.29.3 Phase 5.1). Distinct
+#                     from `source_id` (which is "which printing") and from
+#                     `id` (which is "which slug"). Two rulesets can share a
+#                     game system (e.g. srd_5_1 and srd_5_2_1 are both
+#                     "dnd5e"). Future Pathfinder/Cypher/etc. rulesets
+#                     would set their own (e.g. "pf2e", "cypher").
+# - id_prefix       — optional per-ruleset namespace prefix on record IDs
+#                     (v0.29.3 Phase 5.2). Default None preserves current
+#                     IDs (`spell:fireball` stays `spell:fireball`). A
+#                     future ruleset can set e.g. "pf2e" to emit
+#                     `pf2e:spell:fireball` and avoid collisions in
+#                     multi-system bundles.
 #
 # To add a ruleset (e.g. SRD 5.2.1):
 #   1. Add an entry below.
 #   2. Create rulesets/<id>/ holding the PDF.
 #   3. Run: python -m srd_builder.build --ruleset <id> ...
-RULESETS: Final[dict[str, dict[str, str]]] = {
+RULESETS: Final[dict[str, dict[str, Any]]] = {
     "srd_5_1": {
         "id": "srd_5_1",
         "source_id": "SRD_CC_v5.1",
@@ -39,6 +51,8 @@ RULESETS: Final[dict[str, dict[str, str]]] = {
         "edition_short": "5e",
         "ruleset_version": "5.1",
         "pdf_filename": "SRD_CC_v5.1.pdf",
+        "game_system": "dnd5e",
+        "id_prefix": None,
     },
 }
 

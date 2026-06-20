@@ -66,6 +66,7 @@ from .postprocess import (
 from .postprocess.engine import clean_records
 from .utils.metadata import (
     DATASET_TO_SCHEMA,
+    derive_source_pages,
     generate_meta_json,
     read_schema_version,
     wrap_with_meta,
@@ -103,6 +104,29 @@ def _render_json(payload: Any) -> str:
     return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
 
 
+# Short prose descriptions stamped into each dataset's _meta block (v0.29.3
+# Phase 1). Kept here rather than per-extractor so the build orchestrator
+# owns the dist-shape contract end-to-end. Prose datasets (conditions,
+# diseases) pull their description from extraction_metadata.TABLES via
+# assemble_prose, and intentionally do not appear here.
+_DATASET_DESCRIPTIONS: dict[str, str] = {
+    "monsters": "Monster stat blocks (creatures + miscellaneous appendix)",
+    "spells": "Spell descriptions: 319 spells from Acid Splash to Wish",
+    "equipment": "Equipment tables: armor, weapons, gear, services, costs",
+    "magic_items": ("Magic items: rarity, tables, A-Z descriptions, sentient items, artifacts"),
+    "tables": "Reference tables extracted from the SRD",
+    "lineages": "Character lineages (races): Dwarf, Elf, Halfling, Human, etc.",
+    "classes": "Character classes: Barbarian through Wizard (12 classes)",
+    "poisons": "Poisons: types, application, effects, costs",
+    "features": "Class features extracted from class descriptions",
+    "rules": "Core game rules: ability checks, combat, exploration, spellcasting",
+    "ability_scores": "The six core ability scores (STR, DEX, CON, INT, WIS, CHA)",
+    "damage_types": "Canonical damage types (acid, bludgeoning, cold, fire, etc.)",
+    "skills": "Skills tied to ability scores (Athletics, Stealth, Arcana, etc.)",
+    "weapon_properties": "Weapon properties (Ammunition, Finesse, Heavy, etc.)",
+}
+
+
 def _write_datasets(  # noqa: PLR0913
     *,
     ruleset: str,
@@ -124,14 +148,31 @@ def _write_datasets(  # noqa: PLR0913
     feature_records: list[dict[str, Any]] | None = None,  # Raw records; engine cleans + wraps here
     rules: list[dict[str, Any]] | None = None,
     spell_classes_map: dict[str, list[str]] | None = None,
+    pdf_sha256: str | None = None,
 ) -> None:
+    def _enriched(
+        dataset: str,
+        schema: str,
+        records: list[dict[str, Any]],
+        *,
+        top_key: str = "items",
+    ) -> dict[str, Any]:
+        """Wrap ``records`` in the enriched _meta envelope (v0.29.3 Phase 1)."""
+        return wrap_with_meta(
+            {top_key: records},
+            ruleset=ruleset,
+            schema_version=read_schema_version(schema),
+            dataset=dataset,
+            source_pages=derive_source_pages(records),
+            description=_DATASET_DESCRIPTIONS.get(dataset),
+            pdf_sha256=pdf_sha256,
+            item_count=len(records),
+            extraction_warnings=[],
+        )
+
     processed_monsters = [clean_monster_record(monster) for monster in monsters]
 
-    monsters_doc = wrap_with_meta(
-        {"items": processed_monsters},
-        ruleset=ruleset,
-        schema_version=read_schema_version("monster"),
-    )
+    monsters_doc = _enriched("monsters", "monster", processed_monsters)
     (dist_data_dir / "monsters.json").write_text(
         _render_json(monsters_doc),
         encoding="utf-8",
@@ -141,11 +182,7 @@ def _write_datasets(  # noqa: PLR0913
     processed_equipment = None
     if equipment:
         processed_equipment = [clean_equipment_record(item) for item in equipment]
-        equipment_doc = wrap_with_meta(
-            {"items": processed_equipment},
-            ruleset=ruleset,
-            schema_version=read_schema_version("equipment"),
-        )
+        equipment_doc = _enriched("equipment", "equipment", processed_equipment)
 
         # Add equipment-specific metadata (SRD economic rules)
         equipment_doc["_meta"]["equipment_economics"] = {
@@ -173,11 +210,7 @@ def _write_datasets(  # noqa: PLR0913
     else:
         processed_spells = []
 
-    spells_doc = wrap_with_meta(
-        {"items": processed_spells},
-        ruleset=ruleset,
-        schema_version=read_schema_version("spell"),
-    )
+    spells_doc = _enriched("spells", "spell", processed_spells)
     (dist_data_dir / "spells.json").write_text(
         _render_json(spells_doc),
         encoding="utf-8",
@@ -187,11 +220,7 @@ def _write_datasets(  # noqa: PLR0913
     # Parse extracts structure, postprocess normalizes (following modular pattern)
     processed_magic_items = clean_records(magic_items, "magic_item") if magic_items else []
 
-    magic_items_doc = wrap_with_meta(
-        {"items": processed_magic_items},
-        ruleset=ruleset,
-        schema_version=read_schema_version("magic_item"),
-    )
+    magic_items_doc = _enriched("magic_items", "magic_item", processed_magic_items)
     (dist_data_dir / "magic_items.json").write_text(
         _render_json(magic_items_doc),
         encoding="utf-8",
@@ -235,11 +264,7 @@ def _write_datasets(  # noqa: PLR0913
                 ordered["rows"] = table["rows"]
             reordered_tables.append(ordered)
 
-        tables_doc = wrap_with_meta(
-            {"items": reordered_tables},
-            ruleset=ruleset,
-            schema_version=read_schema_version("table"),
-        )
+        tables_doc = _enriched("tables", "table", reordered_tables)
         (dist_data_dir / "tables.json").write_text(
             _render_json(tables_doc),
             encoding="utf-8",
@@ -249,11 +274,7 @@ def _write_datasets(  # noqa: PLR0913
     # Postprocess: normalize IDs and polish text
     processed_lineages = clean_records(lineages, "lineage") if lineages else None
     if processed_lineages:
-        lineages_doc = wrap_with_meta(
-            {"items": processed_lineages},
-            ruleset=ruleset,
-            schema_version=read_schema_version("lineage"),
-        )
+        lineages_doc = _enriched("lineages", "lineage", processed_lineages)
         (dist_data_dir / "lineages.json").write_text(
             _render_json(lineages_doc),
             encoding="utf-8",
@@ -263,11 +284,7 @@ def _write_datasets(  # noqa: PLR0913
     # Postprocess: normalize IDs and polish text
     processed_classes = clean_records(classes, "class") if classes else None
     if processed_classes:
-        classes_doc = wrap_with_meta(
-            {"items": processed_classes},
-            ruleset=ruleset,
-            schema_version=read_schema_version("class"),
-        )
+        classes_doc = _enriched("classes", "class", processed_classes)
         (dist_data_dir / "classes.json").write_text(
             _render_json(classes_doc),
             encoding="utf-8",
@@ -280,11 +297,7 @@ def _write_datasets(  # noqa: PLR0913
         clean_records(ability_scores, "ability_score") if ability_scores else None
     )
     if processed_ability_scores:
-        ability_scores_doc = wrap_with_meta(
-            {"items": processed_ability_scores},
-            ruleset=ruleset,
-            schema_version=read_schema_version("ability_score"),
-        )
+        ability_scores_doc = _enriched("ability_scores", "ability_score", processed_ability_scores)
         (dist_data_dir / "ability_scores.json").write_text(
             _render_json(ability_scores_doc),
             encoding="utf-8",
@@ -295,11 +308,7 @@ def _write_datasets(  # noqa: PLR0913
     # Static data from SRD page 97, no PDF extraction required
     processed_damage_types = clean_records(damage_types, "damage_type") if damage_types else None
     if processed_damage_types:
-        damage_types_doc = wrap_with_meta(
-            {"items": processed_damage_types},
-            ruleset=ruleset,
-            schema_version=read_schema_version("damage_type"),
-        )
+        damage_types_doc = _enriched("damage_types", "damage_type", processed_damage_types)
         (dist_data_dir / "damage_types.json").write_text(
             _render_json(damage_types_doc),
             encoding="utf-8",
@@ -310,11 +319,7 @@ def _write_datasets(  # noqa: PLR0913
     # Static data from SRD pages 76-79, no PDF extraction required
     processed_skills = clean_records(skills, "skill") if skills else None
     if processed_skills:
-        skills_doc = wrap_with_meta(
-            {"items": processed_skills},
-            ruleset=ruleset,
-            schema_version=read_schema_version("skill"),
-        )
+        skills_doc = _enriched("skills", "skill", processed_skills)
         (dist_data_dir / "skills.json").write_text(
             _render_json(skills_doc),
             encoding="utf-8",
@@ -327,10 +332,8 @@ def _write_datasets(  # noqa: PLR0913
         clean_records(weapon_properties, "weapon_property") if weapon_properties else None
     )
     if processed_weapon_properties:
-        weapon_properties_doc = wrap_with_meta(
-            {"items": processed_weapon_properties},
-            ruleset=ruleset,
-            schema_version=read_schema_version("weapon_property"),
+        weapon_properties_doc = _enriched(
+            "weapon_properties", "weapon_property", processed_weapon_properties
         )
         (dist_data_dir / "weapon_properties.json").write_text(
             _render_json(weapon_properties_doc),
@@ -363,11 +366,7 @@ def _write_datasets(  # noqa: PLR0913
     # cleaned and wrapped here so the path matches the 12 simple engine datasets.
     processed_poisons = clean_records(poison_records, "poison") if poison_records else None
     if processed_poisons:
-        poisons_doc = wrap_with_meta(
-            {"items": processed_poisons},
-            ruleset=ruleset,
-            schema_version=read_schema_version("poison"),
-        )
+        poisons_doc = _enriched("poisons", "poison", processed_poisons)
         (dist_data_dir / "poisons.json").write_text(
             _render_json(poisons_doc),
             encoding="utf-8",
@@ -378,11 +377,7 @@ def _write_datasets(  # noqa: PLR0913
     # historical reasons; the inconsistency is tracked as a v0.30.0 candidate.
     processed_features = clean_records(feature_records, "feature") if feature_records else None
     if processed_features:
-        features_doc = wrap_with_meta(
-            {"features": processed_features},
-            ruleset=ruleset,
-            schema_version=read_schema_version("features"),
-        )
+        features_doc = _enriched("features", "features", processed_features, top_key="features")
         (dist_data_dir / "features.json").write_text(
             _render_json(features_doc),
             encoding="utf-8",
@@ -393,11 +388,7 @@ def _write_datasets(  # noqa: PLR0913
     processed_rules = None
     if rules:
         processed_rules = [clean_rule_record(rule) for rule in rules]
-        rules_doc = wrap_with_meta(
-            {"items": processed_rules},
-            ruleset=ruleset,
-            schema_version=read_schema_version("rule"),
-        )
+        rules_doc = _enriched("rules", "rule", processed_rules)
         (dist_data_dir / "rules.json").write_text(
             _render_json(rules_doc),
             encoding="utf-8",
@@ -1309,6 +1300,16 @@ def build(  # noqa: C901
     # all_features is already a raw record list; cleaning + wrapping happens in
     # _write_datasets alongside the 12 simple engine datasets.
 
+    # Read PDF hash from pdf_meta.json (if present). Hoisted above
+    # _write_datasets so the per-dataset _meta blocks can stamp pdf_sha256
+    # for provenance (v0.29.3 Phase 1).
+    pdf_meta_path = layout["raw"] / "pdf_meta.json"
+    pdf_hash = None
+    if pdf_meta_path.exists():
+        pdf_meta = json.loads(pdf_meta_path.read_text(encoding="utf-8"))
+        if isinstance(pdf_meta, dict):
+            pdf_hash = pdf_meta.get("pdf_sha256")
+
     _write_datasets(
         ruleset=ruleset,
         dist_data_dir=target_dir,
@@ -1329,15 +1330,8 @@ def build(  # noqa: C901
         feature_records=all_features if all_features else None,
         rules=parsed_rules if parsed_rules else None,
         spell_classes_map=spell_classes_map or None,
+        pdf_sha256=pdf_hash,
     )
-
-    # Read PDF hash from pdf_meta.json (if present)
-    pdf_meta_path = layout["raw"] / "pdf_meta.json"
-    pdf_hash = None
-    if pdf_meta_path.exists():
-        pdf_meta = json.loads(pdf_meta_path.read_text(encoding="utf-8"))
-        if isinstance(pdf_meta, dict):
-            pdf_hash = pdf_meta.get("pdf_sha256")
 
     # Compute page range from raw monsters for provenance
     monsters_page_range = None

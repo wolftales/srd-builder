@@ -191,43 +191,139 @@ def stamp_source(records: list[dict], ruleset: str) -> list[dict]:
     return [{**rec, "source": source} for rec in records]
 
 
-def meta_block(ruleset: str, schema_version: str) -> dict[str, str]:
+def meta_block(
+    ruleset: str,
+    schema_version: str,
+    *,
+    dataset: str | None = None,
+    source_pages: str | None = None,
+    description: str | None = None,
+    pdf_sha256: str | None = None,
+    item_count: int | None = None,
+    extraction_warnings: list[Any] | None = None,
+) -> dict[str, Any]:
     """Generate standardized _meta block with consistent field order.
+
+    Base fields are always emitted:
+        source, ruleset_version, game_system, schema_version, generated_by,
+        build_report.
+
+    Optional provenance fields are emitted in this order only when supplied
+    (additive, see v0.29.3 Phase 1):
+        dataset, source_pages, description, pdf_sha256, item_count,
+        extraction_warnings.
+
+    The first two args are positional for back-compat with golden tests
+    that call ``meta_block("srd_5_1", schema_version)`` directly. All new
+    provenance fields are keyword-only.
 
     Args:
         ruleset: Ruleset identifier (e.g., 'srd_5_1'). Used to look up
-            source_id and ruleset_version from the RULESETS registry.
+            source_id, ruleset_version, and game_system from the RULESETS
+            registry.
         schema_version: Schema version for this specific dataset.
+        dataset: Logical dataset name (e.g. "spells", "monsters"). Mirrors
+            the dist filename stem.
+        source_pages: Human-readable page range string (e.g. "114-194") or
+            single page. None when no page provenance is available.
+        description: Short prose description of the dataset (typically
+            pulled from PAGE_INDEX).
+        pdf_sha256: SHA-256 of the source PDF this dataset was extracted
+            from. Provides record-to-source traceability.
+        item_count: Number of records in this dataset. Canonical count
+            field going forward (prose datasets currently also emit a
+            legacy ``{key}_count`` alias that will be removed in v0.30.0).
+        extraction_warnings: List of non-fatal warnings raised during
+            extraction. Empty list means "extraction was clean".
 
     Returns:
-        Metadata dictionary
+        Ordered metadata dictionary suitable for placing under ``_meta``.
     """
     info = RULESETS[ruleset]
-    return {
+    block: dict[str, Any] = {
         "source": info["source_id"],
         "ruleset_version": info["ruleset_version"],
+        "game_system": info["game_system"],
         "schema_version": schema_version,
         "generated_by": f"srd-builder v{__version__}",
         "build_report": "./build_report.json",
     }
+    if dataset is not None:
+        block["dataset"] = dataset
+    if source_pages is not None:
+        block["source_pages"] = source_pages
+    if description is not None:
+        block["description"] = description
+    if pdf_sha256 is not None:
+        block["pdf_sha256"] = pdf_sha256
+    if item_count is not None:
+        block["item_count"] = item_count
+    if extraction_warnings is not None:
+        block["extraction_warnings"] = extraction_warnings
+    return block
 
 
-def wrap_with_meta(payload: dict[str, Any], *, ruleset: str, schema_version: str) -> dict[str, Any]:
+def wrap_with_meta(
+    payload: dict[str, Any],
+    *,
+    ruleset: str,
+    schema_version: str,
+    dataset: str | None = None,
+    source_pages: str | None = None,
+    description: str | None = None,
+    pdf_sha256: str | None = None,
+    item_count: int | None = None,
+    extraction_warnings: list[Any] | None = None,
+) -> dict[str, Any]:
     """Wrap payload with _meta block.
 
-    Args:
-        payload: Data to wrap
-        ruleset: Ruleset identifier
-        schema_version: Schema version for this dataset
-
-    Returns:
-        Document with _meta block
+    Forwards all provenance kwargs to :func:`meta_block`; see there for
+    field semantics.
     """
     document: OrderedDict[str, Any] = OrderedDict()
-    document["_meta"] = meta_block(ruleset, schema_version)
+    document["_meta"] = meta_block(
+        ruleset,
+        schema_version,
+        dataset=dataset,
+        source_pages=source_pages,
+        description=description,
+        pdf_sha256=pdf_sha256,
+        item_count=item_count,
+        extraction_warnings=extraction_warnings,
+    )
     for key, value in payload.items():
         document[key] = value
     return document
+
+
+def derive_source_pages(records: list[dict[str, Any]]) -> str | None:
+    """Best-effort source-pages string derived from per-record page fields.
+
+    Handles three record shapes:
+    - ``page: int``                              (most datasets)
+    - ``page: list[int]``                        (poisons)
+    - ``extraction_metadata.source_pages: list`` (lineages)
+
+    Returns ``"<lo>-<hi>"`` when records span a range, ``"<n>"`` when all
+    records share one page, or ``None`` when no page data can be found.
+    """
+    pages: list[int] = []
+    for rec in records:
+        page = rec.get("page")
+        if isinstance(page, int):
+            pages.append(page)
+        elif isinstance(page, list):
+            pages.extend(p for p in page if isinstance(p, int))
+        else:
+            meta = rec.get("extraction_metadata")
+            if isinstance(meta, dict):
+                sp = meta.get("source_pages")
+                if isinstance(sp, list):
+                    pages.extend(p for p in sp if isinstance(p, int))
+    if not pages:
+        return None
+    lo, hi = min(pages), max(pages)
+    return str(lo) if lo == hi else f"{lo}-{hi}"
 
 
 def build_page_index(

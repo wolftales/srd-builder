@@ -98,13 +98,15 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert index_path.exists()
 
     monsters_doc = json.loads(monsters_path.read_text(encoding="utf-8"))
-    assert monsters_doc["_meta"] == {
-        "source": "SRD_CC_v5.1",
-        "ruleset_version": "5.1",
-        "schema_version": read_schema_version("monster"),
-        "generated_by": monsters_doc["_meta"]["generated_by"],
-        "build_report": "./build_report.json",
-    }
+    monsters_meta = monsters_doc["_meta"]
+    assert monsters_meta["source"] == "SRD_CC_v5.1"
+    assert monsters_meta["ruleset_version"] == "5.1"
+    assert monsters_meta["game_system"] == "dnd5e"
+    assert monsters_meta["schema_version"] == read_schema_version("monster")
+    assert monsters_meta["build_report"] == "./build_report.json"
+    assert monsters_meta["dataset"] == "monsters"
+    assert monsters_meta["item_count"] == len(monsters_doc["items"])
+    assert monsters_meta["extraction_warnings"] == []
     assert monsters_doc["_meta"]["generated_by"].startswith("srd-builder v")
     assert len(monsters_doc["items"]) > 0
 

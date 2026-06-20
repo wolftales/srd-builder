@@ -83,14 +83,20 @@ def assemble_prose_dataset(
 
     doc: dict[str, Any] = {
         "_meta": {
-            **meta_block(ruleset, config["schema_version"]),
-            "dataset": dataset_name,
-            "source_pages": f"{start_page}-{end_page}",
-            "description": config["description"],
-            "pdf_sha256": raw_data["_meta"]["pdf_sha256"],
-            # Note: No timestamps per AGENTS.md determinism requirement
+            **meta_block(
+                ruleset,
+                config["schema_version"],
+                dataset=dataset_name,
+                source_pages=f"{start_page}-{end_page}",
+                description=config["description"],
+                pdf_sha256=raw_data["_meta"]["pdf_sha256"],
+                item_count=len(parsed_records),
+                extraction_warnings=raw_data["_meta"]["warnings"],
+            ),
+            # Legacy alias preserved for backward compatibility; consumers
+            # should migrate to `item_count`. Scheduled for removal in
+            # v0.30.0 Phase 2 alongside the prose-output-key normalization.
             f"{output_key}_count": len(parsed_records),
-            "extraction_warnings": raw_data["_meta"]["warnings"],
         },
         output_key: parsed_records,
     }
