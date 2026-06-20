@@ -25,6 +25,7 @@ import fitz  # PyMuPDF (kept for fitz.Page type hints only; doc lifecycle goes t
 from ...constants import EXTRACTOR_VERSION
 from ...utils.context_tracker import ContextTracker
 from ...utils.pdf_probe import open_pdf
+from ...utils.pdf_tables import clean_and_split_header
 
 logger = logging.getLogger(__name__)
 
@@ -123,7 +124,7 @@ def _extract_page_equipment(
 
         for table in tables:
             raw_rows = table.extract()
-            header, rows = _split_header_and_rows(raw_rows)
+            header, rows = clean_and_split_header(raw_rows, header_predicate=_looks_like_header)
             if not rows:
                 continue
 
@@ -409,25 +410,11 @@ def _merge_split_name(row: list[str]) -> list[str]:
 def _split_header_and_rows(
     table_rows: list[list[str]] | None,
 ) -> tuple[list[str] | None, list[list[str]]]:
-    """Separate header row from data rows when possible."""
-
-    if not table_rows:
-        return None, []
-
-    cleaned_rows: list[list[str]] = []
-    for raw_row in table_rows:
-        cleaned_row = [str(cell).strip() if cell is not None else "" for cell in raw_row]
-        if any(cleaned_row):
-            cleaned_rows.append(cleaned_row)
-
-    if not cleaned_rows:
-        return None, []
-
-    header_candidate = cleaned_rows[0]
-    if _looks_like_header(header_candidate):
-        return header_candidate, cleaned_rows[1:]
-
-    return None, cleaned_rows
+    """Backwards-compat wrapper preserved for any external import. Delegates
+    to ``utils.pdf_tables.clean_and_split_header`` with this module's
+    header heuristic.
+    """
+    return clean_and_split_header(table_rows, header_predicate=_looks_like_header)
 
 
 def _looks_like_header(row: list[str]) -> bool:
