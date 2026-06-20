@@ -15,16 +15,30 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF — kept for fitz.Page type hints and fitz.TEXTFLAGS_TEXT
+import fitz  # PyMuPDF — kept for fitz.Page type hints
 
 from ...constants import EXTRACTOR_VERSION
+from ...utils.pdf_layout import (
+    FONT_SIZE_TOLERANCE,
+    Y_COORDINATE_TOLERANCE,
+    extract_columnar_spans,
+    merge_spans_into_lines,
+)
 from ...utils.pdf_probe import open_pdf
 
-# PDF extraction tolerance constants
-Y_COORDINATE_TOLERANCE = 2.0  # Tolerance for Y-coordinate matching (points)
-FONT_SIZE_TOLERANCE = 0.5  # Tolerance for font size matching (points)
+# Extraction tolerances. Y/font-size tolerances are imported from utils.pdf_layout
+# (kept re-exported here so existing call sites referencing them via this module
+# continue to work). The remaining constants are monster-specific.
 MAX_VERTICAL_GAP = 30  # Maximum vertical gap between text blocks (points)
 MAX_MONSTER_NAME_LENGTH = 50  # Maximum reasonable monster name length (characters)
+
+# Re-export for backward compat with any tests that import these from here.
+__all__ = [
+    "FONT_SIZE_TOLERANCE",
+    "Y_COORDINATE_TOLERANCE",
+    "MAX_VERTICAL_GAP",
+    "MAX_MONSTER_NAME_LENGTH",
+]
 
 
 @dataclass
@@ -119,201 +133,14 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
 def _extract_page_lines(
     page: fitz.Page, page_num: int, config: ExtractionConfig
 ) -> list[dict[str, Any]]:
-    """Extract text lines from a single page.
-
-    Args:
-        page: PyMuPDF page object
-        page_num: 1-based page number
-        config: Extraction configuration
-
-    Returns:
-        List of merged line dictionaries
-    """
-    # Get structured text with font metadata
-    textpage = page.get_textpage(flags=fitz.TEXTFLAGS_TEXT)
-    page_dict = page.get_text("dict", textpage=textpage)
-
-    # Extract all text spans with metadata
-    spans = _extract_spans(page_dict, page_num, config)
-
-    # Merge spans into logical lines (fixes text fragmentation)
-    lines = _merge_spans_into_lines(spans, config)
-
-    return lines
-
-
-def _extract_spans(
-    page_dict: dict[str, Any], page_num: int, config: ExtractionConfig
-) -> list[dict[str, Any]]:
-    """Extract text spans with metadata from page dict.
-
-    Args:
-        page_dict: PyMuPDF page.get_text("dict") output
-        page_num: 1-based page number
-        config: Extraction configuration
-
-    Returns:
-        List of span dictionaries with metadata
-    """
-    spans: list[dict[str, Any]] = []
-
-    for block in page_dict.get("blocks", []):
-        for line in block.get("lines", []):
-            for span in line.get("spans", []):
-                # Extract span metadata
-                text = span.get("text", "").strip()
-                if not text:
-                    continue
-
-                bbox = span.get("bbox", [0, 0, 0, 0])
-                font = span.get("font", "")
-                size = round(span.get("size", 0), 2)
-                color = span.get("color", 0)
-                flags = span.get("flags", 0)
-
-                # Determine column (left=1, right=2, single=0)
-                column = _determine_column(bbox[0], config)
-
-                # Mark if this is a large header (for reference)
-                is_header = size >= config.header_font_size_min
-
-                spans.append(
-                    {
-                        "page": page_num,
-                        "column": column,
-                        "bbox": [round(x, 2) for x in bbox],
-                        "text": text,
-                        "font": font,
-                        "size": size,
-                        "color": _color_to_rgb(color),
-                        "flags": flags,
-                        "is_header": is_header,  # Kept for debugging/metadata
-                    }
-                )
-
-    # Sort spans by reading order: column, y, x
-    spans.sort(key=lambda s: (s["page"], s["column"], s["bbox"][1], s["bbox"][0]))
-
-    return spans
-
-
-def _merge_spans_into_lines(
-    spans: list[dict[str, Any]], config: ExtractionConfig
-) -> list[dict[str, Any]]:
-    """Merge consecutive spans into logical lines.
-
-    Fixes text fragmentation where 'Air Elemental' is split across spans.
-    Groups spans by Y-coordinate (±2pt tolerance) and same font/size.
-
-    Args:
-        spans: Ordered list of text spans
-        config: Extraction configuration
-
-    Returns:
-        List of merged line dictionaries with combined text
-    """
-    if not spans:
-        return []
-
-    lines: list[dict[str, Any]] = []
-    current_line: dict[str, Any] | None = None
-
-    for span in spans:
-        # Check if this span continues the current line
-        if current_line and _spans_on_same_line(current_line, span):
-            # Merge into current line
-            current_line["text"] += " " + span["text"]
-            current_line["spans"].append(span)
-            # Extend bbox to include this span
-            current_line["bbox"] = _merge_bboxes(current_line["bbox"], span["bbox"])
-        else:
-            # Save previous line
-            if current_line:
-                lines.append(current_line)
-
-            # Start new line
-            current_line = {
-                "page": span["page"],
-                "column": span["column"],
-                "bbox": span["bbox"].copy(),
-                "text": span["text"],
-                "font": span["font"],
-                "size": span["size"],
-                "color": span["color"],
-                "flags": span["flags"],
-                "is_header": span["is_header"],
-                "spans": [span],  # Keep original spans for debugging
-            }
-
-    # Don't forget the last line
-    if current_line:
-        lines.append(current_line)
-
-    return lines
-
-
-def _spans_on_same_line(line: dict[str, Any], span: dict[str, Any]) -> bool:
-    """Check if span continues the current line.
-
-    Args:
-        line: Current line being built
-        span: Span to check
-
-    Returns:
-        True if span should be merged into line
-    """
-    # Must be same page and column
-    if line["page"] != span["page"] or line["column"] != span["column"]:
-        return False
-
-    # Must have similar Y-coordinate (±2pt tolerance)
-    line_y = line["bbox"][1]  # Top Y of line
-    span_y = span["bbox"][1]  # Top Y of span
-    if abs(line_y - span_y) > Y_COORDINATE_TOLERANCE:
-        return False
-
-    # Must have same font and size (for monster name detection)
-    # Allow slight size variation (±0.5pt) for rounding differences
-    if line["font"] != span["font"]:
-        return False
-    if abs(line["size"] - span["size"]) > FONT_SIZE_TOLERANCE:
-        return False
-
-    return True
-
-
-def _merge_bboxes(bbox1: list[float], bbox2: list[float]) -> list[float]:
-    """Merge two bounding boxes into a single encompassing box.
-
-    Args:
-        bbox1: First bbox [x0, y0, x1, y1]
-        bbox2: Second bbox [x0, y0, x1, y1]
-
-    Returns:
-        Merged bbox encompassing both
-    """
-    return [
-        min(bbox1[0], bbox2[0]),  # Left edge
-        min(bbox1[1], bbox2[1]),  # Top edge
-        max(bbox1[2], bbox2[2]),  # Right edge
-        max(bbox1[3], bbox2[3]),  # Bottom edge
-    ]
-
-
-def _determine_column(x_coord: float, config: ExtractionConfig) -> int:
-    """Determine which column a span belongs to.
-
-    Args:
-        x_coord: X-coordinate of span's left edge
-        config: Extraction configuration
-
-    Returns:
-        0 (single column), 1 (left), or 2 (right)
-    """
-    if x_coord < config.column_midpoint:
-        return 1  # Left column
-    else:
-        return 2  # Right column
+    """Extract column-aware merged lines from a single page."""
+    spans = extract_columnar_spans(
+        page,
+        page_num,
+        column_midpoint=config.column_midpoint,
+        header_size_min=config.header_font_size_min,
+    )
+    return merge_spans_into_lines(spans)
 
 
 def _detect_monster_boundaries(
@@ -564,22 +391,6 @@ def _monster_to_dict(monster: RawMonster) -> dict[str, Any]:
         "markers": monster.markers,
         "warnings": monster.warnings,
     }
-
-
-def _color_to_rgb(color_int: int) -> list[int]:
-    """Convert PyMuPDF color integer to RGB list.
-
-    Args:
-        color_int: Color as integer
-
-    Returns:
-        [R, G, B] list with values 0-255
-    """
-    # PyMuPDF stores color as integer, extract RGB
-    r = (color_int >> 16) & 0xFF
-    g = (color_int >> 8) & 0xFF
-    b = color_int & 0xFF
-    return [r, g, b]
 
 
 def _calculate_pdf_hash(pdf_path: Path) -> str:
