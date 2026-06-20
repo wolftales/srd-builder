@@ -22,6 +22,7 @@ from ...utils.pdf_layout import (
     Y_COORDINATE_TOLERANCE,
     extract_columnar_spans,
     merge_spans_into_lines,
+    span_matches_predicate,
 )
 from ...utils.pdf_probe import open_pdf, pdf_sha256
 
@@ -211,11 +212,14 @@ def _is_monster_name_line(line: dict[str, Any], config: ExtractionConfig) -> boo
     Returns:
         True if this looks like a monster name
     """
-    # Must be Calibri-Bold at 9.84pt
-    if line["font"] != config.monster_name_font:
-        return False
-
-    if abs(line["size"] - config.monster_name_font_size) > FONT_SIZE_TOLERANCE:
+    # Font + size predicate: exact Calibri-Bold match with a small size
+    # tolerance window around config.monster_name_font_size.
+    name_predicate = {
+        "font_exact": config.monster_name_font,
+        "size_min": config.monster_name_font_size - FONT_SIZE_TOLERANCE,
+        "size_max": config.monster_name_font_size + FONT_SIZE_TOLERANCE,
+    }
+    if not span_matches_predicate(line, name_predicate):
         return False
 
     # Must not be a stat block field keyword
@@ -278,7 +282,7 @@ def _has_size_type_line_following(
             break
 
         # Check if this is a size/type line (Calibri-Italic with size keywords)
-        if next_line["font"] == config.size_type_font:
+        if span_matches_predicate(next_line, {"font_exact": config.size_type_font}):
             size_keywords = {
                 "Tiny",
                 "Small",

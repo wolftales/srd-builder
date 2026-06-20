@@ -76,6 +76,7 @@ def span_matches_predicate(span: dict[str, Any], predicate: dict[str, Any]) -> b
       - ``require_trailing_period`` (bool): text must end with ``.``
       - ``size_min`` / ``size_max`` (float): inclusive font-size range
       - ``font_substring`` (str): substring required in the font name
+      - ``font_exact`` (str): exact match required on the font name
       - ``require_bold`` (bool): span flags must include the bold bit
       - ``require_italic`` (bool): span flags must include the italic bit
 
@@ -93,7 +94,10 @@ def span_matches_predicate(span: dict[str, Any], predicate: dict[str, Any]) -> b
         return False
     if "size_max" in predicate and size > predicate["size_max"]:
         return False
-    if "font_substring" in predicate and predicate["font_substring"] not in span.get("font", ""):
+    font = span.get("font", "")
+    if "font_substring" in predicate and predicate["font_substring"] not in font:
+        return False
+    if "font_exact" in predicate and font != predicate["font_exact"]:
         return False
     flags = span.get("flags", 0)
     if predicate.get("require_bold", False) and not (flags & SPAN_FLAG_BOLD):
