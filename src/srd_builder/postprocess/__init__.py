@@ -21,7 +21,7 @@ from .monsters import (
     structure_defenses,
     unify_simple_name,
 )
-from .rules import clean_rule_record
+from .rules import clean_rule_record, dedupe_rule_records
 from .spells import clean_spell_record
 from .text import polish_text, polish_text_fields
 
@@ -32,6 +32,7 @@ __all__ = [
     "clean_rule_record",
     "clean_spell_record",
     "dedup_defensive_lists",
+    "dedupe_rule_records",
     "normalize_id",
     "parse_action_structures",
     "polish_text",

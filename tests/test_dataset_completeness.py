@@ -21,8 +21,8 @@ EXPECTED_COUNTS = {
     "monsters": 317,  # 201 monsters + 95 creatures (MM-A) + 21 NPCs (MM-B)
     "spells": 319,  # All SRD spells
     "equipment": 200,  # ~200+ equipment items (weapons, armor, gear, packs, etc.)
-    "rules": 172,  # Game rules and mechanics from 7 core chapters (v0.17.0)
-    "tables": 38,  # Reference tables throughout the document
+    "rules": 167,  # Game rules and mechanics (v0.30.0: dedupe + section-namespaced ids)
+    "tables": 35,  # Reference tables (v0.30.0: dropped 3 appendix duplicates)
     "lineages": 9,  # Player character lineages (races)
     "classes": 12,  # Player character classes
     "conditions": 15,  # Standard game conditions
@@ -43,20 +43,10 @@ def test_dataset_populated(dataset_name: str, expected_min: int) -> None:
 
     document = json.loads(dataset_path.read_text(encoding="utf-8"))
 
-    # Determine the key that holds the items
-    # Most use "items", but conditions/diseases/features use their own keys
-    if dataset_name == "conditions":
-        items_key = "conditions"
-    elif dataset_name == "diseases":
-        items_key = "diseases"
-    elif dataset_name == "features":
-        items_key = "features"
-    else:
-        items_key = "items"
+    # v0.30.0 phase 2 unified all prose datasets on the "items" envelope.
+    items = document.get("items", [])
 
-    items = document.get(items_key, [])
-
-    assert isinstance(items, list), f"{dataset_name}.json {items_key} should be a list"
+    assert isinstance(items, list), f"{dataset_name}.json 'items' should be a list"
     assert len(items) > 0, f"{dataset_name}.json should not be empty"
     assert len(items) >= expected_min, (
         f"{dataset_name}.json has {len(items)} items, expected at least {expected_min}"

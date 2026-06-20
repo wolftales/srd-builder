@@ -40,14 +40,15 @@ DIST_DIR = REPO_ROOT / "dist" / "srd_5_1"
 
 # (dataset_filename_stem, top-level list key in the shipped JSON).
 # ``lineages`` is intentionally absent — its records carry no ``page``.
+# v0.30.0 phase 2: all prose datasets share the canonical "items" envelope.
 _DATASETS: list[tuple[str, str]] = [
     ("ability_scores", "items"),
     ("classes", "items"),
-    ("conditions", "conditions"),
+    ("conditions", "items"),
     ("damage_types", "items"),
-    ("diseases", "diseases"),
+    ("diseases", "items"),
     ("equipment", "items"),
-    ("features", "features"),
+    ("features", "items"),
     ("magic_items", "items"),
     ("monsters", "items"),
     ("poisons", "items"),

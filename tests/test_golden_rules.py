@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from srd_builder.postprocess import clean_rule_record
+from srd_builder.postprocess import clean_rule_record, dedupe_rule_records
 from srd_builder.utils.metadata import meta_block, read_schema_version
 
 
@@ -16,8 +16,8 @@ def test_rule_dataset_matches_normalized_fixture(assert_golden_matches) -> None:
     # Raw fixture contains pre-parsed rules (output of parse_rules)
     parsed = rules_raw["parsed_rules"]
 
-    # Apply postprocessing
-    processed = [clean_rule_record(rule) for rule in parsed]
+    # Apply postprocessing + collection-level dedupe (v0.30.0 phase 3).
+    processed = dedupe_rule_records([clean_rule_record(rule) for rule in parsed])
 
     document = {"_meta": meta_block("srd_5_1", read_schema_version("rule")), "items": processed}
 

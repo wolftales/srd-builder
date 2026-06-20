@@ -15,7 +15,7 @@ Checks (grouped by severity):
     - inventory_mismatch      meta.json.datasets[*].count disagrees with actual counts
 
   warning
-    - bad_id_format           id does not match ``^[a-z][a-z0-9_]*(:[a-z0-9_]+)+$``
+    - bad_id_format           id does not match ``^[a-z][a-z0-9_]*(:[a-z0-9_]+)+(/[a-z0-9_]+)*$``
     - missing_reference       cross-dataset id not resolved (e.g. feature_id)
     - non_ascii_in_text       mojibake (e.g. ``â€™``) in a prose field
     - hyphenation_artifact    soft-hyphen split (``light- ning``) not re-joined
@@ -48,7 +48,7 @@ from srd_builder.utils.metadata import ALL_DATASETS  # noqa: E402
 
 SEVERITY_ORDER = {"info": 0, "warning": 1, "critical": 2}
 
-ID_RE = re.compile(r"^[a-z][a-z0-9_]*(:[a-z0-9_]+)+$")
+ID_RE = re.compile(r"^[a-z][a-z0-9_]*(:[a-z0-9_]+)+(/[a-z0-9_]+)*$")
 CONTROL_RE = re.compile(r"[\t\r\xa0]")
 FOOTER_RE = re.compile(r"System Reference Document", re.IGNORECASE)
 # Mojibake markers from UTF-8 mis-decoded as windows-1252 / latin-1.

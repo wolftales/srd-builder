@@ -62,6 +62,7 @@ from .postprocess import (
     clean_monster_record,
     clean_rule_record,
     clean_spell_record,
+    dedupe_rule_records,
 )
 from .postprocess.engine import clean_records
 from .utils.metadata import (
@@ -384,10 +385,13 @@ def _write_datasets(  # noqa: PLR0913
         )
 
     # Write rules (v0.17.0)
-    # Parse extracts structure, postprocess normalizes (following modular pattern)
+    # Parse extracts structure, postprocess normalizes (following modular pattern).
+    # v0.30.0: IDs are now namespaced by parent section (e.g.
+    # `rule:ability_checks/strength`), and exact duplicates extracted twice from
+    # the SRD layout are dropped — fixes the 19 duplicate-id audit findings.
     processed_rules = None
     if rules:
-        processed_rules = [clean_rule_record(rule) for rule in rules]
+        processed_rules = dedupe_rule_records([clean_rule_record(rule) for rule in rules])
         rules_doc = _enriched("rules", "rule", processed_rules)
         (dist_data_dir / "rules.json").write_text(
             _render_json(rules_doc),

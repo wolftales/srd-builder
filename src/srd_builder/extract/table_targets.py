@@ -188,26 +188,10 @@ TARGET_TABLES: list[TableTarget] = [
         "priority": "MEDIUM",
         "notes": "Distance per hour/day at different paces",
     },
-    {
-        "id": "table:food_drink_lodging",
-        "simple_name": "food_drink_lodging",
-        "name": "Food, Drink, and Lodging",
-        "page": 158,
-        "section": "Chapter 5: Equipment",
-        "category": "equipment",
-        "priority": "MEDIUM",
-        "notes": "Service costs for inns/taverns",
-    },
-    {
-        "id": "table:services",
-        "simple_name": "services",
-        "name": "Services",
-        "page": 159,
-        "section": "Chapter 5: Equipment",
-        "category": "equipment",
-        "priority": "MEDIUM",
-        "notes": "Hireling and service costs",
-    },
+    # NOTE: appendix copies of `food_drink_lodging` (p158), `services`
+    # (p159) and `lifestyle_expenses` (p157) were removed in v0.30.0
+    # phase 3 — the chapter copies (pp72-74) are canonical and the
+    # appendix entries had byte-identical rows.
     # Reference
     {
         "id": "table:size_categories",
@@ -218,16 +202,6 @@ TARGET_TABLES: list[TableTarget] = [
         "category": "reference",
         "priority": "MEDIUM",
         "notes": "Size to space mapping (Tiny=2.5ft, Small/Medium=5ft, etc.)",
-    },
-    {
-        "id": "table:lifestyle_expenses",
-        "simple_name": "lifestyle_expenses",
-        "name": "Lifestyle Expenses",
-        "page": 157,
-        "section": "Chapter 5: Equipment",
-        "category": "equipment",
-        "priority": "LOW",
-        "notes": "Daily living costs (wretched to aristocratic)",
     },
     # Equipment tables extracted via text parsing (v0.9.0 Phase 2)
     {

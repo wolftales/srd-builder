@@ -3,13 +3,13 @@
     "source": "SRD_CC_v5.1",
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
-    "schema_version": "2.0.0",
+    "schema_version": "3.0.0",
     "generated_by": "srd-builder v0.29.3",
     "build_report": "./build_report.json"
   },
   "items": [
     {
-      "id": "rule:ability_scores_and_modifiers",
+      "id": "rule:using_ability_scores/ability_scores_and_modifiers",
       "name": "Ability Scores and Modifiers",
       "simple_name": "ability_scores_and_modifiers",
       "category": "Using Ability Scores",
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "id": "rule:ability_checks",
+      "id": "rule:using_ability_scores/ability_checks",
       "name": "Ability Checks",
       "simple_name": "ability_checks",
       "category": "Using Ability Scores",
@@ -57,7 +57,7 @@
       ]
     },
     {
-      "id": "rule:contests",
+      "id": "rule:ability_checks/contests",
       "name": "Contests",
       "simple_name": "contests",
       "category": "Using Ability Scores",
@@ -95,7 +95,7 @@
       "subcategory": "Ability Checks"
     },
     {
-      "id": "rule:speed",
+      "id": "rule:movement/speed",
       "name": "Speed",
       "simple_name": "speed",
       "category": "Using Ability Scores",
@@ -113,7 +113,7 @@
       "subcategory": "Movement"
     },
     {
-      "id": "rule:falling",
+      "id": "rule:the_environment/falling",
       "name": "Falling",
       "simple_name": "falling",
       "category": "Using Ability Scores",
@@ -129,7 +129,7 @@
       "subcategory": "The Environment"
     },
     {
-      "id": "rule:bonus_actions",
+      "id": "rule:the_order_of_combat/bonus_actions",
       "name": "Bonus Actions",
       "simple_name": "bonus_actions",
       "category": "Using Ability Scores",
@@ -156,7 +156,7 @@
       "subcategory": "The Order of Combat"
     },
     {
-      "id": "rule:attack_rolls",
+      "id": "rule:making_an_attack/attack_rolls",
       "name": "Attack Rolls",
       "simple_name": "attack_rolls",
       "category": "Using Ability Scores",
@@ -175,7 +175,7 @@
       "subcategory": "Making an Attack"
     },
     {
-      "id": "rule:casting_time",
+      "id": "rule:casting_a_spell/casting_time",
       "name": "Casting Time",
       "simple_name": "casting_time",
       "category": "Spellcasting",

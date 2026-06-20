@@ -90,7 +90,7 @@
       ]
     },
     "conditions": {
-      "container_key": "conditions",
+      "container_key": "items",
       "truths": [
         {
           "id": "condition:blinded",
@@ -326,7 +326,7 @@
       ]
     },
     "diseases": {
-      "container_key": "diseases",
+      "container_key": "items",
       "truths": [
         {
           "id": "disease:cackle_fever",
@@ -367,7 +367,7 @@
       ]
     },
     "features": {
-      "container_key": "features",
+      "container_key": "items",
       "truths": [
         {
           "id": "feature:barbarian:rage",
@@ -390,7 +390,7 @@
       "container_key": "items",
       "truths": [
         {
-          "id": "rule:advantage_and_disadvantage",
+          "id": "rule:using_ability_scores/advantage_and_disadvantage",
           "fields": {
             "name": "Advantage and Disadvantage",
             "category": "Using Ability Scores",

@@ -39,11 +39,16 @@ def clean_rule_record(rule: dict[str, Any]) -> dict[str, Any]:
     if not category:
         raise ValueError(f"Rule '{name}' missing 'category' field")
 
-    # Generate id and simple_name using shared utility
-    # Clean name first to remove control characters
+    # Generate id and simple_name using shared utility.
+    # IDs are namespaced by parent section (subcategory if present, else
+    # category) — `rule:{section}/{name}` — so headings reused across
+    # SRD sections (e.g. "Strength" under Ability Checks vs Using Each
+    # Ability) get distinct IDs. Mirrors how tables disambiguate by category.
     cleaned_name = clean_text(name)
     simple_name = normalize_id(cleaned_name)
-    rule_id = f"rule:{simple_name}"
+    section = rule.get("subcategory") or category
+    section_simple = normalize_id(clean_text(section))
+    rule_id = f"rule:{section_simple}/{simple_name}"
 
     # Polish text arrays using shared utility
     text = rule.get("text", [])
@@ -97,6 +102,51 @@ def clean_rule_record(rule: dict[str, Any]) -> dict[str, Any]:
     return cleaned_record
 
 
+def dedupe_rule_records(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Drop exact duplicate rule records and disambiguate remaining collisions.
+
+    The SRD layout exposes two kinds of rule-id collisions that survive
+    section-namespacing:
+
+    1. Byte-identical duplicates extracted twice (e.g. Time/Movement/Speed
+       headings reused across the Adventuring overview and its movement
+       subsection). Drop the second occurrence by `(id, page, tuple(text))`.
+
+    2. Distinct subsections that share a grandparent the parser cannot
+       see (e.g. "Attack Rolls and Damage" appears under both Strength
+       and Dexterity inside the Using Each Ability subsection; the parser
+       only tracks immediate parent). Append a 1-based ordinal suffix to
+       `id` and `simple_name` for the 2nd, 3rd, ... occurrences so every
+       record keeps a stable unique id without losing data.
+    """
+    # Pass 1: drop byte-identical duplicates.
+    seen: set[tuple[str, int, tuple[str, ...]]] = set()
+    deduped: list[dict[str, Any]] = []
+    for rec in records:
+        key = (rec["id"], int(rec.get("page", 0) or 0), tuple(rec.get("text", []) or ()))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(rec)
+
+    # Pass 2: ordinal-suffix any remaining id collisions.
+    id_counts: dict[str, int] = {}
+    for rec in deduped:
+        id_counts[rec["id"]] = id_counts.get(rec["id"], 0) + 1
+    if any(c > 1 for c in id_counts.values()):
+        seen_id: dict[str, int] = {}
+        for rec in deduped:
+            rid = rec["id"]
+            if id_counts[rid] > 1:
+                n = seen_id.get(rid, 0) + 1
+                seen_id[rid] = n
+                if n > 1:
+                    rec["id"] = f"{rid}_{n}"
+                    if "simple_name" in rec:
+                        rec["simple_name"] = f"{rec['simple_name']}_{n}"
+    return deduped
+
+
 def main() -> int:
     """Command-line entry point for testing."""
     import json
@@ -112,7 +162,7 @@ def main() -> int:
     parsed_rules = json.loads(parsed_path.read_text(encoding="utf-8"))
 
     # Process each rule
-    cleaned_rules = [clean_rule_record(rule) for rule in parsed_rules]
+    cleaned_rules = dedupe_rule_records([clean_rule_record(rule) for rule in parsed_rules])
 
     # Write to stdout
     print(json.dumps(cleaned_rules, indent=2, ensure_ascii=False))
