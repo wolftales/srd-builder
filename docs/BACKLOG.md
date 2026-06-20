@@ -574,6 +574,12 @@ descriptions in `build.py`.
 
 ### Phase 2 — Output-key normalization (breaking)
 
+> **Status:** ✅ **SHIPPED in v0.30.0** (commit `ea4620c`). All 16
+> datasets ship `{"_meta": ..., "items": [...]}`. Legacy `{key}_count`
+> aliases removed from `_meta` (use `item_count`). Schema bumps:
+> `condition` 2.0.0 -> 3.0.0, `disease` 2.0.0 -> 3.0.0, `features`
+> 3.0.0 -> 4.0.0.
+
 All 16 datasets ship `{"_meta": ..., "items": [...]}`. Affected files:
 
 - `features.json`: `{"features": [...]}` → `{"items": [...]}`
@@ -587,6 +593,11 @@ Bumps `schemas/features.schema.json`, `schemas/condition.schema.json`,
 record shape inside the array is unchanged.
 
 ### Phase 3 — Duplicate-id resolution (breaking IDs)
+
+> **Status:** ✅ **SHIPPED in v0.30.0** (commit `3dc9f81`). All 22
+> `duplicate_id` audit findings resolved — dataset audit now reports
+> 0 critical / 0 warning / 0 info. Schema bumps: `rule` 2.0.0 -> 3.0.0,
+> `table` 2.1.0 -> 3.0.0.
 
 The 22 `duplicate_id` audit findings break into two classes that need
 different fixes:
@@ -635,6 +646,12 @@ appendix copies during extraction (the chapter copies are the
 canonical source). Reduces `tables.json` from 19 to 16 records.
 
 ### Phase 4 — Code-path collapse (refactor, follows Phase 1)
+
+> **Status:** ✅ **SHIPPED in v0.30.0** (commit `f046fd9`).
+> `assemble_prose_dataset` is now `extract_prose_records` returning
+> `(records, warnings)`; `_write_datasets._enriched()` is the single
+> wrap path for all 16 datasets. Closes the "Unify the two assembly
+> code paths" item.
 
 Once Phase 1 makes `_meta` uniform, the only remaining difference
 between the simple path and the prose path is *who extracts the

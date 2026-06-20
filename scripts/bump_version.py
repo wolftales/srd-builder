@@ -85,6 +85,7 @@ def regenerate_fixtures() -> None:
         clean_monster_record,
         clean_rule_record,
         clean_spell_record,
+        dedupe_rule_records,
     )
     from srd_builder.postprocess.engine import clean_records
     from srd_builder.utils.metadata import meta_block, read_schema_version
@@ -162,7 +163,7 @@ def regenerate_fixtures() -> None:
             "schema_name": "condition",
             "raw": "tests/fixtures/srd_5_1/raw/conditions.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/conditions.json",
-            "output_key": "conditions",
+            "output_key": "items",
             "process": lambda raw: clean_records(
                 list(parse_condition_records(raw["sections"], "srd_5_1")),
                 "condition",
@@ -173,7 +174,7 @@ def regenerate_fixtures() -> None:
             "schema_name": "disease",
             "raw": "tests/fixtures/srd_5_1/raw/diseases.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/diseases.json",
-            "output_key": "diseases",
+            "output_key": "items",
             "process": lambda raw: clean_records(
                 list(parse_disease_records(raw["sections"], "srd_5_1")),
                 "disease",
@@ -231,7 +232,9 @@ def regenerate_fixtures() -> None:
             "raw": "tests/fixtures/srd_5_1/raw/rules.json",
             "normalized": "tests/fixtures/srd_5_1/normalized/rules.json",
             "output_key": "items",
-            "process": lambda raw: [clean_rule_record(rule) for rule in raw["parsed_rules"]],
+            "process": lambda raw: dedupe_rule_records(
+                [clean_rule_record(rule) for rule in raw["parsed_rules"]]
+            ),
         },
         {
             "name": "tables",
