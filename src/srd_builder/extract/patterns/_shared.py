@@ -9,6 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from ...utils.pdf_layout import (
+    SPAN_FLAG_BOLD,
+    SPAN_FLAG_ITALIC,
+    span_matches_predicate,
+)
+
 _DEFAULT_STRUCTURAL_PATTERNS = (
     r"^System Reference Document",
     r"^\d+$",
@@ -17,33 +23,26 @@ _DEFAULT_STRUCTURAL_PATTERNS = (
     r"^Spell Slots per Spell Level",
 )
 
-_SPAN_FLAG_ITALIC = 2**1
-_SPAN_FLAG_BOLD = 2**4
+# Re-exported as private aliases so existing imports inside this package
+# (e.g. ``from ._shared import _SPAN_FLAG_BOLD``) keep working without
+# repeating the magic numbers; the canonical definitions live in
+# ``utils.pdf_layout``.
+_SPAN_FLAG_ITALIC = SPAN_FLAG_ITALIC
+_SPAN_FLAG_BOLD = SPAN_FLAG_BOLD
 
 
 def _span_matches_fingerprint(span: dict[str, Any], fp: dict[str, Any]) -> bool:
-    """Test a single span against a header fingerprint config."""
-    text = span["text"].strip()
-    if len(text) < fp.get("min_text_len", 1):
-        return False
-    if fp.get("require_trailing_period", False) and not text.endswith("."):
-        return False
+    """Test a single span against a header fingerprint config.
 
-    size = span.get("size", 0)
-    if not (fp["size_min"] <= size <= fp["size_max"]):
-        return False
-
-    font = span.get("font", "")
-    if fp["font_substring"] not in font:
-        return False
-
-    flags = span.get("flags", 0)
-    if fp.get("require_bold", False) and not (flags & _SPAN_FLAG_BOLD):
-        return False
-    if fp.get("require_italic", False) and not (flags & _SPAN_FLAG_ITALIC):
-        return False
-
-    return True
+    Thin wrapper around ``utils.pdf_layout.span_matches_predicate`` that
+    enforces the legacy fingerprint contract: ``size_min``,
+    ``size_max``, and ``font_substring`` are required keys (raises
+    ``KeyError`` if missing). The public helper treats them as optional.
+    """
+    # Touch the required keys so a missing one raises the same KeyError
+    # the legacy implementation did.
+    _ = (fp["size_min"], fp["size_max"], fp["font_substring"])
+    return span_matches_predicate(span, fp)
 
 
 def _resolve_body_cleanup(name: str | None) -> Any:
@@ -72,27 +71,11 @@ def _simplify_span(span: dict[str, Any]) -> dict[str, Any]:
 
 
 def _span_matches_predicate(span: dict[str, Any], pred: dict[str, Any]) -> bool:
-    """Generalized span predicate. All keys optional; absent keys are not
-    constraints. Empty predicate {} matches every span.
+    """Generalized span predicate. Delegates to the public helper in
+    ``utils.pdf_layout`` so the engine and the unbound dataset
+    extractors share one matcher.
     """
-    text = span.get("text", "").strip()
-    if "min_text_len" in pred and len(text) < pred["min_text_len"]:
-        return False
-    if pred.get("require_trailing_period", False) and not text.endswith("."):
-        return False
-    size = span.get("size", 0)
-    if "size_min" in pred and size < pred["size_min"]:
-        return False
-    if "size_max" in pred and size > pred["size_max"]:
-        return False
-    if "font_substring" in pred and pred["font_substring"] not in span.get("font", ""):
-        return False
-    flags = span.get("flags", 0)
-    if pred.get("require_bold", False) and not (flags & _SPAN_FLAG_BOLD):
-        return False
-    if pred.get("require_italic", False) and not (flags & _SPAN_FLAG_ITALIC):
-        return False
-    return True
+    return span_matches_predicate(span, pred)
 
 
 def _resolve_attach(attach: dict[str, Any], font: str) -> dict[str, Any]:

@@ -27,7 +27,7 @@ from typing import Any
 import fitz
 
 from srd_builder.postprocess.ids import normalize_id
-from srd_builder.utils.pdf_layout import is_bold as span_is_bold
+from srd_builder.utils.pdf_layout import iter_page_spans, span_matches_predicate
 from srd_builder.utils.pdf_probe import normalize_whitespace
 
 SPELL_LIST_PAGES_PDF_INDICES = range(104, 113)  # SRD pages 105-113
@@ -53,6 +53,33 @@ _LEVEL_HEADER_PATTERN = re.compile(
     r"^(Cantrips?\s*\(0\s*Level\)|\d+(?:st|nd|rd|th)\s+Level)$",
     re.IGNORECASE,
 )
+
+# Font fingerprints fed to ``span_matches_predicate``. The class-header
+# rule selects the per-class banner that resets ``current_class``; the
+# remaining rules are skip filters (level dividers, the "Spell Lists"
+# page header, page numbers); the spell-name rule selects the entries
+# we actually collect.
+_PRED_CLASS_HEADER = {
+    "size_min": 13.5,
+    "size_max": 14.5,
+    "font_substring": "GillSans",
+    "require_bold": True,
+}
+_PRED_LEVEL_HEADER = {
+    "size_min": 11.5,
+    "size_max": 12.5,
+    "font_substring": "GillSans",
+    "require_bold": True,
+}
+_PRED_PAGE_HEADER = {
+    "size_min": 17.5,
+    "font_substring": "GillSans",
+}
+_PRED_SPELL_NAME = {
+    "size_min": 9.5,
+    "size_max": 10.5,
+    "font_substring": "Cambria",
+}
 
 
 def extract_spell_classes(pdf_path: str | Path) -> dict[str, Any]:
@@ -81,42 +108,36 @@ def extract_spell_classes(pdf_path: str | Path) -> dict[str, Any]:
     with fitz.open(str(pdf_path)) as doc:
         for pi in SPELL_LIST_PAGES_PDF_INDICES:
             page = doc[pi]
-            for block in page.get_text("dict")["blocks"]:
-                if "lines" not in block:
+            for span in iter_page_spans(page.get_text("dict")):
+                text = normalize_whitespace(span["text"])
+                if not text:
                     continue
-                for line in block["lines"]:
-                    for span in line["spans"]:
-                        text = normalize_whitespace(span["text"])
-                        if not text:
-                            continue
-                        size = round(span.get("size", 0), 1)
-                        font = span.get("font", "")
-                        is_bold = span_is_bold(span.get("flags", 0))
+                size = round(span.get("size", 0), 1)
 
-                        # 13.9pt G-SB = class header
-                        if is_bold and "GillSans" in font and 13.5 <= size <= 14.5:
-                            cls = _CLASS_HEADERS.get(text)
-                            if cls:
-                                current_class = cls
-                            continue
+                # 13.9pt G-SB = class header
+                if span_matches_predicate(span, _PRED_CLASS_HEADER):
+                    cls = _CLASS_HEADERS.get(text)
+                    if cls:
+                        current_class = cls
+                    continue
 
-                        # 12.0pt G-SB = level header (just a divider; skip)
-                        if is_bold and "GillSans" in font and 11.5 <= size <= 12.5:
-                            continue
+                # 12.0pt G-SB = level header (just a divider; skip)
+                if span_matches_predicate(span, _PRED_LEVEL_HEADER):
+                    continue
 
-                        # 18.0pt G-SB = "Spell Lists" (skip)
-                        if size >= 17.5 and "GillSans" in font:
-                            continue
+                # 18.0pt G-SB = "Spell Lists" (skip)
+                if span_matches_predicate(span, _PRED_PAGE_HEADER):
+                    continue
 
-                        # 10.8pt = page numbers / footer (skip)
-                        if 10.5 <= size <= 11.0:
-                            continue
+                # 10.8pt = page numbers / footer (skip)
+                if 10.5 <= size <= 11.0:
+                    continue
 
-                        # 9.8pt Cambria = spell name
-                        if "Cambria" in font and 9.5 <= size <= 10.5 and current_class:
-                            simple = normalize_id(text)
-                            if simple and simple not in class_spells[current_class]:
-                                class_spells[current_class].append(simple)
+                # 9.8pt Cambria = spell name
+                if current_class and span_matches_predicate(span, _PRED_SPELL_NAME):
+                    simple = normalize_id(text)
+                    if simple and simple not in class_spells[current_class]:
+                        class_spells[current_class].append(simple)
 
     return {
         "source_pages": "105-113",

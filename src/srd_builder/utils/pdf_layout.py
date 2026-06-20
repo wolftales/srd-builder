@@ -48,6 +48,61 @@ def is_italic(flags: int) -> bool:
     return bool(flags & SPAN_FLAG_ITALIC)
 
 
+def iter_page_spans(page_dict: dict[str, Any]) -> Any:
+    """Yield raw PyMuPDF span dicts from a ``page.get_text('dict')`` payload.
+
+    Walks the canonical block → line → span structure and skips non-text
+    blocks (``block['type'] != 0``). Callers receive the original span
+    dict references, so any per-span normalization (whitespace,
+    rounding) remains the caller's responsibility.
+
+    Lifted out of the triple-loop boilerplate that previously appeared
+    in extract_lineages, extract_rules, extract_spell_classes, etc.
+    """
+    for block in page_dict.get("blocks", []):
+        if block.get("type") != 0:
+            continue
+        for line in block.get("lines", []):
+            yield from line.get("spans", [])
+
+
+def span_matches_predicate(span: dict[str, Any], predicate: dict[str, Any]) -> bool:
+    """Test a PyMuPDF span against a declarative predicate dict.
+
+    All predicate keys are optional; absent keys impose no constraint
+    (so ``{}`` matches any span). Recognised keys:
+
+      - ``min_text_len`` (int): minimum stripped-text length
+      - ``require_trailing_period`` (bool): text must end with ``.``
+      - ``size_min`` / ``size_max`` (float): inclusive font-size range
+      - ``font_substring`` (str): substring required in the font name
+      - ``require_bold`` (bool): span flags must include the bold bit
+      - ``require_italic`` (bool): span flags must include the italic bit
+
+    The matcher reads ``span['text']`` verbatim (no normalization), so
+    callers that pre-normalize text should pass a copy of the span dict
+    with the normalized text in place.
+    """
+    text = span.get("text", "").strip()
+    if "min_text_len" in predicate and len(text) < predicate["min_text_len"]:
+        return False
+    if predicate.get("require_trailing_period", False) and not text.endswith("."):
+        return False
+    size = span.get("size", 0)
+    if "size_min" in predicate and size < predicate["size_min"]:
+        return False
+    if "size_max" in predicate and size > predicate["size_max"]:
+        return False
+    if "font_substring" in predicate and predicate["font_substring"] not in span.get("font", ""):
+        return False
+    flags = span.get("flags", 0)
+    if predicate.get("require_bold", False) and not (flags & SPAN_FLAG_BOLD):
+        return False
+    if predicate.get("require_italic", False) and not (flags & SPAN_FLAG_ITALIC):
+        return False
+    return True
+
+
 def color_to_rgb(color_int: int) -> list[int]:
     """Convert a PyMuPDF packed color integer into [r, g, b]."""
     return [(color_int >> 16) & 0xFF, (color_int >> 8) & 0xFF, color_int & 0xFF]

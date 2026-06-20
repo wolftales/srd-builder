@@ -64,8 +64,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from srd_builder.utils.pdf_layout import is_bold as span_is_bold
-from srd_builder.utils.pdf_layout import is_italic as span_is_italic
+from srd_builder.utils.pdf_layout import iter_page_spans, span_matches_predicate
 from srd_builder.utils.pdf_probe import normalize_whitespace
 from srd_builder.utils.prose import clean_text, normalize_apostrophes
 
@@ -136,124 +135,128 @@ def _walk_lineage_pages(doc: fitz.Document) -> list[dict[str, Any]]:
     for pi in LINEAGE_PAGES_PDF_INDICES:
         page = doc[pi]
         srd_page = pi + 1
-        for block in page.get_text("dict")["blocks"]:
-            if "lines" not in block:
+        for span in iter_page_spans(page.get_text("dict")):
+            text = normalize_whitespace(span["text"])
+            if not text:
                 continue
-            for line in block["lines"]:
-                for span in line["spans"]:
-                    text = normalize_whitespace(span["text"])
-                    if not text:
-                        continue
-                    size = round(span.get("size", 0), 1)
-                    font = span.get("font", "")
-                    flags = span.get("flags", 0)
-                    is_bold = span_is_bold(flags)
-                    is_italic = span_is_italic(flags)
-                    role = _classify_span(
-                        text=text,
-                        size=size,
-                        font=font,
-                        is_bold=is_bold,
-                        is_italic=is_italic,
-                        race_seen=current_race is not None,
-                    )
+            # Hand a span copy with normalized text to the classifier so
+            # the predicate matcher sees the same string the caller will
+            # store.
+            norm_span = {**span, "text": text}
+            role = _classify_span(norm_span, race_seen=current_race is not None)
 
-                    if role == "race":
-                        close_trait()
-                        current_race = {
-                            "name": text,
-                            "page": srd_page,
-                            "traits": [],
-                            "subraces": [],
-                        }
-                        current_container = current_race
-                        races.append(current_race)
-                    elif role == "subrace":
-                        close_trait()
-                        if current_race is None:
-                            # 12pt GillSans before any race appeared (intro
-                            # labels on p.3). Already filtered by race_seen,
-                            # but guard defensively.
-                            continue
-                        subrace = {
-                            "name": text,
-                            "page": srd_page,
-                            "traits": [],
-                        }
-                        current_race["subraces"].append(subrace)
-                        current_container = subrace
-                    elif role == "trait":
-                        close_trait()
-                        if current_container is None:
-                            continue
-                        # clean_text() does not normalize U+2019 (right
-                        # single quote) reliably, so handle it here.
-                        name = normalize_apostrophes(text.rstrip("."))
-                        current_trait = {
-                            "name": name,
-                            "text": "",
-                        }
-                    elif role == "body":
-                        if current_trait is not None:
-                            current_trait["text"] += text + " "
-                    # role == "skip": no-op
+            if role == "race":
+                close_trait()
+                current_race = {
+                    "name": text,
+                    "page": srd_page,
+                    "traits": [],
+                    "subraces": [],
+                }
+                current_container = current_race
+                races.append(current_race)
+            elif role == "subrace":
+                close_trait()
+                if current_race is None:
+                    # 12pt GillSans before any race appeared (intro
+                    # labels on p.3). Already filtered by race_seen,
+                    # but guard defensively.
+                    continue
+                subrace = {
+                    "name": text,
+                    "page": srd_page,
+                    "traits": [],
+                }
+                current_race["subraces"].append(subrace)
+                current_container = subrace
+            elif role == "trait":
+                close_trait()
+                if current_container is None:
+                    continue
+                # clean_text() does not normalize U+2019 (right
+                # single quote) reliably, so handle it here.
+                name = normalize_apostrophes(text.rstrip("."))
+                current_trait = {
+                    "name": name,
+                    "text": "",
+                }
+            elif role == "body":
+                if current_trait is not None:
+                    current_trait["text"] += text + " "
+            # role == "skip": no-op
 
     close_trait()
     return races
 
 
-def _classify_span(
-    *,
-    text: str,
-    size: float,
-    font: str,
-    is_bold: bool,
-    is_italic: bool,
-    race_seen: bool,
-) -> str:
-    """Return one of: race, subrace, trait, body, skip."""
+# Span fingerprints fed to ``span_matches_predicate``. Each rule is a
+# declarative description of one font role on lineage pages 3–7; the
+# matcher in utils.pdf_layout handles the size/font/flags checks.
+_PRED_RACE_NAME = {
+    "size_min": 17.5,
+    "size_max": 18.5,
+    "font_substring": "GillSans",
+    "require_bold": True,
+}
+_PRED_RACE_TRAITS_SUBHEAD = {
+    "size_min": 13.5,
+    "size_max": 14.5,
+    "font_substring": "GillSans",
+    "require_bold": True,
+}
+_PRED_SUBRACE_OR_INTRO = {
+    "size_min": 11.5,
+    "size_max": 12.5,
+    "font_substring": "GillSans",
+    "require_bold": True,
+}
+_PRED_TRAIT_HEADER = {
+    "size_min": 9.5,
+    "size_max": 10.5,
+    "font_substring": "Cambria",
+    "require_bold": True,
+    "require_italic": True,
+    "require_trailing_period": True,
+    "min_text_len": 4,
+}
+_PRED_BODY = {
+    "size_min": 9.5,
+    "size_max": 10.5,
+    "font_substring": "Cambria",
+}
+
+
+def _classify_span(span: dict[str, Any], *, race_seen: bool) -> str:
+    """Return one of: race, subrace, trait, body, skip.
+
+    ``span`` is a PyMuPDF span dict (with ``text`` already normalized
+    by the caller); ``race_seen`` disambiguates 12pt GillSans-SemiBold
+    between p.3 intro labels (skip) and subrace names (subrace).
+    """
+    size = span.get("size", 0)
     # Skip "Races" section header (only one occurrence, 25.9pt)
     if size >= 20.0:
         return "skip"
-
-    # Race name: 18pt GillSans-SemiBold
-    if is_bold and "GillSans" in font and 17.5 <= size <= 18.5:
+    if span_matches_predicate(span, _PRED_RACE_NAME):
         return "race"
-
-    # "<Race> Traits" subheader: 13.9pt GillSans-SemiBold (skip — decoration)
-    if is_bold and "GillSans" in font and 13.5 <= size <= 14.5:
+    # "<Race> Traits" subheader — decoration, skip.
+    if span_matches_predicate(span, _PRED_RACE_TRAITS_SUBHEAD):
         return "skip"
-
-    # 12pt GillSans-SemiBold:
-    #   - Before any race header → intro labels on p.3 (skip)
-    #   - After race header → subrace name
-    # Note: 12pt Calibri-Bold is the Draconic Ancestry table header (skip).
-    if is_bold and "GillSans" in font and 11.5 <= size <= 12.5:
+    # 12pt GillSans-SemiBold: subrace iff a race header was already seen,
+    # otherwise an intro label on p.3 (skip). 12pt Calibri-Bold (Draconic
+    # Ancestry table header) is filtered by the font_substring check.
+    if span_matches_predicate(span, _PRED_SUBRACE_OR_INTRO):
         return "subrace" if race_seen else "skip"
-
-    # Trait header: 9.8pt Cambria-BoldItalic ending in "."
-    if (
-        is_bold
-        and is_italic
-        and "Cambria" in font
-        and 9.5 <= size <= 10.5
-        and text.endswith(".")
-        and len(text) > 3
-    ):
+    if span_matches_predicate(span, _PRED_TRAIT_HEADER):
         return "trait"
-
-    # Skip page numbers (10.8pt G-SB single digit) and header/footer
+    # Page numbers (10.8pt G-SB single digit) and footer.
     if 10.5 <= size <= 11.0:
         return "skip"
-
-    # Skip Dragon-ancestry table cells (8.9pt Calibri)
+    # Dragon-ancestry table cells (8.9pt Calibri).
     if size < 9.5:
         return "skip"
-
-    # Default: body text (typically 9.8pt Cambria or Cambria-Italic)
-    if "Cambria" in font and 9.5 <= size <= 10.5:
+    if span_matches_predicate(span, _PRED_BODY):
         return "body"
-
     return "skip"
 
 
