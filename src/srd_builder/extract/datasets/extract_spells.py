@@ -12,9 +12,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import fitz
+import fitz  # kept for fitz.Page type hints + fitz.TEXTFLAGS_TEXT constant; doc lifecycle goes through pdf_probe
 
 from ...constants import EXTRACTOR_VERSION
+from ...utils.pdf_probe import open_pdf
 
 # Spell section pages (descriptions, not spell lists)
 SPELL_START_PAGE = 114  # First page of spell descriptions
@@ -71,11 +72,10 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
     pdf_bytes = pdf_path.read_bytes()
     pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
 
-    doc = fitz.open(pdf_path)
     spells: list[dict[str, Any]] = []
     warnings: list[str] = []
 
-    try:
+    with open_pdf(pdf_path) as doc:
         # Extract spells from each page, carrying over incomplete spells
         carry_over_spell = None
         carry_over_section = ""
@@ -96,9 +96,6 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
             warnings.append(
                 f"Only extracted {len(spells)} spells, expected at least {config.expected_spell_count_min}"
             )
-
-    finally:
-        doc.close()
 
     return {
         "spells": spells,

@@ -300,6 +300,7 @@ Key milestones:
 - **v0.33.0** — Extract-consolidation P3: `extract_equipment.py` migrated to `pdf_probe.open_pdf()` (minimum-diff lifecycle swap; `find_tables()` + font-anchored section tracking unchanged); legacy-tier count drops 5 → 4; output byte-identical (119 items unchanged)
 - **v0.34.0** — Extract-consolidation P4: `extract_magic_items.py` migrated to `pdf_probe.open_pdf()` (minimum-diff lifecycle swap; font-fingerprint walk + multi-page item merging unchanged); legacy-tier count drops 4 → 3; output byte-identical (245 items unchanged)
 - **v0.35.0** — Extract-consolidation P5: `extract_features.py` migrated to `pdf_probe.open_pdf()` (minimum-diff lifecycle swap; both entry points `extract_class_features` and `extract_lineage_traits` keep their font-fingerprint header walks); legacy-tier count drops 3 → 2; output byte-identical (155 class features + 102 lineage traits unchanged)
+- **v0.36.0** — Extract-consolidation P6: `extract_spells.py` migrated to `pdf_probe.open_pdf()` (minimum-diff lifecycle swap; font-fingerprint walk + cross-page carry-over state machine + multi-page spell merging unchanged); legacy-tier count drops 2 → 1 (only `extract_monsters.py` left); output byte-identical (319 spells unchanged)
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License
