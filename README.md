@@ -52,7 +52,7 @@ release verification).
 
 ## Datasets
 
-Latest build: **1,695 items across 16 datasets** (counts and schema versions are written to
+Latest build: **1,687 items across 16 datasets** (counts and schema versions are written to
 `dist/srd_5_1/meta.json` on every build).
 
 | Dataset | Count | Schema |
@@ -60,10 +60,10 @@ Latest build: **1,695 items across 16 datasets** (counts and schema versions are
 | Monsters | 317 | 2.0.0 |
 | Spells | 319 | 2.0.0 |
 | Equipment | 259 | 2.1.0 |
-| Magic Items | 240 | 2.0.0 |
 | Features | 245 | 3.0.0 |
-| Rules | 172 | 2.0.0 |
-| Tables | 38 | 2.0.0 |
+| Magic Items | 240 | 2.0.0 |
+| Rules | 167 | 2.0.0 |
+| Tables | 35 | 2.0.0 |
 | Skills | 18 | 1.0.0 |
 | Conditions | 15 | 2.0.0 |
 | Poisons | 14 | 2.0.0 |
@@ -105,10 +105,10 @@ dist/srd_5_1/
 ├── magic_items.json       # 240
 ├── monsters.json          # 317
 ├── poisons.json           # 14
-├── rules.json             # 172
+├── rules.json             # 167
 ├── skills.json            # 18
 ├── spells.json            # 319
-├── tables.json            # 38
+├── tables.json            # 35
 ├── weapon_properties.json # 11
 ├── index.json             # Cross-dataset lookup with aliases
 ├── meta.json              # Versions, license, inventory, schema map
@@ -125,9 +125,14 @@ and the schema exemplars.
 **Pipeline (per-dataset):**
 
 1. **Extract** — `src/srd_builder/extract/` hosts both layers: the config-driven
-   table-extraction engine (`engine.py`, `patterns.py`, `extraction_metadata.py`)
-   and the per-dataset PDF extractors under `extract/datasets/`. PDF-text
-   primitives live in [src/srd_builder/utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py).
+   table-extraction engine ([engine.py](src/srd_builder/extract/engine.py),
+   [patterns/](src/srd_builder/extract/patterns/) package, one module per pattern
+   type; [extraction_metadata.py](src/srd_builder/extract/extraction_metadata.py))
+   and the per-dataset PDF extractors under
+   [extract/datasets/](src/srd_builder/extract/datasets/). Reusable PDF primitives
+   live in [utils/pdf_probe.py](src/srd_builder/utils/pdf_probe.py) (text/dict
+   helpers) and [utils/pdf_layout.py](src/srd_builder/utils/pdf_layout.py)
+   (column-aware span extraction + bbox math).
 2. **Parse** — `src/srd_builder/parse/parse_<dataset>.py` maps raw text into typed records.
 3. **Postprocess** — `src/srd_builder/postprocess/engine.py` drives `DATASET_CONFIGS`
    (in `configs.py`) to normalize 12 of the 16 datasets declaratively (id stamping,
@@ -202,8 +207,7 @@ ruff format --check .
 pytest -q
 ```
 
-**Tests:** 294 passing, 19 skipped (skips are dataset-specific gates that wait on a PDF
-when none is committed). Golden tests live in `tests/test_golden_<dataset>.py` and pin
+**Tests:** 690 passing. Golden tests live in `tests/test_golden_<dataset>.py` and pin
 parse + postprocess output against fixtures under `tests/fixtures/srd_5_1/`. PDF-extraction
 provenance reproducer tests live in
 [tests/test_pdf_provenance.py](tests/test_pdf_provenance.py); see
@@ -213,7 +217,7 @@ provenance reproducer tests live in
 
 srd-builder uses two version numbers:
 
-- **Package version** (currently `v0.28.1`, read from `pyproject.toml` at runtime via
+- **Package version** (currently `v0.37.0`, read from `pyproject.toml` at runtime via
   `importlib.metadata`) — the builder release.
 - **Schema version** — each dataset schema in `schemas/*.schema.json` evolves independently
   (currently `1.0.0`–`3.0.0`). Schema versions are written into `dist/srd_5_1/meta.json`
@@ -239,14 +243,16 @@ srd-builder/
 │   ├── constants.py              # Versioned/static builder constants
 │   ├── extract/                  # Table engine + bespoke per-dataset extractors
 │   │   ├── engine.py             # Config-driven table-extraction engine
-│   │   ├── patterns.py           # Table-extraction patterns
+│   │   ├── patterns/             # One module per pattern type (9 engines + _shared)
+│   │   ├── extraction_metadata.py # TABLES config registry
 │   │   ├── table_targets.py      # Hand-curated table targets
+│   │   ├── text_parser_utils.py  # Word/Y-grouping helpers for text_region patterns
 │   │   └── datasets/             # Per-dataset PDF extractors (extract_*.py)
 │   ├── parse/                    # parse_<dataset>.py
 │   ├── postprocess/              # engine.py + DATASET_CONFIGS (12 datasets) + 4 custom modules
 │   ├── assemble/                 # Cross-dataset indexer
 │   ├── rulesets/srd_5_1/         # Per-ruleset hand-curated Python data (class/lineage/spell targets)
-│   └── utils/                    # pdf_probe, page_index, metadata, prose, helpers
+│   └── utils/                    # pdf_probe, pdf_layout, page_index, metadata, prose, helpers
 ├── rulesets/
 │   └── srd_5_1/
 │       ├── SRD_CC_v5.1.pdf       # (gitignored) Source PDF
@@ -298,6 +304,7 @@ Key milestones:
 - **v0.31.0** — `extract_pdf_metadata.py` switched from raw `fitz.open()` to `pdf_probe.open_pdf()` + `page_text()`; output byte-identical. Small structural win; did NOT advance engine binding.
 - **v0.32.0** — `extract_rules.py` switched to `pdf_probe.open_pdf()` + new `pdf_probe.page_dict()` helper (font/bbox/span metadata). Output byte-identical (3086 span blocks unchanged). The `page_dict()` helper is a genuine shared primitive; did NOT advance engine binding.
 - **v0.33.0–v0.37.0** — ⚠️ Five tags of lifecycle-only swaps (`fitz.open` → `open_pdf`) in `extract_equipment`, `extract_magic_items`, `extract_features`, `extract_spells`, `extract_monsters`. **No behavioral change; engine binding not advanced.** Durable artifact: five parity tests pinning each extractor's byte output against the shipped SRD PDF. The five tags are retained for honesty.
+- **post-v0.37.0 (unreleased on `main`)** — (a) Three real engine bindings landed: `extract_features` and `extract_magic_items` onto a new `font_fingerprint_walk` pattern (span-mode and line-mode), `extract_spells` onto a new `font_stateful_walk` pattern. Total bespoke logic replaced: ~450 lines across the three extractors. `extract_monsters` declined at the 2-caller threshold (bbox+column-aware spans, cross-page pre-accumulation, lookahead validation). Bound: 3/13. (b) `extract/patterns.py` (1648 lines) split into `extract/patterns/` package, one module per pattern engine plus `_shared.py`/`_types.py`/`_dispatch.py`; public surface unchanged. (c) Bbox/column primitives lifted from `extract_monsters` into `utils/pdf_layout.py` (`extract_columnar_spans`, `merge_spans_into_lines`, `determine_column`, `merge_bboxes`, `color_to_rgb`); monsters shrunk 631 → 442 lines. Full design pass + outcomes recorded in [docs/BACKLOG.md](docs/BACKLOG.md).
 - **v1.0.0** — Frozen schema + stable consumer API 🚀
 
 ## License
