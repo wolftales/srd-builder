@@ -15,9 +15,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF — kept for fitz.Page type hints and fitz.TEXTFLAGS_TEXT
 
 from ...constants import EXTRACTOR_VERSION
+from ...utils.pdf_probe import open_pdf
 
 # PDF extraction tolerance constants
 Y_COORDINATE_TOLERANCE = 2.0  # Tolerance for Y-coordinate matching (points)
@@ -86,7 +87,7 @@ def extract_monsters(pdf_path: Path, config: ExtractionConfig | None = None) -> 
     # Collect ALL lines from ALL pages first (fixes cross-page monsters)
     all_lines: list[dict[str, Any]] = []
 
-    with fitz.open(pdf_path) as doc:
+    with open_pdf(pdf_path) as doc:
         page_end = config.page_end or doc.page_count
 
         # Extract lines from all pages

@@ -82,16 +82,17 @@ all LIVE (12 imported by `build.py`; `extract_conditions` wired through
 
 | Tier | Files | Uses `pdf_probe` | Notes |
 | --- | --- | --- | --- |
-| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_spells.py` | ✅ `open_pdf` + `page_text` / `page_dict` (lifecycle managed; `find_tables` / `page.get_text("dict")` calls still ride on managed pages) | v0.27.5–v0.27.6, v0.31.0–v0.36.0 |
+| Modern (full `pdf_probe`) | `extract_equipment_descriptions.py`, `extract_equipment_packs.py`, `extract_pdf_metadata.py`, `extract_rules.py`, `extract_equipment.py`, `extract_magic_items.py`, `extract_features.py`, `extract_spells.py`, `extract_monsters.py` | ✅ `open_pdf` + `page_text` / `page_dict` (lifecycle managed; `find_tables` / `page.get_text("dict")` calls still ride on managed pages) | v0.27.5–v0.27.6, v0.31.0–v0.37.0 |
 | Mixed | `extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py` | ⚠️ `normalize_whitespace` only; still raw `fitz.open()` | v0.27.0–v0.27.2 |
 | `ProseExtractor` framework | `extract_conditions.py` | ✅ (via `utils.prose`) | Higher abstraction |
-| Pre-`pdf_probe` (legacy) | `extract_monsters.py` | ❌ raw `fitz.open()` | **1 file violating AGENTS.md rule** |
+| Pre-`pdf_probe` (legacy) | _(none)_ | n/a | **0 files — extract-consolidation track complete** |
 
-The one remaining raw-`fitz` file legitimately extracts from PDF (walks
-pages, produces raw JSON, no fabricated content). The problem is
-mechanism, not output: it bypasses `pdf_probe`'s deterministic-output
-and hidden-doc-lifecycle guarantees, and it is not registered as an
-engine pattern config.
+The extract-consolidation track is complete: every dataset extractor
+that opens a PDF now goes through `pdf_probe.open_pdf()`. The three
+"mixed" files (`extract_lineages.py`, `extract_classes.py`,
+`extract_spell_classes.py`) still call `fitz.open()` directly but only
+use `normalize_whitespace`; they are out of scope for the lifecycle
+consolidation and tracked separately.
 
 ### Proposed approach (gradual, one extractor per release)
 
@@ -137,7 +138,12 @@ GillSans-SemiBold 12pt names + Cambria-Italic level/school +
 Cambria-Bold field labels + Cambria-BoldItalic higher-levels block +
 cross-page carry-over state; same font-fingerprint shape, not a
 `RawTable`, engine binding deferred) →
-`extract_monsters.py` (largest, most unique shape, do last).
+~~`extract_monsters.py`~~ (✅ shipped v0.37.0 — pdf_probe lifecycle
+migration only; 317 monsters over pages 261–403 with Calibri-Bold
+12pt monster names + Calibri-Italic size/type lines +
+Calibri-BoldItalic trait names + column detection +
+cross-page boundary detection; not a `RawTable`, engine binding
+deferred). **Track complete — zero files left in the legacy tier.**
 
 ### Parse-layer consolidation (forward-looking)
 
