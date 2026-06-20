@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -98,3 +98,53 @@ def pdf_sha256(pdf_path: Path, *, chunk_size: int = 8192) -> str:
         for chunk in iter(lambda: fh.read(chunk_size), b""):
             sha256.update(chunk)
     return sha256.hexdigest()
+
+
+def concat_pages_with_offsets(
+    doc: fitz.Document,
+    pages: Sequence[int],
+    *,
+    normalize: Callable[[str], str],
+    separator: str = " ",
+) -> tuple[str, list[tuple[int, int]]]:
+    """Concatenate normalized text from ``pages`` of ``doc`` into one
+    string, returning the concatenation plus an offset index that maps
+    each page's starting char-position back to its 1-indexed page label.
+
+    ``pages`` are 1-indexed PDF page labels; internally each is loaded
+    via ``page_text(doc, page - 1, normalize=False)``. ``normalize`` is
+    then applied to each page's raw text — callers control whitespace
+    policy, soft-hyphen handling, footer stripping, etc.
+
+    The returned ``page_starts: list[(char_offset, page_label)]`` is
+    designed to be consumed by :func:`offset_to_page`. Offsets count
+    the inserted ``separator`` so reverse-lookups remain exact across
+    page boundaries.
+    """
+    parts: list[str] = []
+    page_starts: list[tuple[int, int]] = []
+    cursor = 0
+    for pdf_page in pages:
+        raw = page_text(doc, pdf_page - 1, normalize=False)
+        normalized = normalize(raw)
+        page_starts.append((cursor, pdf_page))
+        parts.append(normalized)
+        cursor += len(normalized) + len(separator)
+    return separator.join(parts), page_starts
+
+
+def offset_to_page(page_starts: Sequence[tuple[int, int]], offset: int) -> int:
+    """Reverse-map a character offset to its source page label.
+
+    ``page_starts`` must be the second element returned by
+    :func:`concat_pages_with_offsets`. Returns the page label whose
+    slice contains ``offset``; if ``offset`` precedes the first page
+    start, the first page's label is returned.
+    """
+    page = page_starts[0][1]
+    for start, pdf_page in page_starts:
+        if start <= offset:
+            page = pdf_page
+        else:
+            break
+    return page

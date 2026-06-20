@@ -24,7 +24,12 @@ from pathlib import Path
 from typing import Any, TypedDict
 
 from srd_builder.utils.page_index import PAGE_INDEX
-from srd_builder.utils.pdf_probe import open_pdf, page_text
+from srd_builder.utils.pdf_probe import (
+    concat_pages_with_offsets,
+    normalize_whitespace,
+    offset_to_page,
+    open_pdf,
+)
 from srd_builder.utils.prose import normalize_apostrophes
 
 logger = logging.getLogger(__name__)
@@ -184,6 +189,7 @@ _PAGE_FOOTER_RE = re.compile(r"\s*System Reference Document 5\.1 \d+\s*")
 
 def _normalize(text: str) -> str:
     """Collapse soft-hyphen runs, normalize apostrophes + whitespace."""
+    text = normalize_whitespace(text)
     text = _SOFT_HYPHEN_RE.sub("-", text)
     text = normalize_apostrophes(text)
     text = _WHITESPACE_RE.sub(" ", text)
@@ -223,42 +229,6 @@ _SUBSECTION_TERMINATORS: dict[str, tuple[str, ...]] = {
 }
 
 
-def _build_section_text(
-    pages: list[int],
-    doc: Any,
-    separator: str = " ",
-) -> tuple[str, list[tuple[int, int]]]:
-    """Concatenate normalized text of `pages` into one section string.
-
-    Returns:
-        (section_text, page_starts) where `page_starts` is a list of
-        `(char_offset, page_number)` tuples giving the offset at which
-        each page's normalized text begins inside `section_text`. Used
-        to attribute the heading match offset back to the source page.
-    """
-    parts: list[str] = []
-    page_starts: list[tuple[int, int]] = []
-    cursor = 0
-    for pdf_page in pages:
-        raw = page_text(doc, pdf_page - 1)
-        normalized = _normalize(raw)
-        page_starts.append((cursor, pdf_page))
-        parts.append(normalized)
-        cursor += len(normalized) + len(separator)
-    return separator.join(parts), page_starts
-
-
-def _offset_to_page(offset: int, page_starts: list[tuple[int, int]]) -> int:
-    """Map a character offset in section text back to its source page."""
-    page = page_starts[0][1]
-    for start, pdf_page in page_starts:
-        if start <= offset:
-            page = pdf_page
-        else:
-            break
-    return page
-
-
 def _extract_section(
     section_name: str,
     pages: list[int],
@@ -271,7 +241,7 @@ def _extract_section(
     each slice at the earliest subsection terminator (if any) found
     inside it.
     """
-    section_text, page_starts = _build_section_text(pages, doc)
+    section_text, page_starts = concat_pages_with_offsets(doc, pages, normalize=_normalize)
     matches = list(_HEADING_RE.finditer(section_text))
     resolving = [m for m in matches if m.group(1) in _HEADING_TO_ITEM_ID]
     terminators = _SUBSECTION_TERMINATORS.get(section_name, ())
@@ -288,7 +258,7 @@ def _extract_section(
             if idx != -1 and idx < body_end:
                 body_end = idx
         description = section_text[body_start:body_end].strip()
-        page = _offset_to_page(m.start(), page_starts)
+        page = offset_to_page(page_starts, m.start())
         records.append(ItemDescription(item_id=item_id, description=description, page=page))
     return records
 
