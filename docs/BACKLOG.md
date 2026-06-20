@@ -93,17 +93,18 @@ is NOT engine binding and does not move any extractor toward the slim
 
 #### Engine binding (substantive — the actual goal)
 
-| Bound to `extract_by_config()` | Files |
+| Bound | Files |
 | --- | --- |
-| ❌ | **all 13** |
+| ✅ via `extract_records_by_config()` (`font_fingerprint_walk`) | `extract_features` (commit 9e9f06f), `extract_magic_items` (commit 0badf2f) |
+| ❌ | the remaining 11 |
 
-The v0.31–v0.37 release series moved the lifecycle column for 7 files
-and left the binding column unchanged. The v0.27.x retirements
-(`class_targets`, `lineage_targets`, `spell_class_targets`,
-`poison_descriptions`, `equipment_packs`, `equipment_descriptions`)
-replaced hand-curated data with new bespoke extractors, also unbound.
-**The engine has had zero new bindings since the original 7 pattern
-types were built.**
+**Current score: 2/13.** The v0.31–v0.37 release series moved the
+lifecycle column for 7 files and left the binding column at 0/13. The
+design pass below opened in 391a6bc, prototype landed in 9e9f06f
+(`extract_features`), schema-generalization test landed in 0badf2f
+(`extract_magic_items` — bound on first try, byte-identical output).
+The two confirmed design-pass candidates are both bound. Further
+bindings need their own shape analysis (see "Remaining shapes" below).
 
 #### Shape inventory (input to engine-binding design)
 
@@ -197,26 +198,64 @@ this depth. **Two callers is the ROI threshold** — below it, bespoke
 is honest; above it, the pattern type pays for itself. This is right
 at the edge.
 
-**Recommended next step (single release, real work).** Pick ONE of:
+**Outcome (2026-06-20).** Prototype path executed. Both confirmed
+candidates bound, both byte-identical, full suite green (690),
+audit 0/0/0, dist byte-identical. Engine schema additions made
+along the way (line-mode header scope, header continuation words,
+font-split span buckets, `merge_short_records` post-pass) generalized
+cleanly — the second binding worked on the first try with no
+revisions to engine code. Pattern type confirmed not single-purpose.
 
-1. **Prototype path.** Implement `font_fingerprint_walk` against
-   `extract_features` first (simpler — one entry point, no cross-page
-   merge, no font-split body). If the binding is clean, do
-   `extract_magic_items` as the second binding and learn whether the
-   config schema generalizes. If it doesn't, revert and document why.
-   *Estimated scope: design + 1 binding + parity test in one focused
-   session. NOT a release; the release is the second binding when the
-   schema is proven.*
-2. **Defer path.** Accept that 2 confirmed callers is below the
-   pattern-type threshold for now. Mark the design pass complete, file
-   the config sketch for reference, and move on to other v1.0 work.
-   Revisit if/when `extract_spells` or `extract_monsters` get inspected
-   at the same depth and add 1–2 more confirmed callers.
+Design-pass open item closed.
 
-The "shared font-anchored pattern emerges" hand-waving in v0.33–v0.37
-is now closed: the pattern was specified above, and the answer to
-"does it justify a pattern type yet?" is "marginally — pick path 1 or
-path 2 deliberately."
+### Remaining shapes — next honest pass
+
+The original shape inventory listed `extract_spells` and
+`extract_monsters` as "font-fingerprint walk + cross-page state".
+A quick read of `extract_spells` (370 lines) shows it is materially
+different from features/magic_items:
+
+- **Sub-field record schema.** Beyond `name` + body buckets,
+  spells have a dedicated flat `level_and_school` string captured
+  from the first italic span after the name.
+- **Section state machine within a record.** Body spans go to
+  `header_blocks` until accumulated text contains `"Duration:"`;
+  then switch to `description_blocks`. Not font-based — text-driven
+  transition.
+- **Per-span metadata enrichment.** `Cambria-BoldItalic` spans get
+  tagged `"section": "higher_levels"`; `Cambria-Bold` spans get
+  `"is_field_label": True`. Buckets need to attach extra fields, not
+  just route spans.
+- **Cross-page carry of incomplete records.** Spells carry a
+  header-only record forward with its section state, rather than
+  the post-pass merge magic_items uses.
+- **Nameless continuation records.** A non-name span arriving when
+  no current spell exists starts an empty-name record that the
+  post-pass merges into the previous.
+
+`extract_monsters` (631 lines) has not been inspected at this depth
+but likely needs further extensions (stat block tables, traits,
+actions, legendary actions are all distinct sections).
+
+**Honest fork.** Three options for `extract_spells` and beyond:
+
+1. **Extend `font_fingerprint_walk` with state-machine body
+   grouping + sub-field buckets + carry-mode page reset.** Real
+   schema work, but each addition pulls the engine toward swallowing
+   one specific extractor's quirks. Risk: pattern type becomes "the
+   spells engine with a couple of toggles".
+2. **Design a sibling pattern type** (e.g. `font_stateful_walk`)
+   that owns state-machine body grouping natively. Higher upfront
+   cost; cleaner shape boundaries.
+3. **Leave `extract_spells` / `extract_monsters` bespoke.** Two
+   bindings (features + magic_items) was the explicit design-pass
+   ROI threshold; further bindings need their own shape analysis,
+   not a presumed extension. Engine binding count stays at 2/13;
+   the remaining 11 either get their own design passes or stay
+   bespoke deliberately.
+
+No path picked yet. Pick when the next release is being scoped, not
+in between.
 
 ### Proposed approach (gradual, one extractor per release)
 
