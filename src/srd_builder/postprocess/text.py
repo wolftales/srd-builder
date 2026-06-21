@@ -5,7 +5,44 @@ from __future__ import annotations
 import re
 from typing import Any
 
-__all__ = ["clean_text", "polish_text", "polish_text_fields"]
+__all__ = [
+    "clean_text",
+    "collapse_soft_hyphen_runs",
+    "polish_text",
+    "polish_text_fields",
+    "strip_srd_page_footer",
+]
+
+_SRD_PAGE_FOOTER_RE = re.compile(r"\s*System Reference Document\s+[\d.]+(?:\s+\d+)?\s*")
+_SOFT_HYPHEN_RUN_RE = re.compile(r"[-\xad\u2010\u2011]{2,}")
+
+
+def strip_srd_page_footer(text: str) -> str:
+    """Replace the SRD running page footer with a single space.
+
+    The PyMuPDF text stream renders the running ``System Reference
+    Document 5.1 67`` footer/header inline with body prose, which
+    leaves the marker mid-sentence on cross-page extractions. The
+    pattern is version-tolerant (matches ``5.1``, ``5.2.1``, etc.) and
+    page-number-optional so callers in postprocess (where text has
+    already been concatenated) and in extract (where each page is
+    normalized individually) can share one implementation.
+    """
+    return _SRD_PAGE_FOOTER_RE.sub(" ", text)
+
+
+def collapse_soft_hyphen_runs(text: str) -> str:
+    """Collapse runs of 2+ hyphen-class characters to a single ASCII ``-``.
+
+    PDF line wraps inside hyphenated compounds (``two-handed`` rendered
+    across a line break, ``15-foot`` across a column break) leave
+    sequences of soft-hyphen (U+00AD), hyphen (U+2010), non-breaking
+    hyphen (U+2011), and ASCII ``-`` adjacent in the text stream.
+    This helper repairs those runs while preserving singleton hyphens
+    so legitimate hyphenated words like ``narrow-bladed`` survive.
+    """
+    return _SOFT_HYPHEN_RUN_RE.sub("-", text)
+
 
 _LEGENDARY_SENTENCES = [
     re.compile(r"The [^.]+ can take [^.]+ legendary actions[^.]*\.\s*", re.IGNORECASE),
@@ -66,7 +103,7 @@ def clean_text(text: str) -> str:
     # Strip the PDF page footer ("System Reference Document 5.1" + optional
     # page number). Appears mid-prose on cross-page extractions and trailing
     # on single-page ones; both cases collapse to a single space.
-    text = re.sub(r"System Reference Document\s+[\d.]+(?:\s+\d+)?", " ", text)
+    text = strip_srd_page_footer(text)
 
     # Fix common PDF encoding issues
     text = text.replace("­‐‑", "-")  # Replace garbled dashes (soft hyphen + hyphens)
@@ -103,7 +140,7 @@ def polish_text(text: str | None) -> str | None:
     # Strip the PDF page footer (mirrors clean_text). Monster trait/action
     # descriptions flow through polish_text rather than clean_text, so the
     # strip has to live here as well.
-    cleaned = re.sub(r"System Reference Document\s+[\d.]+(?:\s+\d+)?", " ", cleaned)
+    cleaned = strip_srd_page_footer(cleaned)
 
     cleaned = cleaned.replace("\u2013", "—").replace("\u2014", "—")
     cleaned = re.sub(r"--+", "—", cleaned)

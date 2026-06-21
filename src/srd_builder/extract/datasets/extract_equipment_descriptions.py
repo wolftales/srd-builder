@@ -30,7 +30,11 @@ from srd_builder.utils.pdf_probe import (
     offset_to_page,
     open_pdf,
 )
-from srd_builder.utils.prose import normalize_apostrophes
+from srd_builder.utils.prose import (
+    collapse_soft_hyphen_runs,
+    normalize_apostrophes,
+    strip_srd_page_footer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -174,26 +178,21 @@ _HEADING_RE = re.compile(
 # Sequence of 2+ hyphen-like characters (PDF soft hyphen U+00AD, hyphen
 # U+2010, non-breaking hyphen U+2011, ASCII '-') collapses to a single
 # ASCII hyphen. Singletons are preserved so legitimate hyphenated words
-# like "narrow-bladed" survive.
-_SOFT_HYPHEN_RE = re.compile(r"[-\xad\u2010\u2011]{2,}")
+# like "narrow-bladed" survive. Implemented in utils.prose.
 _WHITESPACE_RE = re.compile(r"\s+")
 # PDF line-wraps around em-dashes leave a stray space after whitespace
 # normalization ("item— an"). The curated SRD typography closes them,
 # so do the same on both sides.
 _EM_DASH_SPACE_RE = re.compile(r" *— *")
-# Running page footer/header rendered by pymupdf into the text stream.
-# Strip so descriptions that span page boundaries don't carry the
-# "System Reference Document 5.1 67" marker mid-sentence.
-_PAGE_FOOTER_RE = re.compile(r"\s*System Reference Document 5\.1 \d+\s*")
 
 
 def _normalize(text: str) -> str:
     """Collapse soft-hyphen runs, normalize apostrophes + whitespace."""
     text = normalize_whitespace(text)
-    text = _SOFT_HYPHEN_RE.sub("-", text)
+    text = collapse_soft_hyphen_runs(text)
     text = normalize_apostrophes(text)
     text = _WHITESPACE_RE.sub(" ", text)
-    text = _PAGE_FOOTER_RE.sub(" ", text)
+    text = strip_srd_page_footer(text)
     text = _EM_DASH_SPACE_RE.sub("—", text)
     return text.strip()
 

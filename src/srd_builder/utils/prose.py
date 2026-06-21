@@ -12,14 +12,16 @@ import re
 from typing import Any
 
 # Import shared text cleaning utility to avoid duplication
-from ..postprocess.text import clean_text
+from ..postprocess.text import clean_text, collapse_soft_hyphen_runs, strip_srd_page_footer
 
 __all__ = [
     "clean_text",
+    "collapse_soft_hyphen_runs",
     "extract_bullet_points",
     "extract_table_by_pattern",
     "normalize_apostrophes",
     "ProseExtractor",
+    "strip_srd_page_footer",
 ]
 
 
