@@ -148,7 +148,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    schemas = sorted(SCHEMAS_DIR.glob("*.schema.json"))
+    # Envelope schemas describe the bundle wrapper (meta.json, build_report.json),
+    # not item shapes. They're validated by tests/test_meta_envelope_contract.py
+    # against the actual built bundle; generating synthetic exemplars for them
+    # would require hand-coding examples that the generic build_exemplar() helper
+    # can't infer.
+    envelope_schemas = {"meta", "build_report"}
+    schemas = sorted(
+        p
+        for p in SCHEMAS_DIR.glob("*.schema.json")
+        if p.name.replace(".schema.json", "") not in envelope_schemas
+    )
     if not schemas:
         print(f"No schemas found under {SCHEMAS_DIR}", file=sys.stderr)
         return 1

@@ -4,8 +4,7 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "1.0.0",
-    "generated_by": "srd-builder v0.37.1",
-    "build_report": "./build_report.json"
+    "generated_by": "srd-builder v0.38.0"
   },
   "items": [
     {
@@ -114,7 +113,7 @@
       "simple_name": "versatile",
       "name": "Versatile",
       "description": [
-        "This weapon can be used with one or two hands. A damage value in parentheses appears with the property—the damage when the weapon is used with two hands to make a melee attack."
+        "This weapon can be used with one or two hands. A damage value in parentheses appears with the property\u2014the damage when the weapon is used with two hands to make a melee attack."
       ],
       "page": 65,
       "source": "SRD_CC_v5.1"

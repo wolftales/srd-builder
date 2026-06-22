@@ -55,13 +55,14 @@ def test_dataset_populated(dataset_name: str, expected_min: int) -> None:
 
 def test_all_datasets_have_standard_meta_fields() -> None:
     """Test that all datasets have the standard _meta fields in correct order."""
+    # As of v0.38.0 the sibling `build_report` pointer has been removed from
+    # each dataset's _meta; build_report.json lives outside the bundle.
     standard_fields = [
         "source",
         "ruleset_version",
         "game_system",
         "schema_version",
         "generated_by",
-        "build_report",
     ]
 
     for dataset_name in EXPECTED_COUNTS.keys():

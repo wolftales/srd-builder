@@ -246,7 +246,6 @@ def meta_block(
         "game_system": info["game_system"],
         "schema_version": schema_version,
         "generated_by": f"srd-builder v{__version__}",
-        "build_report": "./build_report.json",
     }
     if dataset is not None:
         block["dataset"] = dataset
@@ -410,7 +409,9 @@ def generate_meta_json(  # noqa: PLR0913
     )
 
     build_info: dict[str, str | None] = {
-        "pdf_hash": f"sha256:{pdf_hash}" if pdf_hash else None,
+        # Raw hex sha256 (no "sha256:" prefix) to match the form used in every
+        # dataset's _meta.pdf_sha256. One representation across the envelope.
+        "pdf_hash": pdf_hash if pdf_hash else None,
     }
     if build_timestamp is not None:
         build_info["extracted_at"] = build_timestamp

@@ -106,12 +106,24 @@ def test_build_pipeline(tmp_path, monkeypatch):
     assert monsters_meta["ruleset_version"] == "5.1"
     assert monsters_meta["game_system"] == "dnd5e"
     assert monsters_meta["schema_version"] == read_schema_version("monster")
-    assert monsters_meta["build_report"] == "./build_report.json"
+    # As of v0.38.0 the sibling build_report pointer is gone from dataset _meta;
+    # build_report.json lives one directory up (alongside the bundle).
+    assert "build_report" not in monsters_meta
     assert monsters_meta["dataset"] == "monsters"
     assert monsters_meta["item_count"] == len(monsters_doc["items"])
     assert monsters_meta["extraction_warnings"] == []
     assert monsters_doc["_meta"]["generated_by"].startswith("srd-builder v")
     assert len(monsters_doc["items"]) > 0
+
+    # build_report.json now lives at dist/build_report.json (one level above the
+    # bundle directory) so the bundle stays byte-deterministic.
+    sibling_report_path = dist_ruleset_dir.parent / "build_report.json"
+    assert sibling_report_path.exists()
+    sibling_report = json.loads(sibling_report_path.read_text(encoding="utf-8"))
+    assert sibling_report["bundle"] == ruleset
+    assert sibling_report["ruleset"] == ruleset
+    assert "timestamp_utc" in sibling_report
+    assert "builder_version" in sibling_report
 
     index_doc = json.loads(index_path.read_text(encoding="utf-8"))
     assert index_doc["_meta"]["ruleset_version"] == "5.1"

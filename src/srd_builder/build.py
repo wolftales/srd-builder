@@ -493,8 +493,9 @@ def _write_datasets(  # noqa: PLR0913
 
 @dataclass
 class BuildReport:
-    """Small metadata payload written alongside build artifacts."""
+    """Small metadata payload written alongside (not inside) build artifacts."""
 
+    bundle: str
     ruleset: str
     output_format: str
     timestamp_utc: str
@@ -507,6 +508,7 @@ class BuildReport:
         # dataset files should remain timestamp-free to keep builds reproducible.
         timestamp = datetime.now(UTC).isoformat()
         return cls(
+            bundle=ruleset,
             ruleset=ruleset,
             output_format=output_format,
             timestamp_utc=timestamp,
@@ -739,6 +741,19 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
         else:
             print(f"  ⚠ Schema not found: {src.name}")
     print(f"  ✓ Copied schemas/ ({len(schema_names)} schemas)")
+
+    # Envelope schemas (v0.38.0+): meta.json + build_report.json contracts.
+    envelope_schemas = ["meta.schema.json", "build_report.schema.json"]
+    envelope_copied = 0
+    for envelope_name in envelope_schemas:
+        src = schemas_src / envelope_name
+        if src.exists():
+            (schemas_dst / envelope_name).write_text(
+                src.read_text(encoding="utf-8"), encoding="utf-8"
+            )
+            envelope_copied += 1
+    if envelope_copied:
+        print(f"  ✓ Copied envelope schemas ({envelope_copied} files)")
 
     # Copy generated exemplars (one minimal valid instance per schema).
     exemplars_src = repo_root / SCHEMAS_DIRNAME / EXEMPLARS_DIRNAME
@@ -1093,7 +1108,10 @@ def build(  # noqa: C901
     skip_datasets = skip_datasets or set()
 
     report = BuildReport.create(ruleset=ruleset, output_format=output_format)
-    report_path = target_dir / "build_report.json"
+    # build_report.json lives outside the bundle directory so the bundle stays
+    # byte-deterministic (build_report carries a timestamp). Consumers locate it
+    # one level up from the dataset files.
+    report_path = target_dir.parent / "build_report.json"
     report_path.write_text(report.to_json() + "\n", encoding="utf-8")
 
     # Extract monsters from PDF (v0.3.0)

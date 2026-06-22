@@ -20,9 +20,11 @@ else
   exit 1
 fi
 
-# Hash comparison (determinism check) - exclude build_report.json which has timestamps
+# Hash comparison (determinism check). As of v0.38.0 build_report.json lives
+# alongside the bundle (not inside it), so the dataset directory is already
+# clean — every JSON in here is part of the deterministic envelope.
 declare -A HASHES
-mapfile -t FILES < <(find "${DATA_DIR}" -maxdepth 1 -name '*.json' ! -name 'build_report.json' | sort)
+mapfile -t FILES < <(find "${DATA_DIR}" -maxdepth 1 -name '*.json' | sort)
 for file in "${FILES[@]}"; do
   HASHES["${file}"]=$(sha256sum "${file}" | awk '{print $1}')
 done

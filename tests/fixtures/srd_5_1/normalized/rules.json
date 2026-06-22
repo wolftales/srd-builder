@@ -4,8 +4,7 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "3.1.0",
-    "generated_by": "srd-builder v0.37.1",
-    "build_report": "./build_report.json"
+    "generated_by": "srd-builder v0.38.0"
   },
   "items": [
     {
@@ -28,7 +27,7 @@
         "scores as high as 20, and monsters and divine beings",
         "can have scores as high as 30.",
         "Each ability also has a modifier, derived from the",
-        "score and ranging from −5 (for an ability score of 1)",
+        "score and ranging from \u22125 (for an ability score of 1)",
         "to +10 (for a score of 30). The Ability Scores and",
         "Modifiers table notes the ability modifiers for the",
         "range of possible ability scores, from 1 to 30."
@@ -70,7 +69,7 @@
         "only one can succeed, such as attempting to snatch",
         "up a magic ring that has fallen on the floor. This",
         "situation also applies when one of them is trying to",
-        "prevent the other one from accomplishing a goal—",
+        "prevent the other one from accomplishing a goal\u2014",
         "for example, when a monster tries to force open a",
         "door that an adventurer is holding closed. In",
         "situations like these, the outcome is determined by a",

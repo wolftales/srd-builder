@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/build_report.schema.json",
+  "version": "1.0.0",
+  "last_modified": "2026-06-22",
+  "title": "srd-builder Build Report (build_report.json)",
+  "description": "Per-build provenance payload written to dist/build_report.json alongside the bundle directory. Carries the timestamp and Python version so the bundle itself can stay byte-deterministic. The 'bundle' field links the report to the ruleset directory it produced.",
+  "type": "object",
+  "required": [
+    "bundle",
+    "ruleset",
+    "builder_version",
+    "output_format",
+    "python_version",
+    "timestamp_utc"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "bundle": {
+      "type": "string",
+      "description": "Bundle directory name (e.g. 'srd_5_1'). Matches the subdirectory under dist/."
+    },
+    "ruleset": {
+      "type": "string",
+      "description": "Ruleset identifier (e.g. 'srd_5_1'). Equals 'bundle' today; reserved as distinct field in case a single ruleset ever produces multiple bundles."
+    },
+    "builder_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+].+)?$"
+    },
+    "output_format": {
+      "type": "string",
+      "enum": [
+        "json"
+      ]
+    },
+    "python_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[a-z0-9.-]+)?$"
+    },
+    "timestamp_utc": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

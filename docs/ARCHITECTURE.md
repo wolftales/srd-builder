@@ -1,7 +1,7 @@
 # SRD-Builder Architecture
 
 <!-- AUTO-SYNC:arch:version START -->
-**Version:** v0.37.1
+**Version:** v0.38.0
 <!-- AUTO-SYNC:arch:version END -->
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
@@ -12,7 +12,7 @@
 ## Datasets Overview
 
 <!-- AUTO-SYNC:arch:total-line START -->
-SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.37.1 build ships **16 datasets** containing **1,687 items**:
+SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.38.0 build ships **16 datasets** containing **1,687 items**:
 <!-- AUTO-SYNC:arch:total-line END -->
 
 <!-- AUTO-SYNC:arch:overview-table START -->
@@ -1115,7 +1115,7 @@ When releasing a new version:
 ## Reference Data
 
 <!-- AUTO-SYNC:arch:stats-header START -->
-### Dataset Statistics (v0.37.1)
+### Dataset Statistics (v0.38.0)
 <!-- AUTO-SYNC:arch:stats-header END -->
 
 Live counts come from `dist/srd_5_1/meta.json.datasets`. Snapshot for this revision:

@@ -4,8 +4,7 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "1.0.0",
-    "generated_by": "srd-builder v0.37.1",
-    "build_report": "./build_report.json"
+    "generated_by": "srd-builder v0.38.0"
   },
   "items": [
     {
@@ -52,9 +51,9 @@
       "ability_id": "ability:strength",
       "description": [
         "Your Strength (Athletics) check covers difficult situations you encounter while climbing, jumping, or swimming. Examples include the following activities:",
-        "• You attempt to climb a sheer or slippery cliff, avoid hazards while scaling a wall, or cling to a surface while something is trying to knock you off.",
-        "• You try to jump an unusually long distance or pull off a stunt midjump.",
-        "• You struggle to swim or stay afloat in treacherous currents, storm-tossed waves, or areas of thick seaweed. Or another creature tries to push or pull you underwater or otherwise interfere with your swimming."
+        "\u2022 You attempt to climb a sheer or slippery cliff, avoid hazards while scaling a wall, or cling to a surface while something is trying to knock you off.",
+        "\u2022 You try to jump an unusually long distance or pull off a stunt midjump.",
+        "\u2022 You struggle to swim or stay afloat in treacherous currents, storm-tossed waves, or areas of thick seaweed. Or another creature tries to push or pull you underwater or otherwise interfere with your swimming."
       ],
       "page": 78,
       "source": "SRD_CC_v5.1"

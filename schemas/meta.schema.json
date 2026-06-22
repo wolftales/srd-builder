@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/meta.schema.json",
+  "version": "1.0.0",
+  "last_modified": "2026-06-22",
+  "title": "SRD Bundle Envelope (meta.json)",
+  "description": "Pinned shape of the bundle envelope file shipped at <bundle>/meta.json. This is the consumer-visible contract: top-level keys, the schemas map, the datasets manifest, and licensing. Manifest renames (e.g. files\u2192inventory\u2192datasets) are MAJOR builder_version changes and must update this schema's version. See docs/COMPATIBILITY.md for the policy.",
+  "type": "object",
+  "required": [
+    "source",
+    "ruleset_version",
+    "builder_version",
+    "schemas",
+    "license",
+    "build",
+    "page_index",
+    "datasets"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "source": {
+      "type": "string",
+      "description": "Source identifier for the underlying ruleset (e.g. 'SRD_CC_v5.1')."
+    },
+    "ruleset_version": {
+      "type": "string",
+      "description": "Game ruleset version (e.g. '5.1'). Distinct from builder_version."
+    },
+    "builder_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:[-+].+)?$",
+      "description": "srd-builder semver. Carries the compatibility contract for this envelope and all shipped schemas. MAJOR = envelope or schema breaking change; MINOR = additive; PATCH = bug fix. See docs/COMPATIBILITY.md."
+    },
+    "schemas": {
+      "type": "object",
+      "description": "Per-dataset schema versions. One entry per shipped dataset, keyed by schema name (singular form: 'ability_score', not 'ability_scores').",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+\\.\\d+$"
+      },
+      "required": [
+        "ability_score",
+        "class",
+        "condition",
+        "damage_type",
+        "disease",
+        "equipment",
+        "features",
+        "lineage",
+        "magic_item",
+        "monster",
+        "poison",
+        "rule",
+        "skill",
+        "spell",
+        "table",
+        "weapon_property"
+      ]
+    },
+    "license": {
+      "type": "object",
+      "required": [
+        "type",
+        "url",
+        "attribution"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "attribution": {
+          "type": "string"
+        },
+        "conversion_note": {
+          "type": "string"
+        }
+      }
+    },
+    "build": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "pdf_hash": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "Raw hex sha256 of the source PDF, matching the form used in each dataset's _meta.pdf_sha256. One representation across the whole envelope."
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "extracted_at": {
+          "type": "string",
+          "description": "Optional debug field; envelope itself is timestamp-free (the timestamp_utc lives in dist/build_report.json)."
+        }
+      }
+    },
+    "page_index": {
+      "type": "object",
+      "description": "Named page regions of the source document. Each region carries a start/end page span plus a human description; the optional 'dataset' pointer links a region to a dataset name in the datasets manifest.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "description"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "start": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "dataset": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "datasets": {
+      "type": "object",
+      "description": "Dataset manifest. KEY NAME IS THE CONTRACT \u2014 earlier builder versions used 'files' then 'inventory'; the current name is 'datasets'. Renames are MAJOR builder_version changes.",
+      "minProperties": 16,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "file",
+          "count",
+          "status"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "file": {
+            "type": "string",
+            "pattern": "^[a-z_]+\\.json$"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "partial",
+              "stub"
+            ]
+          }
+        }
+      }
+    },
+    "terminology": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "aliases": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

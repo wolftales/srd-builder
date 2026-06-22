@@ -27,10 +27,14 @@ def test_all_exemplars_validate_against_their_schemas() -> None:
 
 
 def test_every_schema_has_a_committed_exemplar() -> None:
+    # Envelope schemas describe the bundle wrapper (meta.json, build_report.json),
+    # not item shapes. They're covered by tests/test_meta_envelope_contract.py
+    # which validates the actual built bundle.
+    envelope_schemas = {"meta", "build_report"}
     schemas = {
         p.name.replace(".schema.json", "")
         for p in generate_exemplars.SCHEMAS_DIR.glob("*.schema.json")
-    }
+    } - envelope_schemas
     exemplars = {
         p.name.replace(".exemplar.json", "")
         for p in generate_exemplars.EXEMPLARS_DIR.glob("*.exemplar.json")

@@ -4,8 +4,7 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "1.1.0",
-    "generated_by": "srd-builder v0.37.1",
-    "build_report": "./build_report.json"
+    "generated_by": "srd-builder v0.38.0"
   },
   "items": [
     {
@@ -27,7 +26,7 @@
       "simple_name": "bludgeoning",
       "name": "Bludgeoning",
       "description": [
-        "Blunt force attacks—hammers, falling, constriction, and the like—deal bludgeoning damage."
+        "Blunt force attacks\u2014hammers, falling, constriction, and the like\u2014deal bludgeoning damage."
       ],
       "examples": [
         "hammers",

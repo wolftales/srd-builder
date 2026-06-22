@@ -4,8 +4,7 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "3.1.0",
-    "generated_by": "srd-builder v0.37.1",
-    "build_report": "./build_report.json"
+    "generated_by": "srd-builder v0.38.0"
   },
   "items": [
     {
@@ -16,62 +15,62 @@
       "rows": [
         [
           "1",
-          "−5"
+          "\u22125"
         ],
         [
-          "2—3",
-          "−4"
+          "2\u20143",
+          "\u22124"
         ],
         [
-          "4—5",
-          "−3"
+          "4\u20145",
+          "\u22123"
         ],
         [
-          "6—7",
-          "−2"
+          "6\u20147",
+          "\u22122"
         ],
         [
-          "8—9",
-          "−1"
+          "8\u20149",
+          "\u22121"
         ],
         [
-          "10—11",
+          "10\u201411",
           "+0"
         ],
         [
-          "12—13",
+          "12\u201413",
           "+1"
         ],
         [
-          "14—15",
+          "14\u201415",
           "+2"
         ],
         [
-          "16—17",
+          "16\u201417",
           "+3"
         ],
         [
-          "18—19",
+          "18\u201419",
           "+4"
         ],
         [
-          "20—21",
+          "20\u201421",
           "+5"
         ],
         [
-          "22—23",
+          "22\u201423",
           "+6"
         ],
         [
-          "24—25",
+          "24\u201425",
           "+7"
         ],
         [
-          "26—27",
+          "26\u201427",
           "+8"
         ],
         [
-          "28—29",
+          "28\u201429",
           "+9"
         ],
         [
@@ -101,7 +100,7 @@
           "1 lb."
         ],
         [
-          "Alchemist’s fire (flask)",
+          "Alchemist\u2019s fire (flask)",
           "50 gp",
           "1 lb."
         ],
@@ -123,17 +122,17 @@
         [
           "Crossbow bolts (20)",
           "1 gp",
-          "1½ lb."
+          "1\u00bd lb."
         ],
         [
           "Sling bullets (20)",
           "4 cp",
-          "1½ lb."
+          "1\u00bd lb."
         ],
         [
           "Antitoxin (vial)",
           "50 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Arcane focus",
@@ -193,7 +192,7 @@
         [
           "Bell",
           "1 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Blanket",
@@ -228,7 +227,7 @@
         [
           "Candle",
           "1 cp",
-          "—"
+          "\u2014"
         ],
         [
           "Case, crossbow bolt",
@@ -248,7 +247,7 @@
         [
           "Chalk (1 piece)",
           "1 cp",
-          "—"
+          "\u2014"
         ],
         [
           "Chest",
@@ -256,7 +255,7 @@
           "25 lb."
         ],
         [
-          "Climber’s kit",
+          "Climber\u2019s kit",
           "25 gp",
           "12 lb."
         ],
@@ -276,7 +275,7 @@
           "6 lb."
         ],
         [
-          "Clothes, traveler’s",
+          "Clothes, traveler\u2019s",
           "2 gp",
           "4 lb."
         ],
@@ -298,12 +297,12 @@
         [
           "Sprig of mistletoe",
           "1 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Totem",
           "1 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Wooden staff",
@@ -341,7 +340,7 @@
           "10 lb."
         ],
         [
-          "Healer’s kit",
+          "Healer\u2019s kit",
           "5 gp",
           "3 lb."
         ],
@@ -358,7 +357,7 @@
         [
           "Emblem",
           "5 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Reliquary",
@@ -383,12 +382,12 @@
         [
           "Ink (1 ounce bottle)",
           "10 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Ink pen",
           "2 cp",
-          "—"
+          "\u2014"
         ],
         [
           "Jug or pitcher",
@@ -396,7 +395,7 @@
           "4 lb."
         ],
         [
-          "Ladder (10-­‐foot)",
+          "Ladder (10-\u00ad\u2010foot)",
           "1 sp",
           "25 lb."
         ],
@@ -423,7 +422,7 @@
         [
           "Magnifying glass",
           "100 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Manacles",
@@ -448,20 +447,20 @@
         [
           "Paper (one sheet)",
           "2 sp",
-          "—"
+          "\u2014"
         ],
         [
           "Parchment (one sheet)",
           "1 sp",
-          "—"
+          "\u2014"
         ],
         [
           "Perfume (vial)",
           "5 gp",
-          "—"
+          "\u2014"
         ],
         [
-          "Pick, miner’s",
+          "Pick, miner\u2019s",
           "2 gp",
           "10 lb."
         ],
@@ -473,10 +472,10 @@
         [
           "Poison, basic (vial)",
           "100 gp",
-          "—"
+          "\u2014"
         ],
         [
-          "Pole (10-­‐foot)",
+          "Pole (10-\u00ad\u2010foot)",
           "5 cp",
           "7 lb."
         ],
@@ -531,14 +530,14 @@
           "lb."
         ],
         [
-          "Scale, merchant’s",
+          "Scale, merchant\u2019s",
           "5 gp",
           "3 lb."
         ],
         [
           "Sealing wax",
           "5 sp",
-          "—"
+          "\u2014"
         ],
         [
           "Shovel",
@@ -548,17 +547,17 @@
         [
           "Signal whistle",
           "5 cp",
-          "—"
+          "\u2014"
         ],
         [
           "Signet ring",
           "5 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Soap",
           "2 cp",
-          "—"
+          "\u2014"
         ],
         [
           "Spellbook",
@@ -576,7 +575,7 @@
           "1 lb."
         ],
         [
-          "Tent, two-­‐person",
+          "Tent, two-\u00ad\u2010person",
           "2 gp",
           "20 lb."
         ],
@@ -593,7 +592,7 @@
         [
           "Vial",
           "1 gp",
-          "—"
+          "\u2014"
         ],
         [
           "Waterskin",
@@ -622,71 +621,71 @@
           "cured)"
         ],
         [
-          "01—15 “Being drunk",
-          "keeps me sane.”"
+          "01\u201415 \u201cBeing drunk",
+          "keeps me sane.\u201d"
         ],
         [
-          "16—25 “I keep whatever",
-          "I find.”"
+          "16\u201425 \u201cI keep whatever",
+          "I find.\u201d"
         ],
         [
-          "26—30 “I try to become",
+          "26\u201430 \u201cI try to become",
           "more like someone else I"
         ],
         [
-          "know—adopting",
+          "know\u2014adopting",
           "his or her style of dress,"
         ],
         [
           "mannerisms,",
-          "and name.”"
+          "and name.\u201d"
         ],
         [
-          "31—35 “I must bend",
+          "31\u201435 \u201cI must bend",
           "the truth, exaggerate, or outright"
         ],
         [
           "lie to be interesting",
-          "to other people.”"
+          "to other people.\u201d"
         ],
         [
-          "36—45 “Achieving my",
+          "36\u201445 \u201cAchieving my",
           "goal is the only thing of interest"
         ],
         [
-          "to me, and I’ll",
+          "to me, and I\u2019ll",
           "ignore everything else to pursue"
         ],
         [
-          "it.”",
+          "it.\u201d",
           ""
         ],
         [
-          "46—50 “I find it hard",
+          "46\u201450 \u201cI find it hard",
           "to care about anything that goes"
         ],
         [
-          "on around me.”",
+          "on around me.\u201d",
           ""
         ],
         [
-          "51—55 “I don’t like",
+          "51\u201455 \u201cI don\u2019t like",
           "the way people judge me all the"
         ],
         [
-          "time.”",
+          "time.\u201d",
           ""
         ],
         [
-          "56—70 “I am the smartest,",
+          "56\u201470 \u201cI am the smartest,",
           "wisest, strongest, fastest,"
         ],
         [
           "and most beautiful",
-          "person I know.”"
+          "person I know.\u201d"
         ],
         [
-          "71—80 “I am convinced",
+          "71\u201480 \u201cI am convinced",
           "that powerful enemies are"
         ],
         [
@@ -695,27 +694,27 @@
         ],
         [
           "go. I am sure",
-          "they’re watching me all the time.”"
+          "they\u2019re watching me all the time.\u201d"
         ],
         [
-          "81—85 “There’s only",
+          "81\u201485 \u201cThere\u2019s only",
           "one person I can trust. And only I"
         ],
         [
           "can see this",
-          "special friend.”"
+          "special friend.\u201d"
         ],
         [
-          "86—95 “I can’t take",
+          "86\u201495 \u201cI can\u2019t take",
           "anything seriously. The more"
         ],
         [
           "serious the situation,",
-          "the funnier I find it.”"
+          "the funnier I find it.\u201d"
         ],
         [
-          "96—100 “I’ve discovered",
-          "that I really like killing people.”"
+          "96\u2014100 \u201cI\u2019ve discovered",
+          "that I really like killing people.\u201d"
         ]
       ],
       "simple_name": "indefinite_madness",

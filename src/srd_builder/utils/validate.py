@@ -259,13 +259,17 @@ def check_data_quality(ruleset: str) -> None:  # noqa: C901
 
 
 def _ensure_build_report(ruleset: str) -> None:
-    report_path = DIST_DIR / ruleset / "build_report.json"
+    # As of v0.38.0 build_report.json lives alongside the bundle (not inside it)
+    # so the bundle directory stays byte-deterministic. Same producer, same
+    # consumer-visible information, different location.
+    report_path = DIST_DIR / "build_report.json"
     if not report_path.exists():
         raise FileNotFoundError(
-            f"build_report.json missing for ruleset '{ruleset}'. Did you run build?"
+            f"build_report.json missing for ruleset '{ruleset}'. "
+            f"Expected at {report_path}. Did you run build?"
         )
 
-    print(f"OK: build_report.json present for {ruleset}.")
+    print(f"OK: build_report.json present for {ruleset} at {report_path}.")
 
 
 def _check_pdf_hash(ruleset: str) -> None:
