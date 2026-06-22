@@ -5,14 +5,23 @@ This document defines behavioral guidelines for AI coding agents working on srd-
 For software architecture and design patterns, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Workflow
-- **Branch:** one feature per PR. Never commit to main.
-- **Local development:**
-  - pre-commit run -a
-  - pytest -q
-- **CI and container environments (no pre-commit available):**
-  - ruff check .
-  - ruff format --check .
-  - pytest -q
+- **Branch model:** This is a solo project. Direct commits to `main` are the
+  norm, not the exception. The "never commit to main" rule applies if and when
+  additional contributors join — at that point switch to feature branches and
+  PR review. Until then, the goal is fast iteration with the safety nets below
+  doing the work that a reviewer would otherwise do.
+- **Every commit must leave the tree green.** Before committing:
+  - `pre-commit run -a` (ruff, ruff-format, mypy, sync-doc-tables, no-srd-pdf, pretty-json)
+  - `pytest -q` (full suite, including the `package` marker)
+  - For releases: `make verify-ci` (adds the strict bundle validator as step 5/5)
+- **CI / container environments (no pre-commit available):**
+  - `ruff check .`
+  - `ruff format --check .`
+  - `pytest -q`
+- **Pushing:** Pushing to `origin/main` makes the change visible to consumers
+  (e.g. the Blackmoor integration). Push when a logical chunk of work is done
+  and tested; don't push WIP. Tagged releases (`vX.Y.Z`) should always be
+  pushed alongside the commit they tag.
 - **Determinism:** No timestamps or environment-dependent values in dataset files.
 
 ## Agent Behavior
