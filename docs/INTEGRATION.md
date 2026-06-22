@@ -20,7 +20,7 @@ This document is written for **downstream consumers** of the srd-builder bundle 
 ---
 
 <!-- AUTO-SYNC:int:bundle-header START -->
-## Bundle Layout (v0.38.0)
+## Bundle Layout (v0.38.1)
 <!-- AUTO-SYNC:int:bundle-header END -->
 
 The full bundle lives under `dist/srd_5_1/`:

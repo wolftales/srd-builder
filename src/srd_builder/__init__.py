@@ -21,7 +21,7 @@ def _read_version() -> str:
             with _PYPROJECT.open("rb") as fh:
                 data = tomllib.load(fh)
             return str(data["project"]["version"])
-        except (OSError, KeyError, TypeError, tomllib.TOMLDecodeError):
+        except OSError, KeyError, TypeError, tomllib.TOMLDecodeError:
             pass
     try:
         from importlib.metadata import version
