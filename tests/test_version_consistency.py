@@ -9,11 +9,33 @@ See docs/ARCHITECTURE.md#version-management for details.
 
 import json
 import re
+import tomllib
 from pathlib import Path
 
 import pytest
 
 from srd_builder import __version__
+
+
+def test_runtime_version_matches_pyproject():
+    """Runtime __version__ must equal the value in pyproject.toml.
+
+    Without this test, editing pyproject.toml could leave the runtime
+    reading a stale value (the bug that prompted the v0.38.0 fix to
+    src/srd_builder/__init__.py — it now reads pyproject.toml directly
+    instead of relying on importlib.metadata, which only updates on
+    pip install).
+    """
+    pyproject = Path("pyproject.toml")
+    with pyproject.open("rb") as fh:
+        data = tomllib.load(fh)
+    declared = data["project"]["version"]
+    assert __version__ == declared, (
+        f"Runtime srd_builder.__version__ ({__version__!r}) does not match "
+        f"pyproject.toml project.version ({declared!r}). Editing pyproject.toml "
+        f"should take effect at the next Python process start — if it didn't, "
+        f"something has regressed in src/srd_builder/__init__.py."
+    )
 
 
 def test_version_format():
