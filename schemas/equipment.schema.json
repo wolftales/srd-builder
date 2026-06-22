@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/equipment.schema.json",
-  "version": "2.2.0",
-  "last_modified": "2026-06-18",
+  "version": "2.3.0",
+  "last_modified": "2026-06-22",
   "title": "SRD 5.1 Equipment Item",
   "description": "Equipment items from SRD 5.1. Core fields describe base equipment, optional fields reserve space for future magic items and internal metadata.",
   "type": "object",
@@ -27,8 +27,8 @@
     },
     "simple_name": {
       "type": "string",
-      "pattern": "^[a-z][a-z0-9\\s-]*$",
-      "description": "Lowercase normalized name for indexing and search"
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing and search (snake_case; matches the simple_name convention used across all SRD-builder datasets)."
     },
     "aliases": {
       "type": "array",
@@ -78,6 +78,9 @@
         "armor",
         "gear",
         "mount",
+        "vehicle",
+        "consumable",
+        "service",
         "trade_good"
       ],
       "description": "Primary equipment category"
@@ -344,6 +347,22 @@
         "null"
       ],
       "description": "INTERNAL: Row index within the source table"
+    },
+    "source_table": {
+      "type": "string",
+      "description": "Builder provenance: name of the source PDF table this record was extracted from (e.g. 'weapons', 'armor', 'adventuring_gear')."
+    },
+    "proficiency": {
+      "type": "string",
+      "enum": [
+        "simple",
+        "martial"
+      ],
+      "description": "Weapon proficiency tier required to wield without disadvantage. Only emitted on weapon-category items."
+    },
+    "capacity": {
+      "type": "string",
+      "description": "Container volume description (e.g. '40 gallons liquid, 4 cubic feet solid'). Free-form prose from the SRD; not currently structured."
     },
     "_meta": {
       "type": "object",

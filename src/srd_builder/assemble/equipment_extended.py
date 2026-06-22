@@ -175,7 +175,7 @@ EXTENDED_EQUIPMENT: list[ExtendedItem] = [
         "weapon_type": "melee",
         "cost": {"amount": 2, "currency": "gp"},
         "weight_lb": 0.5,
-        "damage": {"dice": "1d4", "type": "slashing"},
+        "damage": {"dice": "1d4", "type": "slashing", "type_id": "slashing"},
         "properties": ["finesse", "light"],
         "page": 70,
         "is_magic": False,

@@ -59,6 +59,7 @@
     "example table_header"
   ],
   "row_index": 1,
+  "source_table": "example source_table",
   "_meta": {},
   "_provenance": {
     "source": "inferred",

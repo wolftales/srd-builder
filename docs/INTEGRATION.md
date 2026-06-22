@@ -38,7 +38,7 @@ dist/srd_5_1/
 ├── conditions.json            # 15    (schema v3.0.0)
 ├── damage_types.json          # 13    (schema v1.1.0)
 ├── diseases.json              # 3     (schema v3.0.0)
-├── equipment.json             # 259   (schema v2.2.0)
+├── equipment.json             # 259   (schema v2.3.0)
 ├── features.json              # 245   (schema v4.0.0)
 ├── lineages.json              # 13    (schema v2.0.0)
 ├── magic_items.json           # 240   (schema v2.0.0)
