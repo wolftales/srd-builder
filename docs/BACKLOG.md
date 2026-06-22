@@ -407,6 +407,70 @@ just be a smaller version of the same theater pattern.
 Final score after architecture pass: **3/13 bound, 442-line bespoke
 monsters file (down from 631) consuming shared bbox primitives.**
 
+### Primitive-lift continuation (2026-06-22)
+
+Picked up the orthogonal "shared primitives" thread after the
+architecture pass — explicitly *not* engine binding (see "Stopping
+point" above for why the 3/13 number stays put). Each lift removes
+one identifiable 2+ caller duplicate from the bespoke extractors and
+parks the behavior in `utils/` or `postprocess/`. Each lift is its
+own commit, pushed individually so `git bisect` works, with
+`dist/srd_5_1` byte-identical at every commit boundary and the full
+690-test suite green.
+
+Commits landed this thread (chronological):
+
+| Commit | What |
+|---|---|
+| `f61ff90` | `span_matches_predicate` gains `font_exact`; monsters migrated |
+| `9a55633` | `find_in_lookahead` lifted; monsters' size/type validator migrated |
+| `d34ef71` | `cluster_values_by_gap` lifted; classes' progression migrated |
+| `5a55e0e` | `concat_pages_with_offsets` + `offset_to_page` lifted; equipment_descriptions migrated |
+| `2fd5e8d` | `clean_and_split_header` table primitive lifted; equipment migrated |
+| `d1b713a` | classes' `_collect_spans` delegates iteration to `iter_page_spans` |
+| `82345c2` | ARCHITECTURE.md: 2-tier PDF primitives principle codified |
+| `6b056b2` | `strip_srd_page_footer` + `collapse_soft_hyphen_runs` lifted to `postprocess/text` (was triple-duplicated across `clean_text`, `polish_text`, `extract_equipment_descriptions`); re-exported from `utils.prose` for discoverability |
+| `9add88f` | `iter_normalized_spans` lifted — absorbs the `get_text('dict')` + `normalize_whitespace` + skip-empty triplet that appeared identically in `extract_lineages`, `extract_spell_classes`, `extract_classes` |
+| `cc8fe2d` | last 3 raw `fitz.open()` callers (spell_classes, lineages, classes) switched to `utils.pdf_probe.open_pdf`; AGENTS.md "no fresh fitz.open" discipline now fully enforced in `extract/datasets/` |
+| `6d04ba9` | `extract_spells` + `extract_magic_items` switched from inline `hashlib.sha256(pdf_bytes).hexdigest()` to `utils.pdf_probe.pdf_sha256(pdf_path)` (3 prior siblings already used it) |
+
+#### What this thread does NOT change
+
+Engine binding remains at **3/13** (features, magic_items, spells).
+Primitive lifting trims shared duplication from inside bespoke
+extractors; it does not move any extractor toward the
+`DATASET_CONFIG + extract_records_by_config()` slim shape. The
+2026-06-20 "Stopping point" judgement stands: design passes for the
+remaining 10 are still gated on a real second-caller pattern, not a
+presumed extension of the existing three bindings.
+
+#### What's still chip-away-able if resumed
+
+Searched for further obvious duplication (per-span size rounding,
+SRD-page conversion, font-size constants). No clean 2+ caller
+duplicates remain in the bespoke files. Remaining targets are
+*structural* per-extractor work, not shared-primitive lifting:
+
+- **`extract_classes` (628 lines)** — each phase still emits 4-tuples
+  `(text, size, font, bbox)` hand-decoded inside `_extract_field_labels`,
+  `_extract_progression`, etc. Could be replaced with a typed
+  dataclass, but that's a per-extractor cleanup, single-caller.
+- **`extract_lineages._classify_span` 5-way role dispatch** generalises
+  to the same shape as `extract_spell_classes`' inline-predicate-stack,
+  but the role tags are domain-specific. A generic dispatcher returning
+  role enums is possible; payoff is modest because each caller's branch
+  logic is still bespoke.
+- **`extract_rules._extract_page_text_blocks`** has its own block/line/
+  span walk that intentionally tracks `block_idx`, `line_idx`, `span_idx`
+  for downstream provenance — information `iter_page_spans` discards.
+  Could parameterise the iterator to optionally yield indices, but the
+  walk is single-caller today.
+
+**Treat this as the stopping point for primitive lifting.** Future
+lifts need either a new caller surfacing (e.g. an SRD 5.2.1 extractor
+that picks up one of the single-caller helpers as the second user) or
+a deeper structural refactor that isn't shape-preserving.
+
 ### Proposed approach (gradual, one extractor per release)
 
 Forced big-bang migration is what failed attempts 1–3. The pattern that
@@ -488,14 +552,16 @@ biggest items. These remain:
   machine-readable dumps) to detect single-source bias. Treat
   mismatches as findings, not failures — they often surface ambiguity
   in the SRD itself.
-- **Font-fingerprint regression** — record the font + size we treat as
-  feature/section headers (today: `GillSans-SemiBold 13.9pt`). A test
-  that re-extracts and asserts the fingerprint is unchanged catches
-  silent upstream PDF or library updates.
 - **`unknown_word` audit code** — run `pyspellchecker` over **item
   names only** (not body text — too many fantasy terms) with an
   extended dictionary that loads in all class / monster / spell / item
   names. Output for human review, not automated failure.
+
+> Font fingerprint regression landed 2026-06-22 — six parametrized
+> anchors in [tests/test_pdf_provenance.py](../tests/test_pdf_provenance.py)
+> (`test_pdf_font_fingerprint_anchor_present`) catch silent PDF or
+> PyMuPDF font-rename / size-shift drift before it surfaces as empty
+> datasets downstream.
 
 > The `verify_pdf_sections.py` / `meta.json` TOC ideas captured in the
 > original v0.28.0 plan were proven dead-ends in v0.27.4 — the SRD PDF's
