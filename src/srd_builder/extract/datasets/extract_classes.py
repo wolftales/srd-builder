@@ -64,6 +64,7 @@ import fitz  # PyMuPDF
 
 from srd_builder.postprocess.ids import normalize_id
 from srd_builder.utils.pdf_layout import cluster_values_by_gap, iter_normalized_spans
+from srd_builder.utils.pdf_probe import open_pdf
 from srd_builder.utils.prose import clean_text
 
 CLASS_PAGES_PDF_INDICES = range(7, 55)  # SRD pages 8-55 (PDF idx 7-54)
@@ -148,7 +149,7 @@ def extract_classes(pdf_path: str | Path) -> dict[str, Any]:
     """
     pdf_path = Path(pdf_path)
 
-    with fitz.open(str(pdf_path)) as doc:
+    with open_pdf(pdf_path) as doc:
         # Phase 1: locate the 25.9pt class-name span on each class's
         # first page so we know each class's page range.
         page_spans: dict[int, list[tuple[str, float, str, tuple]]] = {

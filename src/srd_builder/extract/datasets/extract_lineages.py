@@ -65,6 +65,7 @@ from typing import Any
 import fitz  # PyMuPDF
 
 from srd_builder.utils.pdf_layout import iter_normalized_spans, span_matches_predicate
+from srd_builder.utils.pdf_probe import open_pdf
 from srd_builder.utils.prose import clean_text, normalize_apostrophes
 
 LINEAGE_PAGES_PDF_INDICES = range(2, 7)  # SRD pages 3-7 (PDF idx 2-6)
@@ -102,7 +103,7 @@ def extract_lineages(pdf_path: str | Path) -> dict[str, Any]:
     ``parse_lineages.parse_lineages()``.
     """
     pdf_path = Path(pdf_path)
-    with fitz.open(str(pdf_path)) as doc:
+    with open_pdf(pdf_path) as doc:
         records = _walk_lineage_pages(doc)
 
     lineages = [_finalize_lineage_record(rec) for rec in records]

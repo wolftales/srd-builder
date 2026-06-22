@@ -24,10 +24,9 @@ import re
 from pathlib import Path
 from typing import Any
 
-import fitz
-
 from srd_builder.postprocess.ids import normalize_id
 from srd_builder.utils.pdf_layout import iter_normalized_spans, span_matches_predicate
+from srd_builder.utils.pdf_probe import open_pdf
 
 SPELL_LIST_PAGES_PDF_INDICES = range(104, 113)  # SRD pages 105-113
 
@@ -104,7 +103,7 @@ def extract_spell_classes(pdf_path: str | Path) -> dict[str, Any]:
     class_spells: dict[str, list[str]] = {name: [] for name in _CLASS_HEADERS.values()}
     current_class: str | None = None
 
-    with fitz.open(str(pdf_path)) as doc:
+    with open_pdf(pdf_path) as doc:
         for pi in SPELL_LIST_PAGES_PDF_INDICES:
             page = doc[pi]
             for span, text in iter_normalized_spans(page):
