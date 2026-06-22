@@ -20,7 +20,7 @@ This document is written for **downstream consumers** of the srd-builder bundle 
 ---
 
 <!-- AUTO-SYNC:int:bundle-header START -->
-## Bundle Layout (v0.38.1)
+## Bundle Layout (v0.39.0)
 <!-- AUTO-SYNC:int:bundle-header END -->
 
 The full bundle lives under `dist/srd_5_1/`:
@@ -47,7 +47,7 @@ dist/srd_5_1/
 ├── rules.json                 # 167   (schema v3.1.0)
 ├── skills.json                # 18    (schema v1.0.0)
 ├── spells.json                # 319   (schema v2.0.0)
-├── tables.json                # 35    (schema v3.1.0)
+├── tables.json                # 41    (schema v3.1.0)
 ├── weapon_properties.json     # 11    (schema v1.0.0)
 │
 ├── schemas/                   # All 16 JSON Schema files (copies of /schemas/)
@@ -56,7 +56,7 @@ dist/srd_5_1/
 <!-- AUTO-SYNC:int:bundle-tree END -->
 
 <!-- AUTO-SYNC:int:totals START -->
-**Totals shipped:** 16 datasets, 1,687 items.
+**Totals shipped:** 16 datasets, 1,693 items.
 <!-- AUTO-SYNC:int:totals END -->
 
 ---

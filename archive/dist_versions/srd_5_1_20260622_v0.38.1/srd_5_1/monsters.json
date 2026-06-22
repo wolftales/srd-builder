@@ -4,7 +4,13 @@
     "ruleset_version": "5.1",
     "game_system": "dnd5e",
     "schema_version": "2.1.0",
-    "generated_by": "srd-builder v0.39.0"
+    "generated_by": "srd-builder v0.38.1",
+    "dataset": "monsters",
+    "source_pages": "261-403",
+    "description": "Monster stat blocks (creatures + miscellaneous appendix)",
+    "pdf_sha256": "2504d2a0abb0a4d491a939be4f17910a2dde0312570ab8d208080225ccf0a1f0",
+    "item_count": 317,
+    "extraction_warnings": []
   },
   "items": [
     {
@@ -41167,6 +41173,34 @@
             "dc_type_id": "ability:strength",
             "success_type": "none"
           }
+        },
+        {
+          "name": "Racial Traits",
+          "simple_name": "racial_traits",
+          "description": [
+            "You can add racial traits to an NPC. For example, a halfling druid might have a speed of 25 feet and the Lucky trait. Adding racial traits to an NPC doesn't alter its challenge rating. For more on racial traits, see the Player's Handbook ."
+          ]
+        },
+        {
+          "name": "Spell Swaps",
+          "simple_name": "spell_swaps",
+          "description": [
+            "One way to customize an NPC spellcaster is to replace one or more of its spells. You can substitute any spell on the NPC's spell list with a different spell of the same level from the same spell list. Swapping spells in this manner doesn't alter an NPC's challenge rating."
+          ]
+        },
+        {
+          "name": "Armor and Weapon Swaps",
+          "simple_name": "armor_and_weapon_swaps",
+          "description": [
+            "You can upgrade or downgrade an NPC's armor, or add or switch weapons. Adjustments to Armor Class and damage can change an NPC's challenge rating."
+          ]
+        },
+        {
+          "name": "Magic Items",
+          "simple_name": "magic_items",
+          "description": [
+            "The more powerful an NPC, the more likely it has one or more magic items in its possession. An archmage, for example, might have a magic staff or wand, as well as one or more potions and scrolls. Giving an NPC a potent damage-dealing magic item could alter its challenge rating."
+          ]
         }
       ],
       "challenge_rating": 0.5,
@@ -41180,6 +41214,2409 @@
       },
       "languages": "Goblin, Worg",
       "page": 393
+    },
+    {
+      "id": "npc:acolyte",
+      "simple_name": "acolyte",
+      "name": "Acolyte",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 10
+      },
+      "hit_points": {
+        "average": 9,
+        "formula": "2d8"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 10,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 10,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 14,
+          "modifier": 2
+        },
+        "charisma": {
+          "value": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "medicine": 4,
+        "religion": 2
+      },
+      "traits": [
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The acolyte is a 1st-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The acolyte has following cleric spells prepared: Cantrips (at will): light , sacred flame , thaumaturgy 1st level (3 slots): bless , cure wounds , sanctuary"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Club",
+          "simple_name": "club",
+          "description": [
+            "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage. Acolytes are junior members of a clergy, usually answerable to a priest. They perform a variety of functions in a temple and are granted minor spellcasting power by their deities."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d4",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.25,
+      "xp_value": 50,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 12
+      },
+      "languages": "any one language (usually Common)",
+      "page": 395
+    },
+    {
+      "id": "npc:archmage",
+      "simple_name": "archmage",
+      "name": "Archmage",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 12,
+        "type": "15 with mage armor",
+        "type_id": "15_with_mage_armor"
+      },
+      "hit_points": {
+        "average": 99,
+        "formula": "18d8+18"
+      },
+      "hit_dice": "18d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 14,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 20,
+          "modifier": 5
+        },
+        "wisdom": {
+          "value": 15,
+          "modifier": 2
+        },
+        "charisma": {
+          "value": 16,
+          "modifier": 3
+        }
+      },
+      "saving_throws": {
+        "intelligence": 9,
+        "wisdom": 6
+      },
+      "skills": {
+        "arcana": 13,
+        "history": 13
+      },
+      "traits": [
+        {
+          "name": "Magic Resistance",
+          "simple_name": "magic_resistance",
+          "description": [
+            "The archmage has advantage on saving throws against spells and other magical effects."
+          ]
+        },
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The archmage is an 18th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 17, +9 to hit with spell attacks). The archmage can cast disguise self and invisibility at will and has the following wizard spells prepared: Cantrips (at will): fire bolt , light , mage hand , prestidigitation , shocking grasp"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Dagger",
+          "simple_name": "dagger",
+          "description": [
+            "Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage. Archmages are powerful (and usually quite old) spellcasters dedicated to the study of the arcane arts. Benevolent ones counsel kings and queens, while evil ones rule as tyrants and pursue lichdom.",
+            "Those who are neither good nor evil sequester themselves in remote towers to practice their magic without interruption. An archmage typically has one or more apprentice mages, and an archmage's abode has numerous magical wards and guardians to discourage interlopers."
+          ],
+          "attack_bonus": 6,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "1d4+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 12,
+      "xp_value": 8400,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 12
+      },
+      "damage_resistances": [
+        {
+          "type": "damage",
+          "conditions": "spells"
+        },
+        {
+          "type": "nonmagical bludgeoning, piercing, and slashing (from stoneskin )",
+          "type_id": "damage:bludgeoning"
+        }
+      ],
+      "languages": "any six languages",
+      "page": 395
+    },
+    {
+      "id": "npc:assassin",
+      "simple_name": "assassin",
+      "name": "Assassin",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐good alignment",
+      "armor_class": {
+        "value": 15,
+        "type": "studded leather",
+        "type_id": "studded_leather"
+      },
+      "hit_points": {
+        "average": 78,
+        "formula": "12d8+24"
+      },
+      "hit_dice": "12d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 16,
+          "modifier": 3
+        },
+        "constitution": {
+          "value": 14,
+          "modifier": 2
+        },
+        "intelligence": {
+          "value": 13,
+          "modifier": 1
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {
+        "dexterity": 6,
+        "intelligence": 4
+      },
+      "skills": {
+        "acrobatics": 6,
+        "deception": 3,
+        "perception": 3
+      },
+      "traits": [
+        {
+          "name": "Assassinate",
+          "simple_name": "assassinate",
+          "description": [
+            "During its first turn, the assassin has advantage on attack rolls against any creature that hasn't taken a turn. Any hit the assassin scores against a surprised creature is a critical hit."
+          ]
+        },
+        {
+          "name": "Evasion",
+          "simple_name": "evasion",
+          "description": [
+            "If the assassin is subjected to an effect that allows it to make a Dexterity saving throw to take only half damage, the assassin instead takes no damage if it succeeds on the saving throw, and only half damage if it fails."
+          ]
+        },
+        {
+          "name": "Sneak Attack",
+          "simple_name": "sneak_attack",
+          "description": [
+            "Once per turn, the assassin deals an extra 14 (4d6) damage when it hits a target with a weapon attack and has advantage on the attack roll, or when the target is within 5 feet of an ally of the assassin that isn't incapacitated and the assassin doesn't have disadvantage on the attack roll."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The assassin makes two shortsword attacks."
+          ]
+        },
+        {
+          "name": "Shortsword",
+          "simple_name": "shortsword",
+          "description": [
+            "Melee Weapon Attack: +6 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage, and the target must make a DC 15 Constitution saving throw, taking 24 (7d6) poison damage on a failed save, or half as much damage on a successful one."
+          ],
+          "attack_bonus": 6,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+3",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            },
+            {
+              "dice": "7d6",
+              "type": "poison",
+              "type_id": "damage:poison"
+            }
+          ],
+          "dc": {
+            "dc_value": 15,
+            "dc_type": "Constitution",
+            "dc_type_id": "ability:constitution",
+            "success_type": "half"
+          }
+        },
+        {
+          "name": "Light Crossbow",
+          "simple_name": "light_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +6 to hit, range 80/320 ft., one target. Hit: 7 (1d8 + 3) piercing damage, and the target must make a DC 15 Constitution saving throw, taking 24 (7d6) poison damage on a failed save, or half as much damage on a successful one. Trained in the use of poison, assassins are remorseless killers who work for nobles, guildmasters, sovereigns, and anyone else who can afford them."
+          ],
+          "attack_bonus": 6,
+          "range": {
+            "normal": 80,
+            "long": 320
+          },
+          "damage": [
+            {
+              "dice": "1d8+3",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            },
+            {
+              "dice": "7d6",
+              "type": "poison",
+              "type_id": "damage:poison"
+            }
+          ],
+          "dc": {
+            "dc_value": 15,
+            "dc_type": "Constitution",
+            "dc_type_id": "ability:constitution",
+            "success_type": "half"
+          }
+        }
+      ],
+      "challenge_rating": 8,
+      "xp_value": 3900,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 13
+      },
+      "damage_resistances": [
+        {
+          "type": "poison",
+          "type_id": "damage:poison"
+        }
+      ],
+      "languages": "Thieves' cant plus any two languages",
+      "page": 396
+    },
+    {
+      "id": "npc:bandit",
+      "simple_name": "bandit",
+      "name": "Bandit",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐lawful, alignment",
+      "armor_class": {
+        "value": 12,
+        "type": "leather armor",
+        "type_id": "leather_armor"
+      },
+      "hit_points": {
+        "average": 11,
+        "formula": "2d8+2"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 10,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {},
+      "actions": [
+        {
+          "name": "Scimitar",
+          "simple_name": "scimitar",
+          "description": [
+            "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 4 (1d6 + 1) slashing damage."
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+1",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        },
+        {
+          "name": "Light Crossbow",
+          "simple_name": "light_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +3 to hit, range 80 ft./320 ft., one target. Hit: 5 (1d8 + 1) piercing damage. Bandits rove in gangs and are sometimes led by thugs, veterans, or spellcasters. Not all bandits are evil. Oppression, drought, disease, or famine can often drive otherwise honest folk to a life of banditry.",
+            "Pirates are bandits of the high seas. They might be freebooters interested only in treasure and murder, or they might be privateers sanctioned by the crown to attack and plunder an enemy nation's vessels."
+          ],
+          "attack_bonus": 3,
+          "damage": [
+            {
+              "dice": "1d8+1",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.125,
+      "xp_value": 25,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 396
+    },
+    {
+      "id": "npc:bandit_captain",
+      "simple_name": "bandit_captain",
+      "name": "Bandit Captain",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐lawful, alignment",
+      "armor_class": {
+        "value": 15,
+        "type": "studded leather",
+        "type_id": "studded_leather"
+      },
+      "hit_points": {
+        "average": 65,
+        "formula": "10d8+20"
+      },
+      "hit_dice": "10d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 15,
+          "modifier": 2
+        },
+        "dexterity": {
+          "value": 16,
+          "modifier": 3
+        },
+        "constitution": {
+          "value": 14,
+          "modifier": 2
+        },
+        "intelligence": {
+          "value": 14,
+          "modifier": 2
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 14,
+          "modifier": 2
+        }
+      },
+      "saving_throws": {
+        "strength": 4,
+        "dexterity": 5,
+        "wisdom": 2
+      },
+      "skills": {
+        "athletics": 4,
+        "deception": 4
+      },
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The captain makes three melee attacks: two with its scimitar and one with its dagger. Or the captain makes two ranged attacks with its daggers."
+          ]
+        },
+        {
+          "name": "Scimitar",
+          "simple_name": "scimitar",
+          "description": [
+            "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) slashing damage."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+3",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        },
+        {
+          "name": "Dagger",
+          "simple_name": "dagger",
+          "description": [
+            "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 5 (1d4 + 3) piercing damage."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "1d4+3",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Parry",
+          "simple_name": "parry",
+          "description": [
+            "The captain adds 2 to its AC against one melee attack that would hit it. To do so, the captain must see the attacker and be wielding a melee weapon. It takes a strong personality, ruthless cunning, and a silver tongue to keep a gang of bandits in line. The bandit captain has these qualities in spades.",
+            "In addition to managing a crew of selfish malcontents, the pirate captain is a variation of the bandit captain, with a ship to protect and command. To keep the crew in line, the captain must mete out rewards and punishment on a regular basis. More than treasure, a bandit captain or pirate captain craves infamy.",
+            "A prisoner who appeals to the captain's vanity or ego is more likely to be treated fairly than a prisoner who does not or claims not to know anything of the captain's colorful reputation."
+          ]
+        }
+      ],
+      "challenge_rating": 2,
+      "xp_value": 450,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any two languages",
+      "page": 397
+    },
+    {
+      "id": "npc:berserker",
+      "simple_name": "berserker",
+      "name": "Berserker",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any chaotic alignment",
+      "armor_class": {
+        "value": 13,
+        "type": "hide armor",
+        "type_id": "hide_armor"
+      },
+      "hit_points": {
+        "average": 67,
+        "formula": "9d8+27"
+      },
+      "hit_dice": "9d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 16,
+          "modifier": 3
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 17,
+          "modifier": 3
+        },
+        "intelligence": {
+          "value": 9,
+          "modifier": -1
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 9,
+          "modifier": -1
+        }
+      },
+      "saving_throws": {},
+      "skills": {},
+      "traits": [
+        {
+          "name": "Reckless",
+          "simple_name": "reckless",
+          "description": [
+            "At the start of its turn, the berserker can gain advantage on all melee weapon attack rolls during that turn, but attack rolls against it have advantage until the start of its next turn."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Greataxe",
+          "simple_name": "greataxe",
+          "description": [
+            "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 9 (1d12 + 3) slashing damage. Hailing from uncivilized lands, unpredictable berserkers come together in war parties and seek conflict wherever they can find it."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d12+3",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 2,
+      "xp_value": 450,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 397
+    },
+    {
+      "id": "npc:commoner",
+      "simple_name": "commoner",
+      "name": "Commoner",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 10
+      },
+      "hit_points": {
+        "average": 4,
+        "formula": "1d8"
+      },
+      "hit_dice": "1d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 10,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 10,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 10,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {},
+      "actions": [
+        {
+          "name": "Club",
+          "simple_name": "club",
+          "description": [
+            "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage. Commoners include peasants, serfs, slaves, servants, pilgrims, merchants, artisans, and hermits."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d4",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0,
+      "xp_value": 10,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 398
+    },
+    {
+      "id": "npc:cultist",
+      "simple_name": "cultist",
+      "name": "Cultist",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐good alignment",
+      "armor_class": {
+        "value": 12,
+        "type": "leather armor",
+        "type_id": "leather_armor"
+      },
+      "hit_points": {
+        "average": 9,
+        "formula": "2d8"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 10,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "deception": 2,
+        "religion": 2
+      },
+      "traits": [
+        {
+          "name": "Dark Devotion",
+          "simple_name": "dark_devotion",
+          "description": [
+            "The cultist has advantage on saving throws against being charmed or frightened."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Scimitar",
+          "simple_name": "scimitar",
+          "description": [
+            "Melee Weapon Attack: +3 to hit, reach 5 ft., one creature. Hit: 4 (1d6 + 1) slashing damage. Cultists swear allegiance to dark powers such as elemental princes, demon lords, or archdevils. Most conceal their loyalties to avoid being ostracized, imprisoned, or executed for their beliefs. Unlike evil acolytes, cultists often show signs of insanity in their beliefs and practices."
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+1",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.125,
+      "xp_value": 25,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 398
+    },
+    {
+      "id": "npc:cult_fanatic",
+      "simple_name": "cult_fanatic",
+      "name": "Cult Fanatic",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐good alignment",
+      "armor_class": {
+        "value": 13,
+        "type": "leather armor",
+        "type_id": "leather_armor"
+      },
+      "hit_points": {
+        "average": 33,
+        "formula": "6d8+6"
+      },
+      "hit_dice": "6d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 14,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 13,
+          "modifier": 1
+        },
+        "charisma": {
+          "value": 14,
+          "modifier": 2
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "deception": 4,
+        "persuasion": 4,
+        "religion": 2
+      },
+      "traits": [
+        {
+          "name": "Dark Devotion",
+          "simple_name": "dark_devotion",
+          "description": [
+            "The fanatic has advantage on saving throws against being charmed or frightened."
+          ]
+        },
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The fanatic is a 4th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 11, +3 to hit with spell attacks). The fanatic has the following cleric spells prepared: Cantrips (at will): light , sacred flame , thaumaturgy 1st level (4 slots): command , inflict wounds , shield of faith 2nd level (3 slots): hold person , spiritual weapon"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The fanatic makes two melee attacks."
+          ]
+        },
+        {
+          "name": "Dagger",
+          "simple_name": "dagger",
+          "description": [
+            "Melee or Ranged Weapon Attack: +4 to hit, reach 5 ft. or range 20/60 ft., one creature. Hit : 4 (1d4 + 2) piercing damage. Fanatics are often part of a cult's leadership, using their charisma and dogma to influence and prey on those of weak will. Most are interested in personal power above all else."
+          ],
+          "attack_bonus": 4,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "1d4+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 2,
+      "xp_value": 450,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 11
+      },
+      "languages": "any one language (usually Common)",
+      "page": 398
+    },
+    {
+      "id": "npc:druid",
+      "simple_name": "druid",
+      "name": "Druid",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 11,
+        "type": "16 with barkskin",
+        "type_id": "16_with_barkskin"
+      },
+      "hit_points": {
+        "average": 27,
+        "formula": "5d8+5"
+      },
+      "hit_dice": "5d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 13,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 12,
+          "modifier": 1
+        },
+        "wisdom": {
+          "value": 15,
+          "modifier": 2
+        },
+        "charisma": {
+          "value": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "medicine": 4,
+        "nature": 3,
+        "perception": 4
+      },
+      "traits": [
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The druid is a 4th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). It has the following druid spells prepared: Cantrips (at will): druidcraft , produce flame , shillelagh 1st level (4 slots): entangle , longstrider , speak with animals , thunderwave 2nd level (3 slots): animal messenger , barkskin"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Quarterstaff",
+          "simple_name": "quarterstaff",
+          "description": [
+            "Melee Weapon Attack: +2 to hit (+4 to hit with shillelagh ), reach 5 ft., one target. Hit: 3 (1d6) bludgeoning damage, 4 (1d8) bludgeoning damage if wielded with two hands, or 6 (1d8 + 2) bludgeoning damage with shillelagh . Druids dwell in forests and other secluded wilderness locations, where they protect the natural world from monsters and the encroachment of civilization.",
+            "Some are tribal shamans who heal the sick, pray to animal spirits, and provide spiritual guidance."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            },
+            {
+              "dice": "1d8",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            },
+            {
+              "dice": "1d8+2",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 2,
+      "xp_value": 450,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 14
+      },
+      "languages": "Druidic plus any two languages",
+      "page": 398
+    },
+    {
+      "id": "npc:gladiator",
+      "simple_name": "gladiator",
+      "name": "Gladiator",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 16,
+        "type": "studded leather, shield",
+        "type_id": "studded_leather_shield"
+      },
+      "hit_points": {
+        "average": 112,
+        "formula": "15d8+45"
+      },
+      "hit_dice": "15d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 18,
+          "modifier": 4
+        },
+        "dexterity": {
+          "value": 15,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 16,
+          "modifier": 3
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 12,
+          "modifier": 1
+        },
+        "charisma": {
+          "value": 15,
+          "modifier": 2
+        }
+      },
+      "saving_throws": {
+        "strength": 7,
+        "dexterity": 5,
+        "constitution": 6
+      },
+      "skills": {
+        "athletics": 10,
+        "intimidation": 5
+      },
+      "traits": [
+        {
+          "name": "Brave",
+          "simple_name": "brave",
+          "description": [
+            "The gladiator has advantage on saving throws against being frightened."
+          ]
+        },
+        {
+          "name": "Brute",
+          "simple_name": "brute",
+          "description": [
+            "A melee weapon deals one extra die of its damage when the gladiator hits with it (included in the attack)."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The gladiator makes three melee attacks or two ranged attacks."
+          ]
+        },
+        {
+          "name": "Spear",
+          "simple_name": "spear",
+          "description": [
+            "Melee or Ranged Weapon Attack: +7 to hit, reach 5 ft. and range 20/60 ft., one target. Hit: 11 (2d6 + 4) piercing damage, or 13 (2d8 + 4) piercing damage if used with two hands to make a melee attack."
+          ],
+          "attack_bonus": 7,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "2d6+4",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            },
+            {
+              "dice": "2d8+4",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        },
+        {
+          "name": "Shield Bash",
+          "simple_name": "shield_bash",
+          "description": [
+            "Melee Weapon Attack: +7 to hit, reach 5 ft., one creature. Hit: 9 (2d4 + 4) bludgeoning damage. If the target is a Medium or smaller creature, it must succeed on a DC 15 Strength saving throw or be knocked prone."
+          ],
+          "attack_bonus": 7,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "2d4+4",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ],
+          "dc": {
+            "dc_value": 15,
+            "dc_type": "Strength",
+            "dc_type_id": "ability:strength",
+            "success_type": "none"
+          }
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Parry",
+          "simple_name": "parry",
+          "description": [
+            "The gladiator adds 3 to its AC against one melee attack that would hit it. To do so, the gladiator must see the attacker and be wielding a melee weapon. Gladiators battle for the entertainment of raucous crowds. Some gladiators are brutal pit fighters who treat each match as a life- or-death struggle, while others are professional duelists who command huge fees but rarely fight to the death."
+          ]
+        }
+      ],
+      "challenge_rating": 5,
+      "xp_value": 1800,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 11
+      },
+      "languages": "any one language (usually Common)",
+      "page": 399
+    },
+    {
+      "id": "npc:guard",
+      "simple_name": "guard",
+      "name": "Guard",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 16,
+        "type": "chain shirt, shield",
+        "type_id": "chain_shirt_shield"
+      },
+      "hit_points": {
+        "average": 11,
+        "formula": "2d8+2"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 13,
+          "modifier": 1
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "perception": 2
+      },
+      "actions": [
+        {
+          "name": "Spear",
+          "simple_name": "spear",
+          "description": [
+            "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d6 +"
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          }
+        }
+      ],
+      "challenge_rating": 0.125,
+      "xp_value": 25,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 12
+      },
+      "languages": "any one language (usually Common)",
+      "page": 399
+    },
+    {
+      "id": "npc:knight",
+      "simple_name": "knight",
+      "name": "Knight",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 18,
+        "type": "plate",
+        "type_id": "plate"
+      },
+      "hit_points": {
+        "average": 52,
+        "formula": "8d8+16"
+      },
+      "hit_dice": "8d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 16,
+          "modifier": 3
+        },
+        "dexterity": {
+          "value": 11,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 14,
+          "modifier": 2
+        },
+        "intelligence": {
+          "value": 11,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 15,
+          "modifier": 2
+        }
+      },
+      "saving_throws": {
+        "constitution": 4,
+        "wisdom": 2
+      },
+      "skills": {},
+      "traits": [
+        {
+          "name": "Brave",
+          "simple_name": "brave",
+          "description": [
+            "The knight has advantage on saving throws against being frightened."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The knight makes two melee attacks."
+          ]
+        },
+        {
+          "name": "Greatsword",
+          "simple_name": "greatsword",
+          "description": [
+            "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 10 (2d6 + 3) slashing damage."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "2d6+3",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        },
+        {
+          "name": "Heavy Crossbow",
+          "simple_name": "heavy_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +2 to hit, range 100/400 ft., one target. Hit: 5 (1d10) piercing damage."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "normal": 100,
+            "long": 400
+          },
+          "damage": [
+            {
+              "dice": "1d10",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        },
+        {
+          "name": "Leadership (Recharges after a Short or Long Rest)",
+          "simple_name": "leadership_recharges_after_a_short_or_long_rest",
+          "description": [
+            "For 1 minute, the knight can utter a special command or warning whenever a nonhostile creature that it can see within 30 feet of it makes an attack roll or a saving throw. The creature can add a d4 to its roll provided it can hear and understand the knight. A creature can benefit from only one Leadership die at a time.",
+            "This effect ends if the knight is incapacitated."
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Parry",
+          "simple_name": "parry",
+          "description": [
+            "The knight adds 2 to its AC against one melee attack that would hit it. To do so, the knight must see the attacker and be wielding a melee weapon. Knights are warriors who pledge service to rulers, religious orders, and noble causes. A knight's alignment determines the extent to which a pledge is honored.",
+            "Whether undertaking a quest or patrolling a realm, a knight often travels with an entourage that includes squires and hirelings who are commoners."
+          ]
+        }
+      ],
+      "challenge_rating": 3,
+      "xp_value": 700,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 400
+    },
+    {
+      "id": "npc:mage",
+      "simple_name": "mage",
+      "name": "Mage",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 12,
+        "type": "15 with mage armor",
+        "type_id": "15_with_mage_armor"
+      },
+      "hit_points": {
+        "average": 40,
+        "formula": "9d8"
+      },
+      "hit_dice": "9d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 9,
+          "modifier": -1
+        },
+        "dexterity": {
+          "value": 14,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 11,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 17,
+          "modifier": 3
+        },
+        "wisdom": {
+          "value": 12,
+          "modifier": 1
+        },
+        "charisma": {
+          "value": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {
+        "intelligence": 6,
+        "wisdom": 4
+      },
+      "skills": {
+        "arcana": 6,
+        "history": 6
+      },
+      "traits": [
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The mage is a 9th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 14, +6 to hit with spell attacks). The mage has the following wizard spells prepared: Cantrips (at will): fire bolt , light , mage hand , prestidigitation 1st level (4 slots): detect magic , mage armor , magic missile , shield 2nd level (3 slots): misty step , suggestion 3rd level (3 slots): counterspell , fireball , fly 4th level (3 slots): greater invisibility , ice storm 5th level (1 slot): cone of cold"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Dagger",
+          "simple_name": "dagger",
+          "description": [
+            "Melee or Ranged Weapon Attack: +5 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4 + 2) piercing damage. Mages spend their lives in the study and practice of magic. Good-aligned mages offer counsel to nobles and others in power, while evil mages dwell in isolated sites to perform unspeakable experiments without interference."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "1d4+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 6,
+      "xp_value": 2300,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 11
+      },
+      "languages": "any four languages",
+      "page": 400
+    },
+    {
+      "id": "npc:noble",
+      "simple_name": "noble",
+      "name": "Noble",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 15,
+        "type": "breastplate",
+        "type_id": "breastplate"
+      },
+      "hit_points": {
+        "average": 9,
+        "formula": "2d8"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 12,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 11,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 12,
+          "modifier": 1
+        },
+        "wisdom": {
+          "value": 14,
+          "modifier": 2
+        },
+        "charisma": {
+          "value": 16,
+          "modifier": 3
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "deception": 5,
+        "insight": 4,
+        "persuasion": 5
+      },
+      "actions": [
+        {
+          "name": "Rapier",
+          "simple_name": "rapier",
+          "description": [
+            "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 5 (1d8 + 1) piercing damage."
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d8+1",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Parry",
+          "simple_name": "parry",
+          "description": [
+            "The noble adds 2 to its AC against one melee attack that would hit it. To do so, the noble must see the attacker and be wielding a melee weapon. Nobles wield great authority and influence as members of the upper class, possessing wealth and connections that can make them as powerful as monarchs and generals.",
+            "A noble often travels in the company of guards, as well as servants who are commoners. The noble's statistics can also be used to represent courtiers who aren't of noble birth."
+          ]
+        }
+      ],
+      "challenge_rating": 0.125,
+      "xp_value": 25,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 12
+      },
+      "languages": "any two languages",
+      "page": 401
+    },
+    {
+      "id": "npc:priest",
+      "simple_name": "priest",
+      "name": "Priest",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 13,
+        "type": "chain shirt",
+        "type_id": "chain_shirt"
+      },
+      "hit_points": {
+        "average": 27,
+        "formula": "5d8+5"
+      },
+      "hit_dice": "5d8",
+      "speed": {
+        "walk": 25,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 10,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 13,
+          "modifier": 1
+        },
+        "wisdom": {
+          "value": 16,
+          "modifier": 3
+        },
+        "charisma": {
+          "value": 13,
+          "modifier": 1
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "medicine": 7,
+        "persuasion": 3,
+        "religion": 4
+      },
+      "traits": [
+        {
+          "name": "Divine Eminence",
+          "simple_name": "divine_eminence",
+          "description": [
+            "As a bonus action, the priest can expend a spell slot to cause its melee weapon attacks to magically deal an extra 10 (3d6) radiant damage to a target on a hit. This benefit lasts until the end of the turn. If the priest expends a spell slot of 2nd level or higher, the extra damage increases by 1d6 for each level above 1st."
+          ]
+        },
+        {
+          "name": "Spellcasting",
+          "simple_name": "spellcasting",
+          "description": [
+            "The priest is a 5th-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 13, +5 to hit with spell attacks). The priest has the following cleric spells prepared: Cantrips (at will): light , sacred flame , thaumaturgy 1st level (4 slots): cure wounds , guiding bolt , sanctuary 2nd level (3 slots): lesser restoration , spiritual weapon 3rd level (2 slots): dispel magic , spirit guardians"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Mace",
+          "simple_name": "mace",
+          "description": [
+            "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 3 (1d6) bludgeoning damage. Priests bring the teachings of their gods to the common folk. They are the spiritual leaders of temples and shrines and often hold positions of influence in their communities. Evil priests might work openly under a tyrant, or they might be the leaders of religious sects hidden in the shadows of good society, overseeing depraved rites.",
+            "A priest typically has one or more acolytes to help with religious ceremonies and other sacred duties."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 2,
+      "xp_value": 450,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 13
+      },
+      "languages": "any two languages",
+      "page": 401
+    },
+    {
+      "id": "npc:scout",
+      "simple_name": "scout",
+      "name": "Scout",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 13,
+        "type": "leather armor",
+        "type_id": "leather_armor"
+      },
+      "hit_points": {
+        "average": 16,
+        "formula": "3d8+3"
+      },
+      "hit_dice": "3d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 11,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 14,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 11,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 13,
+          "modifier": 1
+        },
+        "charisma": {
+          "value": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "nature": 4,
+        "perception": 5,
+        "stealth": 6,
+        "survival": 5
+      },
+      "traits": [
+        {
+          "name": "Keen Hearing and Sight",
+          "simple_name": "keen_hearing_and_sight",
+          "description": [
+            "The scout has advantage on Wisdom (Perception) checks that rely on hearing or sight."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The scout makes two melee attacks or two ranged attacks."
+          ]
+        },
+        {
+          "name": "Shortsword",
+          "simple_name": "shortsword",
+          "description": [
+            "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+          ],
+          "attack_bonus": 4,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        },
+        {
+          "name": "Longbow",
+          "simple_name": "longbow",
+          "description": [
+            "Ranged Weapon Attack: +4 to hit, ranged 150/600 ft., one target. Hit: 6 (1d8 + 2) piercing damage. Scouts are skilled hunters and trackers who offer their services for a fee. Most hunt wild game, but a few work as bounty hunters, serve as guides, or provide military reconnaissance."
+          ],
+          "attack_bonus": 4,
+          "damage": [
+            {
+              "dice": "1d8+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.5,
+      "xp_value": 100,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 15
+      },
+      "languages": "any one language (usually Common)",
+      "page": 401
+    },
+    {
+      "id": "npc:spy",
+      "simple_name": "spy",
+      "name": "Spy",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 12
+      },
+      "hit_points": 0,
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 10,
+          "modifier": 0
+        },
+        "dexterity": {
+          "value": 15,
+          "modifier": 2
+        },
+        "constitution": {
+          "value": 10,
+          "modifier": 0
+        },
+        "intelligence": {
+          "value": 12,
+          "modifier": 1
+        },
+        "wisdom": {
+          "value": 14,
+          "modifier": 2
+        },
+        "charisma": {
+          "value": 16,
+          "modifier": 3
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "deception": 5,
+        "insight": 4,
+        "investigation": 5
+      },
+      "traits": [
+        {
+          "name": "Cunning Action",
+          "simple_name": "cunning_action",
+          "description": [
+            "On each of its turns, the spy can use a bonus action to take the Dash, Disengage, or Hide action."
+          ]
+        },
+        {
+          "name": "Sneak Attack (1/Turn)",
+          "simple_name": "sneak_attack_1turn",
+          "description": [
+            "The spy deals an extra 7 (2d6) damage when it hits a target with a weapon attack and has advantage on the attack roll, or when the target is within 5 feet of an ally of the spy that isn't incapacitated and the spy doesn't have disadvantage on the attack roll."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The spy makes two melee attacks."
+          ]
+        },
+        {
+          "name": "Shortsword",
+          "simple_name": "shortsword",
+          "description": [
+            "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) piercing damage."
+          ],
+          "attack_bonus": 4,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        },
+        {
+          "name": "Hand Crossbow",
+          "simple_name": "hand_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +4 to hit, range 30/120 ft., one target. Hit: 5 (1d6 + 2) piercing damage. Rulers, nobles, merchants, guildmasters, and other wealthy individuals use spies to gain the upper hand in a world of cutthroat politics. A spy is trained to secretly gather information. Loyal spies would rather die than divulge information that could compromise them or their employers."
+          ],
+          "attack_bonus": 4,
+          "range": {
+            "normal": 30,
+            "long": 120
+          },
+          "damage": [
+            {
+              "dice": "1d6+2",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 1,
+      "xp_value": 200,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 16
+      },
+      "languages": "any two languages",
+      "page": 402
+    },
+    {
+      "id": "npc:thug",
+      "simple_name": "thug",
+      "name": "Thug",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any non-­‐good alignment",
+      "armor_class": {
+        "value": 11,
+        "type": "leather armor",
+        "type_id": "leather_armor"
+      },
+      "hit_points": {
+        "average": 32,
+        "formula": "5d8+10"
+      },
+      "hit_dice": "5d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 15,
+          "modifier": 2
+        },
+        "dexterity": {
+          "value": 11,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 14,
+          "modifier": 2
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 10,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 11,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "intimidation": 2
+      },
+      "traits": [
+        {
+          "name": "Pack Tactics",
+          "simple_name": "pack_tactics",
+          "description": [
+            "The thug has advantage on an attack roll against a creature if at least one of the thug's allies is within 5 feet of the creature and the ally isn't incapacitated."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The thug makes two melee attacks."
+          ]
+        },
+        {
+          "name": "Mace",
+          "simple_name": "mace",
+          "description": [
+            "Melee Weapon Attack: +4 to hit, reach 5 ft., one creature. Hit: 5 (1d6 + 2) bludgeoning damage."
+          ],
+          "attack_bonus": 4,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+2",
+              "type": "bludgeoning",
+              "type_id": "damage:bludgeoning"
+            }
+          ]
+        },
+        {
+          "name": "Heavy Crossbow",
+          "simple_name": "heavy_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +2 to hit, range 100/400 ft., one target. Hit: 5 (1d10) piercing damage. Thugs are ruthless enforcers skilled at intimidation and violence. They work for money and have few scruples."
+          ],
+          "attack_bonus": 2,
+          "range": {
+            "normal": 100,
+            "long": 400
+          },
+          "damage": [
+            {
+              "dice": "1d10",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.5,
+      "xp_value": 100,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language (usually Common)",
+      "page": 402
+    },
+    {
+      "id": "npc:tribal_warrior",
+      "simple_name": "tribal_warrior",
+      "name": "Tribal Warrior",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 12,
+        "type": "hide armor",
+        "type_id": "hide_armor"
+      },
+      "hit_points": {
+        "average": 11,
+        "formula": "2d8+2"
+      },
+      "hit_dice": "2d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 13,
+          "modifier": 1
+        },
+        "dexterity": {
+          "value": 11,
+          "modifier": 0
+        },
+        "constitution": {
+          "value": 12,
+          "modifier": 1
+        },
+        "intelligence": {
+          "value": 8,
+          "modifier": -1
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 8,
+          "modifier": -1
+        }
+      },
+      "saving_throws": {},
+      "skills": {},
+      "traits": [
+        {
+          "name": "Pack Tactics",
+          "simple_name": "pack_tactics",
+          "description": [
+            "The warrior has advantage on an attack roll against a creature if at least one of the warrior's allies is within 5 feet of the creature and the ally isn't incapacitated."
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "name": "Spear",
+          "simple_name": "spear",
+          "description": [
+            "Melee or Ranged Weapon Attack: +3 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d6 + 1) piercing damage, or 5 (1d8 + 1) piercing damage if used with two hands to make a melee attack. Tribal warriors live beyond civilization, most often subsisting on fishing and hunting. Each tribe acts in accordance with the wishes of its chief, who is the greatest or oldest warrior of the tribe or a tribe member blessed by the gods."
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "reach": 5,
+            "normal": 20,
+            "long": 60
+          },
+          "damage": [
+            {
+              "dice": "1d6+1",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            },
+            {
+              "dice": "1d8+1",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 0.125,
+      "xp_value": 25,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 10
+      },
+      "languages": "any one language",
+      "page": 402
+    },
+    {
+      "id": "npc:veteran",
+      "simple_name": "veteran",
+      "name": "Veteran",
+      "size": "Medium",
+      "type": "humanoid (any race)",
+      "alignment": "any alignment",
+      "armor_class": {
+        "value": 17,
+        "type": "splint",
+        "type_id": "splint"
+      },
+      "hit_points": {
+        "average": 58,
+        "formula": "9d8+18"
+      },
+      "hit_dice": "9d8",
+      "speed": {
+        "walk": 30,
+        "swim": 0,
+        "fly": 0,
+        "burrow": 0,
+        "climb": 0,
+        "hover": false
+      },
+      "ability_scores": {
+        "strength": {
+          "value": 16,
+          "modifier": 3
+        },
+        "dexterity": {
+          "value": 13,
+          "modifier": 1
+        },
+        "constitution": {
+          "value": 14,
+          "modifier": 2
+        },
+        "intelligence": {
+          "value": 10,
+          "modifier": 0
+        },
+        "wisdom": {
+          "value": 11,
+          "modifier": 0
+        },
+        "charisma": {
+          "value": 10,
+          "modifier": 0
+        }
+      },
+      "saving_throws": {},
+      "skills": {
+        "athletics": 5,
+        "perception": 2
+      },
+      "actions": [
+        {
+          "name": "Multiattack",
+          "simple_name": "multiattack",
+          "description": [
+            "The veteran makes two longsword attacks. If it has a shortsword drawn, it can also make a shortsword attack."
+          ]
+        },
+        {
+          "name": "Longsword",
+          "simple_name": "longsword",
+          "description": [
+            "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 7 (1d8 + 3) slashing damage, or 8 (1d10 + 3) slashing damage if used with two hands."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d8+3",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            },
+            {
+              "dice": "1d10+3",
+              "type": "slashing",
+              "type_id": "damage:slashing"
+            }
+          ]
+        },
+        {
+          "name": "Shortsword",
+          "simple_name": "shortsword",
+          "description": [
+            "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 6 (1d6 + 3) piercing damage."
+          ],
+          "attack_bonus": 5,
+          "range": {
+            "reach": 5
+          },
+          "damage": [
+            {
+              "dice": "1d6+3",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        },
+        {
+          "name": "Heavy Crossbow",
+          "simple_name": "heavy_crossbow",
+          "description": [
+            "Ranged Weapon Attack: +3 to hit, range 100/400 ft., one target. Hit: 6 (1d10 + 1) piercing damage. Veterans are professional fighters that take up arms for pay or to protect something they believe in or value. Their ranks include soldiers retired from long service and warriors who never served anyone but themselves."
+          ],
+          "attack_bonus": 3,
+          "range": {
+            "normal": 100,
+            "long": 400
+          },
+          "damage": [
+            {
+              "dice": "1d10+1",
+              "type": "piercing",
+              "type_id": "damage:piercing"
+            }
+          ]
+        }
+      ],
+      "challenge_rating": 3,
+      "xp_value": 700,
+      "senses": {
+        "darkvision": 0,
+        "blindsight": 0,
+        "tremorsense": 0,
+        "truesight": 0,
+        "passive_perception": 12
+      },
+      "languages": "any one language (usually Common)",
+      "page": 403
     }
   ]
 }

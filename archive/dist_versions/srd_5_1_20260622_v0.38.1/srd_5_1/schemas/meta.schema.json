@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/meta.schema.json",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "last_modified": "2026-06-22",
   "title": "SRD Bundle Envelope (meta.json)",
-  "description": "Pinned shape of the bundle envelope file shipped at <bundle>/meta.json. This is the consumer-visible contract: top-level keys, the schemas map, the datasets manifest, and licensing. The top level is closed (additionalProperties: false) and explicitly rejects the legacy manifest keys 'files', 'inventory', and 'extraction_status'. Manifest renames (e.g. files\u2192inventory\u2192datasets) are MAJOR builder_version changes and must update this schema's version. See docs/COMPATIBILITY.md (shipped at <bundle>/docs/COMPATIBILITY.md) for the policy.",
+  "description": "Pinned shape of the bundle envelope file shipped at <bundle>/meta.json. This is the consumer-visible contract: top-level keys, the schemas map, the datasets manifest, and licensing. Manifest renames (e.g. files\u2192inventory\u2192datasets) are MAJOR builder_version changes and must update this schema's version. See docs/COMPATIBILITY.md for the policy.",
   "type": "object",
   "required": [
     "source",
@@ -16,31 +16,7 @@
     "page_index",
     "datasets"
   ],
-  "additionalProperties": false,
-  "allOf": [
-    {
-      "comment": "Explicitly reject legacy manifest keys that older builders used. A consumer who only has this schema (not the producer's test suite) gets a hard failure if a producer ever re-introduces them.",
-      "not": {
-        "anyOf": [
-          {
-            "required": [
-              "files"
-            ]
-          },
-          {
-            "required": [
-              "inventory"
-            ]
-          },
-          {
-            "required": [
-              "extraction_status"
-            ]
-          }
-        ]
-      }
-    }
-  ],
+  "additionalProperties": true,
   "properties": {
     "source": {
       "type": "string",
@@ -107,10 +83,7 @@
     },
     "build": {
       "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "pdf_hash"
-      ],
+      "additionalProperties": true,
       "properties": {
         "pdf_hash": {
           "oneOf": [
@@ -123,6 +96,10 @@
               "type": "null"
             }
           ]
+        },
+        "extracted_at": {
+          "type": "string",
+          "description": "Optional debug field; envelope itself is timestamp-free (the timestamp_utc lives in dist/build_report.json)."
         }
       }
     },

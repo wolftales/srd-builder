@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/schemas/poison.schema.json",
+  "version": "2.1.0",
+  "last_modified": "2026-06-22",
+  "title": "SRD 5.1 Poison",
+  "description": "Poisons from SRD 5.1 pages 204-205. Poisons with application methods, effects, and costs.",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "simple_name",
+    "poison_type",
+    "source",
+    "page"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^poison:[a-z0-9_]+$",
+      "description": "Unique identifier using the poison: namespace"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name (e.g., 'Assassin's Blood', 'Truth Serum')"
+    },
+    "simple_name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Lowercase normalized name for indexing"
+    },
+    "aliases": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "description": "Alternative names"
+    },
+    "type": {
+      "type": "string",
+      "description": "Reserved: when present on poison records this is the damage type label (e.g., 'poison'). The application-method enum lives on 'poison_type'."
+    },
+    "poison_type": {
+      "type": "string",
+      "enum": [
+        "contact",
+        "ingested",
+        "inhaled",
+        "injury"
+      ],
+      "description": "Application method (contact, ingested, inhaled, injury). Previously named 'type' in v2.0.0 schema, but the data has always emitted 'poison_type'."
+    },
+    "description": {
+      "type": "string",
+      "description": "Full poison mechanics and effects"
+    },
+    "save": {
+      "type": "object",
+      "description": "Saving throw to resist effects",
+      "properties": {
+        "ability": {
+          "type": "string",
+          "enum": [
+            "strength",
+            "dexterity",
+            "constitution",
+            "intelligence",
+            "wisdom",
+            "charisma"
+          ]
+        },
+        "dc": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "damage": {
+      "type": "object",
+      "description": "Poison damage",
+      "properties": {
+        "dice": {
+          "type": "string",
+          "description": "Damage dice (e.g., '1d12')"
+        },
+        "type": {
+          "type": "string",
+          "description": "Damage type (usually 'poison')"
+        },
+        "type_id": {
+          "type": "string",
+          "pattern": "^damage:[a-z_]+$",
+          "description": "Cross-reference to damage type (e.g., 'damage:poison'). Namespace 'damage:' matches damage_types.json IDs and references in monsters/spells."
+        },
+        "on_save": {
+          "type": "string",
+          "description": "Damage on successful save (e.g., 'half', 'none')"
+        }
+      }
+    },
+    "condition": {
+      "type": "string",
+      "description": "Condition imposed by poison (e.g., 'poisoned')"
+    },
+    "duration": {
+      "type": "string",
+      "description": "How long poison effects last"
+    },
+    "cost": {
+      "type": "object",
+      "description": "Purchase cost",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "enum": [
+            "cp",
+            "sp",
+            "gp",
+            "pp"
+          ]
+        }
+      }
+    },
+    "page": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1
+        }
+      ],
+      "description": "Page number(s) in source PDF. Array when entry spans pages."
+    },
+    "source": {
+      "type": "string",
+      "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "source_table": {
+      "type": "string",
+      "description": "Builder provenance: name of the source PDF table this record was extracted from (e.g., 'poisons')."
+    },
+    "row_index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Builder provenance: 0-based row index within source_table."
+    },
+    "_meta": {
+      "type": "object",
+      "description": "INTERNAL: Builder metadata"
+    }
+  }
+}

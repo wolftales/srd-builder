@@ -1,7 +1,7 @@
 # SRD-Builder Architecture
 
 <!-- AUTO-SYNC:arch:version START -->
-**Version:** v0.38.1
+**Version:** v0.39.0
 <!-- AUTO-SYNC:arch:version END -->
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
@@ -12,7 +12,7 @@
 ## Datasets Overview
 
 <!-- AUTO-SYNC:arch:total-line START -->
-SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.38.1 build ships **16 datasets** containing **1,687 items**:
+SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.39.0 build ships **16 datasets** containing **1,693 items**:
 <!-- AUTO-SYNC:arch:total-line END -->
 
 <!-- AUTO-SYNC:arch:overview-table START -->
@@ -32,7 +32,7 @@ SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.38.1 
 | `rules.json` | 167 | v3.1.0 | Core mechanics from 7 chapters |
 | `skills.json` | 18 | v1.0.0 | Atomic reference: skill vocabulary |
 | `spells.json` | 319 | v2.0.0 | Spell list with effects, components, casting |
-| `tables.json` | 35 | v3.1.0 | Reference tables (equipment, expenses, services, madness) |
+| `tables.json` | 41 | v3.1.0 | Reference tables (equipment, expenses, services, madness) |
 | `weapon_properties.json` | 11 | v1.0.0 | Atomic reference: weapon property vocabulary |
 <!-- AUTO-SYNC:arch:overview-table END -->
 
@@ -1115,7 +1115,7 @@ When releasing a new version:
 ## Reference Data
 
 <!-- AUTO-SYNC:arch:stats-header START -->
-### Dataset Statistics (v0.38.1)
+### Dataset Statistics (v0.39.0)
 <!-- AUTO-SYNC:arch:stats-header END -->
 
 Live counts come from `dist/srd_5_1/meta.json.datasets`. Snapshot for this revision:
@@ -1129,7 +1129,7 @@ Live counts come from `dist/srd_5_1/meta.json.datasets`. Snapshot for this revis
 | features | 245 | Class features and lineage traits |
 | magic_items | 240 | Magic items with descriptions |
 | rules | 167 | 7 chapters of core mechanics |
-| tables | 35 | Equipment, expenses, services, madness, etc. |
+| tables | 41 | Equipment, expenses, services, madness, etc. |
 | skills | 18 | Atomic reference |
 | conditions | 15 | Status conditions |
 | poisons | 14 | Poison gear + descriptions |
@@ -1139,7 +1139,7 @@ Live counts come from `dist/srd_5_1/meta.json.datasets`. Snapshot for this revis
 | weapon_properties | 11 | Atomic reference |
 | ability_scores | 6 | STR/DEX/CON/INT/WIS/CHA |
 | diseases | 3 | Cackle Fever, Sewer Plague, Sight Rot |
-| **Total** | **1,687** | |
+| **Total** | **1,693** | |
 <!-- AUTO-SYNC:arch:stats-table END -->
 
 ### PDF Typography (SRD 5.1)

@@ -63,6 +63,7 @@ from .postprocess import (
     clean_spell_record,
     dedupe_rule_records,
 )
+from .postprocess.derive_reference_tables import derive_reference_tables
 from .postprocess.engine import clean_records
 from .utils.metadata import (
     DATASET_TO_SCHEMA,
@@ -233,6 +234,16 @@ def _write_datasets(  # noqa: PLR0913
     # Postprocess: normalize IDs and polish text
     processed_tables = clean_records(tables, "table") if tables else None
     if processed_tables:
+        # Append derived reference tables (v0.39.0 — finding #2).
+        # Five tables (proficiency_bonus, full-caster + paladin/ranger/warlock
+        # spell slots) are derived from already-extracted class progressions;
+        # draconic_ancestry is hand-curated. Run clean_records on the appended
+        # set so they go through the same id/text normalization as extracted
+        # tables.
+        derived = clean_records(derive_reference_tables(processed_tables), "table")
+        if derived:
+            processed_tables = processed_tables + derived
+
         # Sort tables by page number (document/TOC order)
         def get_sort_page(table: dict[str, Any]) -> int:
             page = table.get("page")
@@ -425,6 +436,7 @@ def _write_datasets(  # noqa: PLR0913
         processed_damage_types,
         processed_ability_scores,
         processed_skills,
+        processed_weapon_properties,
     )
 
     # Build cross-reference indexes (v0.21.0 - Phase 2)
@@ -657,13 +669,24 @@ ships as a single `*.json` file with a `_meta` block + `items` array.
 |---|---:|---|---|
 {inventory_table}
 
-Plus:
+Plus, inside this bundle directory:
 
-- `meta.json` — bundle metadata (versions, license, page index, inventory)
-- `build_report.json` — build provenance (timestamps, builder version)
+- `meta.json` — bundle envelope (versions, license, page index, dataset manifest)
 - `index.json` — pre-built search index with alias support
-- `schemas/` — JSON Schema files for all datasets
-- `docs/` — `SCHEMAS.md`, `DATA_DICTIONARY.md`
+- `schemas/` — JSON Schema files for all datasets, plus envelope schemas
+  (`meta.schema.json`, `build_report.schema.json`) and minimal exemplars
+- `docs/` — `SCHEMAS.md`, `DATA_DICTIONARY.md`, `COMPATIBILITY.md`
+
+### Adjacent build artifacts (outside the bundle directory)
+
+A companion file is written alongside the bundle directory by the producer,
+*not* inside it. Consumers SHOULD NOT depend on this file existing in the
+bundle, and producers MUST NOT place it inside the bundle:
+
+- `../build_report.json` — build provenance (timestamps, builder version,
+  python version, bundle hash). Lives next to the bundle directory because
+  it carries environment-dependent values; keeping it outside lets the bundle
+  itself stay byte-deterministic.
 
 ---
 
@@ -720,7 +743,7 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
     - README.md (generated dynamically from meta.json)
     - schemas/ directory (every dataset schema)
     - schemas/exemplars/ directory (one valid instance per schema)
-    - docs/ directory (SCHEMAS.md, DATA_DICTIONARY.md)
+    - docs/ directory (SCHEMAS.md, DATA_DICTIONARY.md, COMPATIBILITY.md)
     """
     repo_root = Path(__file__).resolve().parents[2]
 
@@ -766,11 +789,12 @@ def _copy_bundle_collateral(target_dir: Path) -> None:
             count += 1
         print(f"  ✓ Copied schemas/exemplars/ ({count} exemplars)")
 
-    # Copy docs
+    # Copy docs (incl. COMPATIBILITY.md so the bundle is self-describing for
+    # consumers who only have the shipped artifacts and never see the repo).
     docs_src = repo_root / "docs"
     docs_dst = target_dir / "docs"
     docs_dst.mkdir(exist_ok=True)
-    for doc_file in ["SCHEMAS.md", "DATA_DICTIONARY.md"]:
+    for doc_file in ["SCHEMAS.md", "DATA_DICTIONARY.md", "COMPATIBILITY.md"]:
         src = docs_src / doc_file
         if src.exists():
             (docs_dst / doc_file).write_text(src.read_text(encoding="utf-8"), encoding="utf-8")

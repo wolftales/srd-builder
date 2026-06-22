@@ -1,0 +1,75 @@
+{
+  "id": "item:example",
+  "name": "example name",
+  "simple_name": "example",
+  "category": "weapon",
+  "source": "example source",
+  "page": 1,
+  "aliases": [
+    "example aliases"
+  ],
+  "description": "example description",
+  "pack_contents": [
+    {
+      "item_id": "item:example",
+      "item_name": "example item_name",
+      "quantity": 1
+    }
+  ],
+  "sub_category": "example sub_category",
+  "weapon_type": "melee",
+  "cost": {
+    "amount": 0,
+    "currency": "cp"
+  },
+  "weight_lb": 0.0,
+  "weight_raw": "example weight_raw",
+  "damage": {
+    "dice": "1d8",
+    "type": "bludgeoning",
+    "type_id": "example"
+  },
+  "versatile_damage": {
+    "dice": "1d8"
+  },
+  "armor_class": {
+    "base": 0,
+    "dex_bonus": false,
+    "max_bonus": 0
+  },
+  "strength_req": 0,
+  "stealth_disadvantage": false,
+  "properties": [
+    "example properties"
+  ],
+  "range": {
+    "normal": 0,
+    "long": 0
+  },
+  "quantity": 1,
+  "variant_of": "item:example",
+  "is_magic": false,
+  "rarity": "common",
+  "requires_attunement": false,
+  "modifiers": [
+    "example modifiers"
+  ],
+  "section": "example section",
+  "table_header": [
+    "example table_header"
+  ],
+  "row_index": 1,
+  "source_table": "example source_table",
+  "proficiency": "simple",
+  "capacity": "example capacity",
+  "_meta": {},
+  "_provenance": {
+    "source": "inferred",
+    "reason": "pack_cross_reference",
+    "referenced_by": "example referenced_by",
+    "module": "example module",
+    "estimates": [
+      "cost"
+    ]
+  }
+}

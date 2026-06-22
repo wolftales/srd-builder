@@ -65,7 +65,7 @@ if command -v jq &> /dev/null; then
     ["rules.json"]=167
     ["skills.json"]=18
     ["spells.json"]=319
-    ["tables.json"]=35
+    ["tables.json"]=41
     ["weapon_properties.json"]=11
   )
 

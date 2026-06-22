@@ -25,6 +25,32 @@ def _stable_dict(values: Iterable[tuple[str, list[str]]]) -> dict[str, list[str]
     return {key: ids for key, ids in values}
 
 
+def _build_by_name_all_map(
+    records: Iterable[dict[str, Any]],
+) -> dict[str, list[str]]:
+    """List-valued name index with complete coverage.
+
+    Unlike `_build_by_name_map` (scalar, first-write-wins), this maps every
+    lowercased display name to the full list of IDs that share it. Datasets
+    with ambiguous names (e.g. ``feature:fighter:ability_score_improvement``
+    and ``feature:wizard:ability_score_improvement`` both display as
+    "Ability Score Improvement") MUST expose this index in addition to
+    `by_name` so consumers can resolve a name to every matching record
+    rather than just the first one seen. Introduced v0.39.0.
+    """
+
+    bucket: defaultdict[str, list[str]] = defaultdict(list)
+    for record in records:
+        name = str(record.get("name", ""))
+        if not name:
+            continue
+        record_id = fallback_id(record)
+        key = name.lower()
+        if record_id not in bucket[key]:
+            bucket[key].append(record_id)
+    return {key: sorted(ids) for key, ids in sorted(bucket.items())}
+
+
 def fallback_id(monster: dict[str, Any]) -> str:
     """Best-effort identifier for monsters missing explicit IDs."""
 
@@ -595,6 +621,7 @@ def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical feature lookup tables."""
 
     by_name, _ = _build_by_name_map(features)
+    by_name_all = _build_by_name_all_map(features)
     by_source: defaultdict[str, list[str]] = defaultdict(list)
 
     for feature in features:
@@ -610,6 +637,7 @@ def build_feature_index(features: list[dict[str, Any]]) -> dict[str, Any]:
 
     return {
         "by_name": by_name,
+        "by_name_all": by_name_all,
         "by_source": sorted_by_source,
     }
 
@@ -618,6 +646,7 @@ def build_rule_index(rules: list[dict[str, Any]]) -> dict[str, Any]:
     """Build canonical rule lookup tables."""
 
     by_name, _ = _build_by_name_map(rules)
+    by_name_all = _build_by_name_all_map(rules)
     by_category: defaultdict[str, list[str]] = defaultdict(list)
     by_subcategory: defaultdict[str, list[str]] = defaultdict(list)
 
@@ -641,6 +670,7 @@ def build_rule_index(rules: list[dict[str, Any]]) -> dict[str, Any]:
 
     return {
         "by_name": by_name,
+        "by_name_all": by_name_all,
         "by_category": sorted_by_category,
         "by_subcategory": sorted_by_subcategory,
     }
@@ -662,10 +692,11 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
     damage_types: list[dict[str, Any]] | None = None,
     ability_scores: list[dict[str, Any]] | None = None,
     skills: list[dict[str, Any]] | None = None,
+    weapon_properties: list[dict[str, Any]] | None = None,
     *,
     display_normalizer: Callable[[str], str] | None = None,
 ) -> dict[str, Any]:
-    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, rule, damage type, ability, skill, and entity indexes for dataset output."""
+    """Aggregate monster, spell, equipment, magic item, table, lineage, class, condition, disease, poison, feature, rule, damage type, ability, skill, weapon-property, and entity indexes for dataset output."""
 
     # Split into monsters, creatures (MM-A), and NPCs (MM-B) based on ID prefix
     actual_monsters = [m for m in monsters if fallback_id(m).startswith("monster:")]
@@ -718,9 +749,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
             "total_creatures": len(misc_creatures),
             "total_npcs": len(npcs),
             "total_all_creatures": len(monsters),  # Combined count
-            "total_entities": len(monster_entity_index)
-            + len(creature_entity_index)
-            + len(npc_entity_index),
             "unique_crs": len(monster_indexes["by_cr"]),
             "unique_types": len(monster_indexes["by_type"]),
             "unique_sizes": len(monster_indexes["by_size"]),
@@ -735,7 +763,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["spells"] = spell_indexes
         entities["spells"] = spell_entity_index
         payload["stats"]["total_spells"] = len(spells)
-        payload["stats"]["total_entities"] = len(monster_entity_index) + len(spell_entity_index)
         payload["stats"]["unique_spell_levels"] = len(spell_indexes["by_level"])
         payload["stats"]["unique_spell_schools"] = len(spell_indexes["by_school"])
 
@@ -747,12 +774,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["equipment"] = equipment_indexes
         entities["equipment"] = equipment_entity_index
         payload["stats"]["total_equipment"] = len(equipment)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        total += len(equipment_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["unique_equipment_categories"] = len(equipment_indexes["by_category"])
         payload["stats"]["unique_equipment_rarities"] = len(equipment_indexes["by_rarity"])
 
@@ -764,14 +785,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["magic_items"] = magic_item_indexes
         entities["magic_items"] = magic_item_entity_index
         payload["stats"]["total_magic_items"] = len(magic_items)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        total += len(magic_item_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["unique_magic_item_rarities"] = len(magic_item_indexes["by_rarity"])
         payload["stats"]["unique_magic_item_types"] = len(magic_item_indexes["by_type"])
 
@@ -783,16 +796,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["tables"] = table_indexes
         entities["tables"] = table_entity_index
         payload["stats"]["total_tables"] = len(tables)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        if magic_items is not None:
-            total += len(magic_item_entity_index)
-        total += len(table_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["unique_table_categories"] = len(table_indexes["by_category"])
 
     # Add lineage indexes if lineages provided (including empty list)
@@ -803,18 +806,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["lineages"] = lineage_indexes
         entities["lineages"] = lineage_entity_index
         payload["stats"]["total_lineages"] = len(lineages)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        if magic_items is not None:
-            total += len(magic_item_entity_index)
-        if tables is not None:
-            total += len(table_entity_index)
-        total += len(lineage_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["unique_lineage_sizes"] = len(lineage_indexes["by_size"])
         payload["stats"]["unique_lineage_speeds"] = len(lineage_indexes["by_speed"])
 
@@ -826,20 +817,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["classes"] = class_indexes
         entities["classes"] = class_entity_index
         payload["stats"]["total_classes"] = len(classes)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        if magic_items is not None:
-            total += len(magic_item_entity_index)
-        if tables is not None:
-            total += len(table_entity_index)
-        if lineages is not None:
-            total += len(lineage_entity_index)
-        total += len(class_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["unique_hit_dice"] = len(class_indexes["by_hit_die"])
         payload["stats"]["unique_primary_abilities"] = len(class_indexes["by_primary_ability"])
 
@@ -851,22 +828,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["conditions"] = condition_indexes
         entities["conditions"] = condition_entity_index
         payload["stats"]["total_conditions"] = len(conditions)
-        # Recalculate total entities
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        if magic_items is not None:
-            total += len(magic_item_entity_index)
-        if tables is not None:
-            total += len(table_entity_index)
-        if lineages is not None:
-            total += len(lineage_entity_index)
-        if classes is not None:
-            total += len(class_entity_index)
-        total += len(condition_entity_index)
-        payload["stats"]["total_entities"] = total
         payload["stats"]["conditions_with_levels"] = len(
             condition_indexes["by_has_levels"].get("true", [])
         )
@@ -908,7 +869,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["stats"]["total_rules"] = len(rules)
 
     # Add damage_types to entities index if provided
-    damage_type_entity_index: dict[str, Any] = {}
     if damage_types is not None:
         damage_type_entity_index = _build_simple_entity_index(
             damage_types, "damage", "damage_types.json"
@@ -919,7 +879,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["stats"]["total_damage_types"] = len(damage_types)
 
     # Add ability_scores to entities index if provided
-    ability_score_entity_index: dict[str, Any] = {}
     if ability_scores is not None:
         ability_score_entity_index = _build_simple_entity_index(
             ability_scores, "ability", "ability_scores.json"
@@ -930,7 +889,6 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         payload["stats"]["total_ability_scores"] = len(ability_scores)
 
     # Add skills to entities index if provided
-    skill_entity_index: dict[str, Any] = {}
     if skills is not None:
         skill_entity_index = _build_simple_entity_index(skills, "skill", "skills.json")
         by_name, _ = _build_by_name_map(skills)
@@ -938,46 +896,20 @@ def build_indexes(  # noqa: C901, PLR0912, PLR0913, PLR0915
         entities["skills"] = skill_entity_index
         payload["stats"]["total_skills"] = len(skills)
 
-    # Recalculate total entities to include new datasets
-    if (
-        diseases is not None
-        or poisons is not None
-        or features is not None
-        or rules is not None
-        or damage_types is not None
-        or ability_scores is not None
-        or skills is not None
-    ):
-        total = len(monster_entity_index)
-        if spells is not None:
-            total += len(spell_entity_index)
-        if equipment is not None:
-            total += len(equipment_entity_index)
-        if magic_items is not None:
-            total += len(magic_item_entity_index)
-        if tables is not None:
-            total += len(table_entity_index)
-        if lineages is not None:
-            total += len(lineage_entity_index)
-        if classes is not None:
-            total += len(class_entity_index)
-        if conditions is not None:
-            total += len(condition_entity_index)
-        if diseases is not None:
-            total += len(disease_entity_index)
-        if poisons is not None:
-            total += len(poison_entity_index)
-        if features is not None:
-            total += len(feature_entity_index)
-        if rules is not None:
-            total += len(rule_entity_index)
-        if damage_types is not None:
-            total += len(damage_type_entity_index)
-        if ability_scores is not None:
-            total += len(ability_score_entity_index)
-        if skills is not None:
-            total += len(skill_entity_index)
-        payload["stats"]["total_entities"] = total
+    # Add weapon_properties to entities index if provided (v0.39.0 — finding #4)
+    if weapon_properties is not None:
+        weapon_property_entity_index = _build_simple_entity_index(
+            weapon_properties, "weapon_property", "weapon_properties.json"
+        )
+        by_name, _ = _build_by_name_map(weapon_properties)
+        payload["weapon_properties"] = {"by_name": by_name}
+        entities["weapon_properties"] = weapon_property_entity_index
+        payload["stats"]["total_weapon_properties"] = len(weapon_properties)
+
+    # Single source of truth for total_entities: sum over every shipped entity
+    # bucket (v0.39.0 — finding #4). Earlier code recalculated this after every
+    # dataset and silently dropped creatures, npcs, and weapon_properties.
+    payload["stats"]["total_entities"] = sum(len(bucket) for bucket in entities.values())
 
     if name_conflicts:
         payload["conflicts"] = {"by_name": name_conflicts}

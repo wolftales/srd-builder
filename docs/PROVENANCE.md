@@ -155,6 +155,19 @@ a failed save"` phrasing.
 | Notes | Parser walks the four sections by concatenating each section’s pages into one normalized string, finds heading candidates with `_HEADING_RE` (Title-Case + lowercase glue words `and`/`or`/`of` + period), filters via a 69-entry `_HEADING_TO_ITEM_ID` table, and slices each item’s body up to the next resolving heading or a known subsection terminator (`Heavy Armor`, `Medium Armor`, `Self-Sufficiency`, `Mounts and Vehicles`, `Adventuring Gear`). Normalization handles four PDF artifacts: (1) soft-hyphen runs (`-\xad‐‑` → `-`) inside compound words like `15-foot`, (2) curly U+2019 → ASCII `'`, (3) page-footer text (`System Reference Document 5.1 N`) stripped to keep cross-page descriptions clean, (4) line-wrap em-dashes (`item— an` → `item—an`). Two of the curated module’s `page` fields were wrong (`Antitoxin` and `Arcane Focus` are on p. 66, not p. 67) and six descriptions had editorially stripped phrases (`book` lost `(described later in this section)`, `holy_symbol` lost the Appendix PH-B reference, etc.); the new extractor restores all six and corrects both pages — the data is strictly better than what was retired. `assemble_equipment_from_tables(..., equipment_descriptions=None)` now takes the extracted descriptions as a kwarg; `_add_item_descriptions` builds a lookup from the parameter list (no module-level imports). `build.py` calls `extract_equipment_descriptions(pdf_files[0])["descriptions"]` once via the `_extract_equipment_pdf_data` helper (which also wraps the v0.27.5 packs extractor). |
 | Downstream | `dist/srd_5_1/equipment.json` (description fields on adventure-gear / tools / armor / lifestyle records) |
 
+### `derive_reference_tables.py` — DRACONIC_ANCESTRY + 5 derived tables  *(added in v0.39.0)*
+
+| Field | Value |
+| --- | --- |
+| Status | **LIVE** (one hand-curated literal; five derived from already-extracted class progressions) |
+| Path | [src/srd_builder/postprocess/derive_reference_tables.py](../src/srd_builder/postprocess/derive_reference_tables.py) |
+| Scope | Six reference tables that close Blackmoor's 21 dangling cross-references (`table:proficiency_bonus`, `table:spell_slots_full_caster`, `table:paladin_spell_slots`, `table:ranger_spell_slots`, `table:warlock_spell_slots`, `table:draconic_ancestry`) |
+| Reason codes | Five tables: `derived_lookup_table` (aggregated from existing class progressions; pure transformation, no PDF re-extraction). One table (`table:draconic_ancestry`): `pdf_missing` — the table exists as a standalone PDF table on page 5 (Dragonborn section) but is not yet listed in [src/srd_builder/extract/table_targets.py](../src/srd_builder/extract/table_targets.py), so the live extractor never pulls it. |
+| Removal trigger | Derived five: never (they remain useful cross-reference aggregations even after extraction improves). `draconic_ancestry`: add an entry to `TARGET_TABLES` and confirm extracted content matches the hand-curated literal byte-for-byte. |
+| Reproducer | TODO — add a derivation parity test (`tests/test_derive_reference_tables.py`) that asserts the proficiency bonus column is identical across all 12 class progressions, and the full-caster slot columns are identical across bard/cleric/druid/sorcerer/wizard. |
+| Notes | The class progression tables represent "no slot" as the digit `0` or `1` overprinted with U+0336 (combining long stroke overlay) which renders as strikethrough; the derivation strips the overlay and normalizes empty cells to em-dash (`\u2014`). The `draconic_ancestry` literal is faithful to the SRD 5.1 CC-BY content (10 dragon types × 3 columns: Dragon, Damage Type, Breath Weapon). |
+| Downstream | `dist/srd_5_1/tables.json` (6 added rows raise table count from 35 to 41) |
+
 ### `extract_equipment.py` — page constants  *(resolved in v0.27.4)*
 
 | Field | Value |

@@ -8,6 +8,36 @@ It is the explicit policy that lets `builder_version` stand in for what would
 otherwise need a separate `bundle_format_version`: there is one version
 number, and renaming the dataset manifest is a MAJOR change to it.
 
+## Pre-1.0 status
+
+`srd-builder` is currently pre-1.0. Under semver, pre-1.0 explicitly allows
+breaking changes to ship in any release including PATCH. We retain the
+MAJOR/MINOR/PATCH framework below as the *intended* policy that will become
+strict at v1.0.0, but pre-1.0 the rules carry the following carve-outs:
+
+1. **Bundle artifact relocations** (e.g. moving `build_report.json` out of the
+   bundle directory in v0.38.0) may ship in a MINOR release pre-1.0 with a
+   release-note migration paragraph, instead of a MAJOR bump. This is the
+   exception that applied to v0.38.0; it is recorded here explicitly so it
+   is not a retroactive inference.
+2. **Schema-tightening hardenings that close envelope shape** (e.g. setting
+   `additionalProperties: false` on `meta.schema.json` top-level, removing
+   `build.extracted_at` from the allowed properties, both shipped in v0.39.0)
+   may ship in a MINOR release pre-1.0 with a release-note paragraph,
+   because no producer or consumer is currently shipping those keys.
+3. **Manifest renames** are still MAJOR, even pre-1.0. The cost to consumers
+   of `files`\u2192`inventory`\u2192`datasets` is too high to silently absorb.
+4. **Removing a required schema field** is still MAJOR even pre-1.0. A
+   consumer reading the field will get a hard runtime error.
+
+These carve-outs expire at v1.0.0. From v1.0.0 forward, the
+MAJOR/MINOR/PATCH rules below are strict, and the only valid way to ship a
+breaking change is a MAJOR bump.
+
+Consumers integrating pre-1.0 SHOULD pin the exact `builder_version` they
+tested against and re-test before adopting a new release, even within a
+single MINOR cycle.
+
 ## Where `builder_version` is recorded
 
 | Location | Field |
@@ -47,10 +77,10 @@ Examples that REQUIRE a MAJOR bump:
   oneOf integer|array` collapsing back to `page: integer`.
 - **Moving artifacts within the bundle layout.** Example: moving
   `dist/srd_5_1/meta.json` to `dist/srd_5_1/_meta/meta.json` would break any
-  consumer hard-coded to the current path. The v0.38.0 relocation of
-  `build_report.json` from inside the bundle to alongside it is the kind of
-  move that qualifies — though in this case there is no real consumer
-  product running yet, so it landed without ceremony.
+  consumer hard-coded to the current path. From v1.0.0 forward, the v0.38.0
+  relocation of `build_report.json` from inside the bundle to alongside it
+  would qualify as MAJOR. Pre-1.0, it shipped as MINOR under the carve-out
+  documented in the *Pre-1.0 status* section above.
 - **Removing a dataset** from the 16 currently shipped, or merging two
   datasets into one.
 
