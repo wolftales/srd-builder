@@ -17,6 +17,9 @@ def test_build_pipeline(tmp_path, monkeypatch):
         def validate(self, _instance):
             return None
 
+        def iter_errors(self, _instance):
+            return iter(())
+
     monkeypatch.setattr(jsonschema, "Draft202012Validator", _DummyValidator)
 
     from srd_builder.utils import validate as validate_module

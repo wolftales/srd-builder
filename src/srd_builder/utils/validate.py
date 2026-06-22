@@ -1,13 +1,16 @@
-"""Validation helpers for SRD datasets."""
+"""Strict validation of SRD bundle datasets against shipped JSON Schemas."""
 
 from __future__ import annotations
 
 import argparse
 import hashlib
 import json
+import sys
+from collections import defaultdict
 from collections.abc import Iterable
 from itertools import islice
 from pathlib import Path
+from typing import Any
 
 from jsonschema import Draft202012Validator
 
@@ -17,83 +20,177 @@ SCHEMA_DIR = Path(__file__).resolve().parents[3] / SCHEMAS_DIRNAME
 DIST_DIR = Path(__file__).resolve().parents[3] / DIST_DIRNAME
 RULESETS_DIR = Path(__file__).resolve().parents[3] / RULESETS_DIRNAME
 
+# Maps every emitted dataset filename to the schema stem (file without .schema.json)
+# that defines its item shape. Every dataset shipped in dist/<ruleset>/ MUST appear
+# here, otherwise the strict validator silently skips it.
+DATASET_SCHEMA_MAP: dict[str, str] = {
+    "ability_scores.json": "ability_score",
+    "classes.json": "class",
+    "conditions.json": "condition",
+    "damage_types.json": "damage_type",
+    "diseases.json": "disease",
+    "equipment.json": "equipment",
+    "features.json": "features",
+    "lineages.json": "lineage",
+    "magic_items.json": "magic_item",
+    "monsters.json": "monster",
+    "poisons.json": "poison",
+    "rules.json": "rule",
+    "skills.json": "skill",
+    "spells.json": "spell",
+    "tables.json": "table",
+    "weapon_properties.json": "weapon_property",
+}
 
-def load_json(path: Path) -> object:
+
+def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def validate_dataset(
-    ruleset: str,
+def _categorize_error(err: Any) -> str:
+    """Build a stable category key from a jsonschema ValidationError."""
+    path = ".".join(str(p) for p in err.absolute_path) or "<root>"
+    return f"{err.validator}@{path}"
+
+
+def validate_one_dataset(
     *,
-    dataset_name: str,
-    schema_name: str,
-    items_key: str = "items",
+    data_path: Path,
+    schema_path: Path,
     limit: int | None = None,
-) -> int:
-    """Generic dataset validator to reduce duplication.
+) -> dict[str, Any]:
+    """Validate a single dataset file against a schema, collecting every error."""
+    report: dict[str, Any] = {
+        "dataset": data_path.name,
+        "status": "OK",
+        "total": 0,
+        "failed": 0,
+        "categories": {},
+        "errors": [],
+    }
+    if not data_path.exists():
+        report["status"] = "NO_DATA"
+        return report
+    if not schema_path.exists():
+        report["status"] = "NO_SCHEMA"
+        return report
 
-    Args:
-        ruleset: Ruleset identifier (e.g., 'srd_5_1')
-        dataset_name: Name of dataset file (e.g., 'monsters', 'spells')
-        schema_name: Name of schema file (e.g., 'monster', 'spell')
-        items_key: Key containing items array (default: 'items')
-        limit: Optional limit on number of items to validate
-
-    Returns:
-        Number of items validated
-
-    Raises:
-        FileNotFoundError: If schema is missing
-        TypeError: If document structure is invalid
-    """
-    data_file = DIST_DIR / ruleset / f"{dataset_name}.json"
-    if not data_file.exists():
-        print(f"No {dataset_name}.json found for ruleset '{ruleset}'. Skipping validation.")
-        return 0
-
-    schema_file = SCHEMA_DIR / f"{schema_name}.schema.json"
-    if not schema_file.exists():
-        raise FileNotFoundError(
-            f"{schema_name.capitalize()} schema is missing. Did you remove schemas/{schema_name}.schema.json?"
-        )
-
-    document = load_json(data_file)
-    if not isinstance(document, dict):  # pragma: no cover - defensive guard
-        raise TypeError(f"{dataset_name}.json must contain a JSON object")
-    items = document.get(items_key, [])
+    document = load_json(data_path)
+    items = document.get("items", []) if isinstance(document, dict) else []
     if not isinstance(items, list):
-        raise TypeError(f"{dataset_name}.json '{items_key}' must contain a JSON array")
+        report["status"] = "BAD_SHAPE"
+        return report
 
-    schema = load_json(schema_file)
+    schema = load_json(schema_path)
     validator = Draft202012Validator(schema)
 
-    count = 0
-    iterable: Iterable[object] = items
+    iterable: Iterable[Any] = items
     if limit is not None:
         iterable = islice(iterable, limit)
 
+    categories: dict[str, int] = defaultdict(int)
+    errors_list: list[dict[str, str]] = []
+    total = 0
+    failed = 0
+
     for item in iterable:
-        validator.validate(item)
-        count += 1
+        total += 1
+        if not isinstance(item, dict):
+            continue
+        item_errors = list(validator.iter_errors(item))
+        if item_errors:
+            failed += 1
+            item_id = str(item.get("id", "<no-id>"))
+            for err in item_errors:
+                cat = _categorize_error(err)
+                categories[cat] += 1
+                errors_list.append(
+                    {
+                        "id": item_id,
+                        "category": cat,
+                        "path": ".".join(str(p) for p in err.absolute_path),
+                        "message": err.message,
+                    }
+                )
 
-    entity_label = dataset_name.rstrip("s")  # "monsters" -> "monster"
-    print(f"Validated {count} {entity_label} entries for ruleset '{ruleset}'.")
-    return count
+    report["total"] = total
+    report["failed"] = failed
+    report["categories"] = dict(categories)
+    report["errors"] = errors_list
+    report["status"] = "OK" if failed == 0 else "FAIL"
+    return report
 
 
-def validate_monsters(ruleset: str, limit: int | None = None) -> int:
-    """Validate monsters.json against monster.schema.json."""
-    return validate_dataset(ruleset, dataset_name="monsters", schema_name="monster", limit=limit)
+def validate_all_datasets(
+    ruleset: str,
+    *,
+    schema_source: str = "bundle",
+    limit: int | None = None,
+) -> dict[str, Any]:
+    """Validate every dataset shipped under ``dist/<ruleset>/`` against shipped schemas."""
+    ruleset_dir = DIST_DIR / ruleset
+    if schema_source == "bundle":
+        schema_dir = ruleset_dir / "schemas"
+    elif schema_source == "repo":
+        schema_dir = SCHEMA_DIR
+    else:
+        raise ValueError(f"schema_source must be 'bundle' or 'repo', got {schema_source!r}")
+
+    dataset_reports: list[dict[str, Any]] = []
+    total_items = 0
+    total_failed = 0
+    for dataset_file, schema_stem in DATASET_SCHEMA_MAP.items():
+        d_report = validate_one_dataset(
+            data_path=ruleset_dir / dataset_file,
+            schema_path=schema_dir / f"{schema_stem}.schema.json",
+            limit=limit,
+        )
+        dataset_reports.append(d_report)
+        total_items += d_report["total"]
+        total_failed += d_report["failed"]
+
+    return {
+        "ruleset": ruleset,
+        "schema_source": schema_source,
+        "total_items": total_items,
+        "total_failed": total_failed,
+        "datasets": dataset_reports,
+    }
 
 
-def validate_spells(ruleset: str, limit: int | None = None) -> int:
-    """Validate spells.json against spell.schema.json."""
-    return validate_dataset(ruleset, dataset_name="spells", schema_name="spell", limit=limit)
+def render_report(report: dict[str, Any], *, show_samples: int = 3) -> str:
+    """Pretty-print a validation report as a multi-line string."""
+    lines: list[str] = []
+    lines.append(
+        f"Validation report for ruleset '{report['ruleset']}' (schemas={report['schema_source']})"
+    )
+    lines.append("")
+    lines.append(f"{'Dataset':<28}{'Total':>8}{'Fail':>8}  Status")
+    lines.append("-" * 60)
+    for d in report["datasets"]:
+        lines.append(f"{d['dataset']:<28}{d['total']:>8}{d['failed']:>8}  {d['status']}")
+    lines.append("-" * 60)
+    lines.append(f"{'TOTAL':<28}{report['total_items']:>8}{report['total_failed']:>8}")
 
-
-def validate_lineages(ruleset: str, limit: int | None = None) -> int:
-    """Validate lineages.json against lineage.schema.json."""
-    return validate_dataset(ruleset, dataset_name="lineages", schema_name="lineage", limit=limit)
+    if report["total_failed"]:
+        lines.append("")
+        lines.append("Error categories per failing dataset (top 5 each):")
+        for d in report["datasets"]:
+            if not d["failed"]:
+                continue
+            lines.append("")
+            lines.append(f"  {d['dataset']} ({d['failed']} failing items):")
+            for cat, n in sorted(d["categories"].items(), key=lambda x: -x[1])[:5]:
+                lines.append(f"    [{n:>4}] {cat}")
+            if show_samples:
+                lines.append("    samples:")
+                for err in d["errors"][:show_samples]:
+                    msg = err["message"]
+                    if len(msg) > 120:
+                        msg = msg[:117] + "..."
+                    lines.append(f"      {err['id']}  [{err['category']}]")
+                    lines.append(f"        {msg}")
+    return "\n".join(lines)
 
 
 def check_data_quality(ruleset: str) -> None:  # noqa: C901
@@ -204,31 +301,90 @@ def _check_pdf_hash(ruleset: str) -> None:
     print("PDF/hash not present — OK for v0.2.0.")
 
 
-def validate_ruleset(ruleset: str, limit: int | None = None) -> None:
+def validate_ruleset(
+    ruleset: str,
+    limit: int | None = None,
+    *,
+    strict: bool = True,
+    schema_source: str = "bundle",
+    report_path: Path | None = None,
+) -> dict[str, Any]:
+    """Run the full validation suite for a ruleset bundle.
+
+    With ``strict=True`` (the default) any schema-validation failure raises
+    ``SystemExit(1)`` after a full report has been printed. This is the
+    producer-side gate: emitted data MUST conform to its shipped schemas.
+    Pass ``strict=False`` for report-only mode during iteration.
+    """
     _ensure_build_report(ruleset)
     _check_pdf_hash(ruleset)
 
-    validate_monsters(ruleset=ruleset, limit=limit)
-    validate_spells(ruleset=ruleset, limit=limit)
-    validate_lineages(ruleset=ruleset, limit=limit)
+    report = validate_all_datasets(ruleset, schema_source=schema_source, limit=limit)
+    print(render_report(report))
+
+    if report_path is not None:
+        report_path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+        print(f"\nWrote machine-readable report to {report_path}")
+
     check_data_quality(ruleset=ruleset)
+
+    if strict and report["total_failed"]:
+        n_ds = sum(1 for d in report["datasets"] if d["failed"])
+        sys.stdout.flush()
+        raise SystemExit(
+            f"\nStrict validation FAILED: {report['total_failed']} item(s) "
+            f"across {n_ds} dataset(s) failed schema validation."
+        )
+
+    return report
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Validate SRD dataset files")
+    parser = argparse.ArgumentParser(
+        description="Strict validation of an SRD bundle against shipped JSON Schemas"
+    )
     parser.add_argument("--ruleset", required=True, help="Ruleset identifier (e.g. srd_5_1)")
     parser.add_argument(
         "--limit",
         type=int,
         default=None,
-        help="Optional limit on number of monsters to validate",
+        help="Optional cap on items validated per dataset (debugging only)",
+    )
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="Print the report but exit 0 even when failures exist (iteration mode)",
+    )
+    parser.add_argument(
+        "--schema-source",
+        choices=("bundle", "repo"),
+        default="bundle",
+        help="Validate against schemas shipped in the bundle (default) or repo top-level schemas/",
+    )
+    parser.add_argument(
+        "--report",
+        type=Path,
+        default=None,
+        help="Write a machine-readable JSON report (dataset/id/category/path/message) to this path",
     )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
-    validate_ruleset(ruleset=args.ruleset, limit=args.limit)
+    try:
+        validate_ruleset(
+            ruleset=args.ruleset,
+            limit=args.limit,
+            strict=not args.report_only,
+            schema_source=args.schema_source,
+            report_path=args.report,
+        )
+    except SystemExit as exc:
+        if isinstance(exc.code, str):
+            print(exc.code, file=sys.stderr)
+            return 1
+        return int(exc.code or 0)
     return 0
 
 
