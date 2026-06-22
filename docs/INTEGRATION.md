@@ -19,10 +19,13 @@ This document is written for **downstream consumers** of the srd-builder bundle 
 
 ---
 
-## Bundle Layout (v0.23.0)
+<!-- AUTO-SYNC:int:bundle-header START -->
+## Bundle Layout (v0.37.0)
+<!-- AUTO-SYNC:int:bundle-header END -->
 
 The full bundle lives under `dist/srd_5_1/`:
 
+<!-- AUTO-SYNC:int:bundle-tree START -->
 ```
 dist/srd_5_1/
 ├── README.md                  # Generated dynamically from meta.json
@@ -31,27 +34,30 @@ dist/srd_5_1/
 ├── build_report.json          # Per-stage parse/postprocess counts
 │
 ├── ability_scores.json        # 6     (schema v1.0.0)
-├── classes.json               # 12    (schema v2.0.0)
-├── conditions.json            # 15    (schema v2.0.0)
+├── classes.json               # 12    (schema v2.1.0)
+├── conditions.json            # 15    (schema v3.0.0)
 ├── damage_types.json          # 13    (schema v1.0.0)
-├── diseases.json              # 3     (schema v2.0.0)
-├── equipment.json             # 259   (schema v2.0.0)
-├── features.json              # 246   (schema v2.0.0)
+├── diseases.json              # 3     (schema v3.0.0)
+├── equipment.json             # 259   (schema v2.2.0)
+├── features.json              # 245   (schema v4.0.0)
 ├── lineages.json              # 13    (schema v2.0.0)
 ├── magic_items.json           # 240   (schema v2.0.0)
 ├── monsters.json              # 317   (schema v2.0.0)
 ├── poisons.json               # 14    (schema v2.0.0)
-├── rules.json                 # 172   (schema v2.0.0)
+├── rules.json                 # 167   (schema v3.0.0)
 ├── skills.json                # 18    (schema v1.0.0)
 ├── spells.json                # 319   (schema v2.0.0)
-├── tables.json                # 38    (schema v2.0.0)
+├── tables.json                # 35    (schema v3.0.0)
 ├── weapon_properties.json     # 11    (schema v1.0.0)
 │
 ├── schemas/                   # All 16 JSON Schema files (copies of /schemas/)
 └── docs/                      # DATA_DICTIONARY.md, SCHEMAS.md (shipped to consumers)
 ```
+<!-- AUTO-SYNC:int:bundle-tree END -->
 
-**Totals shipped:** 16 datasets, 1,696 items.
+<!-- AUTO-SYNC:int:totals START -->
+**Totals shipped:** 16 datasets, 1,687 items.
+<!-- AUTO-SYNC:int:totals END -->
 
 ---
 

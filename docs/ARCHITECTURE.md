@@ -1,6 +1,8 @@
 # SRD-Builder Architecture
 
-**Version:** v0.23.0
+<!-- AUTO-SYNC:arch:version START -->
+**Version:** v0.37.0
+<!-- AUTO-SYNC:arch:version END -->
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
 > The authoritative item counts and schema versions live in `dist/srd_5_1/meta.json` (the `inventory` and `schemas` blocks). The tables below are a human-readable snapshot — if they ever disagree with the live `meta.json`, `meta.json` wins.
@@ -9,26 +11,30 @@
 
 ## Datasets Overview
 
-SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.23.0 build ships **16 datasets** containing **1,696 items**:
+<!-- AUTO-SYNC:arch:total-line START -->
+SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.37.0 build ships **16 datasets** containing **1,687 items**:
+<!-- AUTO-SYNC:arch:total-line END -->
 
+<!-- AUTO-SYNC:arch:overview-table START -->
 | File | Count | Schema | Description |
 |------|------:|--------|-------------|
 | `ability_scores.json` | 6 | v1.0.0 | Atomic reference: STR/DEX/CON/INT/WIS/CHA |
-| `classes.json` | 12 | v2.0.0 | Character classes with progression |
-| `conditions.json` | 15 | v2.0.0 | Status conditions (poisoned, stunned, etc.) |
+| `classes.json` | 12 | v2.1.0 | Character classes with progression |
+| `conditions.json` | 15 | v3.0.0 | Status conditions (poisoned, stunned, etc.) |
 | `damage_types.json` | 13 | v1.0.0 | Atomic reference: damage type vocabulary |
-| `diseases.json` | 3 | v2.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
-| `equipment.json` | 259 | v2.0.0 | Weapons, armor, adventuring gear |
-| `features.json` | 246 | v2.0.0 | Class features and lineage traits |
+| `diseases.json` | 3 | v3.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
+| `equipment.json` | 259 | v2.2.0 | Weapons, armor, adventuring gear |
+| `features.json` | 245 | v4.0.0 | Class features and lineage traits |
 | `lineages.json` | 13 | v2.0.0 | Races/lineages with traits |
 | `magic_items.json` | 240 | v2.0.0 | Magic items with descriptions |
 | `monsters.json` | 317 | v2.0.0 | Monsters, creatures, and NPCs |
 | `poisons.json` | 14 | v2.0.0 | Poison gear entries + descriptions |
-| `rules.json` | 172 | v2.0.0 | Core mechanics from 7 chapters |
+| `rules.json` | 167 | v3.0.0 | Core mechanics from 7 chapters |
 | `skills.json` | 18 | v1.0.0 | Atomic reference: skill vocabulary |
 | `spells.json` | 319 | v2.0.0 | Spell list with effects, components, casting |
-| `tables.json` | 38 | v2.0.0 | Reference tables (equipment, expenses, services, madness) |
+| `tables.json` | 35 | v3.0.0 | Reference tables (equipment, expenses, services, madness) |
 | `weapon_properties.json` | 11 | v1.0.0 | Atomic reference: weapon property vocabulary |
+<!-- AUTO-SYNC:arch:overview-table END -->
 
 **Bundle collateral** (also under `dist/srd_5_1/`):
 
@@ -1108,19 +1114,22 @@ When releasing a new version:
 
 ## Reference Data
 
-### Dataset Statistics (v0.23.0)
+<!-- AUTO-SYNC:arch:stats-header START -->
+### Dataset Statistics (v0.37.0)
+<!-- AUTO-SYNC:arch:stats-header END -->
 
 Live counts come from `dist/srd_5_1/meta.json.inventory`. Snapshot for this revision:
 
+<!-- AUTO-SYNC:arch:stats-table START -->
 | Dataset | Count | Notes |
 |---------|------:|-------|
-| monsters | 317 | Pages 261–394; 27 fields, 100% required coverage |
 | spells | 319 | Cantrip through 9th, all 8 schools |
+| monsters | 317 | Pages 261–394; 27 fields, 100% required coverage |
 | equipment | 259 | Weapons, armor, adventuring gear (11 weapon properties) |
-| features | 246 | Class features and lineage traits |
+| features | 245 | Class features and lineage traits |
 | magic_items | 240 | Magic items with descriptions |
-| rules | 172 | 7 chapters of core mechanics |
-| tables | 38 | Equipment, expenses, services, madness, etc. |
+| rules | 167 | 7 chapters of core mechanics |
+| tables | 35 | Equipment, expenses, services, madness, etc. |
 | skills | 18 | Atomic reference |
 | conditions | 15 | Status conditions |
 | poisons | 14 | Poison gear + descriptions |
@@ -1130,7 +1139,8 @@ Live counts come from `dist/srd_5_1/meta.json.inventory`. Snapshot for this revi
 | weapon_properties | 11 | Atomic reference |
 | ability_scores | 6 | STR/DEX/CON/INT/WIS/CHA |
 | diseases | 3 | Cackle Fever, Sewer Plague, Sight Rot |
-| **Total** | **1,696** | |
+| **Total** | **1,687** | |
+<!-- AUTO-SYNC:arch:stats-table END -->
 
 ### PDF Typography (SRD 5.1)
 

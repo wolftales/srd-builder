@@ -47,22 +47,29 @@ fi
 
 # Item count validation (if jq available)
 if command -v jq &> /dev/null; then
+  # AUTO-SYNC:check:expected START
   declare -A EXPECTED=(
-    ["monsters.json"]=317
-    ["spells.json"]=319
-    ["equipment.json"]=258
+    ["ability_scores.json"]=6
     ["classes.json"]=12
+    ["conditions.json"]=15
+    ["damage_types.json"]=13
+    ["diseases.json"]=3
+    ["equipment.json"]=259
+    ["features.json"]=245
     ["lineages.json"]=13
-    ["tables.json"]=38
+    ["magic_items.json"]=240
+    ["monsters.json"]=317
+    ["poisons.json"]=14
+    ["rules.json"]=167
+    ["skills.json"]=18
+    ["spells.json"]=319
+    ["tables.json"]=35
+    ["weapon_properties.json"]=11
   )
 
-  # Special keys for non-standard structures
-  declare -A KEYS=(
-    ["features.json"]="features"
-    ["conditions.json"]="conditions"
-  )
-  EXPECTED["features.json"]=246
-  EXPECTED["conditions.json"]=15
+  # All datasets use the 'items' key since v0.30.0.
+  declare -A KEYS=()
+  # AUTO-SYNC:check:expected END
 
   for file in "${!EXPECTED[@]}"; do
     if [[ -f "${DATA_DIR}/${file}" ]]; then

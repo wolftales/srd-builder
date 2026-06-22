@@ -52,27 +52,31 @@ release verification).
 
 ## Datasets
 
+<!-- AUTO-SYNC:readme:totals-prefix START -->
 Latest build: **1,687 items across 16 datasets** (counts and schema versions are written to
 `dist/srd_5_1/meta.json` on every build).
+<!-- AUTO-SYNC:readme:totals-prefix END -->
 
+<!-- AUTO-SYNC:readme:dataset-table START -->
 | Dataset | Count | Schema |
 |---|---:|---|
-| Monsters | 317 | 2.0.0 |
 | Spells | 319 | 2.0.0 |
-| Equipment | 259 | 2.1.0 |
-| Features | 245 | 3.0.0 |
+| Monsters | 317 | 2.0.0 |
+| Equipment | 259 | 2.2.0 |
+| Features | 245 | 4.0.0 |
 | Magic Items | 240 | 2.0.0 |
-| Rules | 167 | 2.0.0 |
-| Tables | 35 | 2.0.0 |
+| Rules | 167 | 3.0.0 |
+| Tables | 35 | 3.0.0 |
 | Skills | 18 | 1.0.0 |
-| Conditions | 15 | 2.0.0 |
+| Conditions | 15 | 3.0.0 |
 | Poisons | 14 | 2.0.0 |
 | Damage Types | 13 | 1.0.0 |
 | Lineages | 13 | 2.0.0 |
 | Classes | 12 | 2.1.0 |
 | Weapon Properties | 11 | 1.0.0 |
 | Ability Scores | 6 | 1.0.0 |
-| Diseases | 3 | 2.0.0 |
+| Diseases | 3 | 3.0.0 |
+<!-- AUTO-SYNC:readme:dataset-table END -->
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full pipeline and schema-evolution
 policy.
@@ -92,24 +96,25 @@ PYTHONPATH=src python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
 
 **Bundle output (`make bundle`):**
 
+<!-- AUTO-SYNC:readme:bundle-tree START -->
 ```
 dist/srd_5_1/
-├── ability_scores.json    # 6
-├── classes.json           # 12
-├── conditions.json        # 15
-├── damage_types.json      # 13
-├── diseases.json          # 3
-├── equipment.json         # 259
-├── features.json          # 245
-├── lineages.json          # 13
-├── magic_items.json       # 240
-├── monsters.json          # 317
-├── poisons.json           # 14
-├── rules.json             # 167
-├── skills.json            # 18
-├── spells.json            # 319
-├── tables.json            # 35
-├── weapon_properties.json # 11
+├── ability_scores.json     # 6
+├── classes.json            # 12
+├── conditions.json         # 15
+├── damage_types.json       # 13
+├── diseases.json           # 3
+├── equipment.json          # 259
+├── features.json           # 245
+├── lineages.json           # 13
+├── magic_items.json        # 240
+├── monsters.json           # 317
+├── poisons.json            # 14
+├── rules.json              # 167
+├── skills.json             # 18
+├── spells.json             # 319
+├── tables.json             # 35
+├── weapon_properties.json  # 11
 ├── index.json             # Cross-dataset lookup with aliases
 ├── meta.json              # Versions, license, inventory, schema map
 ├── build_report.json      # Build provenance (timestamp, builder version, sources)
@@ -118,6 +123,7 @@ dist/srd_5_1/
 ├── schemas/               # 16 schemas + schemas/exemplars/ (one valid instance each)
 └── docs/                  # SCHEMAS.md, DATA_DICTIONARY.md
 ```
+<!-- AUTO-SYNC:readme:bundle-tree END -->
 
 `make build` produces the same JSON files but skips `schemas/`, `docs/`, the bundle README,
 and the schema exemplars.

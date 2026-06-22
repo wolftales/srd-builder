@@ -1,4 +1,4 @@
-.PHONY: init lint test format pre-commit ci verify-ci output bundle smoke release-check tables monsters equipment spells bump-version
+.PHONY: init lint test format pre-commit ci verify-ci output bundle smoke release-check sync-docs tables monsters equipment spells bump-version
 
 init:
 	pip install -e ".[dev]"
@@ -34,11 +34,13 @@ ci: lint test
 # Verify CI will pass (run before pushing)
 verify-ci:
 	@echo "🔍 Verifying CI checks..."
-	@echo "1/3 Checking formatting..."
+	@echo "1/4 Checking formatting..."
 	@ruff format --check . || (echo "❌ Format errors! Run: make format" && exit 1)
-	@echo "2/3 Checking linting..."
+	@echo "2/4 Checking linting..."
 	@ruff check . || (echo "❌ Lint errors! Run: ruff check . --fix" && exit 1)
-	@echo "3/3 Running tests..."
+	@echo "3/4 Checking doc-table sync..."
+	@python scripts/sync_doc_tables.py --check || (echo "❌ Doc tables drifted! Run: make sync-docs" && exit 1)
+	@echo "4/4 Running tests..."
 	@pytest -q || (echo "❌ Test failures!" && exit 1)
 	@echo "✅ All CI checks passed! Safe to push."
 
@@ -52,6 +54,7 @@ output:
 bundle:
 	@echo "Building complete bundle..."
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --bundle
+	@python scripts/sync_doc_tables.py
 	@echo "✓ Bundle complete. Run 'make smoke MODE=bundle' to validate."
 
 # Quick validation (item counts + optional bundle structure)
@@ -61,6 +64,10 @@ smoke:
 # Deterministic validation (hash comparison + item counts)
 release-check:
 	@./scripts/release_check.sh srd_5_1 dist
+
+# Sync doc count/schema tables from dist/srd_5_1/meta.json (idempotent)
+sync-docs:
+	@python scripts/sync_doc_tables.py
 
 tables:
 	python -m srd_builder.build --ruleset srd_5_1 --out dist --tables-only --bundle
