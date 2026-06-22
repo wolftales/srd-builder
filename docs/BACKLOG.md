@@ -8,530 +8,84 @@ list; do not let it accumulate history.
 
 ## Active: Extractor consolidation (attempt #4)
 
-> **Honest framing.** Attempts 1–3 produced the engine in
-> [src/srd_builder/extract/patterns.py](../src/srd_builder/extract/patterns.py)
-> (7 config-driven pattern types: `standard_grid`, `split_column`,
-> `text_region`, `multipage_text_region`, `prose_section`, `calculated`,
-> `reference`) and the consolidated `extract/` namespace. The plan to
-> move the bespoke per-dataset extractors into `extract/_legacy/`
-> awaiting migration to the engine was **only partially right** — and
-> we then proceeded to add five new bespoke extractors
-> (`extract_lineages.py`, `extract_classes.py`, `extract_spell_classes.py`,
-> `extract_equipment_packs.py`, `extract_equipment_descriptions.py`)
-> alongside the original seven across v0.27.x without migrating any to
-> the engine. The previous BACKLOG framing ("legacy awaiting migration")
-> stopped being true the moment we stopped feeding new files through
-> the engine. Calling them "legacy" was aspirational; reality is that
-> [extract/datasets/](../src/srd_builder/extract/datasets/) is the LIVE
-> home of all 13 per-dataset extractors.
+> **Status (2026-06-22).** 3/13 bound — `extract_features` and
+> `extract_magic_items` on `font_fingerprint_walk`; `extract_spells`
+> on `font_stateful_walk`. The other 10 are bespoke by deliberate
+> choice. Full narrative of work landed (3 bindings, 3-phase
+> architecture refactor, 11-commit primitive-lift continuation,
+> font-fingerprint regression test, `unknown_word` audit code):
+> [ROADMAP.md](ROADMAP.md) § "post-v0.37.0".
 
-### Reframe: `extract/datasets/` is the pattern registry, not a graveyard
+### End state (the goal)
 
-The earlier sustainability argument made it sound like the goal is to
-*empty* [extract/datasets/](../src/srd_builder/extract/datasets/). It
-isn't. The right end state is for the directory to **stay**, with one
-file per dataset, but each file shrinks to a slim declarative config
-that binds to the engine:
+[extract/datasets/](../src/srd_builder/extract/datasets/) becomes the
+**pattern registry** — one file per dataset, declarative, easy to
+diff. The directory having 13–20 files is a *feature*, not a smell,
+because each file is ~30–60 lines of config binding to
+`extract_by_config()` / `extract_records_by_config()` rather than
+~300–800 lines of bespoke PDF-walking logic. When SRD 5.2.1 lands as
+a second ruleset, the per-dataset config changes (page numbers,
+section headers, table targets, font fingerprints) but engine code
+does not. If we cannot articulate that in one paragraph, the design
+is not done.
 
-```python
-# extract/datasets/extract_pdf_metadata.py (illustrative target shape)
-from srd_builder.extract import engine
-from srd_builder.extract.patterns import extract_by_config
+### Open: 10 remaining extractors
 
-DATASET_CONFIG = {
-    "pattern_type": "document_metadata",
-    "fields": ["title", "creator", "page_count", "fingerprint"],
-}
+Future bindings need their own design-pass entry, not a presumed
+extension of the three already landed. The 2-caller threshold is the
+gate — below it, bespoke is honest; above it, the pattern type pays
+for itself.
 
-def extract_pdf_metadata(pdf_path: str) -> dict:
-    return extract_by_config(pdf_path, DATASET_CONFIG)
-```
-
-In that end state:
-
-- **`extract/datasets/`** becomes the **pattern registry** — one file
-  per dataset, declarative, easy to diff, easy to audit. The directory
-  having 13–20 files is a *feature*, not a smell, because each file is
-  ~30–60 lines of config rather than ~300–800 lines of bespoke
-  PDF-walking logic.
-- **`extract/patterns.py`** (+ engine) is where logic gravitates. New
-  dataset shapes add a new `pattern_type`; existing shapes reuse one.
-- **SRD 5.2.1** = a sibling directory of config files (or per-ruleset
-  config overrides) and possibly one or two new pattern types. Engine
-  code does not change. This is what makes attempt #4 worth doing.
-
-The migration steps below ("pick one extractor, factor its uniqueness,
-ship it, then the next") are how each file *gets* to that slim shape.
-We are not deleting files; we are converting bespoke walkers into
-pattern bindings.
-
-### Why this matters (the sustainability argument)
-
-Every per-dataset bespoke file we ship doubles in cost when SRD 5.2.1
-lands as a second ruleset. 13 files × N rulesets is unbounded growth.
-The goal of attempt #4 is: **when SRD 5.2.1 lands, the per-dataset
-config changes (page numbers, section headers, table targets, font
-fingerprints) but engine code does not**. If we cannot articulate that
-in one paragraph, the design is not done.
-
-### Current state (audit 2026-06-20)
-
-13 files in [extract/datasets/](../src/srd_builder/extract/datasets/),
-all LIVE (12 imported by `build.py`; `extract_conditions` wired through
-`parse_conditions` + tests). **Zero are bound to the engine.** Calling
-`pdf_probe.open_pdf()` vs `fitz.open()` is a lifecycle convention; it
-is NOT engine binding and does not move any extractor toward the slim
-`DATASET_CONFIG + extract_by_config()` end state above.
-
-#### Lifecycle convention (cosmetic)
-
-| Uses `pdf_probe` for `open()` | Files |
-| --- | --- |
-| ✅ | `extract_pdf_metadata` (v0.31.0), `extract_rules` (v0.32.0), `extract_equipment` (v0.33.0), `extract_magic_items` (v0.34.0), `extract_features` (v0.35.0), `extract_spells` (v0.36.0), `extract_monsters` (v0.37.0), `extract_equipment_descriptions` (v0.27.6), `extract_equipment_packs` (v0.27.5) |
-| ⚠️ raw `fitz.open()` but uses `normalize_whitespace` | `extract_lineages` (v0.27.0), `extract_classes` (v0.27.x), `extract_spell_classes` (v0.27.0) |
-| ✅ via `utils.prose` framework | `extract_conditions` |
-
-#### Engine binding (substantive — the actual goal)
-
-| Bound | Files |
-| --- | --- |
-| ✅ via `extract_records_by_config()` (`font_fingerprint_walk`) | `extract_features` (commit 9e9f06f), `extract_magic_items` (commit 0badf2f) |
-| ✅ via `extract_records_by_config()` (`font_stateful_walk`) | `extract_spells` (commit 1689edc) |
-| ❌ | the remaining 10 |
-
-**Current score: 3/13.** Design pass (commit 391a6bc) → prototype
-(commit 9e9f06f, `extract_features`) → schema-generalization test
-(commit 0badf2f, `extract_magic_items`, bound first try) → sibling
-pattern type (commit 1689edc, `extract_spells` via
-`font_stateful_walk`). `extract_monsters` was the next candidate
-considered and declined at the 2-caller threshold (see
-"Monsters: option 3" below). The remaining 10 extractors haven't
-been inspected at the same depth and would each need their own
-design pass.
-
-#### Shape inventory (input to engine-binding design)
-
-| Shape | Files | Engine fit |
-| --- | --- | --- |
-| Doc-level regex | `extract_pdf_metadata` | None — would need `document_metadata` pattern type |
-| Font-stamped span dump | `extract_rules` | None — needs `font_span_section` pattern type |
-| PyMuPDF `find_tables()` + section tracking | `extract_equipment` | Closest to `standard_grid` but needs font-anchored section state |
-| Font-fingerprint walk over single-page items | `extract_magic_items`, `extract_features` | None — needs `font_fingerprint_walk` pattern type *(see design-pass finding below)* |
-| Regex walk over pre-concatenated section text | `extract_equipment_descriptions` | Closer to `prose_section` than to the font-fingerprint walks above |
-| Font-fingerprint walk + cross-page state | `extract_spells`, `extract_monsters` | Extension of font-fingerprint walk (not yet inspected in depth) |
-| `normalize_whitespace`-only PDF read | `extract_lineages`, `extract_classes`, `extract_spell_classes` | Possibly `prose_section` with target-list config |
-| Packs-config + ID synthesis | `extract_equipment_packs` | Possibly `reference` |
-| `ProseExtractor` framework | `extract_conditions` | Already abstracted (different framework) |
-
-### Design-pass finding (2026-06-20)
-
-Read `extract_magic_items`, `extract_features`, and
-`extract_equipment_descriptions` side-by-side. Earlier framing called
-all three candidates for a shared `font_fingerprint_walk` pattern
-type. Reality:
-
-- **`extract_magic_items`** and **`extract_features`** share the
-  font-fingerprint shape. Both iterate page → block → line → span,
-  detect headers by font name + size (+ optional flags), close the
-  current record on the next header, and emit per-record dicts.
-- **`extract_equipment_descriptions` does not.** It pre-concatenates
-  all pages in a section into one normalized string, then walks
-  regex matches (`_HEADING_RE`) over that string, filtered by a
-  dict lookup (`_HEADING_TO_ITEM_ID`). No font matching, no
-  span/block traversal. Its closer engine sibling is `prose_section`,
-  not a font-fingerprint walk.
-
-**What the two real candidates actually share:**
-
-- Page iteration → `block / line / span` traversal.
-- Header detection by `(font_substring, font_size, tolerance)` on the
-  first span of a line.
-- Record boundary = next header (with end-of-page or
-  end-of-range as terminators).
-
-**What differs even between those two:**
-
-| Dimension | `extract_magic_items` | `extract_features` |
-| --- | --- | --- |
-| Header fingerprints | 1 (GillSans-SemiBold 12pt) | 2 (GillSans-SemiBold 13.9pt class-feature + Cambria-BoldItalic 9.8pt lineage-trait) |
-| Body grouping | Font-split into `metadata_blocks` (Cambria-Italic) + `description_blocks` (rest); spans preserved, not concatenated | Single bucket, concatenated string with `clean_text()` pass |
-| Multi-line header continuation | Yes (joins lines ending in "and"/"or"/"of"/...) | No |
-| Cross-page record merging | Yes, post-pass: merges item if `len(description) < 20` and no metadata | No (each page independent) |
-| Structural-text filter | No | Yes (`_is_structural_text()` drops page numbers, table headers, etc.) |
-
-**Engine return-type problem.** `extract_by_config()` returns
-`RawTable` (row/column shape: `headers`, `rows: list[list[...]]`).
-Font-fingerprint walks emit **lists of records** (per-item dicts), not
-table rows. A binding requires either (a) widening
-`extract_by_config()` to a `RawTable | RawRecordList` union, or
-(b) adding a sibling `extract_records_by_config()` and routing the new
-pattern types through it. Decision belongs in the pattern design.
-
-**Sketch of minimum config schema** (not yet implemented):
-
-```python
-DATASET_CONFIG = {
-    "pattern_type": "font_fingerprint_walk",
-    "pages": (206, 253),  # inclusive; or {"start_const": ..., "end_const": ...}
-    "header_fingerprints": [
-        {
-            "font_substring": "GillSans-SemiBold",
-            "size": 12.0,
-            "size_tolerance": 0.5,
-            "role": "record_name",
-        },
-        # second fingerprint optional (features has two; magic_items has one)
-    ],
-    "body_grouping": "single_bucket",      # or "font_split"
-    "body_split_fingerprints": {           # only if body_grouping == "font_split"
-        "metadata": {"font_substring": "Cambria-Italic"},
-    },
-    "merge_partial_records": False,        # magic_items=True, features=False
-    "filter_structural_text": False,       # features=True, magic_items=False
-    "multi_line_header": False,            # magic_items=True, features=False
-}
-```
-
-**Honest ROI assessment.** A `font_fingerprint_walk` pattern type would
-have **two confirmed callers** (`extract_magic_items`,
-`extract_features`), not the 3–5 that earlier BACKLOG framing implied.
-`extract_spells` and `extract_monsters` are *probable* additional
-callers under cross-page extension but neither has been inspected at
-this depth. **Two callers is the ROI threshold** — below it, bespoke
-is honest; above it, the pattern type pays for itself. This is right
-at the edge.
-
-**Outcome (2026-06-20).** Prototype path executed. Both confirmed
-candidates bound, both byte-identical, full suite green (690),
-audit 0/0/0, dist byte-identical. Engine schema additions made
-along the way (line-mode header scope, header continuation words,
-font-split span buckets, `merge_short_records` post-pass) generalized
-cleanly — the second binding worked on the first try with no
-revisions to engine code. Pattern type confirmed not single-purpose.
-
-Design-pass open item closed.
-
-### Remaining shapes — next honest pass
-
-The original shape inventory listed `extract_spells` and
-`extract_monsters` as "font-fingerprint walk + cross-page state".
-A quick read of `extract_spells` (370 lines) shows it is materially
-different from features/magic_items:
-
-- **Sub-field record schema.** Beyond `name` + body buckets,
-  spells have a dedicated flat `level_and_school` string captured
-  from the first italic span after the name.
-- **Section state machine within a record.** Body spans go to
-  `header_blocks` until accumulated text contains `"Duration:"`;
-  then switch to `description_blocks`. Not font-based — text-driven
-  transition.
-- **Per-span metadata enrichment.** `Cambria-BoldItalic` spans get
-  tagged `"section": "higher_levels"`; `Cambria-Bold` spans get
-  `"is_field_label": True`. Buckets need to attach extra fields, not
-  just route spans.
-- **Cross-page carry of incomplete records.** Spells carry a
-  header-only record forward with its section state, rather than
-  the post-pass merge magic_items uses.
-- **Nameless continuation records.** A non-name span arriving when
-  no current spell exists starts an empty-name record that the
-  post-pass merges into the previous.
-
-`extract_monsters` (631 lines) has not been inspected at this depth
-but likely needs further extensions (stat block tables, traits,
-actions, legendary actions are all distinct sections).
-
-**Honest fork.** Three options for `extract_spells` and beyond:
-
-1. **Extend `font_fingerprint_walk` with state-machine body
-   grouping + sub-field buckets + carry-mode page reset.** Real
-   schema work, but each addition pulls the engine toward swallowing
-   one specific extractor's quirks. Risk: pattern type becomes "the
-   spells engine with a couple of toggles".
-2. **Design a sibling pattern type** (e.g. `font_stateful_walk`)
-   that owns state-machine body grouping natively. Higher upfront
-   cost; cleaner shape boundaries.
-3. **Leave `extract_spells` / `extract_monsters` bespoke.** Two
-   bindings (features + magic_items) was the explicit design-pass
-   ROI threshold; further bindings need their own shape analysis,
-   not a presumed extension. Engine binding count stays at 2/13;
-   the remaining 11 either get their own design passes or stay
-   bespoke deliberately.
-
-### Spells: option 2 executed (2026-06-20)
-
-`font_stateful_walk` shipped in commit `1689edc`. New engine
-vocabulary: header fingerprint + ordered span rules with
-`{match, guard, action}` semantics, sentinel-resolved attach dicts
-(`$bold_from_font`, `$italic_from_font`), per-rule
-`check_state_transitions_after`, `carry_if` page-boundary predicate,
-`merge_nameless_into_previous` post-pass, `keep_if` final filter.
-
-Binding result: `extract_spells` shrunk 370 → 190 lines; 319 spells,
-byte-identical to v0.36.0 baseline (`70df0558…`). Engine binding
-count: **2/13 → 3/13**.
-
-One engine bug surfaced during the binding: state transitions
-initially ran after every rule's append, which caused the
-`"Duration:"` label (a Cambria-Bold field label) to fire the
-`header → description` transition before the duration value arrived,
-sending that value into the wrong bucket. The original code only
-checks transitions after the default-rule append; the engine now
-exposes per-rule `check_state_transitions_after` and the spells
-config sets it on the default rule only.
-
-### Monsters: option 3 (2026-06-20)
-
-`extract_monsters` was read at the same depth as spells (631 lines).
-Decision: **leave bespoke**. Justification:
-
-Unique primitives not used by any other extractor in the codebase:
-
-- **Bbox + column-aware spans.** Spans carry `bbox`, `column`
-  (0/1/2 from x-coord vs midpoint), and `color` in addition to
-  font/size. No other extractor needs columnar reading order.
-- **Cross-page pre-accumulation, then boundary detection.** All
-  spans from all pages are sorted by `(page, column, y, x)` first,
-  THEN walked for monster boundaries. The other three bindings walk
-  per-page and merge after.
-- **Y-coordinate line merging.** Spans within 2pt Y and matching
-  font/size are merged into a single logical line before any
-  pattern matching. The engine's existing line iteration uses
-  PyMuPDF's native line grouping.
-- **Lookahead validation.** A `Calibri-Bold` 12pt line is only
-  accepted as a monster name if a `Calibri-Italic` line containing
-  a size keyword (Tiny/Small/Medium/Large/Huge/Gargantuan) appears
-  within 30pt vertical distance.
-- **Reject-list header guard.** Stat-field tokens (`Speed`, `STR`,
-  `Armor Class`, …) and section headers (`Actions`, `Reactions`,
-  `Legendary Actions`) must be excluded from the header match even
-  when font + size match.
-
-Cost to bind: a new `font_columnar_walk` pattern type would need
-~250 lines of engine code (column detection, reading-order sort,
-cross-page accumulation, line merger, lookahead validator, reject
-list). It would have **one caller**. None of the remaining 10
-extractors deal with bbox-aware columnar layouts; most are
-table-shaped (already handled by `standard_grid`) or
-whitespace-normalized prose. Binding monsters at this point
-*increases* total complexity rather than reducing it.
-
-This is the BACKLOG's own 2-caller threshold cutting cleanly: a
-new pattern type for a single caller is the wrong tradeoff,
-exactly as documented above. Stopping is the deliberate choice,
-not the avoidance pattern v0.33–v0.37 fell into — the design pass
-was done, the engine was extended once, the engine was extended
-again into a sibling pattern, and the next candidate failed the
-threshold for honest reasons.
-
-### Stopping point (2026-06-20)
-
-Final score: **3/13 bound** (features, magic_items, spells).
-Remaining 10:
-
-- `extract_monsters` — bespoke by deliberate choice (above).
-- `extract_pdf_metadata`, `extract_rules`, `extract_equipment`,
+- **`extract_monsters`** — bespoke by deliberate choice. A
+  `font_columnar_walk` pattern type would have one caller;
+  `lookahead_validation` engine action ("confirm header X only if a
+  span matching fingerprint Y appears within N points of Y-distance")
+  is a 1-caller need and the binding cannot work without it. The
+  bbox/column-aware primitives it does need are already lifted to
+  [utils/pdf_layout.py](../src/srd_builder/utils/pdf_layout.py) so
+  any future second caller starts at a much lower binding cost.
+- **`extract_pdf_metadata`, `extract_rules`, `extract_equipment`,
   `extract_equipment_descriptions`, `extract_equipment_packs`,
   `extract_classes`, `extract_lineages`, `extract_spell_classes`,
-  `extract_conditions` — separate design passes if/when needed.
-  No claim is made here about whether they would benefit; they
-  haven't been inspected at the same depth.
+  `extract_conditions`** — no claim here about whether they would
+  benefit; they have not been inspected at the same depth as the
+  three that bound.
 
-The "remaining shapes" question is closed for this session. Future
-bindings need their own design-pass entry, not a presumed extension
-of the work landed here.
+### Open: chip-away-able structural targets
 
-### Architecture pass (2026-06-20)
+No clean 2+ caller shared primitives remain in the bespoke
+extractors. These are *structural* per-extractor cleanups, single
+caller today, kept here so a future session doesn't re-discover them:
 
-After the three bindings landed, `extract/patterns.py` had grown to
-1648 lines holding 9 pattern engines plus 30 helpers in one module.
-Two follow-up refactors landed before stopping:
+- **`extract_classes`** (628 lines) — each phase still emits 4-tuples
+  `(text, size, font, bbox)` hand-decoded inside helpers like
+  `_extract_field_labels` and `_extract_progression`. Replace with a
+  typed dataclass.
+- **`extract_lineages._classify_span`** 5-way role dispatch
+  generalises to the same shape as `extract_spell_classes`' inline
+  predicate stack. A generic dispatcher returning role enums is
+  possible; payoff is modest because each caller's branch logic is
+  still bespoke.
+- **`extract_rules._extract_page_text_blocks`** carries its own block /
+  line / span walk that intentionally tracks `(block_idx, line_idx,
+  span_idx)` for downstream provenance — information
+  `iter_page_spans` discards. Could parameterise the iterator to
+  optionally yield indices.
 
-**Phase 1 — split `patterns.py` into `extract/patterns/` package**
-(commit ce1d7ed). Mechanical refactor, no behavior change. One module
-per pattern engine plus `_shared.py` for cross-pattern helpers and
-`_types.py` for `RawTable`. Public surface
-(`RawTable`, `extract_by_config`, `extract_records_by_config`)
-re-exported from `__init__.py` so consumers are unchanged.
+### Forward-looking: parse-layer consolidation
 
-  | file | lines |
-  |---|---|
-  | `__init__.py` (re-exports) | 24 |
-  | `_dispatch.py` (routing) | 119 |
-  | `_types.py` (`RawTable`) | 24 |
-  | `_shared.py` (span helpers) | 134 |
-  | `calculated.py` | 151 |
-  | `reference.py` | 49 |
-  | `split_column.py` | 175 |
-  | `text_region.py` | 147 |
-  | `multipage_text_region.py` | 123 |
-  | `standard_grid.py` | 80 |
-  | `prose_section.py` | 76 |
-  | `font_fingerprint_walk.py` | 350 |
-  | `font_stateful_walk.py` | 302 |
+The same framework lesson should apply to
+[parse/](../src/srd_builder/parse/): ~15 modules each doing
+record-walking, prose-normalizing, id-synthesizing,
+cross-reference-resolving in their own shape. Possible pattern types
+for a parse engine: `record_walker`, `table_row_mapper`,
+`prose_narrator_stripper`, `cross_reference_resolver`,
+`schema_stamp_normalizer`, `id_synthesizer`.
 
-**Phase 2 — lift bbox/column primitives to `utils/pdf_layout.py`**
-(commit a74f017). The two-column span extraction and Y-tolerance line
-merging that lived inline in `extract_monsters` are domain-neutral
-PDF layout helpers. Moved to a dedicated utility:
-
-  - `color_to_rgb(int) -> [r, g, b]`
-  - `merge_bboxes(b1, b2)`
-  - `determine_column(x, *, midpoint)`
-  - `extract_columnar_spans(page, page_num, *, column_midpoint, header_size_min)`
-  - `merge_spans_into_lines(spans, *, y_tolerance, size_tolerance)`
-
-`extract_monsters` consumes these instead of carrying its own copies
-(631 → 442 lines, -189). Future column-aware extractors can reuse the
-primitives without copying ~190 lines.
-
-**Phase 3 — re-evaluated monsters binding (2026-06-20)**
-With `pdf_layout` extracted, the remaining bespoke logic in
-`extract_monsters` is: boundary detection, stat-field reject list,
-and the size/type lookahead validation. Binding to
-`font_fingerprint_walk` would require two new engine capabilities:
-
-1. `reject_list` predicate on header detection — ~10 lines, genuinely
-   general (the "this looks like a header but is actually a stat-field
-   keyword" problem is plausible elsewhere).
-2. `lookahead_validation` action — ~40 lines in engine, plus config
-   schema. Only `extract_monsters` currently needs this: "confirm
-   header X only if a span matching fingerprint Y appears within
-   N points of Y-distance."
-
-The 2-caller threshold applies: `lookahead_validation` is a 1-caller
-need and the binding cannot work without it. Decision: leave
-`extract_monsters` bespoke. The `reject_list` addition is also held
-until a second caller surfaces — adding it now for one caller would
-just be a smaller version of the same theater pattern.
-
-Final score after architecture pass: **3/13 bound, 442-line bespoke
-monsters file (down from 631) consuming shared bbox primitives.**
-
-### Primitive-lift continuation (2026-06-22)
-
-Picked up the orthogonal "shared primitives" thread after the
-architecture pass — explicitly *not* engine binding (see "Stopping
-point" above for why the 3/13 number stays put). Each lift removes
-one identifiable 2+ caller duplicate from the bespoke extractors and
-parks the behavior in `utils/` or `postprocess/`. Each lift is its
-own commit, pushed individually so `git bisect` works, with
-`dist/srd_5_1` byte-identical at every commit boundary and the full
-690-test suite green.
-
-Commits landed this thread (chronological):
-
-| Commit | What |
-|---|---|
-| `f61ff90` | `span_matches_predicate` gains `font_exact`; monsters migrated |
-| `9a55633` | `find_in_lookahead` lifted; monsters' size/type validator migrated |
-| `d34ef71` | `cluster_values_by_gap` lifted; classes' progression migrated |
-| `5a55e0e` | `concat_pages_with_offsets` + `offset_to_page` lifted; equipment_descriptions migrated |
-| `2fd5e8d` | `clean_and_split_header` table primitive lifted; equipment migrated |
-| `d1b713a` | classes' `_collect_spans` delegates iteration to `iter_page_spans` |
-| `82345c2` | ARCHITECTURE.md: 2-tier PDF primitives principle codified |
-| `6b056b2` | `strip_srd_page_footer` + `collapse_soft_hyphen_runs` lifted to `postprocess/text` (was triple-duplicated across `clean_text`, `polish_text`, `extract_equipment_descriptions`); re-exported from `utils.prose` for discoverability |
-| `9add88f` | `iter_normalized_spans` lifted — absorbs the `get_text('dict')` + `normalize_whitespace` + skip-empty triplet that appeared identically in `extract_lineages`, `extract_spell_classes`, `extract_classes` |
-| `cc8fe2d` | last 3 raw `fitz.open()` callers (spell_classes, lineages, classes) switched to `utils.pdf_probe.open_pdf`; AGENTS.md "no fresh fitz.open" discipline now fully enforced in `extract/datasets/` |
-| `6d04ba9` | `extract_spells` + `extract_magic_items` switched from inline `hashlib.sha256(pdf_bytes).hexdigest()` to `utils.pdf_probe.pdf_sha256(pdf_path)` (3 prior siblings already used it) |
-
-#### What this thread does NOT change
-
-Engine binding remains at **3/13** (features, magic_items, spells).
-Primitive lifting trims shared duplication from inside bespoke
-extractors; it does not move any extractor toward the
-`DATASET_CONFIG + extract_records_by_config()` slim shape. The
-2026-06-20 "Stopping point" judgement stands: design passes for the
-remaining 10 are still gated on a real second-caller pattern, not a
-presumed extension of the existing three bindings.
-
-#### What's still chip-away-able if resumed
-
-Searched for further obvious duplication (per-span size rounding,
-SRD-page conversion, font-size constants). No clean 2+ caller
-duplicates remain in the bespoke files. Remaining targets are
-*structural* per-extractor work, not shared-primitive lifting:
-
-- **`extract_classes` (628 lines)** — each phase still emits 4-tuples
-  `(text, size, font, bbox)` hand-decoded inside `_extract_field_labels`,
-  `_extract_progression`, etc. Could be replaced with a typed
-  dataclass, but that's a per-extractor cleanup, single-caller.
-- **`extract_lineages._classify_span` 5-way role dispatch** generalises
-  to the same shape as `extract_spell_classes`' inline-predicate-stack,
-  but the role tags are domain-specific. A generic dispatcher returning
-  role enums is possible; payoff is modest because each caller's branch
-  logic is still bespoke.
-- **`extract_rules._extract_page_text_blocks`** has its own block/line/
-  span walk that intentionally tracks `block_idx`, `line_idx`, `span_idx`
-  for downstream provenance — information `iter_page_spans` discards.
-  Could parameterise the iterator to optionally yield indices, but the
-  walk is single-caller today.
-
-**Treat this as the stopping point for primitive lifting.** Future
-lifts need either a new caller surfacing (e.g. an SRD 5.2.1 extractor
-that picks up one of the single-caller helpers as the second user) or
-a deeper structural refactor that isn't shape-preserving.
-
-### Proposed approach (gradual, one extractor per release)
-
-Forced big-bang migration is what failed attempts 1–3. The pattern that
-worked in v0.27.x retirements was **pick one target, factor its
-uniqueness, ship it, then the next**. Apply the same here:
-
-1. Each release picks ONE bespoke extractor.
-2. Identify the shape — does it map to an existing engine `pattern_type`,
-   or does it need a new one (e.g., `font_fingerprint_walk` for monster
-   stat blocks; `bbox_cursor_walk` for class progression tables)?
-3. Add the pattern type to [patterns.py](../src/srd_builder/extract/patterns.py)
-   if needed; add the dataset's config to
-   [extraction_metadata.py](../src/srd_builder/extract/extraction_metadata.py).
-4. Delete the bespoke file.
-5. Pin parity (byte-perfect against pre-migration raw JSON, same way
-   v0.27.5 P6 / v0.27.6 P7 did).
-
-**Honest framing.** Of the seven `pdf_probe` lifecycle migrations in
-v0.31.0–v0.37.0, only v0.31.0 (`extract_pdf_metadata`) and v0.32.0
-(`extract_rules` + new `page_dict()` helper) had any structural value;
-v0.33.0–v0.37.0 were one-line `fitz.open` → `open_pdf` swaps with
-byte-identical output and no engine binding work. Each of those five
-commit messages wrote "engine binding deferred until a shared
-font-anchored pattern emerges" while never actually looking for that
-pattern. The pattern is right there in the shape inventory above:
-three extractors (`extract_magic_items`, `extract_features`,
-`extract_equipment_descriptions`) share single-page font-fingerprint
-walks; two more (`extract_spells`, `extract_monsters`) extend that
-shape with cross-page state. That is what the proposed
-`font_fingerprint_walk` pattern type would absorb.
-
-**Concrete first step (not yet scheduled — design pass needed).** Read
-`extract_magic_items`, `extract_features`, and `extract_equipment_descriptions`
-side-by-side and write down the actual common shape:
-
-1. What configuration does each extractor's font walk need? (header
-   font + size + page range + record-end signal)
-2. What is the shared record envelope? (`name`, `page` / `pages`,
-   `description_blocks`, optional `metadata_blocks` / `header_blocks`)
-3. What does the new `pattern_type` config look like? Sketch in
-   [extraction_metadata.py](../src/srd_builder/extract/extraction_metadata.py).
-4. What return type does the engine need to support? Today's
-   `RawTable` is row/column-shaped; this pattern produces lists of
-   records. Either widen `extract_by_config` or give it a sibling.
-
-Output is a design doc + one proof binding (probably
-`extract_equipment_descriptions` — the smallest of the three). Only
-*then* ship it, and only as one release.
-
-### Parse-layer consolidation (forward-looking)
-
-The same framework lesson should apply to [parse/](../src/srd_builder/parse/):
-~15 modules each doing record-walking, prose-normalizing, id-synthesizing,
-cross-reference-resolving in their own shape. Possible pattern types for
-a parse engine: `record_walker`, `table_row_mapper`, `prose_narrator_stripper`,
-`cross_reference_resolver`, `schema_stamp_normalizer`, `id_synthesizer`.
-
-Do NOT start parse consolidation until extract consolidation has migrated
-at least 3–4 datasets and the pattern is proven. The hard part is not
-the design; it is resisting "this one is different, I will just write
-it bespoke" for every dataset.
+Do NOT start parse consolidation until extract consolidation has
+migrated at least 3–4 datasets and the pattern is proven. The hard
+part is not the design; it is resisting "this one is different, I
+will just write it bespoke" for every dataset.
 
 ### Bottom line
 
@@ -543,33 +97,17 @@ types). Treat every new bespoke file as a regression on that goal.
 
 ## Active: Data integrity follow-ups
 
-The v0.28.0 four-phase release (exemplar generator, `known_truths.json`
-release gate, three audit codes, round-trip PDF sampling) closed the
-biggest items. These remain:
-
 - **Independent reference cross-check** — spot-check ~10 items per
   dataset against an independent SRD source (Open5e API, D&D Beyond
   machine-readable dumps) to detect single-source bias. Treat
   mismatches as findings, not failures — they often surface ambiguity
   in the SRD itself.
 
-> `unknown_word` audit code landed 2026-06-22 — `pyspellchecker` is now
-> a dev dependency, `scripts/audit_dataset_quality.py` runs it over
-> item names only with a domain dictionary auto-built from every other
-> dataset's names. Coverage pinned by
-> [tests/test_audit_dataset_quality.py](../tests/test_audit_dataset_quality.py).
-> Current dist: zero findings.
-
-> Font fingerprint regression landed 2026-06-22 — six parametrized
-> anchors in [tests/test_pdf_provenance.py](../tests/test_pdf_provenance.py)
-> (`test_pdf_font_fingerprint_anchor_present`) catch silent PDF or
-> PyMuPDF font-rename / size-shift drift before it surfaces as empty
-> datasets downstream.
-
-> The `verify_pdf_sections.py` / `meta.json` TOC ideas captured in the
-> original v0.28.0 plan were proven dead-ends in v0.27.4 — the SRD PDF's
-> `Document.get_toc()` only exposes two file-level entries with no
-> section anchors, so `PAGE_INDEX` is the canonical source of truth.
+> Guard rail (do not re-investigate): the `verify_pdf_sections.py` /
+> `meta.json` TOC ideas captured in the original v0.28.0 plan were
+> proven dead-ends in v0.27.4 — the SRD PDF's `Document.get_toc()`
+> only exposes two file-level entries with no section anchors, so
+> `PAGE_INDEX` is the canonical source of truth.
 
 ---
 
