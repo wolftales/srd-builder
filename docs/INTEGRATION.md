@@ -47,7 +47,7 @@ dist/srd_5_1/
 ├── rules.json                 # 167   (schema v3.1.0)
 ├── skills.json                # 18    (schema v1.0.0)
 ├── spells.json                # 319   (schema v2.0.0)
-├── tables.json                # 35    (schema v3.0.0)
+├── tables.json                # 35    (schema v3.1.0)
 ├── weapon_properties.json     # 11    (schema v1.0.0)
 │
 ├── schemas/                   # All 16 JSON Schema files (copies of /schemas/)

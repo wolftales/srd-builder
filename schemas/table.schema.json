@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://srd-builder.github.io/schemas/table.schema.json",
-  "version": "3.0.0",
-  "last_modified": "2026-06-19",
+  "version": "3.1.0",
+  "last_modified": "2026-06-22",
   "title": "SRD 5.1 Reference Table Schema",
   "description": "Schema for reusable reference tables (experience by CR, spell slots, proficiency bonus, etc.)",
   "type": "object",
@@ -122,11 +122,13 @@
       "type": "string",
       "enum": [
         "character_creation",
+        "class_progression",
         "combat",
         "magic",
         "equipment",
         "exploration",
         "downtime",
+        "hazards",
         "reference"
       ],
       "description": "Functional category for grouping tables"
@@ -134,6 +136,54 @@
     "notes": {
       "type": "string",
       "description": "Additional context, exceptions, or usage notes"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Structured cross-reference data linking sub-headings within the table back to row indices (currently used by equipment tables to expose grouped row layouts like 'Light Armor' / 'Medium Armor').",
+      "properties": {
+        "categories": {
+          "type": "object",
+          "description": "Map of sub-heading name to its row index plus the rows it contains.",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "row_index",
+              "items"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "row_index": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Row index of the sub-heading row itself within rows[]"
+              },
+              "items": {
+                "type": "array",
+                "description": "Rows belonging to this sub-heading",
+                "items": {
+                  "type": "object",
+                  "required": [
+                    "name",
+                    "row_index"
+                  ],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "row_index": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
