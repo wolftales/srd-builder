@@ -43,7 +43,7 @@ dist/srd_5_1/
 ├── lineages.json              # 13    (schema v2.0.0)
 ├── magic_items.json           # 240   (schema v2.0.0)
 ├── monsters.json              # 317   (schema v2.0.0)
-├── poisons.json               # 14    (schema v2.0.0)
+├── poisons.json               # 14    (schema v2.1.0)
 ├── rules.json                 # 167   (schema v3.1.0)
 ├── skills.json                # 18    (schema v1.0.0)
 ├── spells.json                # 319   (schema v2.0.0)

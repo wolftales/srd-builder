@@ -69,7 +69,7 @@ Latest build: **1,687 items across 16 datasets** (counts and schema versions are
 | Tables | 35 | 3.1.0 |
 | Skills | 18 | 1.0.0 |
 | Conditions | 15 | 3.0.0 |
-| Poisons | 14 | 2.0.0 |
+| Poisons | 14 | 2.1.0 |
 | Damage Types | 13 | 1.1.0 |
 | Lineages | 13 | 2.0.0 |
 | Classes | 12 | 2.1.0 |

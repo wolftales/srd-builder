@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/poison.schema.json",
-  "version": "2.0.0",
-  "last_modified": "2025-12-23",
+  "version": "2.1.0",
+  "last_modified": "2026-06-22",
   "title": "SRD 5.1 Poison",
   "description": "Poisons from SRD 5.1 pages 204-205. Poisons with application methods, effects, and costs.",
   "type": "object",
@@ -10,7 +10,7 @@
     "id",
     "name",
     "simple_name",
-    "type",
+    "poison_type",
     "source",
     "page"
   ],
@@ -40,13 +40,17 @@
     },
     "type": {
       "type": "string",
+      "description": "Reserved: when present on poison records this is the damage type label (e.g., 'poison'). The application-method enum lives on 'poison_type'."
+    },
+    "poison_type": {
+      "type": "string",
       "enum": [
         "contact",
         "ingested",
         "inhaled",
         "injury"
       ],
-      "description": "Application method"
+      "description": "Application method (contact, ingested, inhaled, injury). Previously named 'type' in v2.0.0 schema, but the data has always emitted 'poison_type'."
     },
     "description": {
       "type": "string",
@@ -87,8 +91,8 @@
         },
         "type_id": {
           "type": "string",
-          "pattern": "^damage_type:[a-z]+$",
-          "description": "Cross-reference to damage type (e.g., 'damage_type:poison')"
+          "pattern": "^damage:[a-z_]+$",
+          "description": "Cross-reference to damage type (e.g., 'damage:poison'). Namespace 'damage:' matches damage_types.json IDs and references in monsters/spells."
         },
         "on_save": {
           "type": "string",
@@ -124,13 +128,34 @@
       }
     },
     "page": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "Page number in source PDF"
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "minItems": 1
+        }
+      ],
+      "description": "Page number(s) in source PDF. Array when entry spans pages."
     },
     "source": {
       "type": "string",
       "description": "Source document identifier (e.g., 'SRD 5.1')"
+    },
+    "source_table": {
+      "type": "string",
+      "description": "Builder provenance: name of the source PDF table this record was extracted from (e.g., 'poisons')."
+    },
+    "row_index": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Builder provenance: 0-based row index within source_table."
     },
     "_meta": {
       "type": "object",

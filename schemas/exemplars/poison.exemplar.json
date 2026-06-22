@@ -2,12 +2,13 @@
   "id": "poison:example",
   "name": "example name",
   "simple_name": "example",
-  "type": "contact",
+  "poison_type": "contact",
   "source": "example source",
   "page": 1,
   "aliases": [
     "example aliases"
   ],
+  "type": "example type",
   "description": "example description",
   "save": {
     "ability": "strength",
@@ -16,7 +17,7 @@
   "damage": {
     "dice": "example dice",
     "type": "example type",
-    "type_id": "damage_type:example",
+    "type_id": "damage:example",
     "on_save": "example on_save"
   },
   "condition": "example condition",
@@ -25,5 +26,7 @@
     "amount": 0,
     "currency": "cp"
   },
+  "source_table": "example source_table",
+  "row_index": 0,
   "_meta": {}
 }
