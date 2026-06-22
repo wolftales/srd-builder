@@ -64,8 +64,7 @@ from typing import Any
 
 import fitz  # PyMuPDF
 
-from srd_builder.utils.pdf_layout import iter_page_spans, span_matches_predicate
-from srd_builder.utils.pdf_probe import normalize_whitespace
+from srd_builder.utils.pdf_layout import iter_normalized_spans, span_matches_predicate
 from srd_builder.utils.prose import clean_text, normalize_apostrophes
 
 LINEAGE_PAGES_PDF_INDICES = range(2, 7)  # SRD pages 3-7 (PDF idx 2-6)
@@ -135,10 +134,7 @@ def _walk_lineage_pages(doc: fitz.Document) -> list[dict[str, Any]]:
     for pi in LINEAGE_PAGES_PDF_INDICES:
         page = doc[pi]
         srd_page = pi + 1
-        for span in iter_page_spans(page.get_text("dict")):
-            text = normalize_whitespace(span["text"])
-            if not text:
-                continue
+        for span, text in iter_normalized_spans(page):
             # Hand a span copy with normalized text to the classifier so
             # the predicate matcher sees the same string the caller will
             # store.

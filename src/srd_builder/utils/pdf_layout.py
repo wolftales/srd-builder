@@ -30,6 +30,8 @@ from typing import Any
 
 import fitz
 
+from .pdf_probe import normalize_whitespace
+
 Y_COORDINATE_TOLERANCE = 2.0
 FONT_SIZE_TOLERANCE = 0.5
 
@@ -65,6 +67,32 @@ def iter_page_spans(page_dict: dict[str, Any]) -> Any:
             continue
         for line in block.get("lines", []):
             yield from line.get("spans", [])
+
+
+def iter_normalized_spans(page: fitz.Page) -> Any:
+    """Yield ``(span, text)`` pairs from a page, skipping empty-text spans.
+
+    Wraps ``iter_page_spans(page.get_text('dict'))`` and applies
+    ``utils.pdf_probe.normalize_whitespace`` to each span's text. Spans
+    whose text is empty after normalization are filtered out — this
+    matches what every font-classifier caller (lineages, spell_classes,
+    classes) needs as the first step inside the span loop, so they no
+    longer need to open-code the ``get_text('dict')`` + whitespace
+    normalize + ``if not text: continue`` triplet themselves.
+
+    The yielded ``span`` is the original PyMuPDF span dict (with its
+    raw ``text`` field unchanged); the yielded ``text`` is the
+    whitespace-normalized form for predicates and downstream storage.
+    Callers that need the span dict to carry the normalized text should
+    rewrite it with ``{**span, "text": text}`` (mirrors what
+    extract_lineages does so its ``span_matches_predicate`` sees the
+    same string it'll store).
+    """
+    for span in iter_page_spans(page.get_text("dict")):
+        text = normalize_whitespace(span["text"])
+        if not text:
+            continue
+        yield span, text
 
 
 def span_matches_predicate(span: dict[str, Any], predicate: dict[str, Any]) -> bool:

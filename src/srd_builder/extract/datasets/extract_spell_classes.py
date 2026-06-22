@@ -27,8 +27,7 @@ from typing import Any
 import fitz
 
 from srd_builder.postprocess.ids import normalize_id
-from srd_builder.utils.pdf_layout import iter_page_spans, span_matches_predicate
-from srd_builder.utils.pdf_probe import normalize_whitespace
+from srd_builder.utils.pdf_layout import iter_normalized_spans, span_matches_predicate
 
 SPELL_LIST_PAGES_PDF_INDICES = range(104, 113)  # SRD pages 105-113
 
@@ -108,10 +107,7 @@ def extract_spell_classes(pdf_path: str | Path) -> dict[str, Any]:
     with fitz.open(str(pdf_path)) as doc:
         for pi in SPELL_LIST_PAGES_PDF_INDICES:
             page = doc[pi]
-            for span in iter_page_spans(page.get_text("dict")):
-                text = normalize_whitespace(span["text"])
-                if not text:
-                    continue
+            for span, text in iter_normalized_spans(page):
                 size = round(span.get("size", 0), 1)
 
                 # 13.9pt G-SB = class header
