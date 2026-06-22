@@ -1,0 +1,7 @@
+{
+  "builder_version": "0.37.0",
+  "output_format": "json",
+  "python_version": "3.14.5",
+  "ruleset": "srd_5_1",
+  "timestamp_utc": "2026-06-22T17:21:05.995132+00:00"
+}

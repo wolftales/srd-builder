@@ -1,9 +1,0 @@
-{
-  "id": "feature:example_owner:example",
-  "name": "example name",
-  "simple_name": "example",
-  "owner_id": "class:example",
-  "page": 1,
-  "source": "example source",
-  "text": "example text"
-}

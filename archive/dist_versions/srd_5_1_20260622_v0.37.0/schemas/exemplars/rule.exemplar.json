@@ -1,0 +1,33 @@
+{
+  "id": "rule:example",
+  "name": "example name",
+  "simple_name": "example",
+  "category": "example category",
+  "page": 1,
+  "source": "example source",
+  "text": [
+    "example text"
+  ],
+  "subcategory": "example subcategory",
+  "parent_id": "rule:example",
+  "aliases": [
+    "example aliases"
+  ],
+  "summary": "example summary",
+  "tags": [
+    "action"
+  ],
+  "related_conditions": [
+    "condition:example"
+  ],
+  "related_spells": [
+    "spell:example"
+  ],
+  "related_features": [
+    "feature:example"
+  ],
+  "related_tables": [
+    "table:example"
+  ],
+  "_meta": {}
+}

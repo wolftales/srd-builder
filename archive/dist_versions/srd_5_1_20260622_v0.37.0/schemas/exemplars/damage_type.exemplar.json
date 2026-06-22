@@ -1,0 +1,16 @@
+{
+  "id": "damage_type:example",
+  "simple_name": "example",
+  "name": "example name",
+  "description": [
+    "example description"
+  ],
+  "page": 1,
+  "source": "example source",
+  "aliases": [
+    "example aliases"
+  ],
+  "examples": [
+    "example examples"
+  ]
+}

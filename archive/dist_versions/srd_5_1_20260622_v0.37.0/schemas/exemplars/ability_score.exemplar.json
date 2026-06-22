@@ -1,0 +1,14 @@
+{
+  "id": "ability:example",
+  "simple_name": "example",
+  "name": "example name",
+  "abbreviation": "STR",
+  "description": [
+    "example description"
+  ],
+  "page": 1,
+  "source": "example source",
+  "skills": [
+    "skill:example"
+  ]
+}
