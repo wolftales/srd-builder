@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/rule.schema.json",
-  "version": "3.0.0",
-  "last_modified": "2026-06-19",
+  "version": "3.1.0",
+  "last_modified": "2026-06-22",
   "title": "SRD 5.1 Rule",
   "description": "Game rules and mechanics from SRD 5.1 core chapters (abilities, combat, spellcasting, adventuring). Rules are prose-first mechanical descriptions with optional tags and cross-references.",
   "type": "object",
@@ -19,8 +19,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^rule:[a-z0-9_]+$",
-      "description": "Unique identifier using the rule: namespace"
+      "pattern": "^rule:[a-z0-9_]+(/[a-z0-9_]+)*$",
+      "description": "Unique identifier using the rule: namespace. Allows optional /-separated section path (e.g. rule:ability_checks/strength) to disambiguate duplicate rule names across SRD sections."
     },
     "name": {
       "type": "string",
@@ -41,7 +41,7 @@
     },
     "parent_id": {
       "type": "string",
-      "pattern": "^rule:[a-z0-9_]+$",
+      "pattern": "^rule:[a-z0-9_]+(/[a-z0-9_]+)*$",
       "description": "Optional parent rule ID for hierarchical nesting (use sparingly)"
     },
     "aliases": {

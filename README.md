@@ -65,7 +65,7 @@ Latest build: **1,687 items across 16 datasets** (counts and schema versions are
 | Equipment | 259 | 2.2.0 |
 | Features | 245 | 4.0.0 |
 | Magic Items | 240 | 2.0.0 |
-| Rules | 167 | 3.0.0 |
+| Rules | 167 | 3.1.0 |
 | Tables | 35 | 3.0.0 |
 | Skills | 18 | 1.0.0 |
 | Conditions | 15 | 3.0.0 |

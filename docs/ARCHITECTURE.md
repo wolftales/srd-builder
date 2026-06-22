@@ -29,7 +29,7 @@ SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.37.1 
 | `magic_items.json` | 240 | v2.0.0 | Magic items with descriptions |
 | `monsters.json` | 317 | v2.0.0 | Monsters, creatures, and NPCs |
 | `poisons.json` | 14 | v2.0.0 | Poison gear entries + descriptions |
-| `rules.json` | 167 | v3.0.0 | Core mechanics from 7 chapters |
+| `rules.json` | 167 | v3.1.0 | Core mechanics from 7 chapters |
 | `skills.json` | 18 | v1.0.0 | Atomic reference: skill vocabulary |
 | `spells.json` | 319 | v2.0.0 | Spell list with effects, components, casting |
 | `tables.json` | 35 | v3.0.0 | Reference tables (equipment, expenses, services, madness) |
