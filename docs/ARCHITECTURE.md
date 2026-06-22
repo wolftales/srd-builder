@@ -5,7 +5,7 @@
 <!-- AUTO-SYNC:arch:version END -->
 **Purpose:** Technical reference documenting design decisions, tooling choices, and lessons learned
 
-> The authoritative item counts and schema versions live in `dist/srd_5_1/meta.json` (the `inventory` and `schemas` blocks). The tables below are a human-readable snapshot — if they ever disagree with the live `meta.json`, `meta.json` wins.
+> The authoritative item counts and schema versions live in `dist/srd_5_1/meta.json` (the `datasets` and `schemas` blocks). The tables below are a human-readable snapshot — if they ever disagree with the live `meta.json`, `meta.json` wins.
 
 ---
 
@@ -40,14 +40,14 @@ SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.37.0 
 
 | File | Purpose |
 |------|---------|
-| `meta.json` | Version, license, page index, terminology aliases, `inventory` and `schemas` manifest |
+| `meta.json` | Version, license, page index, terminology aliases, `datasets` and `schemas` manifest |
 | `index.json` | Fast lookup maps (by name, CR, type, etc.) |
 | `build_report.json` | Per-stage parse/postprocess counts and warnings |
 | `README.md` | Generated dynamically from `meta.json` (see [build.py](src/srd_builder/build.py)) |
 | `schemas/` | All 16 JSON Schema files |
 | `docs/` | DATA_DICTIONARY.md, SCHEMAS.md (shipped to consumers) |
 
-**Dataset shape note:** Most datasets follow `{"_meta": ..., "items": [...]}`. Three legacy datasets (`conditions`, `diseases`, `features`) use the dataset name as the array key (`{"_meta": ..., "conditions": [...]}`). The `build_inventory()` helper in [src/srd_builder/utils/metadata.py](src/srd_builder/utils/metadata.py) handles both shapes. Normalizing this is tracked in [docs/PARKING_LOT.md](docs/PARKING_LOT.md).
+**Dataset shape note:** All datasets follow `{"_meta": ..., "items": [...]}`. Three datasets (`conditions`, `diseases`, `features`) previously used the dataset name as the array key; they were normalized to `items` in v0.30.0. Consumers reading any bundle ≥ v0.30.0 can use a single `doc["items"]` access pattern.
 
 ---
 
@@ -378,7 +378,7 @@ kwargs).
                             ▼
 ┌─────────────────────────────────────────────────────────────┐
 │ OUTPUT: dist/srd_5_1/                                      │
-│ • meta.json (license, provenance, inventory, schemas)      │
+│ • meta.json (license, provenance, datasets, schemas)       │
 │ • build_report.json (build metadata)                       │
 │ • monsters.json (317 normalized monsters)                  │
 │ • index.json (lookup tables)                               │
@@ -1108,7 +1108,7 @@ When releasing a new version:
 
 6. **Rebuild + verify:**
    - `make bundle && ./scripts/smoke.sh srd_5_1 dist bundle && pytest -q`
-   - Confirm `dist/srd_5_1/meta.json` `inventory` and `schemas` blocks match expectations
+   - Confirm `dist/srd_5_1/meta.json` `datasets` and `schemas` blocks match expectations
 
 ---
 
@@ -1118,7 +1118,7 @@ When releasing a new version:
 ### Dataset Statistics (v0.37.0)
 <!-- AUTO-SYNC:arch:stats-header END -->
 
-Live counts come from `dist/srd_5_1/meta.json.inventory`. Snapshot for this revision:
+Live counts come from `dist/srd_5_1/meta.json.datasets`. Snapshot for this revision:
 
 <!-- AUTO-SYNC:arch:stats-table START -->
 | Dataset | Count | Notes |
