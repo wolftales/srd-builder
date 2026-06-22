@@ -552,10 +552,13 @@ biggest items. These remain:
   machine-readable dumps) to detect single-source bias. Treat
   mismatches as findings, not failures — they often surface ambiguity
   in the SRD itself.
-- **`unknown_word` audit code** — run `pyspellchecker` over **item
-  names only** (not body text — too many fantasy terms) with an
-  extended dictionary that loads in all class / monster / spell / item
-  names. Output for human review, not automated failure.
+
+> `unknown_word` audit code landed 2026-06-22 — `pyspellchecker` is now
+> a dev dependency, `scripts/audit_dataset_quality.py` runs it over
+> item names only with a domain dictionary auto-built from every other
+> dataset's names. Coverage pinned by
+> [tests/test_audit_dataset_quality.py](../tests/test_audit_dataset_quality.py).
+> Current dist: zero findings.
 
 > Font fingerprint regression landed 2026-06-22 — six parametrized
 > anchors in [tests/test_pdf_provenance.py](../tests/test_pdf_provenance.py)

@@ -20,6 +20,10 @@ Checks (grouped by severity):
     - non_ascii_in_text       mojibake (e.g. ``â€™``) in a prose field
     - hyphenation_artifact    soft-hyphen split (``light- ning``) not re-joined
     - word_boundary_loss      run-on token >20 chars suggesting missing space
+    - unknown_word            item ``name`` field contains a word unrecognised by
+                              the standard English dictionary AND not present as
+                              a name token in any sibling dataset (most likely
+                              a typo in extraction; requires ``pyspellchecker``)
 
 Exit codes:
   0  no findings of the selected severity or higher (default: none required)
@@ -251,6 +255,96 @@ def check_word_boundary_loss(dataset: str, items: list[dict[str, Any]]) -> Itera
                 break
 
 
+# ---------------------------------------------------------------------------
+# Unknown-word audit (item names only)
+#
+# Body text is full of fantasy compounds, monster jargon, and rules
+# vocabulary that no general-purpose dictionary recognises, so spell-
+# checking it would drown the audit. Item names are short, curated, and
+# fewer than a couple thousand strings total; checking *names only* against
+# a domain dictionary auto-built from every other dataset's names catches
+# real typos ("dragnborn", "magic missle") without flooding on
+# legitimate-but-rare words ("aboleth", "tiefling", "ki").
+#
+# Tokenisation: split each name on any non-alphabetic run, then lowercase
+# and drop tokens shorter than 3 chars. Strips numeric suffixes ("+1",
+# "+2", "+3" in magic items), parenthesised qualifiers ("(0 Level)"),
+# possessive 's, and the like — all of which can otherwise confuse the
+# spellchecker. Apostrophe normalisation handles curly U+2019.
+
+
+_NAME_TOKEN_SPLIT = re.compile(r"[^A-Za-z]+")
+
+
+def _name_tokens(name: str) -> list[str]:
+    """Return the lowercase alphabetic word tokens inside an item name."""
+    cleaned = name.replace("\u2019", "'").replace("'s", "").replace("s'", "")
+    return [tok.lower() for tok in _NAME_TOKEN_SPLIT.split(cleaned) if len(tok) >= 3]
+
+
+def _build_domain_dictionary(distributions: dict[str, list[dict[str, Any]]]) -> set[str]:
+    """Collect every token that appears in any dataset's item names.
+
+    The result is the auto-grown allow-list passed to the spellchecker so
+    domain words ("tiefling", "fireball", "yuan", "ti", "pureblood") are
+    treated as known. The only words that remain unknown are ones that
+    appear nowhere else in the SRD — which is the typo signal.
+    """
+    tokens: set[str] = set()
+    for items in distributions.values():
+        for item in items:
+            name = item.get("name")
+            if isinstance(name, str):
+                tokens.update(_name_tokens(name))
+    return tokens
+
+
+def check_unknown_words_in_names(
+    dataset: str, items: list[dict[str, Any]], spellchecker: Any | None
+) -> Iterable[Finding]:
+    """Flag item-name tokens unknown to both the English and domain dictionaries.
+
+    The audit driver constructs the spellchecker once (with the domain
+    dictionary already loaded) and threads it through every dataset; this
+    function is a no-op when ``spellchecker`` is ``None`` (the import
+    failed). One finding per (item, unknown-token) pair so the human
+    reviewer sees every distinct typo, not just the first.
+    """
+    if spellchecker is None:
+        return
+    for item in items:
+        rid = item.get("id") if isinstance(item.get("id"), str) else None
+        name = item.get("name")
+        if not isinstance(name, str) or not name:
+            continue
+        unknown = spellchecker.unknown(_name_tokens(name))
+        for token in sorted(unknown):
+            yield Finding(
+                severity="warning",
+                dataset=dataset,
+                code="unknown_word",
+                detail=f"name={name!r}: token {token!r} not in English+domain dict",
+                item_id=rid,
+            )
+
+
+def _build_spellchecker(distributions: dict[str, list[dict[str, Any]]]) -> Any | None:
+    """Construct a ``pyspellchecker`` with the domain dictionary loaded.
+
+    Returns ``None`` if ``pyspellchecker`` is not installed (the audit is
+    a dev/CI tool and the check is opt-in via the dependency).
+    """
+    try:
+        from spellchecker import SpellChecker  # type: ignore[import-not-found]
+    except ImportError:
+        return None
+    checker = SpellChecker()
+    domain_tokens = _build_domain_dictionary(distributions)
+    if domain_tokens:
+        checker.word_frequency.load_words(domain_tokens)
+    return checker
+
+
 def _collect_ids(items: list[dict[str, Any]]) -> set[str]:
     return {item["id"] for item in items if isinstance(item.get("id"), str)}
 
@@ -357,6 +451,8 @@ def audit(dist_dir: Path) -> tuple[list[Finding], dict[str, int]]:
     distributions = {ds: _load_items(dist_dir, ds) for ds in ALL_DATASETS}
     counts = {ds: len(items) for ds, items in distributions.items()}
 
+    spellchecker = _build_spellchecker(distributions)
+
     findings: list[Finding] = []
     for dataset, items in distributions.items():
         if not items:
@@ -367,6 +463,7 @@ def audit(dist_dir: Path) -> tuple[list[Finding], dict[str, int]]:
         findings.extend(check_non_ascii_in_text(dataset, items))
         findings.extend(check_hyphenation_artifact(dataset, items))
         findings.extend(check_word_boundary_loss(dataset, items))
+        findings.extend(check_unknown_words_in_names(dataset, items, spellchecker))
     findings.extend(check_cross_references(distributions))
     findings.extend(check_inventory(dist_dir, counts))
     return findings, counts
