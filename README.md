@@ -61,7 +61,7 @@ Latest build: **1,687 items across 16 datasets** (counts and schema versions are
 | Dataset | Count | Schema |
 |---|---:|---|
 | Spells | 319 | 2.0.0 |
-| Monsters | 317 | 2.0.0 |
+| Monsters | 317 | 2.1.0 |
 | Equipment | 259 | 2.2.0 |
 | Features | 245 | 4.0.0 |
 | Magic Items | 240 | 2.0.0 |

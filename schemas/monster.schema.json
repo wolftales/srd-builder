@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://wolftales.github.io/srd-builder/schemas/monster.schema.json",
-  "version": "2.0.0",
-  "last_modified": "2025-12-22",
+  "version": "2.1.0",
+  "last_modified": "2026-06-22",
   "title": "Monster",
   "type": "object",
   "additionalProperties": true,
@@ -428,8 +428,8 @@
               "properties": {
                 "dice": {
                   "type": "string",
-                  "pattern": "^\\d+d\\d+(\\+\\d+)?$",
-                  "description": "Damage dice expression (e.g., 2d6+3)"
+                  "pattern": "^\\d+d\\d+([+-]\\d+)?$",
+                  "description": "Damage dice expression (e.g., 2d6+3, 1d4-1)"
                 },
                 "type": {
                   "type": "string",

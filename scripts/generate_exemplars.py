@@ -42,6 +42,7 @@ _PATTERN_EXAMPLES: dict[str, str] = {
     r"^d(6|8|10|12)$": "d8",
     r"^\d+d\d+$": "1d8",
     r"^\d+d\d+(\+\d+)?$": "1d8",
+    r"^\d+d\d+([+-]\d+)?$": "1d8",
     r"^\d+d\d+(\s*[+\-]\s*\d+)?$": "1d8",
     r"^[a-z][a-z0-9\s-]*$": "example",
     r"^[a-z0-9_:]+$": "example",

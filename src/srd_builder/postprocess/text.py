@@ -179,10 +179,9 @@ def polish_text_fields(monster: dict[str, Any]) -> dict[str, Any]:
                 for para in item["description"]:
                     if isinstance(para, str):
                         polished = polish_text(para)
-                        if polished is not None:
+                        if polished:
                             polished_paras.append(polished)
-                if polished_paras:
-                    item["description"] = polished_paras
+                item["description"] = polished_paras
 
             if "name" in item and isinstance(item["name"], str):
                 item["name"] = item["name"].rstrip(".")
