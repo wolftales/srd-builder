@@ -140,7 +140,7 @@ def extract_classes(pdf_path: str | Path) -> dict[str, Any]:
                     "features": ["feature:rage", "feature:unarmored_defense", ...],
                     "subclasses": ["subclass:path_of_the_berserker"],
                     # 8 caster classes also carry:
-                    # "spellcasting": {"ability": "Wis", "spell_list": "cleric"}
+                    # "spellcasting": {"ability": "wisdom", "spell_list": "cleric"}
                     # (later commits add progression)
                 },
                 ...
@@ -345,11 +345,6 @@ _SPELLCASTING_ABILITY_RE = re.compile(
     r"(Charisma|Wisdom|Intelligence)\s+is\s+your\s+spellcasting\s+ability",
     re.IGNORECASE,
 )
-_ABILITY_ABBR: dict[str, str] = {
-    "charisma": "Cha",
-    "wisdom": "Wis",
-    "intelligence": "Int",
-}
 
 
 def _extract_features_and_subclasses(
@@ -386,7 +381,7 @@ def _extract_spellcasting(
     class_spans: list[tuple[str, float, str, tuple]],
     class_simple: str,
 ) -> dict[str, str] | None:
-    """Return ``{'ability': 'Wis', 'spell_list': 'cleric'}`` for caster classes.
+    """Return ``{'ability': 'wisdom', 'spell_list': 'cleric'}`` for caster classes.
 
     Detection: scan all 9.8pt Cambria body spans in the class's page
     range for a single sentence matching
@@ -394,14 +389,15 @@ def _extract_spellcasting(
     exactly once for each of the 8 SRD caster classes: bard, cleric,
     druid, paladin, ranger, sorcerer, warlock, wizard — and zero times
     for the 4 non-casters). The spell list always matches the class's
-    simple_name.
+    simple_name. Ability is emitted lowercased to match the shared
+    ability-score vocabulary (matches ``class.schema.json`` enum).
     """
     body = " ".join(txt for txt, sz, font, _ in class_spans if sz == 9.8 and "Cambria" in font)
     m = _SPELLCASTING_ABILITY_RE.search(body)
     if m is None:
         return None
     return {
-        "ability": _ABILITY_ABBR[m.group(1).lower()],
+        "ability": m.group(1).lower(),
         "spell_list": class_simple,
     }
 

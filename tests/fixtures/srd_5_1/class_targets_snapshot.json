@@ -212,7 +212,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Cha",
+      "ability": "charisma",
       "spell_list": "bard"
     },
     "features": [
@@ -391,7 +391,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Wis",
+      "ability": "wisdom",
       "spell_list": "cleric"
     },
     "features": [
@@ -572,7 +572,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Wis",
+      "ability": "wisdom",
       "spell_list": "druid"
     },
     "features": [
@@ -1095,7 +1095,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Cha",
+      "ability": "charisma",
       "spell_list": "paladin"
     },
     "features": [
@@ -1275,7 +1275,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Wis",
+      "ability": "wisdom",
       "spell_list": "ranger"
     },
     "features": [
@@ -1638,7 +1638,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Cha",
+      "ability": "charisma",
       "spell_list": "sorcerer"
     },
     "features": [
@@ -1797,7 +1797,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Cha",
+      "ability": "charisma",
       "spell_list": "warlock"
     },
     "features": [
@@ -1962,7 +1962,7 @@
       }
     },
     "spellcasting": {
-      "ability": "Int",
+      "ability": "intelligence",
       "spell_list": "wizard"
     },
     "features": [
