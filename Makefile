@@ -34,14 +34,16 @@ ci: lint test
 # Verify CI will pass (run before pushing)
 verify-ci:
 	@echo "🔍 Verifying CI checks..."
-	@echo "1/4 Checking formatting..."
+	@echo "1/5 Checking formatting..."
 	@ruff format --check . || (echo "❌ Format errors! Run: make format" && exit 1)
-	@echo "2/4 Checking linting..."
+	@echo "2/5 Checking linting..."
 	@ruff check . || (echo "❌ Lint errors! Run: ruff check . --fix" && exit 1)
-	@echo "3/4 Checking doc-table sync..."
+	@echo "3/5 Checking doc-table sync..."
 	@python scripts/sync_doc_tables.py --check || (echo "❌ Doc tables drifted! Run: make sync-docs" && exit 1)
-	@echo "4/4 Running tests..."
+	@echo "4/5 Running tests..."
 	@pytest -q || (echo "❌ Test failures!" && exit 1)
+	@echo "5/5 Validating shipped bundle against schemas (strict)..."
+	@python -m srd_builder.utils.validate --ruleset srd_5_1 || (echo "❌ Bundle has schema violations! Inspect with: python -m srd_builder.utils.validate --ruleset srd_5_1 --report-only" && exit 1)
 	@echo "✅ All CI checks passed! Safe to push."
 
 # Development build (data only, fast)
