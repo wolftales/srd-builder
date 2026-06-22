@@ -21,7 +21,7 @@ SRD-Builder extracts structured JSON datasets from the SRD 5.1 PDF. The v0.37.1 
 | `ability_scores.json` | 6 | v1.0.0 | Atomic reference: STR/DEX/CON/INT/WIS/CHA |
 | `classes.json` | 12 | v2.1.0 | Character classes with progression |
 | `conditions.json` | 15 | v3.0.0 | Status conditions (poisoned, stunned, etc.) |
-| `damage_types.json` | 13 | v1.0.0 | Atomic reference: damage type vocabulary |
+| `damage_types.json` | 13 | v1.1.0 | Atomic reference: damage type vocabulary |
 | `diseases.json` | 3 | v3.0.0 | Cackle Fever, Sewer Plague, Sight Rot |
 | `equipment.json` | 259 | v2.2.0 | Weapons, armor, adventuring gear |
 | `features.json` | 245 | v4.0.0 | Class features and lineage traits |

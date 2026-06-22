@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/wolftales/srd-builder/schemas/damage_type.schema.json",
-  "version": "1.0.0",
-  "last_modified": "2025-12-23",
+  "version": "1.1.0",
+  "last_modified": "2026-06-22",
   "title": "Damage Type",
   "description": "A type of damage in D&D 5e (v2.0.0)",
   "type": "object",
@@ -18,8 +18,8 @@
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^damage_type:",
-      "description": "Unique identifier with damage_type: prefix (e.g., 'damage_type:fire')"
+      "pattern": "^damage:[a-z_]+$",
+      "description": "Unique identifier with damage: prefix (e.g., 'damage:fire'). Note: the namespace is 'damage:' not 'damage_type:' to match cross-references in monsters/spells/poisons."
     },
     "simple_name": {
       "type": "string",

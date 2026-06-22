@@ -20,5 +20,8 @@
   ],
   "section": "example section",
   "category": "character_creation",
-  "notes": "example notes"
+  "notes": "example notes",
+  "metadata": {
+    "categories": {}
+  }
 }
