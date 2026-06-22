@@ -824,3 +824,148 @@ def test_equipment_descriptions_item_signature_extractable(
         f"be justified by 'PDF corruption'; the parser just needs to be "
         f"written."
     )
+
+
+# ---------------------------------------------------------------------------
+# Font fingerprint regression — see docs/BACKLOG.md "Data integrity follow-ups"
+# ---------------------------------------------------------------------------
+#
+# Every bespoke extractor in src/srd_builder/extract/datasets/ classifies
+# spans by (font_name_substring, font_size, optional bold/italic flags). A
+# silent change to either the source PDF or the PyMuPDF library can rename a
+# font ("GillSans-SemiBold" → "MS-Reference-SansSerif-Bold") or shift a size
+# by more than the tolerance window, which would make a predicate match zero
+# spans and emit an empty dataset without crashing. The audit pipeline
+# (`scripts/audit_dataset_quality.py`) catches that downstream as empty
+# records, but the upstream cause — fingerprint drift — is invisible.
+#
+# Each test below uses the same `span_matches_predicate` matcher the
+# extractors use, so a regression in the matcher itself is also caught.
+# Thresholds are set a few records below the measured count (2026-06-22)
+# so a tiny content revision in a future PDF reprint doesn't fail the
+# test, but a wholesale fingerprint change drops the count to ~0.
+
+# (font_substring, size_min, size_max, optional bold/italic, page range,
+# minimum-expected-match count, description for failure message). All
+# anchors verified 2026-06-22 against SRD_CC_v5.1.pdf + PyMuPDF 1.27.x.
+_FONT_FINGERPRINT_ANCHORS: list[tuple[dict[str, object], range, int, str]] = [
+    (
+        {
+            "font_substring": "GillSans",
+            "size_min": 17.5,
+            "size_max": 18.5,
+            "require_bold": True,
+        },
+        range(2, 7),  # SRD pages 3-7 (lineages)
+        9,
+        "lineage race name (extract_lineages._PRED_RACE_NAME); 9 races expected, exact count",
+    ),
+    (
+        {
+            "font_substring": "GillSans",
+            "size_min": 13.5,
+            "size_max": 14.5,
+            "require_bold": True,
+        },
+        range(7, 55),  # SRD pages 8-55 (classes)
+        120,
+        "class feature header (extract_features class-feature fingerprint); "
+        "135 measured 2026-06-22, floor at 120",
+    ),
+    (
+        {
+            "font_substring": "GillSans-SemiBold",
+            "size_min": 11.5,
+            "size_max": 12.5,
+        },
+        range(205, 253),  # SRD pages 206-253 (magic items)
+        200,
+        "magic item name (extract_magic_items header fingerprint); "
+        "246 measured 2026-06-22, floor at 200",
+    ),
+    (
+        {
+            "font_substring": "GillSans-SemiBold",
+            "size_min": 11.5,
+            "size_max": 12.5,
+        },
+        range(113, 205),  # SRD pages 114-205 (spell descriptions)
+        300,
+        "spell name (extract_spells header fingerprint); 335 measured 2026-06-22, floor at 300",
+    ),
+    (
+        {
+            "font_exact": "Calibri-Bold",
+            "size_min": 11.5,
+            "size_max": 12.5,
+        },
+        range(260, 403),  # SRD pages 261-403 (monsters)
+        300,
+        "monster name (extract_monsters._is_monster_name_line predicate); "
+        "321 measured 2026-06-22, floor at 300",
+    ),
+    (
+        {
+            "font_substring": "Cambria",
+            "size_min": 9.5,
+            "size_max": 10.5,
+            "require_bold": True,
+            "require_italic": True,
+            "require_trailing_period": True,
+            "min_text_len": 4,
+        },
+        range(2, 7),  # SRD pages 3-7 (lineages)
+        70,
+        "lineage trait header (extract_lineages._PRED_TRAIT_HEADER, also "
+        "used by extract_features lineage-trait fingerprint); "
+        "92 measured 2026-06-22, floor at 70",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    ("predicate", "pdf_page_range", "min_count", "label"),
+    _FONT_FINGERPRINT_ANCHORS,
+)
+def test_pdf_font_fingerprint_anchor_present(
+    predicate: dict[str, object],
+    pdf_page_range: range,
+    min_count: int,
+    label: str,
+) -> None:
+    """Pin the (font, size, flags) anchors every bespoke extractor relies on.
+
+    A silent PDF or PyMuPDF font rename / size shift would otherwise
+    leave the predicate matching zero spans, producing empty datasets
+    that downstream completeness audits flag *after* the build instead
+    of catching the upstream cause.
+
+    Failure means one of: (a) the PDF was rebuilt with different
+    fonts/sizes, (b) PyMuPDF changed how it reports font names, or
+    (c) the predicate definition itself drifted. Diagnose by sampling
+    the page range directly and checking which property no longer
+    matches; the extractor's predicate constant needs to be updated to
+    match the new shape, and this test's threshold updated to the new
+    measured count.
+    """
+    _require_pdf_and_fitz()
+    from srd_builder.utils.pdf_layout import iter_normalized_spans, span_matches_predicate
+    from srd_builder.utils.pdf_probe import open_pdf
+
+    match_count = 0
+    with open_pdf(SRD_5_1_PDF) as doc:
+        for pi in pdf_page_range:
+            for span, text in iter_normalized_spans(doc[pi]):
+                norm_span = {**span, "text": text}
+                if span_matches_predicate(norm_span, predicate):
+                    match_count += 1
+
+    assert match_count >= min_count, (
+        f"Font fingerprint regression: {label}\n"
+        f"  predicate={predicate}\n"
+        f"  pages={pdf_page_range.start + 1}-{pdf_page_range.stop} "
+        f"(0-indexed range {pdf_page_range})\n"
+        f"  matched {match_count} spans, expected at least {min_count}.\n"
+        f"  Either the PDF/PyMuPDF font reporting changed, or the "
+        f"predicate definition drifted from the page contents."
+    )
