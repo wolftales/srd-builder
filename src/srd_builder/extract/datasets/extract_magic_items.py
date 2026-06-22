@@ -13,12 +13,12 @@ See docs/BACKLOG.md "Design-pass finding" for context.
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 from typing import Any
 
 try:
     from ...constants import EXTRACTOR_VERSION
+    from ...utils.pdf_probe import pdf_sha256
     from ..patterns import extract_records_by_config
 except ImportError:
     # Running as script
@@ -27,6 +27,7 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parents[2]))
     from srd_builder.constants import EXTRACTOR_VERSION
     from srd_builder.extract.patterns import extract_records_by_config
+    from srd_builder.utils.pdf_probe import pdf_sha256
 
 # Magic Items section pages (from PAGE_INDEX - see src/srd_builder/utils/page_index.py)
 MAGIC_ITEMS_START_PAGE = 206
@@ -87,8 +88,7 @@ def extract_magic_items(pdf_path: Path) -> dict[str, Any]:
     if not pdf_path.exists():
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
 
-    pdf_bytes = pdf_path.read_bytes()
-    pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+    pdf_hash = pdf_sha256(pdf_path)
 
     pages = list(range(MAGIC_ITEMS_START_PAGE, MAGIC_ITEMS_END_PAGE + 1))
     items = extract_records_by_config(str(pdf_path), pages, DATASET_CONFIG)

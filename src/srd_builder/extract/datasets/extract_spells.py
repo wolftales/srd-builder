@@ -13,12 +13,12 @@ See docs/BACKLOG.md "Remaining shapes" for context.
 
 from __future__ import annotations
 
-import hashlib
 from pathlib import Path
 from typing import Any
 
 try:
     from ...constants import EXTRACTOR_VERSION
+    from ...utils.pdf_probe import pdf_sha256
     from ..patterns import extract_records_by_config
 except ImportError:
     import sys
@@ -26,6 +26,7 @@ except ImportError:
     sys.path.insert(0, str(Path(__file__).parents[2]))
     from srd_builder.constants import EXTRACTOR_VERSION
     from srd_builder.extract.patterns import extract_records_by_config
+    from srd_builder.utils.pdf_probe import pdf_sha256
 
 # Spell section pages (descriptions, not spell lists)
 SPELL_START_PAGE = 114
@@ -151,8 +152,7 @@ def extract_spells(pdf_path: Path) -> dict[str, Any]:
     if not pdf_path.exists():
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
 
-    pdf_bytes = pdf_path.read_bytes()
-    pdf_hash = hashlib.sha256(pdf_bytes).hexdigest()
+    pdf_hash = pdf_sha256(pdf_path)
 
     pages = list(range(SPELL_START_PAGE, SPELL_END_PAGE + 1))
     spells = extract_records_by_config(str(pdf_path), pages, DATASET_CONFIG)
