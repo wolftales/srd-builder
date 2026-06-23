@@ -38,6 +38,46 @@ Consumers integrating pre-1.0 SHOULD pin the exact `builder_version` they
 tested against and re-test before adopting a new release, even within a
 single MINOR cycle.
 
+## Consumer handling of bundle artifacts
+
+The bundle is a producer-owned artifact. Every file in it (JSON datasets,
+schemas, this document, README, exemplars) is generated deterministically
+by `srd-builder` and stamped with `builder_version`. Consumers SHOULD NOT
+reformat, normalize, or regenerate any file in the bundle after import.
+Doing so breaks byte-identity with the upstream release tag and makes any
+future drift undetectable.
+
+If the importing repository has a tree-wide formatter (Prettier, Biome,
+dprint, `json.tool`, etc.), the imported bundle directory and its adjacent
+`build_report.json` MUST be excluded from automatic formatting. Example
+`.prettierignore`:
+
+```
+# Producer-owned bundle — do not reformat
+rulesets/srd_5_1/data/**
+rulesets/srd_5_1/build_report.json
+```
+
+Adjust the paths to wherever the importing project keeps the bundle.
+
+The shipped JSON uses 2-space indentation, Unicode literal characters
+(no `\uXXXX` escapes), and a trailing newline at EOF. It is emitted by
+Python's `json.dumps`, which keeps short arrays inline
+(e.g. `"skills": ["skill:acrobatics", "skill:sleight_of_hand"]`). Prettier
+and several other formatters prefer one item per line, so a default
+formatter run **will** rewrite the bundle even though the content is
+semantically identical. The exclusion above is therefore required, not
+optional. The producer does not chase formatter-specific output — the
+contract is byte-for-byte preservation of the released artifact, not
+cross-formatter compatibility.
+
+Producer self-consistency invariant: every JSON file in the released
+`srd_5_1/` directory round-trips byte-identically through
+`json.dumps(obj, indent=2, ensure_ascii=False) + "\n"`. This is a check
+on the producer's own output stability only; it does NOT imply
+equivalence with any external formatter. Enforced by
+`tests/test_bundle_json_format_stability.py`.
+
 ## Where `builder_version` is recorded
 
 | Location | Field |

@@ -699,6 +699,52 @@ bundle, and producers MUST NOT place it inside the bundle:
 
 ---
 
+## Consumer Guidance
+
+This bundle is a producer-owned artifact. Every file (JSON, Markdown,
+schemas) is generated deterministically by `srd-builder` and stamped with
+`builder_version`. Consumers SHOULD NOT reformat, normalize, or regenerate
+the contents after import. Doing so breaks byte-identity with the released
+artifact and makes drift impossible to detect against the upstream tag.
+
+If your repository has a tree-wide formatter (Prettier, Biome, dprint,
+`json.tool`, etc.), exclude the imported bundle and its adjacent
+`build_report.json`. Example `.prettierignore`:
+
+```
+# Producer-owned bundle — do not reformat
+rulesets/srd_5_1/data/**
+rulesets/srd_5_1/build_report.json
+```
+
+Adjust the paths to wherever your project keeps the imported bundle.
+
+The shipped JSON uses 2-space indentation, Unicode literal characters
+(no `\\uXXXX` escapes), and a trailing newline at EOF. It is emitted by
+Python's `json.dumps`, which keeps short arrays inline:
+
+```json
+"skills": ["skill:acrobatics", "skill:sleight_of_hand", "skill:stealth"]
+```
+
+Prettier (and several other formatters) prefer one-item-per-line:
+
+```json
+"skills": [
+  "skill:acrobatics",
+  "skill:sleight_of_hand",
+  "skill:stealth"
+]
+```
+
+This means a default Prettier run **will** rewrite the bundle, even though
+the content is semantically identical. The exclusion above is therefore
+required, not optional. The producer does not chase formatter-specific
+output — the contract is byte-for-byte preservation of the released
+artifact, not cross-formatter compatibility.
+
+---
+
 ## Quick Start
 
 ```javascript
