@@ -63,6 +63,7 @@ from .postprocess import (
     clean_spell_record,
     dedupe_rule_records,
 )
+from .postprocess.correct_class_progressions import apply_progression_corrections
 from .postprocess.derive_reference_tables import derive_reference_tables
 from .postprocess.engine import clean_records
 from .utils.metadata import (
@@ -234,6 +235,13 @@ def _write_datasets(  # noqa: PLR0913
     # Postprocess: normalize IDs and polish text
     processed_tables = clean_records(tables, "table") if tables else None
     if processed_tables:
+        # Correct PyMuPDF column-detection bugs in paladin + ranger
+        # progressions BEFORE deriving spell-slot tables (v0.39.1 —
+        # Blackmoor v0.39.0 review). See
+        # src/srd_builder/postprocess/correct_class_progressions.py for the
+        # specific cells patched and PROVENANCE.md for the reproducer.
+        processed_tables = apply_progression_corrections(processed_tables)
+
         # Append derived reference tables (v0.39.0 — finding #2).
         # Five tables (proficiency_bonus, full-caster + paladin/ranger/warlock
         # spell slots) are derived from already-extracted class progressions;
@@ -683,10 +691,11 @@ A companion file is written alongside the bundle directory by the producer,
 *not* inside it. Consumers SHOULD NOT depend on this file existing in the
 bundle, and producers MUST NOT place it inside the bundle:
 
-- `../build_report.json` — build provenance (timestamps, builder version,
-  python version, bundle hash). Lives next to the bundle directory because
-  it carries environment-dependent values; keeping it outside lets the bundle
-  itself stay byte-deterministic.
+- `../build_report.json` — build provenance (build timestamp, builder
+  version, python version, ruleset, output format). Lives next to the
+  bundle directory because it carries environment-dependent values;
+  keeping it outside lets the bundle itself stay byte-deterministic.
+  Schema: `schemas/build_report.schema.json`.
 
 ---
 

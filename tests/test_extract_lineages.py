@@ -31,9 +31,8 @@ _SUBRACE_NAME_OVERRIDES = {
 
 
 @pytest.fixture(scope="module")
-def extracted_lineages() -> list[dict]:
-    assert PDF_PATH.exists(), f"Missing SRD PDF at {PDF_PATH}"
-    return extract_lineages(PDF_PATH)["lineages"]
+def extracted_lineages(srd_5_1_pdf: Path) -> list[dict]:
+    return extract_lineages(srd_5_1_pdf)["lineages"]
 
 
 def test_extracts_nine_lineages_in_pdf_order(extracted_lineages: list[dict]) -> None:

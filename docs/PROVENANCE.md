@@ -27,9 +27,13 @@ this file is the *current state*.
 
 ## Status at a glance
 
-8 historical hand-curated sources. 6 retired in the v0.27.x line.
+10 historical hand-curated sources. 6 retired in the v0.27.x line.
 1 active augmentation (`equipment_extended.py`, no SRD source).
 1 structural drift fixed and pinned by audit test in v0.27.4.
+1 derived-reference module added in v0.39.0 (`derive_reference_tables.py`,
+5 derived + 1 hand-curated table).
+1 post-extraction correction module added in v0.39.1
+(`correct_class_progressions.py`, paladin L2 + 20 ranger rows).
 
 | Source | Lines | Status | Reproducer | Live extractor | Quality vs. legacy | Blocker |
 | --- | ---: | --- | --- | --- | --- | --- |
@@ -167,6 +171,20 @@ a failed save"` phrasing.
 | Reproducer | TODO — add a derivation parity test (`tests/test_derive_reference_tables.py`) that asserts the proficiency bonus column is identical across all 12 class progressions, and the full-caster slot columns are identical across bard/cleric/druid/sorcerer/wizard. |
 | Notes | The class progression tables represent "no slot" as the digit `0` or `1` overprinted with U+0336 (combining long stroke overlay) which renders as strikethrough; the derivation strips the overlay and normalizes empty cells to em-dash (`\u2014`). The `draconic_ancestry` literal is faithful to the SRD 5.1 CC-BY content (10 dragon types × 3 columns: Dragon, Damage Type, Breath Weapon). |
 | Downstream | `dist/srd_5_1/tables.json` (6 added rows raise table count from 35 to 41) |
+
+### `correct_class_progressions.py` — paladin L2 + all ranger spell-slot rows  *(added in v0.39.1)*
+
+| Field | Value |
+| --- | --- |
+| Status | **LIVE** (post-extraction cell overrides on two tables) |
+| Path | [src/srd_builder/postprocess/correct_class_progressions.py](../src/srd_builder/postprocess/correct_class_progressions.py) |
+| Scope | Two tables. `table:paladin_progression`: 2 cells on the L2 row (Features and 1st-slot). `table:ranger_progression`: 6 cells × 20 rows = 120 cells (Spells Known + 1st-5th slot columns; Features and Proficiency Bonus columns are not touched). |
+| Reason code | `pdf_corruption` — our `split_column` extractor (configured in [src/srd_builder/extract/extraction_metadata.py](../src/srd_builder/extract/extraction_metadata.py) with hand-tuned `column_boundaries`) misdetects column boundaries on these two tables because the Features column contains multi-line text that wraps into adjacent column slots. For paladin L2, the "Divine Smite" wrap token merges with the slot-count digit `2`. For ranger, the Spells Known column drops to empty for L1-L16 (slot values shift left) and the 1st-slot column drops to empty for L17-L20 (slot values 2nd-5th shift left, 5th-slot value lost). |
+| Removal trigger | Re-tune the `column_boundaries` for `paladin` and `ranger` in `extraction_metadata.py` so the extractor places text spans correctly without post-hoc patching, then verify both reproducer tests below start failing (extractor now matches canonical SRD) and the parity tests in `tests/test_canonical_spell_slots.py` still pass. |
+| Reproducer | [tests/test_pdf_provenance.py::test_paladin_l2_divine_smite_column_drift](../tests/test_pdf_provenance.py) and [tests/test_pdf_provenance.py::test_ranger_progression_column_drift](../tests/test_pdf_provenance.py). Both call the actual `split_column` extractor used by the build pipeline and pin specific broken cells. |
+| Parity tests | [tests/test_canonical_spell_slots.py](../tests/test_canonical_spell_slots.py) asserts that the shipped `table:paladin_progression` L2 row, the full ranger Spells Known + slot columns, and both derived spell-slot tables (`table:paladin_spell_slots`, `table:ranger_spell_slots`) match the canonical SRD 5.1 half-caster progression byte-for-byte. |
+| Notes | The corrections module runs in `build.py` between `clean_records(tables, "table")` and `derive_reference_tables(processed_tables)` so the derived spell-slot tables read corrected source progressions. The paladin fix uses a guard predicate (only patches if the 1st-slot cell still starts with `"Divine Smite "`) so the test fails loudly if PyMuPDF's behavior changes. The ranger fix is wholesale (overwrites all 120 slot cells from canonical SRD truth) because the drift pattern is too tangled to patch surgically — the trade-off is that re-tuning the boundaries later won't be detected by silent fall-through. |
+| Downstream | `dist/srd_5_1/tables.json` (corrected source paladin/ranger progressions + corrected derived spell-slot tables) |
 
 ### `extract_equipment.py` — page constants  *(resolved in v0.27.4)*
 

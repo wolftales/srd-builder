@@ -26,9 +26,8 @@ SNAPSHOT: dict = json.loads(_SNAPSHOT_PATH.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
-def extracted_class_spells() -> dict[str, list[str]]:
-    assert PDF_PATH.exists(), f"Missing SRD PDF at {PDF_PATH}"
-    return extract_spell_classes(PDF_PATH)["class_spells"]
+def extracted_class_spells(srd_5_1_pdf: Path) -> dict[str, list[str]]:
+    return extract_spell_classes(srd_5_1_pdf)["class_spells"]
 
 
 def test_extracts_eight_classes(extracted_class_spells: dict[str, list[str]]) -> None:

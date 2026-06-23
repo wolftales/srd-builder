@@ -103,6 +103,23 @@ types). Treat every new bespoke file as a regression on that goal.
   mismatches as findings, not failures — they often surface ambiguity
   in the SRD itself.
 
+- **Combining-overlay strikethrough in spellcaster progressions**
+  (surfaced v0.39.1). All 8 spellcaster progression tables in
+  `dist/srd_5_1/tables.json` retain the PDF's raw U+0336 combining
+  long-stroke-overlay character in em-dash cells (467 occurrences:
+  bard 74, cleric 77, druid 80, paladin 44, ranger 29, sorcerer 79,
+  warlock 4, wizard 80). This is the publisher's encoding of "no
+  spell slot at this level" and renders as a strikethrough on
+  whitespace; it is correct-but-cosmetically-ugly source data, not a
+  parsing bug. The derived spell-slot tables already normalize it
+  via `_clean_cell` in
+  [src/srd_builder/postprocess/derive_reference_tables.py](../src/srd_builder/postprocess/derive_reference_tables.py).
+  Fix path: extend the normalization to source progression tables in
+  the same postprocess pass (probably as a dash-only cleaner that
+  runs after `clean_records(tables, "table")`). One-line scope, but
+  affects 467 cells across 8 tables, so call it out in release notes
+  and bump table-schema patch version.
+
 > Guard rail (do not re-investigate): the `verify_pdf_sections.py` /
 > `meta.json` TOC ideas captured in the original v0.28.0 plan were
 > proven dead-ends in v0.27.4 — the SRD PDF's `Document.get_toc()`

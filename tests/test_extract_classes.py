@@ -28,9 +28,8 @@ CLASS_DATA: list[dict] = json.loads(_SNAPSHOT_PATH.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
-def extracted_classes() -> list[dict]:
-    assert PDF_PATH.exists(), f"Missing SRD PDF at {PDF_PATH}"
-    return extract_classes(PDF_PATH)["classes"]
+def extracted_classes(srd_5_1_pdf: Path) -> list[dict]:
+    return extract_classes(srd_5_1_pdf)["classes"]
 
 
 # ---------------------------------------------------------------------------
@@ -54,8 +53,8 @@ def test_each_class_has_expected_page(extracted_classes: list[dict]) -> None:
     assert actual == expected
 
 
-def test_source_pages_label() -> None:
-    assert extract_classes(PDF_PATH)["source_pages"] == "8-55"
+def test_source_pages_label(srd_5_1_pdf: Path) -> None:
+    assert extract_classes(srd_5_1_pdf)["source_pages"] == "8-55"
 
 
 # ---------------------------------------------------------------------------

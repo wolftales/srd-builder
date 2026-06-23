@@ -969,3 +969,125 @@ def test_pdf_font_fingerprint_anchor_present(
         f"  Either the PDF/PyMuPDF font reporting changed, or the "
         f"predicate definition drifted from the page contents."
     )
+
+
+# ---------------------------------------------------------------------------
+# v0.39.1 — our split_column extractor (configured in
+# src/srd_builder/extract/extraction_metadata.py with hand-tuned
+# `column_boundaries`) misdetects columns on the paladin L2 row and on
+# every ranger row. These tests prove the broken cells come from the
+# actual extraction path the build pipeline uses, not from our parse or
+# postprocess layers. When either test fails, the matching cell-correction
+# in src/srd_builder/postprocess/correct_class_progressions.py can be
+# retired (the long-term fix would be re-tuning the column_boundaries).
+# ---------------------------------------------------------------------------
+
+
+def _extract_progression_via_split_column(simple_name: str) -> dict:
+    """Run the build pipeline's split_column extractor on a class
+    progression and return its raw output dict.
+    """
+    from srd_builder.extract.extraction_metadata import get_table_metadata
+    from srd_builder.extract.patterns._dispatch import extract_by_config
+    from srd_builder.extract.table_targets import TARGET_TABLES
+
+    target = next(t for t in TARGET_TABLES if t["simple_name"] == simple_name)
+    config = get_table_metadata(simple_name)
+    assert config is not None, f"No extraction config for {simple_name}"
+
+    return extract_by_config(
+        table_id=target["id"],
+        simple_name=simple_name,
+        page=target["page"],
+        config=config,
+        section=target["section"],
+        pdf_path=str(SRD_5_1_PDF),
+    )
+
+
+def test_paladin_l2_divine_smite_column_drift() -> None:
+    """Paladin progression: our split_column extractor returns
+    `Divine Smite 2` in the 1st-level spell-slot column for level 2.
+    The wrapped second-line text "Divine Smite" from the Features cell
+    falls into the configured Features/1st-slot boundary in such a way
+    that it gets merged with the slot-count digit `2`.
+
+    The correction in `correct_class_progressions._fix_paladin` splits
+    the cell back into ``Features = "Fighting Style, Spellcasting,
+    Divine Smite"`` and ``1st-slot = "2"``.
+    """
+    _require_pdf_and_fitz()
+
+    raw = _extract_progression_via_split_column("paladin_progression")
+    headers = raw.headers
+    first_slot_idx = headers.index("1st")
+    features_idx = headers.index("Features")
+
+    l2_row = next((r for r in raw.rows if str(r[0]).strip() == "2nd"), None)
+    assert l2_row is not None, "Could not find paladin L2 row in extractor output"
+
+    assert str(l2_row[first_slot_idx]).strip() == "Divine Smite 2", (
+        f"Paladin L2 1st-slot cell is now {l2_row[first_slot_idx]!r}; "
+        "the split_column extractor may have been re-tuned. Verify and "
+        "consider retiring correct_class_progressions._fix_paladin."
+    )
+    assert str(l2_row[features_idx]).strip() == "Fighting Style, Spellcasting,", (
+        f"Paladin L2 Features cell is now {l2_row[features_idx]!r}; the "
+        "extractor's wrap behavior changed. Re-verify the correction."
+    )
+
+
+def test_ranger_progression_column_drift() -> None:
+    """Ranger progression: our split_column extractor produces misaligned
+    rows at 19 of 20 levels.
+
+      - Rows 1-16: Spells Known column is empty; slot values shift left
+        into adjacent positions.
+      - Rows 17-20: Spells Known has its value but the 1st-slot column
+        is empty, slot values 2nd-5th shift left, and the 5th-slot value
+        is lost (the configured boundaries for these narrow slot columns
+        don't snap correctly when Spells Known carries a 2-digit value).
+
+    This test pins three representative cells; if any starts returning
+    the canonical SRD value, the matching correction in
+    `correct_class_progressions._fix_ranger` should be retired (and the
+    column_boundaries in extraction_metadata.py probably tightened).
+    """
+    _require_pdf_and_fitz()
+
+    raw = _extract_progression_via_split_column("ranger_progression")
+    headers = raw.headers
+    sk_idx = headers.index("Spells Known")
+    slot_1st_idx = headers.index("1st")
+    slot_5th_idx = headers.index("5th")
+
+    rows_by_level = {str(row[0]).strip(): row for row in raw.rows if row}
+
+    # (a) L2 Spells Known should be "2" per SRD; extractor returns empty.
+    l2 = rows_by_level["2nd"]
+    assert str(l2[sk_idx]).strip() == "", (
+        f"Ranger L2 Spells Known is now {l2[sk_idx]!r}; extractor behavior "
+        "changed. Verify and consider retiring _RANGER_CANONICAL[1] in "
+        "correct_class_progressions.py."
+    )
+
+    # (b) L20 Spells Known should be "11" — row 17-20 pattern preserves it.
+    l20 = rows_by_level["20th"]
+    assert str(l20[sk_idx]).strip() == "11", (
+        f"Ranger L20 Spells Known is now {l20[sk_idx]!r}; the row 17-20 "
+        "drift pattern may have changed. Re-verify _RANGER_CANONICAL."
+    )
+
+    # (c) L20 1st-slot should be "4" per SRD; extractor returns empty
+    # (slot values 2nd-5th shifted left into positions 1st-4th).
+    assert str(l20[slot_1st_idx]).strip() == "", (
+        f"Ranger L20 1st-slot is now {l20[slot_1st_idx]!r}; the row 17-20 "
+        "left-shift pattern may have changed. Re-verify _RANGER_CANONICAL."
+    )
+
+    # (d) L20 5th-slot should be "2" per SRD; extractor returns "3"
+    # (the 4th-slot value shifted right into the 5th-slot column).
+    assert str(l20[slot_5th_idx]).strip() == "3", (
+        f"Ranger L20 5th-slot is now {l20[slot_5th_idx]!r}; the row 17-20 "
+        "shift pattern may have changed. Re-verify _RANGER_CANONICAL."
+    )

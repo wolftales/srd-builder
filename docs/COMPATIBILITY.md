@@ -85,7 +85,8 @@ Examples that REQUIRE a MAJOR bump:
   datasets into one.
 
 When a MAJOR change ships, the release notes ([README.md](../README.md),
-[docs/ROADMAP.md](ROADMAP.md)) MUST include a migration note describing what
+[docs/ROADMAP.md](https://github.com/wolftales/srd-builder/blob/main/docs/ROADMAP.md))
+MUST include a migration note describing what
 consumers need to change.
 
 ### MINOR (`0.Y.0`) — additive
@@ -145,7 +146,8 @@ schema MUST be accompanied by:
    that reflects the new shape.
 2. A MAJOR `builder_version` bump in `pyproject.toml`.
 3. A migration note in the release section of [README.md](../README.md) and
-   [docs/ROADMAP.md](ROADMAP.md) describing what consumers must change.
+   [docs/ROADMAP.md](https://github.com/wolftales/srd-builder/blob/main/docs/ROADMAP.md)
+   describing what consumers must change.
 
 The envelope contract test will fail until step 1 is done. Step 2 is
 caught by `tests/test_version_consistency.py`. Step 3 is caught at code

@@ -29,3 +29,4 @@ docs/external/
 # Archive folder — tracked in git as historical reference.
 # (Old rules excluded most of archive/; consolidated under archive/ in v0.23.0
 # and we now track the whole tree intentionally.)
+archive/dist_versions/
