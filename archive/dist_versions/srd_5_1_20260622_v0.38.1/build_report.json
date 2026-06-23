@@ -1,8 +1,0 @@
-{
-  "builder_version": "0.38.1",
-  "bundle": "srd_5_1",
-  "output_format": "json",
-  "python_version": "3.14.5",
-  "ruleset": "srd_5_1",
-  "timestamp_utc": "2026-06-22T22:25:43.108851+00:00"
-}
