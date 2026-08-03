@@ -113,6 +113,10 @@ one contract.
 
 ### Cross-bundle namespaces are looked up, never constructed
 
+**Superseded in principle — see [Entity Identity](entity_identity.md).** Lookup is
+the correct workaround for the bundle as it exists, but the underlying id scheme
+is defective and the proposal is to fix it rather than keep resolving around it.
+
 This settles the open question, and the data allows only one answer. The bundle
 files creatures under `monster:`, `npc:` and `creature:` with no rule connecting
 a name to its namespace. Emitting `monster:<slug>` by convention produces
@@ -154,24 +158,30 @@ identical bbox, so naive extraction doubles every heading. Measured at 125 of
 
 In the order I would take them.
 
-1. **Wire situations and objects.** The locations have prose describing traps,
+1. **Entity identity** ([proposal](entity_identity.md)). Qualify supplement
+   payload ids, make `rulesReference` structured, and decide on bundle id
+   normalization. Ordered first because a breaking change is already implied by
+   the reference work, and doing bundle normalization separately makes consumers
+   migrate twice.
+
+2. **Wire situations and objects.** The locations have prose describing traps,
    alarms, and treasure, and the schema has `active_features`, `situations`, and
    `objects` sitting empty. This is the largest remaining gap between "content
    extracted" and "content runnable", and it will exercise the structured
    predicate and state vocabulary against real text for the first time.
 
-2. **A second source profile (Chaosium).** The claim that typography-as-data
+3. **A second source profile (Chaosium).** The claim that typography-as-data
    means "add a profile, not a branch" is the central architectural bet and only
    one publication has tested it. A structurally different source — an
    investigation, not a dungeon — is the honest falsification test. This also
    unblocks the information layer and R3.
 
-3. **Assets and map regions.** Both maps are GM-owned and one carries secrets.
+4. **Assets and map regions.** Both maps are GM-owned and one carries secrets.
    Paper prototype 17.6 says page extraction alone cannot recover region links,
    so this is where human-assisted review enters the pipeline. Expect
    `inferred_fields: ["regions"]` to be the normal case, not the exception.
 
-4. **Whole-package compile.** Everything currently compiles one location at a
+5. **Whole-package compile.** Everything currently compiles one location at a
    time and re-reads the appendix each call. A single pass emitting one package
    for the whole publication is straightforward but should wait until the
    collections above stop changing shape.
