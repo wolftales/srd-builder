@@ -48,6 +48,26 @@ def build_location(
     }
 
 
+def build_supplement(
+    record: dict[str, Any], profile: SourceProfile, *, page_label: str
+) -> dict[str, Any]:
+    """Wrap a lens-normalized creature in its package ownership envelope.
+
+    The payload is whatever the selected ruleset lens produces, unchanged. A
+    module supplement and an SRD monster are the same shape (D2); only the
+    envelope says who owns this one.
+    """
+    return {
+        "id": f"module_rules:{profile.key}:monster/{record['simple_name']}",
+        "entity_type": "monster",
+        "ruleset": profile.ruleset,
+        "ownership": "module_supplement",
+        "data": record,
+        "source_ref": {"section": "appendix", "printed_page": page_label},
+        "stance": "source_explicit",
+    }
+
+
 def build_package(
     identity: PublicationIdentity,
     profile: SourceProfile,
@@ -57,6 +77,7 @@ def build_package(
     blocks: list[dict[str, Any]],
     locations: list[dict[str, Any]],
     content_version: str,
+    supplements: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """A schema-valid package for the compiled slice."""
     return {
@@ -77,5 +98,5 @@ def build_package(
         "blocks": blocks,
         "locations": locations,
         **{name: [] for name in EMPTY_COLLECTIONS},
-        "rules": {"references": [], "supplements": [], "procedures": []},
+        "rules": {"references": [], "supplements": supplements or [], "procedures": []},
     }

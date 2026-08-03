@@ -9,8 +9,10 @@ from typing import Any
 from srd_builder.module_import import blocks as block_builder
 from srd_builder.module_import import source as source_io
 from srd_builder.module_import import spine
-from srd_builder.module_import.package import build_location, build_package
+from srd_builder.module_import import statblocks as statblock_reader
+from srd_builder.module_import.package import build_location, build_package, build_supplement
 from srd_builder.module_import.profile import SourceProfile
+from srd_builder.parse.parse_monsters import normalize_monster
 
 
 def _next_outline_page(toc: Any, after_index: int, page_count: int) -> int:
@@ -65,6 +67,8 @@ def compile_location_slice(
         extracted = block_builder.blocks_for_key(lines, entry, profile, page_label)
         location = build_location(entry, extracted, page_label)
 
+        supplements = compile_appendix(doc, identity, profile)
+
         return build_package(
             identity,
             profile,
@@ -73,6 +77,7 @@ def compile_location_slice(
             blocks=extracted,
             locations=[location],
             content_version=content_version,
+            supplements=supplements,
         )
 
 
@@ -83,3 +88,33 @@ def write_package(package: dict[str, Any], destination: Path) -> Path:
         json.dumps(package, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     return destination
+
+
+def compile_appendix(doc: Any, identity: Any, profile: SourceProfile) -> list[dict[str, Any]]:
+    """Every module-supplied creature in the publication's statblock appendix.
+
+    Extraction is source-specific; normalization is the selected ruleset lens,
+    reused verbatim from SRD monster parsing so both go through one contract.
+    """
+    try:
+        start, end = statblock_reader.appendix_page_range(
+            identity.toc, profile, identity.page_count
+        )
+    except ValueError:
+        return []
+
+    lines = [
+        line
+        for page_index in range(start, end + 1)
+        for line in source_io.page_lines(doc, page_index, profile)
+    ]
+
+    supplements: list[dict[str, Any]] = []
+    for run in statblock_reader.split_statblocks(lines, profile):
+        raw = statblock_reader.parse_statblock(run, profile)
+        raw["simple_name"] = spine.slugify(raw["name"])
+        raw["id"] = f"monster:{raw['simple_name']}"
+        supplements.append(
+            build_supplement(normalize_monster(raw), profile, page_label=str(start + 1))
+        )
+    return supplements

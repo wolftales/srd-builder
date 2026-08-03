@@ -28,7 +28,7 @@ from referencing.jsonschema import DRAFT202012
 
 from srd_builder.module_import import blocks as block_builder
 from srd_builder.module_import import source as source_io
-from srd_builder.module_import import spine
+from srd_builder.module_import import spine, statblocks
 from srd_builder.module_import.compile import compile_location_slice
 from srd_builder.module_import.profile import GRIMMSGATE_5E, SourceProfile
 from srd_builder.module_import.source import TocEntry
@@ -300,3 +300,89 @@ def test_every_keyed_location_in_the_publication_yields_content(source_path: Pat
         if not package["blocks"]:
             empty.append(entry.key)
     assert empty == [], f"keyed locations extracted no content: {empty}"
+
+
+# --------------------------------------------------------------------------
+# Statblock appendix
+# --------------------------------------------------------------------------
+
+
+def test_appendix_range_is_bounded_by_outline_level_not_by_page() -> None:
+    """The appendix's own children sit on later pages than its heading.
+
+    A page-only boundary stops at the second creature and silently drops the
+    rest, which is exactly what the first cut did.
+    """
+    toc = [
+        TocEntry(1, "The Elder Temple", 9),
+        TocEntry(1, "Appendix: New Monsters", 22),
+        TocEntry(2, "First Creature", 22),
+        TocEntry(2, "Second Creature", 23),
+        TocEntry(2, "Third Creature", 24),
+        TocEntry(1, "Legal Appendix", 25),
+    ]
+    assert statblocks.appendix_page_range(toc, GRIMMSGATE_5E, 26) == (21, 23)
+
+
+def test_appendix_range_reports_when_no_appendix_exists() -> None:
+    toc = [TocEntry(1, "The Village", 6)]
+    with pytest.raises(ValueError, match="no statblock appendix"):
+        statblocks.appendix_page_range(toc, GRIMMSGATE_5E, 26)
+
+
+def test_negative_ability_modifiers_use_the_publication_en_dash() -> None:
+    """The publication sets negative modifiers with an en dash, not a hyphen."""
+    assert statblocks._parse_ability_value("9 (–1)") == {"value": 9, "modifier": -1}
+    assert statblocks._parse_ability_value("15 (+2)") == {"value": 15, "modifier": 2}
+    assert statblocks._parse_ability_value("10 (0)") == {"value": 10, "modifier": 0}
+    assert statblocks._parse_ability_value("not a score") is None
+
+
+def test_statblock_runs_split_on_the_creature_name_role() -> None:
+    def line(text: str, font: str, size: float) -> dict[str, Any]:
+        return {"text": text, "font": font, "size": size, "bbox": (0, 0, 1, 1), "column": 0}
+
+    name_font, name_size = next(
+        key for key, role in GRIMMSGATE_5E.statblock_roles.items() if role == "name"
+    )
+    body_font, body_size = next(
+        key for key, role in GRIMMSGATE_5E.statblock_roles.items() if role == "body"
+    )
+    lines = [
+        line("Ignored preamble", body_font, body_size),
+        line("First", name_font, name_size),
+        line("body a", body_font, body_size),
+        line("Second", name_font, name_size),
+    ]
+    runs = statblocks.split_statblocks(lines, GRIMMSGATE_5E)
+
+    assert len(runs) == 2
+    assert [run[0]["text"] for run in runs] == ["First", "Second"]
+    assert len(runs[0]) == 2  # name plus its body; the preamble is not adopted
+
+
+def test_every_appendix_statblock_validates_against_the_production_lens(
+    compiled_slice: dict[str, Any],
+) -> None:
+    """D2 made executable: a module supplement is an SRD monster in an envelope."""
+    monster_schema = json.loads((ROOT / "schemas" / "monster.schema.json").read_text())
+    validator = Draft202012Validator(monster_schema)
+    supplements = compiled_slice["rules"]["supplements"]
+
+    assert len(supplements) >= 8, "the publication's appendix should yield every creature"
+    for supplement in supplements:
+        assert supplement["ownership"] == "module_supplement"
+        assert supplement["entity_type"] == "monster"
+        assert supplement["id"].startswith("module_rules:")
+        assert list(validator.iter_errors(supplement["data"])) == [], supplement["id"]
+
+
+def test_supplements_carry_mechanics_not_just_names(compiled_slice: dict[str, Any]) -> None:
+    """A supplement that parsed only a name would still validate; assert substance."""
+    for supplement in compiled_slice["rules"]["supplements"]:
+        data = supplement["data"]
+        assert data["armor_class"]["value"] > 0
+        assert len(data["ability_scores"]) == 6
+        assert data["actions"], f"{supplement['id']} has no actions"
+        for ability in data["ability_scores"].values():
+            assert 1 <= ability["value"] <= 30

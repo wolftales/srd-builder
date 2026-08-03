@@ -23,6 +23,16 @@ GM_ONLY = "gm_only"
 
 AUDIENCE_BY_BLOCK_TYPE = {READ_ALOUD: PLAYER_SAFE, GM_DETAIL: GM_ONLY}
 
+# Roles a line can play inside a statblock region.
+STATBLOCK_NAME = "name"  # the creature's name, starting a new statblock
+STATBLOCK_SECTION = "section"  # "Actions", "Reactions"
+STATBLOCK_META = "meta"  # "Medium fiend, chaotic evil"
+STATBLOCK_LABELLED = "labelled"  # "Armor Class 14 (natural armor)"
+STATBLOCK_ABILITY_HEADER = "ability_header"  # "STR"
+STATBLOCK_ABILITY_VALUE = "ability_value"  # "9 (-1)"
+STATBLOCK_ENTRY_NAME = "entry_name"  # "Claw. Melee Weapon Attack: ..."
+STATBLOCK_BODY = "body"  # continuation of the previous entry
+
 
 @dataclass(frozen=True)
 class SourceProfile:
@@ -45,6 +55,14 @@ class SourceProfile:
     heading_fonts: frozenset[str] = field(default_factory=frozenset)
     overprinted_fonts: frozenset[str] = field(default_factory=frozenset)
     column_split_x: float | None = None
+    #: Font roles are REGION-SCOPED, not document-wide. The same faces that carry
+    #: read-aloud and GM prose in a keyed location carry statblock fields in the
+    #: appendix, so `body_fonts` describes narrative regions only and a statblock
+    #: region is read with `statblock_roles` instead. Discovered by importing the
+    #: appendix: a flat font-to-role map silently misreads it as prose.
+    statblock_roles: dict[tuple[str, float], str] = field(default_factory=dict)
+    #: Outline title marking the start of the statblock appendix.
+    appendix_pattern: str = r"^Appendix"
     # Regex naming a keyed location in a bookmark title, e.g. "G-3. Wayfarer's Rest Inn".
     key_pattern: str = r"^(?P<key>[A-Z]{1,2}-\d{1,3})\.\s*(?P<title>.+)$"
 
@@ -75,6 +93,20 @@ GRIMMSGATE_5E = SourceProfile(
     heading_fonts=frozenset({"CaslonAntiqueEF-SC700", "CenturyGothic-SC700", "CenturyGothic"}),
     overprinted_fonts=frozenset({"CaslonAntiqueEF-SC700", "CenturyGothic-SC700"}),
     column_split_x=307.0,
+    # Within the appendix the same faces mean something else entirely. Keyed by
+    # (font, size) because the display face marks both a statblock's name and its
+    # section headers, distinguished only by point size.
+    statblock_roles={
+        ("CaslonAntiqueEF-SC700", 13.0): STATBLOCK_NAME,
+        ("CaslonAntiqueEF-SC700", 11.0): STATBLOCK_SECTION,
+        ("Georgia-Italic", 9.0): STATBLOCK_META,
+        ("CenturySchoolbook-Bold", 9.0): STATBLOCK_LABELLED,
+        ("TimesNewRomanPS-BoldMT", 9.0): STATBLOCK_ABILITY_HEADER,
+        ("TimesNewRomanPSMT", 9.0): STATBLOCK_ABILITY_VALUE,
+        ("CenturySchoolbook-BoldIt", 9.0): STATBLOCK_ENTRY_NAME,
+        ("CenturySchoolbook-Italic", 9.0): STATBLOCK_BODY,
+        ("CenturySchoolbook", 9.0): STATBLOCK_BODY,
+    },
 )
 
 PROFILES = {GRIMMSGATE_5E.key: GRIMMSGATE_5E}
