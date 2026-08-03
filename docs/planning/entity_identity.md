@@ -39,9 +39,35 @@ An audit of all 1,693 bundle records found the same pattern three times:
 | `item:` / `magic_item:` | 499 | whether it is magical - a property, not a kind |
 | `feature:barbarian:rage`, `rule:<section>/<subsection>` | 412 | owner and document hierarchy, in parseable form |
 
-Genuinely structural, and not to be touched: `spell`, `condition`, `skill`,
-`lineage`, `class`, `table`, `ability`, `poison`, `damage`, `disease`,
-`weapon_property`.
+### Not every prefix is equally wrong
+
+Two classes of problem, and only one of them breaks anything:
+
+| Class | Examples | Effect |
+| --- | --- | --- |
+| **One kind split across prefixes** | monster/npc/creature, item/magic_item | **Breaks queries.** A kind cannot be enumerated without knowing every prefix it hides under. |
+| **One prefix at debatable granularity** | table, poison, disease | Enumeration still works; the type is merely coarser or finer than ideal. |
+
+The sharper test is therefore: **does one kind live under more than one prefix?**
+That is the query-breaking case and the only one this proposal changes.
+
+Genuinely structural, with their own distinct fields, and not to be touched:
+`spell` (level, school, casting, components), `condition`, `skill`, `ability`,
+`damage`, `weapon_property`, `class`, `lineage`.
+
+Deferred as granularity questions, deliberately not bundled into this change:
+
+- `table:` is a presentation format rather than an entity kind. It carries
+  `columns`/`rows`, and 156 references from classes and lineages point at tables.
+  `table:draconic_ancestry` is really the ancestry data, rendered as a table.
+- `poison:` carries `cost`, which is an item property. Poisons resemble equipment
+  with a `poison_type` category.
+- `disease:` is thin - description and save - and overlaps `condition:`. Both are
+  states that afflict a creature.
+
+Each may be worth revisiting, but none of them breaks a query today, and folding
+debatable churn into a change with a crisp justification weakens the case for
+both.
 
 ### The test
 
@@ -71,6 +97,18 @@ package-qualified (`module_rules:grimmsgate_5e:monster/...`) while its payload i
 is bare (`monster:...`). A consumer indexing by payload id - the natural thing,
 since that is what SRD records look like - silently overwrites one with the
 other.
+
+## Where the habit may have come from
+
+Untested, but worth recording because it shapes where else to look: the producer
+may have inherited its id shape from its first consumer. Ids that describe *where
+something was printed* are the view of someone reading the document, not someone
+modelling the domain - which is what you get when a data model is derived from a
+reader rather than from the entities themselves.
+
+If that is what happened, the same instinct will show up wherever else the
+producer took its shape from a consumer's convenience rather than from the source
+material.
 
 ## Proposal
 
@@ -140,12 +178,20 @@ The strongest argument for doing this now is not the defect - it is that **a
 breaking change is already coming.** Layer 1 changes how module packages
 reference the bundle. Doing Layer 2 separately makes consumers migrate twice.
 
-- Ship an alias map in the bundle: `old_id -> new_id`, so consumers migrate
-  incrementally rather than atomically.
-- Precedent exists: monster records already carry `aliases`, and the repo has
-  done a documented id migration before.
-- One MAJOR bump covering both layers. Update `docs/COMPATIBILITY.md` to say ids
-  are opaque outside their source, which is the durable version of this rule.
+**Decision: documentation, not compatibility machinery.** No alias map, no
+redirect table, no dual-emit period. The project is small enough that the cost of
+carrying a compatibility layer forever exceeds the cost of a documented rename
+handled once. Building migration machinery would also mean keeping the defective
+scheme alive inside the producer, which is the thing this change exists to stop.
+
+What ships instead:
+
+- One MAJOR bump covering both layers, with a migration note listing every
+  changed id and the field that replaced the dropped prefix.
+- `docs/COMPATIBILITY.md` gains the durable form of the rule: ids are opaque
+  outside their source, and no consumer should parse one for meaning.
+- Consumers migrate on their own schedule by pinning the previous release. The
+  bundle is versioned and tagged; nothing forces an upgrade.
 
 ## Recommended order
 
@@ -154,8 +200,10 @@ reference the bundle. Doing Layer 2 separately makes consumers migrate twice.
 2. Make `rulesReference` structured `{source, entity_type, local_id}`. Retires
    the open cross-bundle reference question properly instead of by convention.
 3. Write the "never parse an id" rule into the architecture docs.
-4. Bundle normalization plus alias map, as one MAJOR release, coordinated with
-   the Blackmoor integration.
+4. Bundle normalization as one MAJOR release, with a migration note rather than
+   an alias map. Scope it to the query-breaking cases only:
+   `monster:`/`npc:`/`creature:` -> `creature:` + `category`, and
+   `item:`/`magic_item:` -> `item:` + `magic`.
 
 Steps 1-3 are producer-side and pre-1.0. Step 4 is the one that needs a consumer
 conversation.
