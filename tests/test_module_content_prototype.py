@@ -279,15 +279,46 @@ def _resolve_rules(package: dict[str, Any], ref: str) -> dict[str, Any]:
     raise KeyError(ref)
 
 
+def _holds(predicate: dict[str, Any] | None, state: dict[str, str]) -> bool:
+    """Evaluate one state predicate against consumer-supplied state.
+
+    The whole evaluator. It branches on the declared operator and nothing else —
+    no parsing, no entity-specific rules, no knowledge of what the values mean.
+    That is the point of structuring conditions: the package declares, the
+    consumer supplies state, and evaluation stays generic.
+    """
+    if predicate is None:
+        return True
+    actual = state.get(predicate["subject_ref"])
+    if predicate["op"] == "eq":
+        return actual == predicate["value"]
+    return actual != predicate["value"]
+
+
+def _predicates(package: dict[str, Any]) -> list[dict[str, Any]]:
+    found: list[dict[str, Any]] = []
+
+    def visit(node: Any) -> None:
+        if isinstance(node, dict):
+            condition = node.get("condition")
+            if isinstance(condition, dict):
+                found.append(condition)
+            for value in node.values():
+                visit(value)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item)
+
+    visit(package)
+    return found
+
+
 def _event_effects(
     situation: dict[str, Any], event: str, state: dict[str, str]
 ) -> list[dict[str, Any]]:
     effects: list[dict[str, Any]] = []
     for response in situation["on_events"]:
-        if response["event"] != event:
-            continue
-        if_ref = response.get("if_ref")
-        if if_ref and state.get(if_ref) != response.get("if_state"):
+        if response["event"] != event or not _holds(response.get("condition"), state):
             continue
         effects.extend(response["effects"])
     return effects
@@ -471,6 +502,67 @@ def test_actor_groups_are_referenced_across_situation_boundaries() -> None:
 
     assert external_uses, "fixture no longer exercises cross-situation group references"
     assert any(len(users) > 1 for users in external_uses.values())
+
+
+def test_predicates_are_structured_and_use_a_declared_state_vocabulary() -> None:
+    """Every executable condition is a predicate over a declared state value.
+
+    A predicate's subject must resolve, and its value must be declared for that
+    subject's entity type. Without the declaration the package would be asserting
+    state names the consumer has no contract to implement.
+    """
+    package = _load(PACKAGE_PATH)
+    index = _index(package)
+    vocabulary = package["meta"]["state_vocabulary"]
+    predicates = _predicates(package)
+    assert predicates
+
+    for predicate in predicates:
+        subject = index[predicate["subject_ref"]]
+        allowed = vocabulary.get(subject["type"], [])
+        assert predicate["value"] in allowed, f"{predicate} not in {subject['type']} vocabulary"
+
+    # Effects that write state must use the same vocabulary they will be read with.
+    for record in _records(package):
+        for effect in record.get("effects", []):
+            if effect["operation"] == "set_state":
+                target = index[effect["target_ref"]]
+                assert effect["value"] in vocabulary.get(target["type"], []), effect
+
+    # The scene context supplies state; it must speak the declared vocabulary too.
+    context = _load(SCENE_CONTEXT_PATH)
+    for subject_ref, value in context["state_inputs"].items():
+        assert value in vocabulary.get(index[subject_ref]["type"], []), (subject_ref, value)
+
+    # Every declared value is actually reachable — no speculative state names.
+    used = {p["value"] for p in predicates}
+    used.update(v for v in context["state_inputs"].values())
+    used.update(
+        e["value"]
+        for record in _records(package)
+        for e in record.get("effects", [])
+        if e["operation"] == "set_state"
+    )
+    used.add("defeated")  # exercised by the reinforcement scenario's negative case
+    declared = {value for values in vocabulary.values() for value in values}
+    assert declared == used, f"declared but unused: {sorted(declared - used)}"
+
+
+def test_no_condition_is_expressed_as_a_bare_string() -> None:
+    """Guards against prose or a mini expression language creeping back in.
+
+    `unless_state: "alarm=disabled"` was an ad-hoc DSL inside a string, and
+    `condition: "30 minutes since the previous check"` was prose standing in for a
+    schedule. Nothing parsed either one.
+    """
+    for file in _package_schema_files():
+        for name, definition in _schema(file).get("$defs", {}).items():
+            for field, subschema in definition.get("properties", {}).items():
+                looks_conditional = any(
+                    token in field for token in ("condition", "unless", "if_", "when")
+                )
+                if looks_conditional:
+                    assert subschema.get("type") != "string", f"{name}.{field} is a bare string"
 
 
 def test_external_refs_resolve_against_the_built_srd_bundle(bundle_ids: set[str]) -> None:

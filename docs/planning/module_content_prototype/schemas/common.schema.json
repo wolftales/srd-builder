@@ -96,6 +96,31 @@
           ]
         }
       }
+    },
+    "statePredicate": {
+      "description": "A condition on consumer-held state. The package DECLARES predicates; it never asserts current state. The consumer evaluates them against its own campaign state (D7). `value` MUST appear in meta.state_vocabulary for the entity type of subject_ref.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_ref",
+        "op",
+        "value"
+      ],
+      "properties": {
+        "subject_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "op": {
+          "enum": [
+            "eq",
+            "ne"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
   }
 }

@@ -120,7 +120,8 @@
         "builder_version",
         "ruleset",
         "source",
-        "relationship_vocabulary"
+        "relationship_vocabulary",
+        "state_vocabulary"
       ],
       "properties": {
         "package_id": {
@@ -206,6 +207,22 @@
             "adaptation": {
               "$ref": "relationships.schema.json#/$defs/relationshipTypeList"
             }
+          }
+        },
+        "state_vocabulary": {
+          "description": "The state values this package's predicates and effects use, grouped by the entity type they apply to. The consumer owns the state itself; this declares the vocabulary it must implement.",
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true,
+            "minItems": 1
           }
         }
       }

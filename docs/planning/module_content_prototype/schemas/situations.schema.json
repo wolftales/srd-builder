@@ -200,13 +200,30 @@
           "type": "string",
           "minLength": 1
         },
-        "unless_state": {
-          "type": "string",
-          "minLength": 1
-        },
         "condition": {
-          "type": "string",
-          "minLength": 1
+          "$ref": "common.schema.json#/$defs/statePredicate"
+        },
+        "cadence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "every",
+            "unit"
+          ],
+          "properties": {
+            "every": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "unit": {
+              "enum": [
+                "game_minutes",
+                "game_hours",
+                "rounds",
+                "days"
+              ]
+            }
+          }
         }
       }
     },
@@ -240,10 +257,6 @@
             "null"
           ]
         },
-        "when": {
-          "type": "string",
-          "minLength": 1
-        },
         "mechanic_ref": {
           "$ref": "common.schema.json#/$defs/id"
         }
@@ -261,12 +274,8 @@
           "type": "string",
           "minLength": 1
         },
-        "if_ref": {
-          "$ref": "common.schema.json#/$defs/id"
-        },
-        "if_state": {
-          "type": "string",
-          "minLength": 1
+        "condition": {
+          "$ref": "common.schema.json#/$defs/statePredicate"
         },
         "mechanic_ref": {
           "$ref": "common.schema.json#/$defs/id"

@@ -71,6 +71,9 @@ creatures.
 
 ### Executable conditions cannot remain prose strings
 
+*Partly done at the time, finished later. See "One predicate, one evaluator, one
+declared state vocabulary" below.*
+
 The first fixture draft expressed reinforcement eligibility as a sentence. The
 working schema now separates `if_ref` from `if_state`, allowing generic evaluation.
 Human-readable preconditions can remain useful guidance, but any condition that
@@ -303,6 +306,60 @@ consumer refers to it by role and by the creature its `rules_ref` resolves to,
 which is enough for this slice and may not be for a module with two distinct
 bands of the same creature in one location.
 
+### One predicate, one evaluator, one declared state vocabulary
+
+The first pass reported that executable conditions could not stay prose, and
+structured one of them. A survey found four more, and only that one had been
+done:
+
+| Site | Held |
+| --- | --- |
+| `eventResponse.if_ref` + `if_state` | a subject and an expected value; equality implied |
+| `trigger.unless_state` | `"alarm=disabled"` — an ad-hoc expression language inside a string |
+| `trigger.condition` | `"30 minutes since the previous check"` — prose |
+| `effect.when` | declared, never used |
+| `containedItem.condition` | declared, never used |
+
+Nothing parsed the middle three. `alarm=disabled` is the worst kind of near-miss:
+it looks structured, so it invites a consumer to write a parser for a grammar
+that was never specified and has exactly one instance.
+
+All condition sites now take one `statePredicate`: a `subject_ref`, an `op` of
+`eq` or `ne`, and a literal `value`. Only those two operators appear because only
+those two are needed; no conjunction, negation, or comparison was added on
+speculation. It lives in `common` rather than a domain file because a predicate
+is cross-cutting vocabulary like `contentStance`, and putting it in one domain
+would become a layering violation the moment a second domain needed it.
+
+The evaluator is now four lines that branch on the declared operator and nothing
+else — no parsing, no entity-specific rules, no knowledge of what the values
+mean. That is the test of whether a condition is really structured.
+
+**Cadence is not a predicate.** `"30 minutes since the previous check"` was a
+schedule wearing a condition's name. It is now `{"every": 30, "unit":
+"game_minutes"}` on the trigger, which restores what the paper prototype had and
+the first schema draft dropped. Asking "when does this fire" and "is this true"
+are different questions, and one field cannot answer both.
+
+**The evaluation owner is the consumer.** The package declares predicates and
+never asserts current state; the consumer evaluates them against campaign state
+it owns (D7). The schema says so where the definition lives.
+
+**The state vocabulary was undeclared.** `armed`, `triggered`, `disabled`,
+`alive_and_present`, `defeated` — the package used all of them and declared none.
+`defeated` existed only inside a test, which is the same self-declaring problem
+groups had. `meta.state_vocabulary` now declares them per entity type, mirroring
+`relationship_vocabulary`, and tests assert that every predicate value, every
+`set_state` value, and every state the scene context supplies is in it — and that
+nothing is declared but unreachable.
+
+Two fields were removed rather than structured. `effect.when` and
+`containedItem.condition` were both declared and never used, in the same pattern
+as `located_at` and `supports`. `containedItem.condition` was also ambiguous:
+"rusted" and "if the alarm is disabled" are not the same kind of thing, and a
+field named `condition` should not have to be both. It was found by the new guard
+against bare-string conditions, which is a fair first result for a guard.
+
 ## Deferred: the information layer and R3
 
 There are no clue, revelation, or information-dependency entities, so R3 (trace
@@ -336,15 +393,22 @@ independently authored.
 
 The next schema pass should resolve only the decisions now supported by evidence:
 
-1. define a small structured predicate shape and its evaluation owner;
-2. settle cross-bundle rules-reference syntax, including how the lens resolves a
+1. settle cross-bundle rules-reference syntax, including how the lens resolves a
    creature name to the correct bundle namespace; and
-3. define the dependency-edge annotations used by scene-context assembly.
+2. define the dependency-edge annotations used by scene-context assembly.
 
 Settled since the first pass: stance unification and coverage (one vocabulary,
 warrant only, required on every normalized entity), attribute-level warrant
 (`inferred_fields`, failing closed), relationship views and vocabulary, the schema
-split, and explicit actor-group identity.
+split, explicit actor-group identity, and one structured predicate with a declared
+state vocabulary and a named evaluation owner.
+
+Both remaining items are arguably importer-shaped rather than schema-shaped. A
+cross-bundle reference syntax is hard to settle without something that has to emit
+one, and dependency-edge annotations are a property of the assembly algorithm. The
+next decision may be whether to keep drafting or to start the first vertical
+slice, since a synthetic fixture can only pose the questions its author already
+thought to ask.
 
 Every in-package reference now resolves with no exemptions, so reference
 integrity is a closed property rather than a mostly-closed one.

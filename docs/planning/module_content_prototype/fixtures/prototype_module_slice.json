@@ -21,6 +21,17 @@
         "connects",
         "contained_by"
       ]
+    },
+    "state_vocabulary": {
+      "active_feature": [
+        "armed",
+        "disabled",
+        "triggered"
+      ],
+      "actor_group": [
+        "alive_and_present",
+        "defeated"
+      ]
     }
   },
   "publication": [
@@ -729,11 +740,19 @@
       "triggers": [
         {
           "event": "object_moved",
-          "unless_state": "alarm=disabled"
+          "condition": {
+            "subject_ref": "active_feature:v2_alarm_coffer",
+            "op": "ne",
+            "value": "disabled"
+          }
         },
         {
           "event": "object_opened",
-          "unless_state": "alarm=disabled"
+          "condition": {
+            "subject_ref": "active_feature:v2_alarm_coffer",
+            "op": "ne",
+            "value": "disabled"
+          }
         }
       ],
       "effects": [
@@ -772,7 +791,10 @@
       "triggers": [
         {
           "event": "adventure_time_elapsed",
-          "condition": "30 minutes since the previous check"
+          "cadence": {
+            "every": 30,
+            "unit": "game_minutes"
+          }
         }
       ],
       "effects": [
@@ -873,8 +895,11 @@
       "on_events": [
         {
           "event": "combat_begins",
-          "if_ref": "group:v4_occupants",
-          "if_state": "alive_and_present",
+          "condition": {
+            "subject_ref": "group:v4_occupants",
+            "op": "eq",
+            "value": "alive_and_present"
+          },
           "mechanic_ref": "mechanic:reinforcement_delay",
           "effects": [
             {
@@ -912,8 +937,11 @@
       "on_events": [
         {
           "event": "combat_begins",
-          "if_ref": "group:v3_occupants",
-          "if_state": "alive_and_present",
+          "condition": {
+            "subject_ref": "group:v3_occupants",
+            "op": "eq",
+            "value": "alive_and_present"
+          },
           "mechanic_ref": "mechanic:reinforcement_delay",
           "effects": [
             {
