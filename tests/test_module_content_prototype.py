@@ -3,14 +3,23 @@
 These tests intentionally exercise planning fixtures rather than production bundle
 output. They should remain generic: no helper branches on source keys, room names,
 or package-specific IDs.
+
+Reference integrity is DERIVED FROM THE SCHEMA, not hand-listed. Any property
+declared as `#/$defs/id` or `#/$defs/idList` is treated as an in-package reference
+and must resolve; any property declared as `#/$defs/externalRef` resolves against
+the installed selected-ruleset bundle instead. Adding a reference-bearing field to
+the schema therefore extends the integrity check automatically.
 """
 
 from __future__ import annotations
 
 import json
+import re
+from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import Any
 
+import pytest
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,38 +29,86 @@ FIXTURES = PROTOTYPE / "fixtures"
 PACKAGE_PATH = FIXTURES / "prototype_module_slice.json"
 SCENE_CONTEXT_PATH = FIXTURES / "v2_scene_context.json"
 REVIEW_COMPANION_PATH = FIXTURES / "review_companion.json"
+BUNDLE_DIR = ROOT / "dist" / "srd_5_1"
+
+ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$")
+
+# Properties that DECLARE an identity rather than reference one.
+DECLARATION_FIELDS = frozenset({"id", "package_id", "context_id"})
+
+_INTERNAL_ID_DEFS = frozenset({"#/$defs/id", "#/$defs/idList"})
+_EXTERNAL_ID_DEFS = frozenset({"#/$defs/externalRef", "#/$defs/externalRefList"})
+
+# Anonymous actor groups have no first-class collection yet: `group:*` identity is
+# declared implicitly by situation participant recipes. FINDINGS.md lists making
+# this explicit as the first schema decision. Until then this is the ONE namespace
+# allowed to resolve outside the declared-record set, and the allowance is asserted
+# rather than assumed (see test_anonymous_actor_group_contract).
+UNDECLARED_NAMESPACE = "group"
 
 
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _schema(name: str) -> dict[str, Any]:
+    return _load(SCHEMAS / name)
+
+
 def _validator(name: str) -> Draft202012Validator:
-    schema = _load(SCHEMAS / name)
+    schema = _schema(name)
     Draft202012Validator.check_schema(schema)
     return Draft202012Validator(schema)
 
 
+def _ref_fields(schema: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]:
+    """Return (in-package reference fields, cross-bundle reference fields)."""
+    internal: set[str] = set()
+    external: set[str] = set()
+
+    def visit(node: Any) -> None:
+        if isinstance(node, dict):
+            properties = node.get("properties")
+            if isinstance(properties, dict):
+                for name, subschema in properties.items():
+                    ref = subschema.get("$ref") if isinstance(subschema, dict) else None
+                    if ref in _INTERNAL_ID_DEFS and name not in DECLARATION_FIELDS:
+                        internal.add(name)
+                    elif ref in _EXTERNAL_ID_DEFS:
+                        external.add(name)
+            for value in node.values():
+                visit(value)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item)
+
+    visit(schema)
+    return frozenset(internal), frozenset(external)
+
+
+def _visit_records(node: Any, on_record: Callable[[dict[str, Any]], None]) -> None:
+    """Walk any package-shaped document, yielding every record with a typed ID.
+
+    A module supplement's `data` payload is governed by the selected ruleset lens
+    (schemas/monster.schema.json), not by the package schema, so the walk reports
+    the ownership envelope but does not descend into the payload.
+    """
+    if isinstance(node, dict):
+        record_id = node.get("id")
+        if isinstance(record_id, str) and ID_PATTERN.match(record_id):
+            on_record(node)
+        skip = {"data"} if node.get("ownership") == "module_supplement" else frozenset()
+        for key, value in node.items():
+            if key not in skip:
+                _visit_records(value, on_record)
+    elif isinstance(node, list):
+        for item in node:
+            _visit_records(item, on_record)
+
+
 def _records(package: dict[str, Any]) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
-    for collection in (
-        "publication",
-        "blocks",
-        "locations",
-        "actors",
-        "placements",
-        "objects",
-        "tables",
-        "active_features",
-        "situations",
-        "relationships",
-        "adaptation_points",
-        "assets",
-    ):
-        records.extend(package[collection])
-    records.extend(package["rules"]["references"])
-    records.extend(package["rules"]["supplements"])
-    records.extend(package["rules"]["procedures"])
+    _visit_records(package, records.append)
     return records
 
 
@@ -60,93 +117,73 @@ def _index(package: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 
 def _declared_ids(package: dict[str, Any]) -> set[str]:
-    declared = set(_index(package))
+    declared = {record["id"] for record in _records(package)}
     declared.add(package["meta"]["package_id"])
-    for situation in package["situations"]:
-        for participant in situation["participants"]:
-            group_ref = participant.get("group_ref")
-            if group_ref:
-                declared.add(group_ref)
     return declared
 
 
+def _values_at(document: Any, fields: Iterable[str]) -> set[str]:
+    """Collect every string value stored under any of `fields`."""
+    wanted = frozenset(fields)
+    found: set[str] = set()
+
+    def visit(node: Any) -> None:
+        if isinstance(node, dict):
+            skip = {"data"} if node.get("ownership") == "module_supplement" else frozenset()
+            for key, value in node.items():
+                if key in skip:
+                    continue
+                if key in wanted:
+                    if isinstance(value, str):
+                        found.add(value)
+                    elif isinstance(value, list):
+                        found.update(item for item in value if isinstance(item, str))
+                visit(value)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item)
+
+    visit(document)
+    return found
+
+
 def _internal_refs(package: dict[str, Any]) -> set[str]:
-    refs: set[str] = set()
+    internal, _ = _ref_fields(_schema("module-package.schema.json"))
+    return _values_at(package, internal)
 
-    for node in package["publication"]:
-        refs.update(node["children"])
-        if node.get("parent_ref"):
-            refs.add(node["parent_ref"])
 
-    for location in package["locations"]:
-        for field in (
-            "content_refs",
-            "asset_refs",
-            "feature_refs",
-            "object_refs",
-            "situation_refs",
-        ):
-            refs.update(location.get(field, []))
-        if location.get("parent_ref"):
-            refs.add(location["parent_ref"])
+def _external_refs(package: dict[str, Any]) -> set[str]:
+    _, external = _ref_fields(_schema("module-package.schema.json"))
+    return _values_at(package, external)
 
-    for actor in package["actors"]:
-        refs.add(actor["mechanics"]["ref"])
 
-    for placement in package["placements"]:
-        refs.update((placement["actor_ref"], placement["location_ref"]))
+def _declared_group_ids(package: dict[str, Any]) -> set[str]:
+    """Group identity as currently declared: situation participant recipes."""
+    return {
+        participant["group_ref"]
+        for situation in package["situations"]
+        for participant in situation["participants"]
+        if participant.get("group_ref")
+    }
 
-    for obj in package["objects"]:
-        refs.add(obj["location_ref"])
-        for field in ("content_refs", "feature_refs", "mechanic_refs"):
-            refs.update(obj.get(field, []))
-        refs.update(item["rules_ref"] for item in obj.get("contents", []) if item.get("rules_ref"))
 
-    for table in package["tables"]:
-        refs.update(outcome["result_ref"] for outcome in table["outcomes"])
+def _group_consumers(package: dict[str, Any]) -> set[str]:
+    """Every `group:*` reference made from somewhere other than a participant recipe."""
+    consumers: set[str] = set()
+
+    def add(value: Any) -> None:
+        if isinstance(value, str) and value.startswith(f"{UNDECLARED_NAMESPACE}:"):
+            consumers.add(value)
 
     for feature in package["active_features"]:
-        refs.update(feature["scope"])
-        for field in ("content_refs", "mechanic_refs"):
-            refs.update(feature.get(field, []))
-        if feature.get("attached_object_ref"):
-            refs.add(feature["attached_object_ref"])
         for effect in feature["effects"]:
-            refs.add(effect["target_ref"])
-            if effect.get("mechanic_ref"):
-                refs.add(effect["mechanic_ref"])
-
+            add(effect["target_ref"])
     for situation in package["situations"]:
-        for field in ("location_ref", "trigger_ref"):
-            if situation.get(field):
-                refs.add(situation[field])
-        refs.update(situation["content_refs"])
-        for participant in situation["participants"]:
-            refs.update(
-                participant[field]
-                for field in ("actor_ref", "rules_ref", "group_ref")
-                if participant.get(field)
-            )
         for response in situation["on_events"]:
-            for field in ("if_ref", "mechanic_ref"):
-                if response.get(field):
-                    refs.add(response[field])
+            add(response.get("if_ref"))
             for effect in response["effects"]:
-                refs.add(effect["target_ref"])
-                if effect.get("mechanic_ref"):
-                    refs.add(effect["mechanic_ref"])
-
-    for relationship in package["relationships"]:
-        refs.update((relationship["from_ref"], relationship["to_ref"]))
-        refs.update(relationship.get("mechanic_refs", []))
-
-    for point in package["adaptation_points"]:
-        refs.update(point["targets"])
-
-    for asset in package["assets"]:
-        refs.update(region["location_ref"] for region in asset["regions"])
-
-    return refs
+                add(effect["target_ref"])
+    return consumers
 
 
 def _ancestor_ids(package: dict[str, Any], location_id: str) -> list[str]:
@@ -202,6 +239,30 @@ def _event_effects(
     return effects
 
 
+def _player_safe_content(package: dict[str, Any], refs: Iterable[str]) -> list[str]:
+    """Generic audience filter over content blocks — no per-block special cases."""
+    index = _index(package)
+    return [ref for ref in refs if index[ref].get("audience") == "player_safe"]
+
+
+def _assets_for_audience(assets: Iterable[dict[str, Any]], audience: str) -> list[dict[str, Any]]:
+    return [asset for asset in assets if asset["audience"] in {audience, "shared"}]
+
+
+@pytest.fixture(scope="module")
+def bundle_ids() -> set[str]:
+    """Every entity ID in the built SRD bundle; skips when dist/srd_5_1/ is absent."""
+    if not BUNDLE_DIR.exists():
+        pytest.skip(f"SRD bundle not built at {BUNDLE_DIR}")
+    ids: set[str] = set()
+    for path in sorted(BUNDLE_DIR.glob("*.json")):
+        document = _load(path)
+        for item in document.get("items", []):
+            if isinstance(item, dict) and isinstance(item.get("id"), str):
+                ids.add(item["id"])
+    return ids
+
+
 def test_candidate_schemas_and_fixtures_validate() -> None:
     package = _load(PACKAGE_PATH)
     context = _load(SCENE_CONTEXT_PATH)
@@ -223,36 +284,57 @@ def test_package_ids_are_unique_and_internal_references_resolve() -> None:
     ids = [record["id"] for record in records]
     assert len(ids) == len(set(ids))
 
-    missing = _internal_refs(package) - _declared_ids(package)
-    assert missing == set()
+    unresolved = _internal_refs(package) - _declared_ids(package)
+    namespaces = {ref.split(":", 1)[0] for ref in unresolved}
+    assert namespaces <= {UNDECLARED_NAMESPACE}, f"undeclared references: {sorted(unresolved)}"
+
+
+def test_schema_declares_reference_fields_the_integrity_check_can_find() -> None:
+    """Guards the derivation itself: a schema that declared no refs would pass vacuously."""
+    internal, external = _ref_fields(_schema("module-package.schema.json"))
+
+    assert {"parent_ref", "actor_ref", "location_ref", "target_ref", "children"} <= internal
+    assert {"ability_id", "skill_id", "tool_id", "target"} <= external
+    assert not internal & external
+    assert not internal & DECLARATION_FIELDS
+
+    package = _load(PACKAGE_PATH)
+    assert len(_internal_refs(package)) > 40
+
+
+def test_anonymous_actor_group_contract() -> None:
+    """`group:*` identity is implicit today; assert the implicit contract holds.
+
+    Participant recipes are the de facto declaration site. Every group referenced
+    from an effect or condition must appear in one. FINDINGS.md tracks replacing
+    this with an explicit collection.
+    """
+    package = _load(PACKAGE_PATH)
+    declared = _declared_group_ids(package)
+    assert declared
+
+    dangling = _group_consumers(package) - declared
+    assert dangling == set(), f"group references with no participant recipe: {sorted(dangling)}"
+
+
+def test_external_refs_resolve_against_the_built_srd_bundle(bundle_ids: set[str]) -> None:
+    """Cross-bundle references really do name records in the installed ruleset."""
+    package = _load(PACKAGE_PATH)
+    external = _external_refs(package)
+    assert external
+
+    missing = external - bundle_ids
+    assert missing == set(), f"external refs not present in the SRD bundle: {sorted(missing)}"
 
 
 def test_scene_context_and_review_refs_resolve() -> None:
     package = _load(PACKAGE_PATH)
     context = _load(SCENE_CONTEXT_PATH)
     companion = _load(REVIEW_COMPANION_PATH)
-    declared = _declared_ids(package)
+    declared = _declared_ids(package) | _declared_group_ids(package)
 
-    refs = {
-        context["package_ref"],
-        context["location"]["ref"],
-        *context["location"]["content_refs"],
-        context["site_context"]["ref"],
-        context["site_context"]["summary_ref"],
-        *context["effective_active_features"],
-        *context["present_actors"],
-        *context["active_situations"],
-        *context["immediately_triggerable"],
-        *context["objects"],
-        *context["dependency_closure"]["locations_summary"],
-        *context["dependency_closure"]["actor_groups"],
-        *context["dependency_closure"]["rules"],
-        *context["dependency_closure"]["tables"],
-        *context["dependency_closure"]["mechanics"],
-        *(exit_["to"] for exit_ in context["exits"]),
-        *(asset["ref"] for asset in context["assets"]),
-        *(item["runtime_ref"] for item in companion["items"]),
-    }
+    refs = _values_at(context, _ref_fields(_schema("scene-context.schema.json"))[0])
+    refs.update(item["runtime_ref"] for item in companion["items"])
     assert refs - declared == set()
 
     regions_by_asset = {
@@ -262,14 +344,16 @@ def test_scene_context_and_review_refs_resolve() -> None:
         assert selected["region_id"] in regions_by_asset[selected["ref"]]
 
 
-def test_fixture_serialization_is_canonical_and_repeatable() -> None:
-    for path in (PACKAGE_PATH, SCENE_CONTEXT_PATH, REVIEW_COMPANION_PATH):
-        document = _load(path)
-        rendered = json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
-        rebuilt = json.dumps(
-            json.loads(rendered), ensure_ascii=False, separators=(",", ":"), sort_keys=True
-        )
-        assert rebuilt == rendered
+def test_fixture_files_are_stored_canonically() -> None:
+    """The files on disk are byte-identical to a canonical re-render.
+
+    This reads the stored bytes deliberately: an in-memory round-trip would hold
+    for any parseable JSON and would prove nothing about the fixture.
+    """
+    for path in sorted(FIXTURES.glob("*.json")) + sorted(SCHEMAS.glob("*.json")):
+        stored = path.read_text(encoding="utf-8")
+        canonical = json.dumps(json.loads(stored), indent=2, ensure_ascii=False) + "\n"
+        assert stored == canonical, f"{path.name} is not canonically serialized"
 
 
 def test_scenario_run_the_inn() -> None:
@@ -295,7 +379,44 @@ def test_scenario_run_the_inn() -> None:
         _resolve_rules(package, index[actor_id]["mechanics"]["ref"])["target"]
         for actor_id in _baseline_actor_ids(package, location_id)
     }
-    assert rules_targets == {"monster:veteran", "monster:commoner"}
+    assert rules_targets == {"npc:veteran", "npc:commoner"}
+
+
+def test_scenario_audience_filter_withholds_gm_content(bundle_ids: set[str]) -> None:
+    """R2/R5: a player-facing projection leaks neither GM prose nor GM maps."""
+    package = _load(PACKAGE_PATH)
+    context = _load(SCENE_CONTEXT_PATH)
+    index = _index(package)
+
+    refs = context["location"]["content_refs"]
+    assert {index[ref]["audience"] for ref in refs} == {"player_safe", "gm_only"}
+    assert _player_safe_content(package, refs) == ["block:v2_read_aloud"]
+
+    # Every map in this fixture is GM-owned and one carries secrets, so a player
+    # audience must come back empty rather than be handed a redacted GM map.
+    assert _assets_for_audience(context["assets"], "player") == []
+    assert _assets_for_audience(context["assets"], "gm") == context["assets"]
+    assert any(index[asset["ref"]]["contains_secrets"] for asset in context["assets"])
+
+
+def test_scenario_adaptation_point_stays_open_without_breaking_content() -> None:
+    """R7: intentional openness is addressable, unbound, and not a missing value."""
+    package = _load(PACKAGE_PATH)
+    index = _index(package)
+    declared = _declared_ids(package)
+
+    points = package["adaptation_points"]
+    assert points
+
+    for point in points:
+        assert point["state"] == "open"
+        assert point["binding"] is None
+        assert point["stance"] == "source_explicit"
+        assert point["constraints"] and point["suggestions"]
+        assert set(point["targets"]) <= declared
+        # The target is fully runnable while the adaptation point remains open.
+        for target in point["targets"]:
+            assert index[target]["names"]["proper"]
 
 
 def test_scenario_enter_alarm_room_before_alarm() -> None:

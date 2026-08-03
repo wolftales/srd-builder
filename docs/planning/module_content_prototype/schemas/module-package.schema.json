@@ -103,6 +103,7 @@
   },
   "$defs": {
     "id": {
+      "description": "In-package identifier. Every value MUST resolve to a record declared inside this package.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
     },
@@ -110,6 +111,18 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/id"
+      },
+      "uniqueItems": true
+    },
+    "externalRef": {
+      "description": "Cross-bundle reference into the installed selected-ruleset bundle. NOT resolvable inside this package. Final cross-bundle URI syntax is still open.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    },
+    "externalRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/externalRef"
       },
       "uniqueItems": true
     },
@@ -1147,7 +1160,7 @@
           "$ref": "#/$defs/id"
         },
         "target": {
-          "$ref": "#/$defs/id"
+          "$ref": "#/$defs/externalRef"
         }
       }
     },
@@ -1182,7 +1195,7 @@
           "const": "module_supplement"
         },
         "derived_from": {
-          "$ref": "#/$defs/idList"
+          "$ref": "#/$defs/externalRefList"
         },
         "data": {
           "type": "object"
@@ -1213,13 +1226,13 @@
           "const": "srd_5_1"
         },
         "ability_id": {
-          "$ref": "#/$defs/id"
+          "$ref": "#/$defs/externalRef"
         },
         "skill_id": {
-          "$ref": "#/$defs/id"
+          "$ref": "#/$defs/externalRef"
         },
         "tool_id": {
-          "$ref": "#/$defs/id"
+          "$ref": "#/$defs/externalRef"
         },
         "dc": {
           "type": "integer",

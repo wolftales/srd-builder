@@ -1017,15 +1017,15 @@
     "references": [
       {
         "id": "rules_ref:prototype_veteran",
-        "target": "monster:veteran"
+        "target": "npc:veteran"
       },
       {
         "id": "rules_ref:prototype_commoner",
-        "target": "monster:commoner"
+        "target": "npc:commoner"
       },
       {
         "id": "rules_ref:prototype_giant_rat",
-        "target": "monster:giant_rat"
+        "target": "creature:giant_rat"
       },
       {
         "id": "rules_ref:healing_draught",
@@ -1262,7 +1262,7 @@
         "kind": "ability_check",
         "ruleset": "srd_5_1",
         "ability_id": "ability:dexterity",
-        "tool_id": "tool:thieves_tools",
+        "tool_id": "item:thieves_tools",
         "dc": 12,
         "purpose": "disable the alarm"
       },
@@ -1297,7 +1297,7 @@
         "kind": "ability_check",
         "ruleset": "srd_5_1",
         "ability_id": "ability:dexterity",
-        "tool_id": "tool:thieves_tools",
+        "tool_id": "item:thieves_tools",
         "dc": 13,
         "purpose": "pick a container lock"
       },
