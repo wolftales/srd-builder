@@ -22,6 +22,11 @@ rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/
 
+# Source-specific module-import analysis. Working notes that quote or
+# reproduce third-party publication content (statblocks, keyed rooms, NPC
+# names, page numbers) stay local. Public planning docs must stay synthetic.
+docs/planning/local/
+
 # macOS
 .DS_Store
 **/.DS_Store
