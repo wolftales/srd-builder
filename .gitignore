@@ -22,10 +22,15 @@ rulesets/*/raw/
 rulesets/*/raw/**
 docs/external/
 
-# Source-specific module-import analysis. Working notes that quote or
-# reproduce third-party publication content (statblocks, keyed rooms, NPC
-# names, page numbers) stay local. Public planning docs must stay synthetic.
-docs/planning/local/
+# Working notes that quote or reproduce third-party publication content
+# (statblocks, keyed rooms, NPC names, printed page numbers) stay local.
+# The suffix is the marker, so the file sits beside its committed siblings
+# and announces itself in its own name — no invisible directory to fall into.
+# Public planning docs must stay synthetic.
+*.local.md
+
+# Generated module packages from imported publications go under build/,
+# which is already ignored above.
 
 # macOS
 .DS_Store

@@ -105,9 +105,9 @@ cross-schema validation tests.
 ## Repository boundary
 
 The committed fixture is synthetic but structurally equivalent to the selected
-source slice. Source-specific analysis remains in the paper prototype under
-`docs/planning/local/`, which is gitignored because it quotes publication
-content.
+source slice. Source-specific analysis remains in
+`docs/planning/module_content_paper_prototype.local.md`, which is gitignored
+because it quotes publication content.
 Actual imported publication records should be generated only into a private,
 ignored build location; public test fixtures should remain synthetic or otherwise
 independently authored.

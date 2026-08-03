@@ -31,7 +31,7 @@ pytest -q tests/test_module_content_prototype.py
 
 The fixture contains complete synthetic records and the direct dependencies needed
 by its scenarios. It is not a reproduction or conversion of the source publication.
-The paper prototype under `docs/planning/local/` records the source-specific design
-observations. It is gitignored because it quotes publication content; this fixture
-tests content shape, linkage, and retrieval behavior safely in the public
-repository.
+The paper prototype (`docs/planning/module_content_paper_prototype.local.md`)
+records the source-specific design observations. It is gitignored because it
+quotes publication content; this fixture tests content shape, linkage, and
+retrieval behavior safely in the public repository.
