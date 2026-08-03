@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/rules.schema.json",
+  "version": "0.1.0",
+  "title": "Selected-ruleset lens: references, module supplements, and procedures",
+  "$defs": {
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "references",
+        "supplements",
+        "procedures"
+      ],
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rulesReference"
+          }
+        },
+        "supplements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rulesSupplement"
+          }
+        },
+        "procedures": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/abilityCheck"
+              },
+              {
+                "$ref": "#/$defs/durationRoll"
+              },
+              {
+                "$ref": "#/$defs/chanceRoll"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "rulesReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "target",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "target": {
+          "$ref": "common.schema.json#/$defs/externalRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "rulesSupplement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "entity_type",
+        "ruleset",
+        "ownership",
+        "data",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "entity_type": {
+          "enum": [
+            "monster",
+            "npc",
+            "item",
+            "hazard"
+          ]
+        },
+        "ruleset": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "ownership": {
+          "const": "module_supplement"
+        },
+        "derived_from": {
+          "$ref": "common.schema.json#/$defs/externalRefList"
+        },
+        "data": {
+          "type": "object"
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "abilityCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "ability_id",
+        "dc"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "ability_check"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "ability_id": {
+          "$ref": "common.schema.json#/$defs/externalRef"
+        },
+        "skill_id": {
+          "$ref": "common.schema.json#/$defs/externalRef"
+        },
+        "tool_id": {
+          "$ref": "common.schema.json#/$defs/externalRef"
+        },
+        "dc": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "chanceRoll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "dice",
+        "matches"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "chance_roll"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "durationRoll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "dice",
+        "unit"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "kind": {
+          "const": "duration_roll"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "unit": {
+          "enum": [
+            "rounds",
+            "turns",
+            "minutes",
+            "hours"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/common.schema.json",
+  "version": "0.1.0",
+  "title": "Shared identifiers, source pointers, and warrant",
+  "$defs": {
+    "id": {
+      "description": "In-package identifier. Every value MUST resolve to a record declared inside this package.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    },
+    "idList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "uniqueItems": true
+    },
+    "externalRef": {
+      "description": "Cross-bundle reference into the installed selected-ruleset bundle. NOT resolvable inside this package. Final cross-bundle URI syntax is still open.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    },
+    "externalRefList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/externalRef"
+      },
+      "uniqueItems": true
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "publication_id": {
+          "$ref": "#/$defs/id"
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "printed_page": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pdf_page": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "section"
+          ]
+        },
+        {
+          "required": [
+            "source_key"
+          ]
+        },
+        {
+          "required": [
+            "pdf_page"
+          ]
+        }
+      ]
+    },
+    "contentStance": {
+      "description": "Warrant for this record: what established it. This is NOT modality - whether something is conditional, open, or baseline is carried by the record's own fields (presence, state), never by stance. Attribute-level warrant is not modelled; stance describes the record's existence and identity. Extraction confidence belongs in the review companion (D5).",
+      "enum": [
+        "source_explicit",
+        "source_inferred",
+        "reviewer_proposed"
+      ]
+    },
+    "names": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "simple"
+      ],
+      "properties": {
+        "simple": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proper": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

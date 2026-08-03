@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/situations.schema.json",
+  "version": "0.1.0",
+  "title": "Situations, active features, and their triggers and effects",
+  "$defs": {
+    "situation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "participants",
+        "preconditions",
+        "on_events",
+        "content_refs",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "situation"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "trigger_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/participant"
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "on_events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/eventResponse"
+          }
+        },
+        "content_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "activeFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "kinds",
+        "scope",
+        "triggers",
+        "effects",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "active_feature"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "alarm",
+              "hazard",
+              "weather",
+              "lair_effect",
+              "machinery",
+              "encounter_check",
+              "schedule",
+              "spreading_effect"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "scope": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "attached_object_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "mechanic_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trigger"
+          },
+          "minItems": 1
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          },
+          "minItems": 1
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "quantity"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "actor_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "rules_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "group_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "actor_ref"
+          ]
+        },
+        {
+          "required": [
+            "rules_ref",
+            "group_ref"
+          ]
+        }
+      ]
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unless_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_ref"
+      ],
+      "properties": {
+        "operation": {
+          "enum": [
+            "set_state",
+            "emit_signal",
+            "activate_situation",
+            "set_flag",
+            "set_intent",
+            "roll_table"
+          ]
+        },
+        "target_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "value": {
+          "type": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "null"
+          ]
+        },
+        "when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      }
+    },
+    "eventResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event",
+        "effects"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "if_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "if_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

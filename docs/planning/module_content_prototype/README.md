@@ -6,13 +6,20 @@ the production `schemas/` and `dist/` trees.
 
 It contains:
 
-- candidate JSON Schemas for a compiled module slice, assembled scene context,
-  and optional review companion;
+- candidate JSON Schemas for a compiled module slice, split across `common`,
+  `content`, `situations`, `relationships`, `assets`, `rules`, and the
+  `module-package` envelope, plus the assembled scene context and the optional
+  review companion;
 - a synthetic fixture shaped to exercise the same structural pressures found in
   the selected Grimmsgate slice, without committing publication-derived content;
 - an alarm-room scene-context example; and
-- pytest coverage for schema validation, reference integrity, idempotent
-  serialization, and five retrieval scenarios.
+- pytest coverage for schema validation and cross-file layering, reference
+  integrity, canonical on-disk serialization, audience and warrant handling, and
+  the retrieval scenarios.
+
+Reference integrity and warrant checks are derived from the schemas rather than
+hand-listed, so adding a reference-bearing or stance-carrying field extends the
+checks automatically.
 
 See `FINDINGS.md` for the conclusions and revisions exposed by the executable
 fixture.

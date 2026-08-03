@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/assets.schema.json",
+  "version": "0.1.0",
+  "title": "Visual assets and map regions",
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "audience",
+        "source_ref",
+        "regions",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "map",
+            "image",
+            "handout"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "player",
+            "gm",
+            "shared"
+          ]
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "contains_secrets": {
+          "type": "boolean"
+        },
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "unit",
+            "per"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "per": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mapRegion"
+          }
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "mapRegion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_key",
+        "location_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      }
+    }
+  }
+}

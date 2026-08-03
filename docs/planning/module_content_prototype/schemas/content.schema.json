@@ -1,0 +1,591 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/content.schema.json",
+  "version": "0.1.0",
+  "title": "Publication spine and normalized content entities",
+  "$defs": {
+    "publicationNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "title",
+        "children",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "publication",
+            "section"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "children": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "contentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "audience",
+        "text",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "read_aloud",
+            "gm_detail",
+            "procedure",
+            "summary",
+            "table_note"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "player_safe",
+            "gm_only",
+            "shared"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "names",
+        "content_refs",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "location"
+        },
+        "names": {
+          "$ref": "common.schema.json#/$defs/names"
+        },
+        "parent_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "asset_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "feature_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "object_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "situation_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "functions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "condition_tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "summary_ref": {
+          "description": "Optional generated abstract. Kept out of content_refs so that stripping inferred records cannot dangle a reference to the source's own prose.",
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "identity",
+        "presentation",
+        "mechanics",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "actor"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "roles"
+          ],
+          "properties": {
+            "ancestry": {
+              "type": "string"
+            },
+            "alignment": {
+              "type": "string"
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "summary"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "ref"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "reference",
+                "reskin",
+                "supplement"
+              ]
+            },
+            "ref": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          }
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "actor_ref",
+        "location_ref",
+        "stance",
+        "presence"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "placement"
+        },
+        "actor_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "location_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "presence": {
+          "enum": [
+            "usual",
+            "initial",
+            "conditional"
+          ]
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "location_ref",
+        "content_refs",
+        "state_defaults",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "object"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "feature_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "mechanic_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "state_defaults": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "integer",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/containedItem"
+          }
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "containedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "rules_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "dice",
+        "outcomes",
+        "source_ref",
+        "stance"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "table"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tableOutcome"
+          },
+          "minItems": 1
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "tableOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matches",
+        "result_ref"
+      ],
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "result_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        }
+      }
+    },
+    "adaptationPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "state",
+        "stance",
+        "purpose",
+        "targets",
+        "constraints",
+        "suggestions",
+        "binding",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "adaptation_point"
+        },
+        "state": {
+          "enum": [
+            "open",
+            "suggested",
+            "bound"
+          ]
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targets": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "binding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

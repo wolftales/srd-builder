@@ -102,6 +102,8 @@ draft should separate shared identifiers/source pointers, content entities,
 situations and active features, assets, and the package envelope while retaining
 cross-schema validation tests.
 
+*Done. See "The split, and what it proved" below.*
+
 ## Revisions from the second pass
 
 ### Relationship views are normative; relationship types are vocabulary
@@ -224,6 +226,42 @@ the investigation slice should confirm it. It is worth recording because the
 information graph was expected to be an investigation-only concern, and a keyed
 dungeon produced one anyway.
 
+### The split, and what it proved
+
+The 1,588-line schema is now seven files averaging about 220 lines:
+
+| File | Holds |
+| --- | --- |
+| `common` | identifiers, source pointers, warrant, names |
+| `content` | publication spine and normalized content entities |
+| `situations` | situations, active features, triggers, effects |
+| `relationships` | typed relationships and their graph views |
+| `assets` | visual assets and map regions |
+| `rules` | selected-lens references, supplements, procedures |
+| `module-package` | the envelope and package metadata |
+
+Two boundaries were added to the sketch above. `rules` earned its own file
+because D1 puts mechanics behind the selected ruleset lens, and making that a
+file boundary means adding a second ruleset touches one file. `relationships`
+earned one because it is the only collection that spans every view by design, and
+the package envelope depends on its vocabulary; content should not own the graph.
+
+The layering came out flat and is now asserted: `common` is a leaf, every domain
+file depends on `common` alone, and only the envelope composes them. No domain
+file reaches another. That flatness is the property worth protecting — it is what
+keeps the lens boundary real.
+
+The split was also a test of the derive-from-schema approach adopted earlier.
+Twenty-one existing checks were rewritten across seven files by changing exactly
+one assertion: the one pinning a literal JSON pointer,
+`{"$ref": "#/$defs/contentStance"}`, which the split turned into a file-qualified
+pointer. Everything else kept working because it matched on definition names
+rather than locations. Definition names must therefore stay globally unique
+across the files, which is now asserted rather than assumed.
+
+The lesson generalizes: assertions about *where* something is declared break
+under repackaging; assertions about *what* is declared survive it.
+
 ## Deferred: the information layer and R3
 
 There are no clue, revelation, or information-dependency entities, so R3 (trace
@@ -259,14 +297,14 @@ The next schema pass should resolve only the decisions now supported by evidence
 
 1. make anonymous actor-group identity explicit;
 2. define a small structured predicate shape and its evaluation owner;
-3. split the monolithic package schema into maintainable contracts;
-4. settle cross-bundle rules-reference syntax, including how the lens resolves a
-   creature name to the correct bundle namespace;
-5. define the dependency-edge annotations used by scene-context assembly; and
-6. decide whether warrant needs attribute-level granularity (see below).
+3. settle cross-bundle rules-reference syntax, including how the lens resolves a
+   creature name to the correct bundle namespace; and
+4. define the dependency-edge annotations used by scene-context assembly.
 
-Stance unification and coverage are now settled: one vocabulary, warrant only,
-required on every normalized entity.
+Settled since the first pass: stance unification and coverage (one vocabulary,
+warrant only, required on every normalized entity), attribute-level warrant
+(`inferred_fields`, failing closed), relationship views and vocabulary, and the
+schema split.
 
 ### Warrant needed a second scale: the record and the attribute
 

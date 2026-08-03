@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/relationships.schema.json",
+  "version": "0.1.0",
+  "title": "Typed relationships and their graph views",
+  "$defs": {
+    "relationshipView": {
+      "description": "Which graph a relationship belongs to. Normative and closed: consumers switch on this, so physical travel can never be mistaken for narrative progression.",
+      "enum": [
+        "publication",
+        "world",
+        "information",
+        "procedural",
+        "reference",
+        "adaptation"
+      ]
+    },
+    "relationshipType": {
+      "description": "Relationship vocabulary within a view. Extensible, but every value used MUST be declared in meta.relationship_vocabulary.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "relationshipTypeList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationshipType"
+      },
+      "uniqueItems": true
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "view",
+        "type",
+        "stance",
+        "from_ref",
+        "to_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "view": {
+          "$ref": "#/$defs/relationshipView"
+        },
+        "type": {
+          "$ref": "#/$defs/relationshipType"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "from_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "to_ref": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_refs": {
+          "$ref": "common.schema.json#/$defs/idList"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

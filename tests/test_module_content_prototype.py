@@ -5,10 +5,14 @@ output. They should remain generic: no helper branches on source keys, room name
 or package-specific IDs.
 
 Reference integrity is DERIVED FROM THE SCHEMA, not hand-listed. Any property
-declared as `#/$defs/id` or `#/$defs/idList` is treated as an in-package reference
-and must resolve; any property declared as `#/$defs/externalRef` resolves against
-the installed selected-ruleset bundle instead. Adding a reference-bearing field to
-the schema therefore extends the integrity check automatically.
+referencing the `id` or `idList` definition is treated as an in-package reference
+and must resolve; any property referencing `externalRef` resolves against the
+installed selected-ruleset bundle instead. Adding a reference-bearing field to the
+schema therefore extends the integrity check automatically.
+
+The package schema is split across several files. Definitions are matched by NAME
+rather than by JSON pointer, so moving one between files changes nothing here;
+definition names are asserted globally unique to keep that safe.
 """
 
 from __future__ import annotations
@@ -21,6 +25,8 @@ from typing import Any
 
 import pytest
 from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT202012
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOTYPE = ROOT / "docs" / "planning" / "module_content_prototype"
@@ -36,8 +42,12 @@ ID_PATTERN = re.compile(r"^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$")
 # Properties that DECLARE an identity rather than reference one.
 DECLARATION_FIELDS = frozenset({"id", "package_id", "context_id"})
 
-_INTERNAL_ID_DEFS = frozenset({"#/$defs/id", "#/$defs/idList"})
-_EXTERNAL_ID_DEFS = frozenset({"#/$defs/externalRef", "#/$defs/externalRefList"})
+# Matched by definition NAME, not by pointer, so a definition moving between
+# schema files does not change what the integrity checks cover.
+_INTERNAL_ID_DEFS = frozenset({"id", "idList"})
+_EXTERNAL_ID_DEFS = frozenset({"externalRef", "externalRefList"})
+
+PACKAGE_SCHEMA = "module-package.schema.json"
 
 # Anonymous actor groups have no first-class collection yet: `group:*` identity is
 # declared implicitly by situation participant recipes. FINDINGS.md lists making
@@ -55,14 +65,79 @@ def _schema(name: str) -> dict[str, Any]:
     return _load(SCHEMAS / name)
 
 
+def _schema_documents() -> dict[str, dict[str, Any]]:
+    return {path.name: _load(path) for path in sorted(SCHEMAS.glob("*.json"))}
+
+
+def _registry() -> Registry:
+    """Every schema file, keyed by $id, so cross-file $refs resolve."""
+    return Registry().with_resources(
+        (document["$id"], Resource.from_contents(document, default_specification=DRAFT202012))
+        for document in _schema_documents().values()
+        if "$id" in document
+    )
+
+
 def _validator(name: str) -> Draft202012Validator:
     schema = _schema(name)
     Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema)
+    return Draft202012Validator(schema, registry=_registry())
 
 
-def _ref_fields(schema: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]:
-    """Return (in-package reference fields, cross-bundle reference fields)."""
+def _ref_targets(node: Any) -> set[tuple[str, str]]:
+    """Every ($ref target file, definition name) in a document. '' means same file."""
+    found: set[tuple[str, str]] = set()
+
+    def visit(value: Any) -> None:
+        if isinstance(value, dict):
+            ref = value.get("$ref")
+            if isinstance(ref, str) and "#/$defs/" in ref:
+                file, _, pointer = ref.partition("#/$defs/")
+                found.add((file, pointer))
+            for item in value.values():
+                visit(item)
+        elif isinstance(value, list):
+            for item in value:
+                visit(item)
+
+    visit(node)
+    return found
+
+
+def _package_schema_files() -> list[str]:
+    """Schema files reachable from the package envelope, envelope first."""
+    documents = _schema_documents()
+    reached = [PACKAGE_SCHEMA]
+    queue = [PACKAGE_SCHEMA]
+    while queue:
+        for file, _ in sorted(_ref_targets(documents[queue.pop()])):
+            if file and file not in reached:
+                reached.append(file)
+                queue.append(file)
+    return reached
+
+
+def _package_defs() -> dict[str, dict[str, Any]]:
+    """All definitions across the split package schemas, by name.
+
+    Definition names must stay globally unique: the integrity checks match on
+    name so that moving a definition between files changes nothing.
+    """
+    documents = _schema_documents()
+    merged: dict[str, dict[str, Any]] = {}
+    for file in _package_schema_files():
+        for name, definition in documents[file].get("$defs", {}).items():
+            assert name not in merged, f"definition {name!r} declared in two schema files"
+            merged[name] = definition
+    return merged
+
+
+def _ref_fields(*schemas: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]:
+    """Return (in-package reference fields, cross-bundle reference fields).
+
+    Matches on the referenced definition NAME, so this is unaffected by which
+    schema file a definition lives in.
+    """
     internal: set[str] = set()
     external: set[str] = set()
 
@@ -72,9 +147,10 @@ def _ref_fields(schema: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]
             if isinstance(properties, dict):
                 for name, subschema in properties.items():
                     ref = subschema.get("$ref") if isinstance(subschema, dict) else None
-                    if ref in _INTERNAL_ID_DEFS and name not in DECLARATION_FIELDS:
+                    target = ref.rsplit("/", 1)[-1] if isinstance(ref, str) else None
+                    if target in _INTERNAL_ID_DEFS and name not in DECLARATION_FIELDS:
                         internal.add(name)
-                    elif ref in _EXTERNAL_ID_DEFS:
+                    elif target in _EXTERNAL_ID_DEFS:
                         external.add(name)
             for value in node.values():
                 visit(value)
@@ -82,8 +158,14 @@ def _ref_fields(schema: dict[str, Any]) -> tuple[frozenset[str], frozenset[str]]
             for item in node:
                 visit(item)
 
-    visit(schema)
+    for schema in schemas:
+        visit(schema)
     return frozenset(internal), frozenset(external)
+
+
+def _package_ref_fields() -> tuple[frozenset[str], frozenset[str]]:
+    documents = _schema_documents()
+    return _ref_fields(*(documents[file] for file in _package_schema_files()))
 
 
 def _visit_records(node: Any, on_record: Callable[[dict[str, Any]], None]) -> None:
@@ -148,12 +230,12 @@ def _values_at(document: Any, fields: Iterable[str]) -> set[str]:
 
 
 def _internal_refs(package: dict[str, Any]) -> set[str]:
-    internal, _ = _ref_fields(_schema("module-package.schema.json"))
+    internal, _ = _package_ref_fields()
     return _values_at(package, internal)
 
 
 def _external_refs(package: dict[str, Any]) -> set[str]:
-    _, external = _ref_fields(_schema("module-package.schema.json"))
+    _, external = _package_ref_fields()
     return _values_at(package, external)
 
 
@@ -294,6 +376,50 @@ def test_candidate_schemas_and_fixtures_validate() -> None:
             monster_validator.validate(supplement["data"])
 
 
+def test_split_schemas_resolve_and_keep_a_flat_layering() -> None:
+    """Every cross-file reference resolves, and no domain file leans on another.
+
+    `common` is a leaf, each domain file depends on `common` alone, and only the
+    envelope composes them. That flatness is what makes the lens boundary real:
+    adding a second ruleset touches rules.schema.json and nothing beside it.
+    """
+    documents = _schema_documents()
+    files = _package_schema_files()
+    assert set(files) == {
+        PACKAGE_SCHEMA,
+        "common.schema.json",
+        "content.schema.json",
+        "situations.schema.json",
+        "relationships.schema.json",
+        "assets.schema.json",
+        "rules.schema.json",
+    }
+
+    for file in files:
+        for target_file, definition in _ref_targets(documents[file]):
+            owner = documents[target_file] if target_file else documents[file]
+            assert definition in owner.get("$defs", {}), f"{file} -> {target_file}#{definition}"
+
+    def outgoing(file: str) -> set[str]:
+        return {target for target, _ in _ref_targets(documents[file]) if target and target != file}
+
+    assert outgoing("common.schema.json") == set(), "common must stay a leaf"
+    for file in files:
+        if file in {PACKAGE_SCHEMA, "common.schema.json"}:
+            continue
+        assert outgoing(file) == {"common.schema.json"}, f"{file} reaches past common"
+    assert outgoing(PACKAGE_SCHEMA) == set(files) - {PACKAGE_SCHEMA}
+
+    # Definition names stay globally unique, so name-based matching is safe.
+    assert len(_package_defs()) == sum(len(documents[f].get("$defs", {})) for f in files)
+
+    # No schema file is orphaned: it is either part of the package or a root.
+    assert set(documents) == set(files) | {
+        "scene-context.schema.json",
+        "review-companion.schema.json",
+    }
+
+
 def test_package_ids_are_unique_and_internal_references_resolve() -> None:
     package = _load(PACKAGE_PATH)
     records = _records(package)
@@ -307,7 +433,7 @@ def test_package_ids_are_unique_and_internal_references_resolve() -> None:
 
 def test_schema_declares_reference_fields_the_integrity_check_can_find() -> None:
     """Guards the derivation itself: a schema that declared no refs would pass vacuously."""
-    internal, external = _ref_fields(_schema("module-package.schema.json"))
+    internal, external = _package_ref_fields()
 
     assert {"parent_ref", "actor_ref", "location_ref", "target_ref", "children"} <= internal
     assert {"ability_id", "skill_id", "tool_id", "target"} <= external
@@ -371,8 +497,8 @@ def test_stance_vocabulary_is_unified_and_required() -> None:
     Three divergent vocabularies had drifted into the schema. This guards the
     unification: a new definition cannot quietly introduce a fourth.
     """
-    schema = _schema("module-package.schema.json")
-    defs = schema["$defs"]
+    schema = _schema(PACKAGE_SCHEMA)
+    defs = _package_defs()
 
     # No definition may declare its own stance-like enum.
     offenders: list[str] = []
@@ -400,7 +526,10 @@ def test_stance_vocabulary_is_unified_and_required() -> None:
     carriers = [name for name, d in defs.items() if "stance" in d.get("properties", {})]
     assert len(carriers) >= 13
     for name in carriers:
-        assert defs[name]["properties"]["stance"] == {"$ref": "#/$defs/contentStance"}, name
+        # Asserted by target name, not by pointer: which file owns contentStance
+        # is a packaging decision, that every carrier shares it is the contract.
+        stance_ref = defs[name]["properties"]["stance"].get("$ref", "")
+        assert stance_ref.rsplit("/", 1)[-1] == "contentStance", name
         assert "stance" in defs[name]["required"], f"{name} does not require stance"
 
     # Every top-level collection holds records that carry warrant.
@@ -423,11 +552,10 @@ def _strip_inferred(package: dict[str, Any]) -> dict[str, Any]:
         if record.get("stance") not in (None, "source_explicit")
     }
 
-    schema = _schema("module-package.schema.json")
-    internal, _ = _ref_fields(schema)
+    internal, _ = _package_ref_fields()
     optional_refs = {
         name
-        for definition in schema["$defs"].values()
+        for definition in _package_defs().values()
         for name in definition.get("properties", {})
         if name in internal and name not in definition.get("required", [])
     }
@@ -495,8 +623,8 @@ def test_inferred_fields_name_real_present_attributes() -> None:
     Validated against the schema rather than a hand-list, so it cannot rot: a
     renamed property turns any stale entry into a failure.
     """
-    schema = _schema("module-package.schema.json")
-    defs = schema["$defs"]
+    schema = _schema(PACKAGE_SCHEMA)
+    defs = _package_defs()
     package = _load(PACKAGE_PATH)
 
     # Map each top-level collection to the definition governing its records.
