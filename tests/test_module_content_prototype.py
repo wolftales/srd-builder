@@ -239,10 +239,26 @@ def _event_effects(
     return effects
 
 
+def _is_trusted(record: dict[str, Any], field: str) -> bool:
+    """A field is trusted only if the source established both record and field."""
+    if record.get("stance") != "source_explicit":
+        return False
+    return field not in record.get("inferred_fields", [])
+
+
 def _player_safe_content(package: dict[str, Any], refs: Iterable[str]) -> list[str]:
-    """Generic audience filter over content blocks — no per-block special cases."""
+    """Generic audience filter over content blocks — no per-block special cases.
+
+    Fails closed: a block whose `audience` the importer inferred is withheld from
+    players regardless of the inferred value. Guessing "player_safe" wrong is how
+    GM text reaches the table.
+    """
     index = _index(package)
-    return [ref for ref in refs if index[ref].get("audience") == "player_safe"]
+    return [
+        ref
+        for ref in refs
+        if index[ref].get("audience") == "player_safe" and _is_trusted(index[ref], "audience")
+    ]
 
 
 def _assets_for_audience(assets: Iterable[dict[str, Any]], audience: str) -> list[dict[str, Any]]:
@@ -471,6 +487,93 @@ def test_inferred_records_are_not_load_bearing() -> None:
     assert set(context["effective_active_features"]) == _effective_feature_ids(
         stripped, context["location"]["ref"]
     )
+
+
+def test_inferred_fields_name_real_present_attributes() -> None:
+    """`inferred_fields` must name actual properties of its own record.
+
+    Validated against the schema rather than a hand-list, so it cannot rot: a
+    renamed property turns any stale entry into a failure.
+    """
+    schema = _schema("module-package.schema.json")
+    defs = schema["$defs"]
+    package = _load(PACKAGE_PATH)
+
+    # Map each top-level collection to the definition governing its records.
+    def_for_collection = {
+        prop: sub["items"]["$ref"].rsplit("/", 1)[-1]
+        for prop, sub in schema["properties"].items()
+        if "items" in sub
+    }
+
+    seen = 0
+    for collection, def_name in def_for_collection.items():
+        allowed = set(defs[def_name]["properties"]) - {"id", "type", "stance", "inferred_fields"}
+        for record in package[collection]:
+            fields = record.get("inferred_fields")
+            if fields is None:
+                continue
+            seen += 1
+            assert fields, f"{record['id']}: empty inferred_fields should be omitted"
+            unknown = set(fields) - allowed
+            assert unknown == set(), f"{record['id']} names non-properties: {sorted(unknown)}"
+            absent = [name for name in fields if name not in record]
+            assert absent == [], f"{record['id']} marks absent fields: {absent}"
+            # Only a source_explicit record has a mix worth describing; if the
+            # record itself was inferred, every attribute already is.
+            assert record["stance"] == "source_explicit", record["id"]
+
+    assert seen >= 2, "fixture no longer exercises attribute-level warrant"
+
+
+def test_player_projection_fails_closed_on_inferred_audience() -> None:
+    """The payoff: a guessed `audience` is never trusted toward players.
+
+    Record-level warrant cannot express this. The inn read-aloud is source_explicit
+    prose whose player-safety was read off typography, so it is withheld, while a
+    block whose audience the source did state is served normally.
+    """
+    package = _load(PACKAGE_PATH)
+    index = _index(package)
+
+    inn_refs = index["location:wayfarers_rest"]["content_refs"]
+    read_aloud = index["block:inn_read_aloud"]
+    assert read_aloud["audience"] == "player_safe"
+    assert read_aloud["stance"] == "source_explicit"
+    assert "audience" in read_aloud["inferred_fields"]
+
+    # Marked player_safe, but withheld because that value was inferred.
+    assert "block:inn_read_aloud" in inn_refs
+    assert _player_safe_content(package, inn_refs) == []
+
+    # A block whose audience the source established is unaffected.
+    context = _load(SCENE_CONTEXT_PATH)
+    assert _player_safe_content(package, context["location"]["content_refs"]) == [
+        "block:v2_read_aloud"
+    ]
+
+
+def test_inferred_attributes_survive_the_strip_but_stay_untrusted() -> None:
+    """Attribute-level warrant is orthogonal to record-level warrant.
+
+    A record with an inferred attribute is still source-established, so stripping
+    inferred RECORDS must keep it — the prose is real. Only the attribute is soft.
+    """
+    package = _load(PACKAGE_PATH)
+    stripped = _strip_inferred(package)
+    index = _index(stripped)
+
+    assert "block:inn_read_aloud" in index, "source prose was stripped for a soft attribute"
+    assert index["block:inn_read_aloud"]["inferred_fields"] == ["audience"]
+    assert not _is_trusted(index["block:inn_read_aloud"], "audience")
+    assert _is_trusted(index["block:v2_read_aloud"], "audience")
+
+    # Map regions cannot be recovered from page extraction alone (17.6), so the
+    # region-to-location bindings the scene context selects are not trusted.
+    asset = index["asset:steamvault_map"]
+    assert not _is_trusted(asset, "regions")
+    context = _load(SCENE_CONTEXT_PATH)
+    assert context["assets"][0]["ref"] == asset["id"]
 
 
 def test_generated_summaries_are_inferred_and_never_mixed_into_source_prose() -> None:

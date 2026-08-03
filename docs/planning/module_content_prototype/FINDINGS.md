@@ -268,24 +268,47 @@ The next schema pass should resolve only the decisions now supported by evidence
 Stance unification and coverage are now settled: one vocabulary, warrant only,
 required on every normalized entity.
 
-### The open question stance did not answer
+### Warrant needed a second scale: the record and the attribute
 
-Record-level warrant cannot express a record whose existence is stated but whose
-classification was guessed. A content block extracted verbatim from a shaded box
-is `source_explicit`, yet its `audience` value — read-aloud versus GM-only — is
-usually inferred from typography. Marking the whole block `source_inferred` would
-be both alarming and uninformative, and would strip real prose; marking it
-`source_explicit` overstates confidence in exactly the field whose failure leaks
-secrets to players.
+Record-level warrant could not express a record whose existence is stated but
+whose classification was guessed. A content block lifted verbatim from a shaded
+box is `source_explicit`, yet its `audience` value — read-aloud versus GM-only —
+is usually read off typography. Marking the whole block `source_inferred` was
+both alarming and uninformative and would strip real prose; marking it
+`source_explicit` overstated confidence in exactly the field whose failure puts
+GM text in front of players.
 
-An `inferred_fields` list naming the attributes that were not source-warranted
-would close this, and would support a fail-closed rule: never serve a block to a
-player audience when its `audience` value was inferred. The counter-argument is
-D5 — attribute-level detail may belong in the review companion rather than the
-runtime package.
+Records now carry an optional `inferred_fields` list naming their own properties
+that the source did not establish. It is meaningful only where `stance` is
+`source_explicit`: if the record itself was inferred, so is everything about it.
 
-This is deliberately left open. `stance` currently documents that it describes a
-record's existence and identity, not its individual attributes.
+The two scales are orthogonal, and the tests hold both:
+
+- stripping inferred **records** keeps a block with an inferred **attribute**,
+  because the prose is real; and
+- the player projection withholds that block anyway, because its `audience` was
+  not established.
+
+That fail-closed rule is the point of the field. A guessed `audience` is never
+trusted toward players regardless of the guessed value, since guessing
+"player_safe" wrong is how GM text reaches the table.
+
+D5's objection — that attribute detail belongs in the review companion — was
+weighed and rejected for this case. The companion is optional and may be absent
+at runtime, but a consumer deciding what to show a player needs this signal every
+time. Confidence *scores* still belong in the companion; whether a value has any
+source warrant is a runtime concern.
+
+A bare list was chosen over a per-field warrant map. A map would also let a
+reviewer mark a single corrected field, but a reviewer-corrected value is *more*
+trustworthy, not less, so it does not belong in a "do not trust this" signal. If
+reviewer field-level overrides ever need representing, the list becomes a map.
+
+The fixture exercises two cases drawn from findings already recorded here: the
+inn read-aloud, whose player-safety came from typography, and the site map, whose
+region-to-location bindings cannot be recovered from page extraction alone
+(17.6). The scene context selects a map region from that second one, so the
+binding it hands a consumer is explicitly untrusted.
 
 Importer implementation should still wait until the revised schemas and the
 retrieval tests agree. The information layer and R3 are explicitly out of scope

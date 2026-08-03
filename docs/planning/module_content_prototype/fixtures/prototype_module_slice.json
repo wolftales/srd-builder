@@ -109,6 +109,9 @@
       "id": "block:inn_read_aloud",
       "type": "read_aloud",
       "stance": "source_explicit",
+      "inferred_fields": [
+        "audience"
+      ],
       "audience": "player_safe",
       "text": "A patched slate roof and painted walking-stick sign mark a busy roadside inn.",
       "source_ref": {
@@ -1048,6 +1051,9 @@
       "id": "asset:steamvault_map",
       "type": "map",
       "stance": "source_explicit",
+      "inferred_fields": [
+        "regions"
+      ],
       "audience": "gm",
       "source_ref": {
         "section": "Steamvault Map"
