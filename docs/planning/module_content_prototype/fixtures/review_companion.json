@@ -1,0 +1,36 @@
+{
+  "package_ref": "module:steamvault_prototype",
+  "package_content_version": "prototype.1",
+  "items": [
+    {
+      "runtime_ref": "active_feature:v2_alarm_coffer",
+      "issue": "trigger_normalization",
+      "status": "accepted",
+      "note": "Moving and opening the armed coffer are represented as separate triggers with one shared response.",
+      "source_blocks": [
+        "prototype:v2:alarm"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "runtime_ref": "asset:steamvault_map",
+      "issue": "audience_variant",
+      "status": "accepted",
+      "note": "The only fixture map is GM-facing because it contains a concealed route.",
+      "source_blocks": [
+        "prototype:steamvault:map"
+      ],
+      "confidence": 1.0
+    },
+    {
+      "runtime_ref": "adaptation_point:settlement_identity",
+      "issue": "adaptation_classification",
+      "status": "accepted",
+      "note": "The open settlement binding is intentional flexibility rather than missing extraction data.",
+      "source_blocks": [
+        "prototype:settlement:guidance"
+      ],
+      "confidence": 1.0
+    }
+  ]
+}

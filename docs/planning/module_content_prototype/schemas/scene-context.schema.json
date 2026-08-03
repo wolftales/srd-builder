@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/scene-context.schema.json",
+  "version": "0.1.0",
+  "title": "Candidate assembled scene context",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context_id",
+    "package_ref",
+    "package_content_version",
+    "location",
+    "site_context",
+    "effective_active_features",
+    "present_actors",
+    "active_situations",
+    "immediately_triggerable",
+    "objects",
+    "dependency_closure",
+    "exits",
+    "assets",
+    "state_inputs"
+  ],
+  "properties": {
+    "context_id": {
+      "$ref": "#/$defs/id"
+    },
+    "package_ref": {
+      "$ref": "#/$defs/id"
+    },
+    "package_content_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "simple_title",
+        "proper_title",
+        "content_refs"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/id"
+        },
+        "simple_title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proper_title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content_refs": {
+          "$ref": "#/$defs/idList"
+        }
+      }
+    },
+    "site_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "summary_ref"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/id"
+        },
+        "summary_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "effective_active_features": {
+      "$ref": "#/$defs/idList"
+    },
+    "present_actors": {
+      "$ref": "#/$defs/idList"
+    },
+    "active_situations": {
+      "$ref": "#/$defs/idList"
+    },
+    "immediately_triggerable": {
+      "$ref": "#/$defs/idList"
+    },
+    "objects": {
+      "$ref": "#/$defs/idList"
+    },
+    "dependency_closure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locations_summary",
+        "actor_groups",
+        "rules",
+        "tables",
+        "mechanics"
+      ],
+      "properties": {
+        "locations_summary": {
+          "$ref": "#/$defs/idList"
+        },
+        "actor_groups": {
+          "$ref": "#/$defs/idList"
+        },
+        "rules": {
+          "$ref": "#/$defs/idList"
+        },
+        "tables": {
+          "$ref": "#/$defs/idList"
+        },
+        "mechanics": {
+          "$ref": "#/$defs/idList"
+        }
+      }
+    },
+    "exits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "to",
+          "summary"
+        ],
+        "properties": {
+          "to": {
+            "$ref": "#/$defs/id"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ref",
+          "region_id",
+          "audience"
+        ],
+        "properties": {
+          "ref": {
+            "$ref": "#/$defs/id"
+          },
+          "region_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9_-]+$"
+          },
+          "audience": {
+            "enum": [
+              "player",
+              "gm",
+              "shared"
+            ]
+          }
+        }
+      }
+    },
+    "state_inputs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": [
+          "string",
+          "number",
+          "integer",
+          "boolean",
+          "null"
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    },
+    "idList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "uniqueItems": true
+    }
+  }
+}

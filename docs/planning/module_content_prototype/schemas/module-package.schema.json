@@ -1,0 +1,1350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/module-package.schema.json",
+  "version": "0.1.0",
+  "title": "Candidate module content package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta",
+    "publication",
+    "blocks",
+    "locations",
+    "actors",
+    "placements",
+    "objects",
+    "tables",
+    "active_features",
+    "situations",
+    "relationships",
+    "adaptation_points",
+    "assets",
+    "rules"
+  ],
+  "properties": {
+    "meta": {
+      "$ref": "#/$defs/packageMeta"
+    },
+    "publication": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/publicationNode"
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contentBlock"
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/location"
+      }
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/actor"
+      }
+    },
+    "placements": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/placement"
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/object"
+      }
+    },
+    "tables": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/table"
+      }
+    },
+    "active_features": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/activeFeature"
+      }
+    },
+    "situations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/situation"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "adaptation_points": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/adaptationPoint"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "rules": {
+      "$ref": "#/$defs/rules"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    },
+    "idList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/id"
+      },
+      "uniqueItems": true
+    },
+    "sourceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "publication_id": {
+          "$ref": "#/$defs/id"
+        },
+        "section": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "printed_page": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pdf_page": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "section"
+          ]
+        },
+        {
+          "required": [
+            "source_key"
+          ]
+        },
+        {
+          "required": [
+            "pdf_page"
+          ]
+        }
+      ]
+    },
+    "packageMeta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "package_id",
+        "title",
+        "content_version",
+        "schema_version",
+        "builder_version",
+        "ruleset",
+        "source"
+      ],
+      "properties": {
+        "package_id": {
+          "$ref": "#/$defs/id"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "builder_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ruleset": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "lens_version"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9_]+$"
+            },
+            "lens_version": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "fingerprint"
+          ],
+          "properties": {
+            "format": {
+              "enum": [
+                "pdf",
+                "epub",
+                "html",
+                "text",
+                "mixed"
+              ]
+            },
+            "fingerprint": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "publicationNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "title",
+        "children"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "publication",
+            "section"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parent_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "children": {
+          "$ref": "#/$defs/idList"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "contentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "audience",
+        "text",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "read_aloud",
+            "gm_detail",
+            "procedure",
+            "summary",
+            "table_note"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "player_safe",
+            "gm_only",
+            "shared"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "names": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "simple"
+      ],
+      "properties": {
+        "simple": {
+          "type": "string",
+          "minLength": 1
+        },
+        "proper": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "names",
+        "content_refs",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "location"
+        },
+        "names": {
+          "$ref": "#/$defs/names"
+        },
+        "parent_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "asset_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "feature_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "object_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "situation_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "functions": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            },
+            "condition_tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          }
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "identity",
+        "presentation",
+        "mechanics",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "actor"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "roles"
+          ],
+          "properties": {
+            "ancestry": {
+              "type": "string"
+            },
+            "alignment": {
+              "type": "string"
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        },
+        "presentation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "summary"
+          ],
+          "properties": {
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "mechanics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "ref"
+          ],
+          "properties": {
+            "mode": {
+              "enum": [
+                "reference",
+                "reskin",
+                "supplement"
+              ]
+            },
+            "ref": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "actor_ref",
+        "location_ref",
+        "stance",
+        "presence"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "placement"
+        },
+        "actor_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "location_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "stance": {
+          "enum": [
+            "source_baseline",
+            "source_conditional",
+            "reviewer_proposed"
+          ]
+        },
+        "presence": {
+          "enum": [
+            "usual",
+            "initial",
+            "conditional"
+          ]
+        }
+      }
+    },
+    "containedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "rules_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "location_ref",
+        "content_refs",
+        "state_defaults"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "object"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "feature_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "mechanic_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "state_defaults": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "integer",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "contents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/containedItem"
+          }
+        }
+      }
+    },
+    "tableOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "matches",
+        "result_ref"
+      ],
+      "properties": {
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "result_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "table": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "dice",
+        "outcomes",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "table"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/tableOutcome"
+          },
+          "minItems": 1
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "target_ref"
+      ],
+      "properties": {
+        "operation": {
+          "enum": [
+            "set_state",
+            "emit_signal",
+            "activate_situation",
+            "set_flag",
+            "set_intent",
+            "roll_table"
+          ]
+        },
+        "target_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "value": {
+          "type": [
+            "string",
+            "number",
+            "integer",
+            "boolean",
+            "null"
+          ]
+        },
+        "when": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unless_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "condition": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "activeFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "kinds",
+        "scope",
+        "triggers",
+        "effects",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "active_feature"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kinds": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "alarm",
+              "hazard",
+              "weather",
+              "lair_effect",
+              "machinery",
+              "encounter_check",
+              "schedule",
+              "spreading_effect"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "scope": {
+          "$ref": "#/$defs/idList"
+        },
+        "attached_object_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "content_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "mechanic_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "triggers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/trigger"
+          },
+          "minItems": 1
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          },
+          "minItems": 1
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "participant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "quantity"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "actor_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "rules_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "group_ref": {
+          "$ref": "#/$defs/id"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "actor_ref"
+          ]
+        },
+        {
+          "required": [
+            "rules_ref",
+            "group_ref"
+          ]
+        }
+      ]
+    },
+    "eventResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "event",
+        "effects"
+      ],
+      "properties": {
+        "event": {
+          "type": "string",
+          "minLength": 1
+        },
+        "if_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "if_state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "effects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/effect"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "situation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "name",
+        "participants",
+        "preconditions",
+        "on_events",
+        "content_refs",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "situation"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "trigger_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/participant"
+          }
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "on_events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/eventResponse"
+          }
+        },
+        "content_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "from_ref",
+        "to_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "contained_by",
+            "connects",
+            "signal_reaches",
+            "located_at",
+            "supports"
+          ]
+        },
+        "from_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "to_ref": {
+          "$ref": "#/$defs/id"
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mechanic_refs": {
+          "$ref": "#/$defs/idList"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "adaptationPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "state",
+        "stance",
+        "purpose",
+        "targets",
+        "constraints",
+        "suggestions",
+        "binding",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "const": "adaptation_point"
+        },
+        "state": {
+          "enum": [
+            "open",
+            "suggested",
+            "bound"
+          ]
+        },
+        "stance": {
+          "enum": [
+            "source_explicit",
+            "source_inferred",
+            "reviewer_proposed"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targets": {
+          "$ref": "#/$defs/idList"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "binding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "mapRegion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_key",
+        "location_ref"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_-]+$"
+        },
+        "source_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location_ref": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "audience",
+        "source_ref",
+        "regions"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "type": {
+          "enum": [
+            "map",
+            "image",
+            "handout"
+          ]
+        },
+        "audience": {
+          "enum": [
+            "player",
+            "gm",
+            "shared"
+          ]
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        },
+        "contains_secrets": {
+          "type": "boolean"
+        },
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "value",
+            "unit",
+            "per"
+          ],
+          "properties": {
+            "value": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "per": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/mapRegion"
+          }
+        }
+      }
+    },
+    "rulesReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "target"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "target": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "rulesSupplement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "entity_type",
+        "ruleset",
+        "ownership",
+        "data",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "entity_type": {
+          "enum": [
+            "monster",
+            "npc",
+            "item",
+            "hazard"
+          ]
+        },
+        "ruleset": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$"
+        },
+        "ownership": {
+          "const": "module_supplement"
+        },
+        "derived_from": {
+          "$ref": "#/$defs/idList"
+        },
+        "data": {
+          "type": "object"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/sourceRef"
+        }
+      }
+    },
+    "abilityCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "ability_id",
+        "dc"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "const": "ability_check"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "ability_id": {
+          "$ref": "#/$defs/id"
+        },
+        "skill_id": {
+          "$ref": "#/$defs/id"
+        },
+        "tool_id": {
+          "$ref": "#/$defs/id"
+        },
+        "dc": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "durationRoll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "dice",
+        "unit"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "const": "duration_roll"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "unit": {
+          "enum": [
+            "rounds",
+            "turns",
+            "minutes",
+            "hours"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "chanceRoll": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "ruleset",
+        "dice",
+        "matches"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "const": "chance_roll"
+        },
+        "ruleset": {
+          "const": "srd_5_1"
+        },
+        "dice": {
+          "type": "string",
+          "pattern": "^[0-9]+d[0-9]+(?:[ ]?[+-][ ]?[0-9]+)?$"
+        },
+        "matches": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "references",
+        "supplements",
+        "procedures"
+      ],
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rulesReference"
+          }
+        },
+        "supplements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/rulesSupplement"
+          }
+        },
+        "procedures": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/abilityCheck"
+              },
+              {
+                "$ref": "#/$defs/durationRoll"
+              },
+              {
+                "$ref": "#/$defs/chanceRoll"
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

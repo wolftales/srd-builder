@@ -1,0 +1,78 @@
+{
+  "context_id": "scene_context:prototype_v2_entry",
+  "package_ref": "module:steamvault_prototype",
+  "package_content_version": "prototype.1",
+  "location": {
+    "ref": "location:steamvault_v2",
+    "simple_title": "control chamber",
+    "proper_title": "Alarm Chamber",
+    "content_refs": [
+      "block:v2_read_aloud",
+      "block:v2_gm_detail",
+      "block:v2_alarm_procedure"
+    ]
+  },
+  "site_context": {
+    "ref": "location:steamvault",
+    "summary_ref": "block:steamvault_summary"
+  },
+  "effective_active_features": [
+    "active_feature:v2_alarm_coffer",
+    "active_feature:steamvault_wandering_checks"
+  ],
+  "present_actors": [],
+  "active_situations": [],
+  "immediately_triggerable": [
+    "situation:v2_alarm_response"
+  ],
+  "objects": [
+    "object:v2_coffer"
+  ],
+  "dependency_closure": {
+    "locations_summary": [
+      "location:steamvault_v1",
+      "location:steamvault_v3",
+      "location:steamvault_v4"
+    ],
+    "actor_groups": [
+      "group:v3_occupants",
+      "group:v4_occupants"
+    ],
+    "rules": [
+      "rules_ref:prototype_giant_rat",
+      "module_rules:steamvault_prototype:monster/ash_burrower",
+      "module_rules:steamvault_prototype:monster/changed_delver"
+    ],
+    "tables": [
+      "table:steamvault_wandering_encounters"
+    ],
+    "mechanics": [
+      "mechanic:v2_notice_alarm",
+      "mechanic:v2_disable_alarm",
+      "mechanic:steamvault_wandering_check",
+      "mechanic:reinforcement_delay"
+    ]
+  },
+  "exits": [
+    {
+      "to": "location:steamvault_v1",
+      "summary": "open passage"
+    },
+    {
+      "to": "location:steamvault_v3",
+      "summary": "open passage"
+    }
+  ],
+  "assets": [
+    {
+      "ref": "asset:steamvault_map",
+      "region_id": "region-v2",
+      "audience": "gm"
+    }
+  ],
+  "state_inputs": {
+    "active_feature:v2_alarm_coffer": "armed",
+    "group:v3_occupants": "alive_and_present",
+    "group:v4_occupants": "alive_and_present"
+  }
+}

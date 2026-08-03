@@ -1,0 +1,1324 @@
+{
+  "meta": {
+    "package_id": "module:steamvault_prototype",
+    "title": "Steamvault Prototype",
+    "content_version": "prototype.1",
+    "schema_version": "0.1.0",
+    "builder_version": "prototype",
+    "ruleset": {
+      "id": "srd_5_1",
+      "lens_version": "prototype.1"
+    },
+    "source": {
+      "format": "text",
+      "fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    }
+  },
+  "publication": [
+    {
+      "id": "publication:steamvault_prototype",
+      "type": "publication",
+      "title": "Steamvault Prototype",
+      "children": [
+        "section:settlement",
+        "section:vault",
+        "section:appendix"
+      ],
+      "source_ref": {
+        "section": "Prototype"
+      }
+    },
+    {
+      "id": "section:settlement",
+      "type": "section",
+      "title": "Border Settlement",
+      "parent_ref": "publication:steamvault_prototype",
+      "children": [
+        "location:border_settlement",
+        "location:wayfarers_rest"
+      ],
+      "source_ref": {
+        "section": "Border Settlement"
+      }
+    },
+    {
+      "id": "section:vault",
+      "type": "section",
+      "title": "The Steamvault",
+      "parent_ref": "publication:steamvault_prototype",
+      "children": [
+        "active_feature:steamvault_wandering_checks",
+        "location:steamvault_v1",
+        "location:steamvault_v2",
+        "location:steamvault_v3",
+        "location:steamvault_v4"
+      ],
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    },
+    {
+      "id": "section:appendix",
+      "type": "section",
+      "title": "Prototype Creature Appendix",
+      "parent_ref": "publication:steamvault_prototype",
+      "children": [
+        "module_rules:steamvault_prototype:monster/ash_burrower",
+        "module_rules:steamvault_prototype:monster/changed_delver"
+      ],
+      "source_ref": {
+        "section": "Prototype Creature Appendix"
+      }
+    }
+  ],
+  "blocks": [
+    {
+      "id": "block:settlement_summary",
+      "type": "summary",
+      "audience": "gm_only",
+      "text": "A small border settlement that can serve as a recurring adventuring base.",
+      "source_ref": {
+        "section": "Border Settlement"
+      }
+    },
+    {
+      "id": "block:steamvault_summary",
+      "type": "summary",
+      "audience": "gm_only",
+      "text": "A connected underground site whose inhabitants react across room boundaries.",
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    },
+    {
+      "id": "block:inn_read_aloud",
+      "type": "read_aloud",
+      "audience": "player_safe",
+      "text": "A patched slate roof and painted walking-stick sign mark a busy roadside inn.",
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "block:inn_gm_detail",
+      "type": "gm_detail",
+      "audience": "gm_only",
+      "text": "The inn offers rooms, meals, and a common room and is usually operated by a proprietor and two relatives.",
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "block:v1_summary",
+      "type": "summary",
+      "audience": "gm_only",
+      "text": "An empty connector chamber used by occupants responding to the nearby alarm.",
+      "source_ref": {
+        "source_key": "V-1"
+      }
+    },
+    {
+      "id": "block:v2_read_aloud",
+      "type": "read_aloud",
+      "audience": "player_safe",
+      "text": "A brass control box stands beside a closed storage coffer in the center of the room.",
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "block:v2_gm_detail",
+      "type": "gm_detail",
+      "audience": "gm_only",
+      "text": "The coffer carries a concealed alarm. Detecting and disabling it require separate checks; moving or opening it while armed sounds the alarm.",
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "block:v2_alarm_procedure",
+      "type": "procedure",
+      "audience": "gm_only",
+      "text": "When the alarm sounds, V-3 occupants prepare and V-4 occupants attempt to reach V-2 through V-1.",
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "block:v3_read_aloud",
+      "type": "read_aloud",
+      "audience": "player_safe",
+      "text": "Ash piles, three sleeping hollows, and a locked iron box fill the warm chamber.",
+      "source_ref": {
+        "source_key": "V-3"
+      }
+    },
+    {
+      "id": "block:v3_gm_detail",
+      "type": "gm_detail",
+      "audience": "gm_only",
+      "text": "Three Ash Burrowers lair here. Combat can draw surviving V-4 occupants after a random delay. A concealed route connects the rooms.",
+      "source_ref": {
+        "source_key": "V-3"
+      }
+    },
+    {
+      "id": "block:v4_read_aloud",
+      "type": "read_aloud",
+      "audience": "player_safe",
+      "text": "Five rough bedrolls surround a lidded stone bin.",
+      "source_ref": {
+        "source_key": "V-4"
+      }
+    },
+    {
+      "id": "block:v4_gm_detail",
+      "type": "gm_detail",
+      "audience": "gm_only",
+      "text": "Five Changed Delvers occupy the chamber. Combat can draw surviving V-3 occupants after a random delay.",
+      "source_ref": {
+        "source_key": "V-4"
+      }
+    },
+    {
+      "id": "block:wandering_procedure",
+      "type": "procedure",
+      "audience": "gm_only",
+      "text": "Check every thirty minutes of game time. A one-in-six result produces an encounter selected from the site table.",
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    }
+  ],
+  "locations": [
+    {
+      "id": "location:border_settlement",
+      "type": "location",
+      "names": {
+        "simple": "settlement",
+        "proper": "Merewatch"
+      },
+      "content_refs": [
+        "block:settlement_summary"
+      ],
+      "asset_refs": [
+        "asset:settlement_map"
+      ],
+      "baseline": {
+        "summary": "A small inhabited settlement near the adventure site.",
+        "functions": [
+          "settlement",
+          "adventuring_base"
+        ],
+        "condition_tags": [
+          "isolated"
+        ]
+      },
+      "source_ref": {
+        "section": "Border Settlement"
+      }
+    },
+    {
+      "id": "location:wayfarers_rest",
+      "type": "location",
+      "names": {
+        "simple": "inn",
+        "proper": "Wayfarer's Rest"
+      },
+      "parent_ref": "location:border_settlement",
+      "content_refs": [
+        "block:inn_read_aloud",
+        "block:inn_gm_detail"
+      ],
+      "asset_refs": [
+        "asset:settlement_map"
+      ],
+      "object_refs": [
+        "object:inn_lockbox"
+      ],
+      "situation_refs": [
+        "situation:inn_service"
+      ],
+      "baseline": {
+        "summary": "A practical family-operated inn.",
+        "functions": [
+          "lodging",
+          "meals",
+          "tavern"
+        ],
+        "condition_tags": [
+          "weathered",
+          "occupied"
+        ]
+      },
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "location:steamvault",
+      "type": "location",
+      "names": {
+        "simple": "underground complex",
+        "proper": "The Steamvault"
+      },
+      "content_refs": [
+        "block:steamvault_summary",
+        "block:wandering_procedure"
+      ],
+      "asset_refs": [
+        "asset:steamvault_map"
+      ],
+      "feature_refs": [
+        "active_feature:steamvault_wandering_checks"
+      ],
+      "baseline": {
+        "summary": "A warm, unstable underground complex.",
+        "functions": [
+          "adventure_site",
+          "lair"
+        ],
+        "condition_tags": [
+          "hot",
+          "damp"
+        ]
+      },
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    },
+    {
+      "id": "location:steamvault_v1",
+      "type": "location",
+      "names": {
+        "simple": "passage chamber",
+        "proper": "Ash Passage"
+      },
+      "parent_ref": "location:steamvault",
+      "content_refs": [
+        "block:v1_summary"
+      ],
+      "asset_refs": [
+        "asset:steamvault_map"
+      ],
+      "baseline": {
+        "summary": "An empty connector used by responding occupants."
+      },
+      "source_ref": {
+        "source_key": "V-1"
+      }
+    },
+    {
+      "id": "location:steamvault_v2",
+      "type": "location",
+      "names": {
+        "simple": "control chamber",
+        "proper": "Alarm Chamber"
+      },
+      "parent_ref": "location:steamvault",
+      "content_refs": [
+        "block:v2_read_aloud",
+        "block:v2_gm_detail",
+        "block:v2_alarm_procedure"
+      ],
+      "asset_refs": [
+        "asset:steamvault_map"
+      ],
+      "feature_refs": [
+        "active_feature:v2_alarm_coffer"
+      ],
+      "object_refs": [
+        "object:v2_coffer"
+      ],
+      "situation_refs": [
+        "situation:v2_alarm_response"
+      ],
+      "baseline": {
+        "summary": "An unoccupied chamber containing an alarmed coffer."
+      },
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "location:steamvault_v3",
+      "type": "location",
+      "names": {
+        "simple": "lair chamber",
+        "proper": "Ash Burrower Nest"
+      },
+      "parent_ref": "location:steamvault",
+      "content_refs": [
+        "block:v3_read_aloud",
+        "block:v3_gm_detail"
+      ],
+      "asset_refs": [
+        "asset:steamvault_map"
+      ],
+      "object_refs": [
+        "object:v3_lockbox"
+      ],
+      "situation_refs": [
+        "situation:v3_burrower_nest"
+      ],
+      "baseline": {
+        "summary": "A hot lair with three sleeping hollows and a concealed route."
+      },
+      "source_ref": {
+        "source_key": "V-3"
+      }
+    },
+    {
+      "id": "location:steamvault_v4",
+      "type": "location",
+      "names": {
+        "simple": "lair chamber",
+        "proper": "Changed Delver Quarters"
+      },
+      "parent_ref": "location:steamvault",
+      "content_refs": [
+        "block:v4_read_aloud",
+        "block:v4_gm_detail"
+      ],
+      "asset_refs": [
+        "asset:steamvault_map"
+      ],
+      "object_refs": [
+        "object:v4_bin"
+      ],
+      "situation_refs": [
+        "situation:v4_changed_delvers"
+      ],
+      "baseline": {
+        "summary": "A five-bed lair connected to V-3 by a concealed route."
+      },
+      "source_ref": {
+        "source_key": "V-4"
+      }
+    }
+  ],
+  "actors": [
+    {
+      "id": "actor:mara_voss",
+      "type": "actor",
+      "name": "Mara Voss",
+      "identity": {
+        "ancestry": "human",
+        "alignment": "neutral good",
+        "roles": [
+          "innkeeper"
+        ]
+      },
+      "presentation": {
+        "summary": "A practical proprietor who keeps the inn functioning."
+      },
+      "mechanics": {
+        "mode": "reference",
+        "ref": "rules_ref:prototype_veteran"
+      },
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "actor:oren_voss",
+      "type": "actor",
+      "name": "Oren Voss",
+      "identity": {
+        "ancestry": "human",
+        "alignment": "neutral good",
+        "roles": [
+          "innkeeper_family"
+        ]
+      },
+      "presentation": {
+        "summary": "A relative who manages rooms and meals."
+      },
+      "mechanics": {
+        "mode": "reference",
+        "ref": "rules_ref:prototype_commoner"
+      },
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "actor:tess_voss",
+      "type": "actor",
+      "name": "Tess Voss",
+      "identity": {
+        "ancestry": "human",
+        "alignment": "neutral",
+        "roles": [
+          "innkeeper_family"
+        ]
+      },
+      "presentation": {
+        "summary": "A relative who works in the common room and stable yard."
+      },
+      "mechanics": {
+        "mode": "reference",
+        "ref": "rules_ref:prototype_commoner"
+      },
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    }
+  ],
+  "placements": [
+    {
+      "id": "placement:mara_at_inn",
+      "type": "placement",
+      "actor_ref": "actor:mara_voss",
+      "location_ref": "location:wayfarers_rest",
+      "stance": "source_baseline",
+      "presence": "usual"
+    },
+    {
+      "id": "placement:oren_at_inn",
+      "type": "placement",
+      "actor_ref": "actor:oren_voss",
+      "location_ref": "location:wayfarers_rest",
+      "stance": "source_baseline",
+      "presence": "usual"
+    },
+    {
+      "id": "placement:tess_at_inn",
+      "type": "placement",
+      "actor_ref": "actor:tess_voss",
+      "location_ref": "location:wayfarers_rest",
+      "stance": "source_baseline",
+      "presence": "usual"
+    }
+  ],
+  "objects": [
+    {
+      "id": "object:inn_lockbox",
+      "type": "object",
+      "name": "inn lockbox",
+      "location_ref": "location:wayfarers_rest",
+      "content_refs": [
+        "block:inn_gm_detail"
+      ],
+      "state_defaults": {
+        "removed": false
+      },
+      "contents": [
+        {
+          "name": "mixed coin reserve",
+          "quantity": 1,
+          "value": "modest business reserve"
+        }
+      ]
+    },
+    {
+      "id": "object:v2_coffer",
+      "type": "object",
+      "name": "alarmed storage coffer",
+      "location_ref": "location:steamvault_v2",
+      "content_refs": [
+        "block:v2_gm_detail"
+      ],
+      "feature_refs": [
+        "active_feature:v2_alarm_coffer"
+      ],
+      "mechanic_refs": [
+        "mechanic:v2_notice_alarm",
+        "mechanic:v2_disable_alarm"
+      ],
+      "state_defaults": {
+        "open": false,
+        "moved": false,
+        "alarm": "armed"
+      },
+      "contents": [
+        {
+          "name": "copper ingots",
+          "quantity": 5
+        }
+      ]
+    },
+    {
+      "id": "object:v3_lockbox",
+      "type": "object",
+      "name": "locked iron box",
+      "location_ref": "location:steamvault_v3",
+      "content_refs": [
+        "block:v3_gm_detail"
+      ],
+      "mechanic_refs": [
+        "mechanic:break_locked_container",
+        "mechanic:pick_locked_container"
+      ],
+      "state_defaults": {
+        "open": false,
+        "locked": true,
+        "broken": false
+      },
+      "contents": [
+        {
+          "name": "silver trade bar",
+          "quantity": 2,
+          "value": "25 gp each"
+        },
+        {
+          "name": "healing draught",
+          "quantity": 1,
+          "rules_ref": "rules_ref:healing_draught"
+        }
+      ]
+    },
+    {
+      "id": "object:v4_bin",
+      "type": "object",
+      "name": "lidded stone bin",
+      "location_ref": "location:steamvault_v4",
+      "content_refs": [
+        "block:v4_gm_detail"
+      ],
+      "state_defaults": {
+        "open": false
+      },
+      "contents": [
+        {
+          "name": "salvaged tools",
+          "quantity": 4
+        }
+      ]
+    }
+  ],
+  "tables": [
+    {
+      "id": "table:steamvault_wandering_encounters",
+      "type": "table",
+      "name": "Steamvault Wandering Encounters",
+      "dice": "1d6",
+      "outcomes": [
+        {
+          "matches": [
+            1,
+            2
+          ],
+          "quantity": "1d3",
+          "result_ref": "rules_ref:prototype_giant_rat"
+        },
+        {
+          "matches": [
+            3,
+            4
+          ],
+          "quantity": 1,
+          "result_ref": "module_rules:steamvault_prototype:monster/ash_burrower"
+        },
+        {
+          "matches": [
+            5,
+            6
+          ],
+          "quantity": "1d2",
+          "result_ref": "module_rules:steamvault_prototype:monster/changed_delver"
+        }
+      ],
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    }
+  ],
+  "active_features": [
+    {
+      "id": "active_feature:v2_alarm_coffer",
+      "type": "active_feature",
+      "name": "Concealed coffer alarm",
+      "kinds": [
+        "alarm",
+        "hazard"
+      ],
+      "scope": [
+        "location:steamvault_v2"
+      ],
+      "attached_object_ref": "object:v2_coffer",
+      "content_refs": [
+        "block:v2_gm_detail",
+        "block:v2_alarm_procedure"
+      ],
+      "mechanic_refs": [
+        "mechanic:v2_notice_alarm",
+        "mechanic:v2_disable_alarm"
+      ],
+      "triggers": [
+        {
+          "event": "object_moved",
+          "unless_state": "alarm=disabled"
+        },
+        {
+          "event": "object_opened",
+          "unless_state": "alarm=disabled"
+        }
+      ],
+      "effects": [
+        {
+          "operation": "set_state",
+          "target_ref": "active_feature:v2_alarm_coffer",
+          "value": "triggered"
+        },
+        {
+          "operation": "activate_situation",
+          "target_ref": "situation:v2_alarm_response"
+        }
+      ],
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "active_feature:steamvault_wandering_checks",
+      "type": "active_feature",
+      "name": "Steamvault wandering encounter checks",
+      "kinds": [
+        "encounter_check",
+        "schedule"
+      ],
+      "scope": [
+        "location:steamvault"
+      ],
+      "content_refs": [
+        "block:wandering_procedure"
+      ],
+      "mechanic_refs": [
+        "mechanic:steamvault_wandering_check"
+      ],
+      "triggers": [
+        {
+          "event": "adventure_time_elapsed",
+          "condition": "30 minutes since the previous check"
+        }
+      ],
+      "effects": [
+        {
+          "operation": "roll_table",
+          "target_ref": "table:steamvault_wandering_encounters",
+          "mechanic_ref": "mechanic:steamvault_wandering_check"
+        }
+      ],
+      "source_ref": {
+        "section": "The Steamvault"
+      }
+    }
+  ],
+  "situations": [
+    {
+      "id": "situation:inn_service",
+      "type": "situation",
+      "name": "Wayfarer's Rest normal operation",
+      "location_ref": "location:wayfarers_rest",
+      "participants": [
+        {
+          "role": "proprietor",
+          "quantity": 1,
+          "actor_ref": "actor:mara_voss"
+        },
+        {
+          "role": "family_worker",
+          "quantity": 1,
+          "actor_ref": "actor:oren_voss"
+        },
+        {
+          "role": "family_worker",
+          "quantity": 1,
+          "actor_ref": "actor:tess_voss"
+        }
+      ],
+      "preconditions": [
+        "baseline placements have not been changed by campaign state"
+      ],
+      "on_events": [],
+      "content_refs": [
+        "block:inn_gm_detail"
+      ],
+      "source_ref": {
+        "source_key": "S-3"
+      }
+    },
+    {
+      "id": "situation:v2_alarm_response",
+      "type": "situation",
+      "name": "V-2 alarm response",
+      "location_ref": "location:steamvault_v2",
+      "trigger_ref": "active_feature:v2_alarm_coffer",
+      "participants": [],
+      "preconditions": [
+        "alarm is triggered",
+        "affected occupants are alive and still present"
+      ],
+      "on_events": [
+        {
+          "event": "situation_activated",
+          "effects": [
+            {
+              "operation": "set_flag",
+              "target_ref": "situation:v3_burrower_nest",
+              "value": "cannot_be_surprised"
+            },
+            {
+              "operation": "set_intent",
+              "target_ref": "group:v4_occupants",
+              "value": "move_to_v2_via_v1"
+            }
+          ]
+        }
+      ],
+      "content_refs": [
+        "block:v2_alarm_procedure"
+      ],
+      "source_ref": {
+        "source_key": "V-2"
+      }
+    },
+    {
+      "id": "situation:v3_burrower_nest",
+      "type": "situation",
+      "name": "V-3 Ash Burrower nest",
+      "location_ref": "location:steamvault_v3",
+      "participants": [
+        {
+          "role": "occupant",
+          "quantity": 3,
+          "rules_ref": "module_rules:steamvault_prototype:monster/ash_burrower",
+          "group_ref": "group:v3_occupants"
+        }
+      ],
+      "preconditions": [
+        "V-3 occupants are alive and present"
+      ],
+      "on_events": [
+        {
+          "event": "combat_begins",
+          "if_ref": "group:v4_occupants",
+          "if_state": "alive_and_present",
+          "mechanic_ref": "mechanic:reinforcement_delay",
+          "effects": [
+            {
+              "operation": "set_intent",
+              "target_ref": "group:v4_occupants",
+              "value": "move_to_v3_via_secret_route",
+              "mechanic_ref": "mechanic:reinforcement_delay"
+            }
+          ]
+        }
+      ],
+      "content_refs": [
+        "block:v3_read_aloud",
+        "block:v3_gm_detail"
+      ],
+      "source_ref": {
+        "source_key": "V-3"
+      }
+    },
+    {
+      "id": "situation:v4_changed_delvers",
+      "type": "situation",
+      "name": "V-4 Changed Delvers",
+      "location_ref": "location:steamvault_v4",
+      "participants": [
+        {
+          "role": "occupant",
+          "quantity": 5,
+          "rules_ref": "module_rules:steamvault_prototype:monster/changed_delver",
+          "group_ref": "group:v4_occupants"
+        }
+      ],
+      "preconditions": [
+        "V-4 occupants are alive and present"
+      ],
+      "on_events": [
+        {
+          "event": "combat_begins",
+          "if_ref": "group:v3_occupants",
+          "if_state": "alive_and_present",
+          "mechanic_ref": "mechanic:reinforcement_delay",
+          "effects": [
+            {
+              "operation": "set_intent",
+              "target_ref": "group:v3_occupants",
+              "value": "move_to_v4_via_secret_route",
+              "mechanic_ref": "mechanic:reinforcement_delay"
+            }
+          ]
+        }
+      ],
+      "content_refs": [
+        "block:v4_read_aloud",
+        "block:v4_gm_detail"
+      ],
+      "source_ref": {
+        "source_key": "V-4"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "relationship:inn_in_settlement",
+      "type": "contained_by",
+      "from_ref": "location:wayfarers_rest",
+      "to_ref": "location:border_settlement"
+    },
+    {
+      "id": "relationship:v1_in_vault",
+      "type": "contained_by",
+      "from_ref": "location:steamvault_v1",
+      "to_ref": "location:steamvault"
+    },
+    {
+      "id": "relationship:v2_in_vault",
+      "type": "contained_by",
+      "from_ref": "location:steamvault_v2",
+      "to_ref": "location:steamvault"
+    },
+    {
+      "id": "relationship:v3_in_vault",
+      "type": "contained_by",
+      "from_ref": "location:steamvault_v3",
+      "to_ref": "location:steamvault"
+    },
+    {
+      "id": "relationship:v4_in_vault",
+      "type": "contained_by",
+      "from_ref": "location:steamvault_v4",
+      "to_ref": "location:steamvault"
+    },
+    {
+      "id": "relationship:v2_connects_v1",
+      "type": "connects",
+      "from_ref": "location:steamvault_v2",
+      "to_ref": "location:steamvault_v1",
+      "route": "open passage"
+    },
+    {
+      "id": "relationship:v2_connects_v3",
+      "type": "connects",
+      "from_ref": "location:steamvault_v2",
+      "to_ref": "location:steamvault_v3",
+      "route": "open passage"
+    },
+    {
+      "id": "relationship:v1_connects_v4",
+      "type": "connects",
+      "from_ref": "location:steamvault_v1",
+      "to_ref": "location:steamvault_v4",
+      "route": "alarm-response passage"
+    },
+    {
+      "id": "relationship:v3_secret_route_v4",
+      "type": "connects",
+      "from_ref": "location:steamvault_v3",
+      "to_ref": "location:steamvault_v4",
+      "route": "concealed passage",
+      "mechanic_refs": [
+        "mechanic:v3_find_secret_route",
+        "mechanic:v3_open_secret_route"
+      ]
+    },
+    {
+      "id": "relationship:alarm_reaches_v3",
+      "type": "signal_reaches",
+      "from_ref": "active_feature:v2_alarm_coffer",
+      "to_ref": "location:steamvault_v3"
+    },
+    {
+      "id": "relationship:alarm_reaches_v4",
+      "type": "signal_reaches",
+      "from_ref": "active_feature:v2_alarm_coffer",
+      "to_ref": "location:steamvault_v4"
+    }
+  ],
+  "adaptation_points": [
+    {
+      "id": "adaptation_point:settlement_identity",
+      "type": "adaptation_point",
+      "state": "open",
+      "stance": "source_explicit",
+      "purpose": "Bind the settlement to an existing campaign.",
+      "targets": [
+        "location:border_settlement"
+      ],
+      "constraints": [
+        "Preserve practical access to the adventure site."
+      ],
+      "suggestions": [
+        "rename the settlement",
+        "replace it with an existing settlement"
+      ],
+      "binding": null,
+      "source_ref": {
+        "section": "Border Settlement"
+      }
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset:settlement_map",
+      "type": "map",
+      "audience": "gm",
+      "source_ref": {
+        "section": "Border Settlement Map"
+      },
+      "contains_secrets": false,
+      "scale": {
+        "value": 10,
+        "unit": "feet",
+        "per": "square"
+      },
+      "regions": [
+        {
+          "id": "region-s3",
+          "source_key": "S-3",
+          "location_ref": "location:wayfarers_rest"
+        }
+      ]
+    },
+    {
+      "id": "asset:steamvault_map",
+      "type": "map",
+      "audience": "gm",
+      "source_ref": {
+        "section": "Steamvault Map"
+      },
+      "contains_secrets": true,
+      "scale": {
+        "value": 10,
+        "unit": "feet",
+        "per": "square"
+      },
+      "regions": [
+        {
+          "id": "region-v1",
+          "source_key": "V-1",
+          "location_ref": "location:steamvault_v1"
+        },
+        {
+          "id": "region-v2",
+          "source_key": "V-2",
+          "location_ref": "location:steamvault_v2"
+        },
+        {
+          "id": "region-v3",
+          "source_key": "V-3",
+          "location_ref": "location:steamvault_v3"
+        },
+        {
+          "id": "region-v4",
+          "source_key": "V-4",
+          "location_ref": "location:steamvault_v4"
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "references": [
+      {
+        "id": "rules_ref:prototype_veteran",
+        "target": "monster:veteran"
+      },
+      {
+        "id": "rules_ref:prototype_commoner",
+        "target": "monster:commoner"
+      },
+      {
+        "id": "rules_ref:prototype_giant_rat",
+        "target": "monster:giant_rat"
+      },
+      {
+        "id": "rules_ref:healing_draught",
+        "target": "magic_item:potion_of_healing"
+      }
+    ],
+    "supplements": [
+      {
+        "id": "module_rules:steamvault_prototype:monster/ash_burrower",
+        "entity_type": "monster",
+        "ruleset": "srd_5_1",
+        "ownership": "module_supplement",
+        "data": {
+          "id": "monster:ash_burrower",
+          "simple_name": "ash_burrower",
+          "name": "Ash Burrower",
+          "aliases": [
+            "cinder mole"
+          ],
+          "size": "Medium",
+          "type": "monstrosity",
+          "alignment": "unaligned",
+          "armor_class": {
+            "value": 12,
+            "type": "natural armor",
+            "type_id": "natural_armor"
+          },
+          "hit_points": {
+            "average": 27,
+            "formula": "5d8+5"
+          },
+          "hit_dice": "5d8",
+          "speed": {
+            "walk": 25,
+            "burrow": 20,
+            "swim": 0,
+            "fly": 0,
+            "climb": 0,
+            "hover": false
+          },
+          "ability_scores": {
+            "strength": {
+              "value": 14,
+              "modifier": 2
+            },
+            "dexterity": {
+              "value": 12,
+              "modifier": 1
+            },
+            "constitution": {
+              "value": 13,
+              "modifier": 1
+            },
+            "intelligence": {
+              "value": 5,
+              "modifier": -3
+            },
+            "wisdom": {
+              "value": 10,
+              "modifier": 0
+            },
+            "charisma": {
+              "value": 6,
+              "modifier": -2
+            }
+          },
+          "damage_resistances": [
+            {
+              "type": "fire",
+              "type_id": "damage:fire"
+            }
+          ],
+          "traits": [
+            {
+              "name": "Ash Camouflage",
+              "simple_name": "ash_camouflage",
+              "description": [
+                "The burrower has advantage on Dexterity (Stealth) checks made in ash or loose volcanic soil."
+              ]
+            }
+          ],
+          "actions": [
+            {
+              "name": "Multiattack",
+              "simple_name": "multiattack",
+              "description": [
+                "The Ash Burrower makes two claw attacks."
+              ]
+            },
+            {
+              "name": "Claw",
+              "simple_name": "claw",
+              "description": [
+                "Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
+              ],
+              "attack_bonus": 4,
+              "range": {
+                "reach": 5
+              },
+              "damage": [
+                {
+                  "dice": "1d6+2",
+                  "type": "slashing",
+                  "type_id": "damage:slashing"
+                }
+              ]
+            }
+          ],
+          "challenge_rating": 0.5,
+          "xp_value": 100,
+          "senses": {
+            "darkvision": 60,
+            "blindsight": 0,
+            "tremorsense": 10,
+            "truesight": 0,
+            "passive_perception": 10
+          },
+          "languages": "understands Terran but cannot speak",
+          "page": 1
+        },
+        "source_ref": {
+          "section": "Prototype Creature Appendix"
+        }
+      },
+      {
+        "id": "module_rules:steamvault_prototype:monster/changed_delver",
+        "entity_type": "monster",
+        "ruleset": "srd_5_1",
+        "ownership": "module_supplement",
+        "data": {
+          "id": "monster:changed_delver",
+          "simple_name": "changed_delver",
+          "name": "Changed Delver",
+          "size": "Medium",
+          "type": "humanoid",
+          "alignment": "neutral evil",
+          "armor_class": {
+            "value": 11
+          },
+          "hit_points": {
+            "average": 22,
+            "formula": "4d8+4"
+          },
+          "hit_dice": "4d8",
+          "speed": {
+            "walk": 30,
+            "burrow": 0,
+            "swim": 0,
+            "fly": 0,
+            "climb": 0,
+            "hover": false
+          },
+          "ability_scores": {
+            "strength": {
+              "value": 13,
+              "modifier": 1
+            },
+            "dexterity": {
+              "value": 12,
+              "modifier": 1
+            },
+            "constitution": {
+              "value": 12,
+              "modifier": 1
+            },
+            "intelligence": {
+              "value": 7,
+              "modifier": -2
+            },
+            "wisdom": {
+              "value": 9,
+              "modifier": -1
+            },
+            "charisma": {
+              "value": 7,
+              "modifier": -2
+            }
+          },
+          "condition_immunities": [
+            {
+              "name": "frightened",
+              "condition_id": "condition:frightened"
+            }
+          ],
+          "actions": [
+            {
+              "name": "Pickaxe",
+              "simple_name": "pickaxe",
+              "description": [
+                "Melee Weapon Attack: +3 to hit, reach 5 ft., one target. Hit: 5 (1d8 + 1) piercing damage."
+              ],
+              "attack_bonus": 3,
+              "range": {
+                "reach": 5
+              },
+              "damage": [
+                {
+                  "dice": "1d8+1",
+                  "type": "piercing",
+                  "type_id": "damage:piercing"
+                }
+              ]
+            }
+          ],
+          "challenge_rating": 0.5,
+          "xp_value": 100,
+          "senses": {
+            "darkvision": 60,
+            "blindsight": 0,
+            "tremorsense": 0,
+            "truesight": 0,
+            "passive_perception": 9
+          },
+          "languages": "Common",
+          "page": 1
+        },
+        "source_ref": {
+          "section": "Prototype Creature Appendix"
+        }
+      }
+    ],
+    "procedures": [
+      {
+        "id": "mechanic:v2_notice_alarm",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:wisdom",
+        "skill_id": "skill:perception",
+        "dc": 13,
+        "purpose": "notice the concealed alarm"
+      },
+      {
+        "id": "mechanic:v2_disable_alarm",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:dexterity",
+        "tool_id": "tool:thieves_tools",
+        "dc": 12,
+        "purpose": "disable the alarm"
+      },
+      {
+        "id": "mechanic:steamvault_wandering_check",
+        "kind": "chance_roll",
+        "ruleset": "srd_5_1",
+        "dice": "1d6",
+        "matches": [
+          1
+        ],
+        "purpose": "determine whether a wandering encounter occurs"
+      },
+      {
+        "id": "mechanic:reinforcement_delay",
+        "kind": "duration_roll",
+        "ruleset": "srd_5_1",
+        "dice": "1d4",
+        "unit": "rounds",
+        "purpose": "delay before nearby occupants reinforce combat"
+      },
+      {
+        "id": "mechanic:break_locked_container",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:strength",
+        "dc": 15,
+        "purpose": "break open a locked container"
+      },
+      {
+        "id": "mechanic:pick_locked_container",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:dexterity",
+        "tool_id": "tool:thieves_tools",
+        "dc": 13,
+        "purpose": "pick a container lock"
+      },
+      {
+        "id": "mechanic:v3_find_secret_route",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:wisdom",
+        "skill_id": "skill:perception",
+        "dc": 12,
+        "purpose": "find the concealed route"
+      },
+      {
+        "id": "mechanic:v3_open_secret_route",
+        "kind": "ability_check",
+        "ruleset": "srd_5_1",
+        "ability_id": "ability:intelligence",
+        "skill_id": "skill:investigation",
+        "dc": 10,
+        "purpose": "find the route's opening mechanism"
+      }
+    ]
+  }
+}

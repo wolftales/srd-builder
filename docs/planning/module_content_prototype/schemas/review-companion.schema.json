@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wolftales.github.io/srd-builder/planning/review-companion.schema.json",
+  "version": "0.1.0",
+  "title": "Candidate module build and review companion",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "package_ref",
+    "package_content_version",
+    "items"
+  ],
+  "properties": {
+    "package_ref": {
+      "$ref": "#/$defs/id"
+    },
+    "package_content_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "runtime_ref",
+          "issue",
+          "status",
+          "note"
+        ],
+        "properties": {
+          "runtime_ref": {
+            "$ref": "#/$defs/id"
+          },
+          "issue": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "status": {
+            "enum": [
+              "proposed",
+              "review_required",
+              "accepted",
+              "rejected"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_blocks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9_:/.-]+$"
+    }
+  }
+}
