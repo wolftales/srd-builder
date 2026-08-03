@@ -6,6 +6,57 @@ list; do not let it accumulate history.
 
 ---
 
+## Planned: Entity id normalization (before SRD 5.2.1)
+
+> **Why now.** Doing this after a second ruleset ships means normalizing
+> two bundles and migrating consumers twice. Full analysis and the
+> reasoning behind each decision:
+> [docs/planning/entity_identity.md](planning/entity_identity.md).
+
+Ids currently encode **where a record was printed** rather than what it
+is. Found by building the module importer: given the name "Veteran"
+there is no rule that yields `npc:veteran` over `monster:veteran`, so
+the importer must read the built bundle and look the id up. A producer
+with one source and one consumer never has to ask that question, which
+is why it went unnoticed.
+
+### Scope: only where one kind is split across prefixes
+
+That is the query-breaking case — a kind cannot be enumerated without
+knowing every prefix it hides under.
+
+- `monster:` / `npc:` / `creature:` → `creature:` + `category` field
+- `item:` / `magic_item:` / `poison:` → `item:` + `magic` / effect fields
+  (a poison and a healing potion are one kind differing on a
+  beneficial-versus-harmful axis)
+- `feature:barbarian:rage` → `feature:barbarian_rage` (opaque slug) +
+  `class_ref`
+
+### Explicitly NOT in scope
+
+- **`table:` and `rule:`** are publication artifacts, not entities.
+  Position *is* their identity, exactly as it is for content blocks. Make
+  their slugs opaque so nothing splits on `/`; change nothing else.
+- **`disease:` does not merge into `condition:`.** In 5e a condition is
+  a term of art with a closed list; a disease is an affliction that
+  *imposes* conditions. Model that as a reference from disease to the
+  conditions it causes. Recorded so it is not "fixed" later.
+- `spell`, `condition`, `skill`, `ability`, `damage`,
+  `weapon_property`, `class`, `lineage` are already correct.
+
+### Delivery
+
+One MAJOR release with a migration note listing every changed id. **No
+alias map, no dual-emit, no compatibility shim** — carrying that forever
+costs more than a documented rename handled once, and would keep the
+defective scheme alive inside the producer. Consumers migrate on their
+own schedule by pinning the previous tag. `docs/COMPATIBILITY.md` gains
+the durable rule: ids are opaque outside their source; never parse one
+for meaning.
+
+
+---
+
 ## Active: Extractor consolidation (attempt #4)
 
 > **Status (2026-06-22).** 3/13 bound — `extract_features` and

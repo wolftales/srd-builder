@@ -90,12 +90,16 @@ position in a publication-artifact id is the point.
   an axis that is beneficial-versus-harmful. That is a field, like
   magical-versus-mundane. Folding both into `item:` would make "every consumable"
   a single query.
-- `disease:` looks mergeable into `condition:` and probably **is not**. In 5e a
-  *condition* is a term of art: a closed list with defined mechanical behaviour. A
-  disease is not a member of that list; it is an affliction that may impose
-  conditions. They are siblings, not subtype and supertype, and merging them would
-  flatten a real rules distinction to satisfy tidiness. Recorded so the split is
-  not "fixed" later by someone reading only the first half of this document.
+- `disease:` looks mergeable into `condition:` and **is not**. In 5e a *condition*
+  is a term of art: a closed list - blinded, charmed, deafened, frightened,
+  grappled, incapacitated, invisible, paralyzed, petrified, poisoned, prone,
+  restrained, stunned, unconscious, plus exhaustion levels - with defined
+  mechanical behaviour. A disease is not a member of it. The right model is a
+  **reference**: a disease imposes one or more conditions, so `disease:` gains a
+  link to the `condition:` records it causes. That is strictly more useful than a
+  merge, which would have destroyed the distinction and the link with it.
+  Recorded so the split is not "fixed" later by someone reading only the first
+  half of this document.
 
 Neither breaks a query today. Folding debatable churn into a change with a crisp
 justification weakens the case for both.
