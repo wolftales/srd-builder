@@ -12,6 +12,15 @@
     "source": {
       "format": "text",
       "fingerprint": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "relationship_vocabulary": {
+      "information": [
+        "signal_reaches"
+      ],
+      "world": [
+        "connects",
+        "contained_by"
+      ]
     }
   },
   "publication": [
@@ -858,58 +867,76 @@
   "relationships": [
     {
       "id": "relationship:inn_in_settlement",
+      "view": "world",
       "type": "contained_by",
+      "stance": "source_inferred",
       "from_ref": "location:wayfarers_rest",
       "to_ref": "location:border_settlement"
     },
     {
       "id": "relationship:v1_in_vault",
+      "view": "world",
       "type": "contained_by",
+      "stance": "source_inferred",
       "from_ref": "location:steamvault_v1",
       "to_ref": "location:steamvault"
     },
     {
       "id": "relationship:v2_in_vault",
+      "view": "world",
       "type": "contained_by",
+      "stance": "source_inferred",
       "from_ref": "location:steamvault_v2",
       "to_ref": "location:steamvault"
     },
     {
       "id": "relationship:v3_in_vault",
+      "view": "world",
       "type": "contained_by",
+      "stance": "source_inferred",
       "from_ref": "location:steamvault_v3",
       "to_ref": "location:steamvault"
     },
     {
       "id": "relationship:v4_in_vault",
+      "view": "world",
       "type": "contained_by",
+      "stance": "source_inferred",
       "from_ref": "location:steamvault_v4",
       "to_ref": "location:steamvault"
     },
     {
       "id": "relationship:v2_connects_v1",
+      "view": "world",
       "type": "connects",
+      "stance": "source_explicit",
       "from_ref": "location:steamvault_v2",
       "to_ref": "location:steamvault_v1",
       "route": "open passage"
     },
     {
       "id": "relationship:v2_connects_v3",
+      "view": "world",
       "type": "connects",
+      "stance": "source_explicit",
       "from_ref": "location:steamvault_v2",
       "to_ref": "location:steamvault_v3",
       "route": "open passage"
     },
     {
       "id": "relationship:v1_connects_v4",
+      "view": "world",
       "type": "connects",
+      "stance": "source_explicit",
       "from_ref": "location:steamvault_v1",
       "to_ref": "location:steamvault_v4",
       "route": "alarm-response passage"
     },
     {
       "id": "relationship:v3_secret_route_v4",
+      "view": "world",
       "type": "connects",
+      "stance": "source_explicit",
       "from_ref": "location:steamvault_v3",
       "to_ref": "location:steamvault_v4",
       "route": "concealed passage",
@@ -920,13 +947,17 @@
     },
     {
       "id": "relationship:alarm_reaches_v3",
+      "view": "information",
       "type": "signal_reaches",
+      "stance": "source_explicit",
       "from_ref": "active_feature:v2_alarm_coffer",
       "to_ref": "location:steamvault_v3"
     },
     {
       "id": "relationship:alarm_reaches_v4",
+      "view": "information",
       "type": "signal_reaches",
+      "stance": "source_explicit",
       "from_ref": "active_feature:v2_alarm_coffer",
       "to_ref": "location:steamvault_v4"
     }

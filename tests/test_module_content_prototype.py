@@ -327,6 +327,58 @@ def test_external_refs_resolve_against_the_built_srd_bundle(bundle_ids: set[str]
     assert missing == set(), f"external refs not present in the SRD bundle: {sorted(missing)}"
 
 
+def test_relationship_views_are_declared_and_vocabulary_is_closed_per_package() -> None:
+    """Views are normative; types are vocabulary the package must declare itself.
+
+    An open type vocabulary is what lets a later investigation slice add
+    information edges without a schema version bump. Requiring each type to be
+    declared in meta.relationship_vocabulary keeps it checkable anyway.
+    """
+    package = _load(PACKAGE_PATH)
+    vocabulary = package["meta"]["relationship_vocabulary"]
+    declared_pairs = {(view, type_) for view, types in vocabulary.items() for type_ in types}
+
+    used_pairs = {(rel["view"], rel["type"]) for rel in package["relationships"]}
+    assert used_pairs <= declared_pairs, f"undeclared: {sorted(used_pairs - declared_pairs)}"
+    assert declared_pairs == used_pairs, "vocabulary declares types the package never uses"
+
+    # A type name must mean one thing: the same type may not span two views.
+    views_by_type: dict[str, set[str]] = {}
+    for view, type_ in declared_pairs:
+        views_by_type.setdefault(type_, set()).add(view)
+    assert all(len(views) == 1 for views in views_by_type.values())
+
+
+def test_inferred_relationships_are_not_load_bearing() -> None:
+    """Strip every relationship the importer inferred; the package must still run.
+
+    This is the machine substitute for hand review. Module imports are unbounded,
+    so nothing that was inferred rather than stated can be required to run the
+    content — otherwise unreviewed inference silently becomes canon.
+    """
+    package = _load(PACKAGE_PATH)
+    explicit = [rel for rel in package["relationships"] if rel["stance"] == "source_explicit"]
+    assert len(explicit) < len(package["relationships"]), "fixture has no inferred edges to strip"
+
+    stripped = {**package, "relationships": explicit}
+    _validator("module-package.schema.json").validate(stripped)
+    assert (
+        _internal_refs(stripped) - _declared_ids(stripped) - _declared_group_ids(stripped) == set()
+    )
+
+    # R1 still answers, and site-scoped feature composition still resolves —
+    # containment survives on location.parent_ref, not on the inferred edges.
+    assert _baseline_actor_ids(stripped, "location:wayfarers_rest") == {
+        "actor:mara_voss",
+        "actor:oren_voss",
+        "actor:tess_voss",
+    }
+    context = _load(SCENE_CONTEXT_PATH)
+    assert set(context["effective_active_features"]) == _effective_feature_ids(
+        stripped, context["location"]["ref"]
+    )
+
+
 def test_scene_context_and_review_refs_resolve() -> None:
     package = _load(PACKAGE_PATH)
     context = _load(SCENE_CONTEXT_PATH)

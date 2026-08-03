@@ -126,6 +126,37 @@
       },
       "uniqueItems": true
     },
+    "relationshipView": {
+      "description": "Which graph a relationship belongs to. Normative and closed: consumers switch on this, so physical travel can never be mistaken for narrative progression.",
+      "enum": [
+        "publication",
+        "world",
+        "information",
+        "procedural",
+        "reference",
+        "adaptation"
+      ]
+    },
+    "relationshipType": {
+      "description": "Relationship vocabulary within a view. Extensible, but every value used MUST be declared in meta.relationship_vocabulary.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "relationshipTypeList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationshipType"
+      },
+      "uniqueItems": true
+    },
+    "contentStance": {
+      "description": "Whether the source established this, the importer worked it out, or a reviewer proposed it.",
+      "enum": [
+        "source_explicit",
+        "source_inferred",
+        "reviewer_proposed"
+      ]
+    },
     "sourceRef": {
       "type": "object",
       "additionalProperties": false,
@@ -178,7 +209,8 @@
         "schema_version",
         "builder_version",
         "ruleset",
-        "source"
+        "source",
+        "relationship_vocabulary"
       ],
       "properties": {
         "package_id": {
@@ -238,6 +270,31 @@
             "fingerprint": {
               "type": "string",
               "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          }
+        },
+        "relationship_vocabulary": {
+          "description": "The relationship types this package uses, grouped by view. Makes the package self-describing so an open vocabulary stays checkable within a package.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "publication": {
+              "$ref": "#/$defs/relationshipTypeList"
+            },
+            "world": {
+              "$ref": "#/$defs/relationshipTypeList"
+            },
+            "information": {
+              "$ref": "#/$defs/relationshipTypeList"
+            },
+            "procedural": {
+              "$ref": "#/$defs/relationshipTypeList"
+            },
+            "reference": {
+              "$ref": "#/$defs/relationshipTypeList"
+            },
+            "adaptation": {
+              "$ref": "#/$defs/relationshipTypeList"
             }
           }
         }
@@ -959,7 +1016,9 @@
       "additionalProperties": false,
       "required": [
         "id",
+        "view",
         "type",
+        "stance",
         "from_ref",
         "to_ref"
       ],
@@ -967,14 +1026,14 @@
         "id": {
           "$ref": "#/$defs/id"
         },
+        "view": {
+          "$ref": "#/$defs/relationshipView"
+        },
         "type": {
-          "enum": [
-            "contained_by",
-            "connects",
-            "signal_reaches",
-            "located_at",
-            "supports"
-          ]
+          "$ref": "#/$defs/relationshipType"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         },
         "from_ref": {
           "$ref": "#/$defs/id"
