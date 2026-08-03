@@ -6,6 +6,7 @@ compiled packages belong under `build/` and never in the repository.
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from typing import Any
 
 from srd_builder import __version__
@@ -15,17 +16,34 @@ from srd_builder.module_import.spine import KeyedEntry, location_id, simple_name
 
 SCHEMA_VERSION = "0.1.0"
 
+
+@dataclass
+class PackageContent:
+    """The records a compile run produced, before they become a package.
+
+    Grouped rather than passed individually: the collections grow together as
+    the importer covers more of a publication, and threading each one through
+    the assembler as its own parameter stops scaling almost immediately.
+    """
+
+    publication: list[dict[str, Any]] = field(default_factory=list)
+    blocks: list[dict[str, Any]] = field(default_factory=list)
+    locations: list[dict[str, Any]] = field(default_factory=list)
+    actor_groups: list[dict[str, Any]] = field(default_factory=list)
+    placements: list[dict[str, Any]] = field(default_factory=list)
+    references: list[dict[str, Any]] = field(default_factory=list)
+    supplements: list[dict[str, Any]] = field(default_factory=list)
+    relationships: list[dict[str, Any]] = field(default_factory=list)
+
+
 #: Collections the package schema requires. Every one is present even when this
 #: slice has nothing to put in it, so the envelope stays valid as it fills in.
 EMPTY_COLLECTIONS = (
     "actors",
-    "actor_groups",
-    "placements",
     "objects",
     "tables",
     "active_features",
     "situations",
-    "relationships",
     "adaptation_points",
     "assets",
 )
@@ -68,16 +86,21 @@ def build_supplement(
     }
 
 
+def _relationship_vocabulary(relationships: list[dict[str, Any]]) -> dict[str, list[str]]:
+    """What the package declares about its own graph, derived from its edges."""
+    vocabulary: dict[str, set[str]] = {}
+    for relationship in relationships:
+        vocabulary.setdefault(relationship["view"], set()).add(relationship["type"])
+    return {view: sorted(types) for view, types in sorted(vocabulary.items())}
+
+
 def build_package(
     identity: PublicationIdentity,
     profile: SourceProfile,
+    content: PackageContent,
     *,
     title: str,
-    publication: list[dict[str, Any]],
-    blocks: list[dict[str, Any]],
-    locations: list[dict[str, Any]],
     content_version: str,
-    supplements: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """A schema-valid package for the compiled slice."""
     return {
@@ -91,12 +114,19 @@ def build_package(
             "source": {"format": "pdf", "fingerprint": identity.fingerprint},
             # Declared even when empty: the package describes its own vocabulary,
             # and an absent declaration is not the same as an empty one.
-            "relationship_vocabulary": {},
+            "relationship_vocabulary": _relationship_vocabulary(content.relationships),
             "state_vocabulary": {},
         },
-        "publication": publication,
-        "blocks": blocks,
-        "locations": locations,
+        "publication": content.publication,
+        "blocks": content.blocks,
+        "locations": content.locations,
+        "actor_groups": content.actor_groups,
+        "placements": content.placements,
+        "relationships": content.relationships,
         **{name: [] for name in EMPTY_COLLECTIONS},
-        "rules": {"references": [], "supplements": supplements or [], "procedures": []},
+        "rules": {
+            "references": content.references,
+            "supplements": content.supplements,
+            "procedures": [],
+        },
     }

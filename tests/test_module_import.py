@@ -27,8 +27,8 @@ from referencing import Registry, Resource
 from referencing.jsonschema import DRAFT202012
 
 from srd_builder.module_import import blocks as block_builder
+from srd_builder.module_import import creatures, spine, statblocks
 from srd_builder.module_import import source as source_io
-from srd_builder.module_import import spine, statblocks
 from srd_builder.module_import.compile import compile_location_slice
 from srd_builder.module_import.profile import GRIMMSGATE_5E, SourceProfile
 from srd_builder.module_import.source import TocEntry
@@ -386,3 +386,124 @@ def test_supplements_carry_mechanics_not_just_names(compiled_slice: dict[str, An
         assert data["actions"], f"{supplement['id']} has no actions"
         for ability in data["ability_scores"].values():
             assert 1 <= ability["value"] <= 30
+
+
+# --------------------------------------------------------------------------
+# Creature resolution
+# --------------------------------------------------------------------------
+
+
+def test_plural_variants_offer_both_forms_never_one_or_the_other() -> None:
+    """A name ending in "man" may still pluralize with -s.
+
+    Treating the -man rule as an ALTERNATIVE to the regular rule generated
+    "cursed humen", which appears nowhere, so the creature went undetected with
+    no error at all. Both forms are always offered.
+    """
+    assert "ash humans" in creatures.name_variants("Ash Human")
+    assert "burrow-men" in creatures.name_variants("Burrow-man")
+    assert "burrow-mans" in creatures.name_variants("Burrow-man")  # harmless, and cheap
+    assert creatures.name_variants("Manes") == ["manes"]
+
+
+def test_bundle_namespace_is_looked_up_not_constructed(tmp_path: Path) -> None:
+    """The bundle files creatures under three namespaces with no naming rule."""
+    (tmp_path / "monsters.json").write_text(
+        json.dumps(
+            {
+                "items": [
+                    {"id": "npc:veteran", "name": "Veteran"},
+                    {"id": "creature:giant_rat", "name": "Giant Rat"},
+                    {"id": "monster:troll", "name": "Troll"},
+                    {"id": "spell:fireball", "name": "Fireball"},
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    index = creatures.bundle_creature_index(tmp_path)
+
+    assert index["veteran"] == "npc:veteran"
+    assert index["giant rat"] == "creature:giant_rat"
+    assert index["troll"] == "monster:troll"
+    assert "fireball" not in index, "only creature namespaces belong in the index"
+    # An unbuilt bundle degrades to appendix-only resolution rather than failing.
+    assert creatures.bundle_creature_index(tmp_path / "absent") == {}
+
+
+def test_mentions_capture_quantity_and_the_publications_own_marker() -> None:
+    supplements = {"burrow-man": "module_rules:m/monster/burrow_man"}
+    core = {"veteran": "npc:veteran"}
+
+    found = creatures.find_mentions(
+        "This room is the lair of 3 burrow-men (see Appendix). A veteran waits.",
+        supplements=supplements,
+        core=core,
+    )
+    by_target = {mention.target: mention for mention in found}
+
+    module = by_target["module_rules:m/monster/burrow_man"]
+    assert module.quantity == 3
+    # The publication marked it, so the link is stated rather than guessed.
+    assert module.explicit and module.stance == "source_explicit"
+
+    # A bare name match is the importer's reading, not the source's statement.
+    assert by_target["npc:veteran"].stance == "source_inferred"
+    assert by_target["npc:veteran"].quantity is None
+
+
+def test_longer_creature_names_win_over_the_names_inside_them() -> None:
+    found = creatures.find_mentions(
+        "A bandit captain leads them.",
+        supplements={},
+        core={"bandit": "npc:bandit", "bandit captain": "npc:bandit_captain"},
+    )
+    assert [mention.target for mention in found] == ["npc:bandit_captain"]
+
+
+def test_creature_links_are_recorded_without_inventing_a_count() -> None:
+    mention = creatures.Mention(
+        name="Burrow-man", target="module_rules:m/monster/burrow_man", quantity=None, explicit=True
+    )
+    relationship = creatures.build_creature_relationship(mention, "location:t_10", mention.target)
+
+    assert relationship["view"] == "reference"
+    assert relationship["type"] == "features_creature"
+    assert relationship["stance"] == "source_explicit"
+    assert relationship["from_ref"] == "location:t_10"
+
+
+def test_compiled_creature_links_resolve_and_declare_their_vocabulary(
+    compiled_slice: dict[str, Any],
+) -> None:
+    supplement_ids = {item["id"] for item in compiled_slice["rules"]["supplements"]}
+    reference_ids = {item["id"] for item in compiled_slice["rules"]["references"]}
+    location_ids = {item["id"] for item in compiled_slice["locations"]}
+    group_ids = {group["id"] for group in compiled_slice["actor_groups"]}
+
+    for relationship in compiled_slice["relationships"]:
+        assert relationship["from_ref"] in location_ids
+        assert relationship["to_ref"] in supplement_ids | reference_ids
+    for group in compiled_slice["actor_groups"]:
+        assert group["rules_ref"] in supplement_ids | reference_ids
+        assert group["quantity"] >= 1
+    for placement in compiled_slice["placements"]:
+        assert placement["group_ref"] in group_ids
+        assert placement["location_ref"] in location_ids
+
+    # The package declares the graph vocabulary it actually uses.
+    vocabulary = compiled_slice["meta"]["relationship_vocabulary"]
+    used = {(edge["view"], edge["type"]) for edge in compiled_slice["relationships"]}
+    declared = {(view, type_) for view, types in vocabulary.items() for type_ in types}
+    assert used == declared
+
+
+def test_core_creature_links_are_marked_inferred(source_path: Path) -> None:
+    """Matching a name in prose is a reading, not a statement by the source."""
+    package = compile_location_slice(source_path, GRIMMSGATE_5E, "G-3")
+    references = package["rules"]["references"]
+    if not references:
+        pytest.skip("core resolution needs a built dist/srd_5_1 bundle")
+
+    assert all(reference["stance"] == "source_inferred" for reference in references)
+    assert all(":" in reference["target"] for reference in references)

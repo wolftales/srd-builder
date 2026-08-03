@@ -7,12 +7,20 @@ from pathlib import Path
 from typing import Any
 
 from srd_builder.module_import import blocks as block_builder
+from srd_builder.module_import import creatures as creature_resolver
 from srd_builder.module_import import source as source_io
 from srd_builder.module_import import spine
 from srd_builder.module_import import statblocks as statblock_reader
-from srd_builder.module_import.package import build_location, build_package, build_supplement
+from srd_builder.module_import.package import (
+    PackageContent,
+    build_location,
+    build_package,
+    build_supplement,
+)
 from srd_builder.module_import.profile import SourceProfile
 from srd_builder.parse.parse_monsters import normalize_monster
+
+DEFAULT_BUNDLE_DIR = Path(__file__).resolve().parents[3] / "dist" / "srd_5_1"
 
 
 def _next_outline_page(toc: Any, after_index: int, page_count: int) -> int:
@@ -27,7 +35,12 @@ def _next_outline_page(toc: Any, after_index: int, page_count: int) -> int:
 
 
 def compile_location_slice(
-    path: Path, profile: SourceProfile, key: str, *, content_version: str = "slice.1"
+    path: Path,
+    profile: SourceProfile,
+    key: str,
+    *,
+    content_version: str = "slice.1",
+    bundle_dir: Path | None = None,
 ) -> dict[str, Any]:
     """Import a single keyed location end to end.
 
@@ -69,15 +82,53 @@ def compile_location_slice(
 
         supplements = compile_appendix(doc, identity, profile)
 
+        # Resolve the creatures this location names, against the appendix first
+        # and the installed bundle second.
+        supplement_names = {item["data"]["name"]: item["id"] for item in supplements}
+        core_names = creature_resolver.bundle_creature_index(
+            DEFAULT_BUNDLE_DIR if bundle_dir is None else bundle_dir
+        )
+        mentions = creature_resolver.find_mentions(
+            " ".join(block["text"] for block in extracted),
+            supplements={name.lower(): ident for name, ident in supplement_names.items()},
+            core=core_names,
+        )
+        references, groups, placements, relationships = [], [], [], []
+        supplement_ids = {item["id"] for item in supplements}
+        for mention in mentions:
+            if mention.target in supplement_ids:
+                rules_ref = mention.target
+            else:
+                reference = creature_resolver.build_rules_reference(mention)
+                references.append(reference)
+                rules_ref = reference["id"]
+            relationships.append(
+                creature_resolver.build_creature_relationship(mention, location["id"], rules_ref)
+            )
+            if mention.quantity is None:
+                continue
+            group = creature_resolver.build_actor_group(mention, rules_ref, entry.key, page_label)
+            groups.append(group)
+            placements.append(
+                creature_resolver.build_placement(group["id"], location["id"], mention.stance)
+            )
+        location["situation_refs"] = []
+
         return build_package(
             identity,
             profile,
+            PackageContent(
+                publication=spine.publication_nodes(identity.toc),
+                blocks=extracted,
+                locations=[location],
+                actor_groups=groups,
+                placements=placements,
+                references=references,
+                supplements=supplements,
+                relationships=relationships,
+            ),
             title=identity.path.stem,
-            publication=spine.publication_nodes(identity.toc),
-            blocks=extracted,
-            locations=[location],
             content_version=content_version,
-            supplements=supplements,
         )
 
 
