@@ -49,13 +49,6 @@ _EXTERNAL_ID_DEFS = frozenset({"externalRef", "externalRefList"})
 
 PACKAGE_SCHEMA = "module-package.schema.json"
 
-# Anonymous actor groups have no first-class collection yet: `group:*` identity is
-# declared implicitly by situation participant recipes. FINDINGS.md lists making
-# this explicit as the first schema decision. Until then this is the ONE namespace
-# allowed to resolve outside the declared-record set, and the allowance is asserted
-# rather than assumed (see test_anonymous_actor_group_contract).
-UNDECLARED_NAMESPACE = "group"
-
 
 def _load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
@@ -239,33 +232,12 @@ def _external_refs(package: dict[str, Any]) -> set[str]:
     return _values_at(package, external)
 
 
-def _declared_group_ids(package: dict[str, Any]) -> set[str]:
-    """Group identity as currently declared: situation participant recipes."""
-    return {
-        participant["group_ref"]
-        for situation in package["situations"]
-        for participant in situation["participants"]
-        if participant.get("group_ref")
-    }
-
-
-def _group_consumers(package: dict[str, Any]) -> set[str]:
-    """Every `group:*` reference made from somewhere other than a participant recipe."""
-    consumers: set[str] = set()
-
-    def add(value: Any) -> None:
-        if isinstance(value, str) and value.startswith(f"{UNDECLARED_NAMESPACE}:"):
-            consumers.add(value)
-
-    for feature in package["active_features"]:
-        for effect in feature["effects"]:
-            add(effect["target_ref"])
-    for situation in package["situations"]:
-        for response in situation["on_events"]:
-            add(response.get("if_ref"))
-            for effect in response["effects"]:
-                add(effect["target_ref"])
-    return consumers
+def _placement_for(package: dict[str, Any], occupant_ref: str) -> dict[str, Any] | None:
+    """The baseline placement of a named actor or an actor group."""
+    for placement in package["placements"]:
+        if occupant_ref in (placement.get("actor_ref"), placement.get("group_ref")):
+            return placement
+    return None
 
 
 def _ancestor_ids(package: dict[str, Any], location_id: str) -> list[str]:
@@ -427,8 +399,7 @@ def test_package_ids_are_unique_and_internal_references_resolve() -> None:
     assert len(ids) == len(set(ids))
 
     unresolved = _internal_refs(package) - _declared_ids(package)
-    namespaces = {ref.split(":", 1)[0] for ref in unresolved}
-    assert namespaces <= {UNDECLARED_NAMESPACE}, f"undeclared references: {sorted(unresolved)}"
+    assert unresolved == set(), f"undeclared references: {sorted(unresolved)}"
 
 
 def test_schema_declares_reference_fields_the_integrity_check_can_find() -> None:
@@ -444,19 +415,62 @@ def test_schema_declares_reference_fields_the_integrity_check_can_find() -> None
     assert len(_internal_refs(package)) > 40
 
 
-def test_anonymous_actor_group_contract() -> None:
-    """`group:*` identity is implicit today; assert the implicit contract holds.
+def test_actor_groups_are_declared_records_that_own_their_composition() -> None:
+    """A group is addressable content, not a shape implied by a participant recipe.
 
-    Participant recipes are the de facto declaration site. Every group referenced
-    from an effect or condition must appear in one. FINDINGS.md tracks replacing
-    this with an explicit collection.
+    Groups exist so interchangeable creatures can be tracked without a named actor
+    per creature, and so consumer state can say a group moved, fled, or was
+    defeated. That needs a declared record, resolvable mechanics, and a baseline
+    location to move away from.
     """
     package = _load(PACKAGE_PATH)
-    declared = _declared_group_ids(package)
-    assert declared
+    index = _index(package)
+    groups = package["actor_groups"]
+    assert groups
 
-    dangling = _group_consumers(package) - declared
-    assert dangling == set(), f"group references with no participant recipe: {sorted(dangling)}"
+    for group in groups:
+        assert group["id"].startswith("group:")
+        assert _resolve_rules(package, group["rules_ref"])["mode"] in {"reference", "supplement"}
+        quantity = group["quantity"]
+        assert isinstance(quantity, str) or quantity >= 1
+
+        placement = _placement_for(package, group["id"])
+        assert placement is not None, f"{group['id']} has no baseline placement"
+        assert placement["location_ref"] in index
+
+    # Composition lives in one place: participants reference, they do not declare.
+    for situation in package["situations"]:
+        for participant in situation["participants"]:
+            assert not {"quantity", "rules_ref"} & set(participant)
+            occupant = participant.get("group_ref") or participant["actor_ref"]
+            assert occupant in index
+
+
+def test_actor_groups_are_referenced_across_situation_boundaries() -> None:
+    """The evidence that ruled out nesting groups inside their owning situation.
+
+    A group declared for one location is targeted by situations at other
+    locations - that is the whole reinforcement mechanic. No single situation owns
+    it, so it cannot be addressed as a child of one.
+    """
+    package = _load(PACKAGE_PATH)
+    declaring = {
+        participant["group_ref"]: situation["id"]
+        for situation in package["situations"]
+        for participant in situation["participants"]
+        if participant.get("group_ref")
+    }
+
+    external_uses: dict[str, set[str]] = {}
+    for situation in package["situations"]:
+        for response in situation["on_events"]:
+            referenced = {response.get("if_ref")} | {e["target_ref"] for e in response["effects"]}
+            for ref in referenced:
+                if isinstance(ref, str) and ref in declaring and declaring[ref] != situation["id"]:
+                    external_uses.setdefault(ref, set()).add(situation["id"])
+
+    assert external_uses, "fixture no longer exercises cross-situation group references"
+    assert any(len(users) > 1 for users in external_uses.values())
 
 
 def test_external_refs_resolve_against_the_built_srd_bundle(bundle_ids: set[str]) -> None:
@@ -595,9 +609,7 @@ def test_inferred_records_are_not_load_bearing() -> None:
     assert len(_records(stripped)) < len(_records(package)), "nothing inferred to strip"
 
     _validator("module-package.schema.json").validate(stripped)
-    assert (
-        _internal_refs(stripped) - _declared_ids(stripped) - _declared_group_ids(stripped) == set()
-    )
+    assert _internal_refs(stripped) - _declared_ids(stripped) == set()
 
     # No source prose was lost: only generated material and derived edges go.
     prose_before = {location["id"]: location["content_refs"] for location in package["locations"]}
@@ -730,7 +742,7 @@ def test_scene_context_and_review_refs_resolve() -> None:
     package = _load(PACKAGE_PATH)
     context = _load(SCENE_CONTEXT_PATH)
     companion = _load(REVIEW_COMPANION_PATH)
-    declared = _declared_ids(package) | _declared_group_ids(package)
+    declared = _declared_ids(package)
 
     refs = _values_at(context, _ref_fields(_schema("scene-context.schema.json"))[0])
     refs.update(item["runtime_ref"] for item in companion["items"])
@@ -891,9 +903,14 @@ def test_scenario_lair_reinforcements_respect_current_state() -> None:
 
 def test_scenario_resolve_package_local_monster_appendix() -> None:
     package = _load(PACKAGE_PATH)
-    situation = _index(package)["situation:v3_burrower_nest"]
-    rules_ref = situation["participants"][0]["rules_ref"]
-    resolved = _resolve_rules(package, rules_ref)
+    index = _index(package)
+    situation = index["situation:v3_burrower_nest"]
+
+    # Situation -> group -> rules appendix. The participant names an occupant;
+    # the group owns what that occupant mechanically is.
+    group = index[situation["participants"][0]["group_ref"]]
+    assert group["quantity"] == 3
+    resolved = _resolve_rules(package, group["rules_ref"])
 
     assert resolved["mode"] == "supplement"
     assert resolved["data"]["id"] == "monster:ash_burrower"

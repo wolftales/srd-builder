@@ -502,6 +502,28 @@
       }
     }
   ],
+  "actor_groups": [
+    {
+      "id": "group:v3_occupants",
+      "type": "actor_group",
+      "stance": "source_explicit",
+      "quantity": 3,
+      "rules_ref": "module_rules:steamvault_prototype:monster/ash_burrower",
+      "source_ref": {
+        "source_key": "V-3"
+      }
+    },
+    {
+      "id": "group:v4_occupants",
+      "type": "actor_group",
+      "stance": "source_explicit",
+      "quantity": 5,
+      "rules_ref": "module_rules:steamvault_prototype:monster/changed_delver",
+      "source_ref": {
+        "source_key": "V-4"
+      }
+    }
+  ],
   "placements": [
     {
       "id": "placement:mara_at_inn",
@@ -526,6 +548,22 @@
       "location_ref": "location:wayfarers_rest",
       "stance": "source_explicit",
       "presence": "usual"
+    },
+    {
+      "id": "placement:v3_occupants",
+      "type": "placement",
+      "group_ref": "group:v3_occupants",
+      "location_ref": "location:steamvault_v3",
+      "stance": "source_explicit",
+      "presence": "initial"
+    },
+    {
+      "id": "placement:v4_occupants",
+      "type": "placement",
+      "group_ref": "group:v4_occupants",
+      "location_ref": "location:steamvault_v4",
+      "stance": "source_explicit",
+      "presence": "initial"
     }
   ],
   "objects": [
@@ -759,17 +797,14 @@
       "participants": [
         {
           "role": "proprietor",
-          "quantity": 1,
           "actor_ref": "actor:mara_voss"
         },
         {
           "role": "family_worker",
-          "quantity": 1,
           "actor_ref": "actor:oren_voss"
         },
         {
           "role": "family_worker",
-          "quantity": 1,
           "actor_ref": "actor:tess_voss"
         }
       ],
@@ -829,8 +864,6 @@
       "participants": [
         {
           "role": "occupant",
-          "quantity": 3,
-          "rules_ref": "module_rules:steamvault_prototype:monster/ash_burrower",
           "group_ref": "group:v3_occupants"
         }
       ],
@@ -870,8 +903,6 @@
       "participants": [
         {
           "role": "occupant",
-          "quantity": 5,
-          "rules_ref": "module_rules:steamvault_prototype:monster/changed_delver",
           "group_ref": "group:v4_occupants"
         }
       ],

@@ -11,6 +11,7 @@
     "blocks",
     "locations",
     "actors",
+    "actor_groups",
     "placements",
     "objects",
     "tables",
@@ -47,6 +48,12 @@
       "type": "array",
       "items": {
         "$ref": "content.schema.json#/$defs/actor"
+      }
+    },
+    "actor_groups": {
+      "type": "array",
+      "items": {
+        "$ref": "content.schema.json#/$defs/actorGroup"
       }
     },
     "placements": {

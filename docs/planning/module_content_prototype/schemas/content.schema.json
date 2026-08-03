@@ -290,7 +290,6 @@
       "required": [
         "id",
         "type",
-        "actor_ref",
         "location_ref",
         "stance",
         "presence"
@@ -326,8 +325,23 @@
             "pattern": "^[a-z][a-z0-9_]*$"
           },
           "uniqueItems": true
+        },
+        "group_ref": {
+          "$ref": "common.schema.json#/$defs/id"
         }
-      }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "actor_ref"
+          ]
+        },
+        {
+          "required": [
+            "group_ref"
+          ]
+        }
+      ]
     },
     "object": {
       "type": "object",
@@ -572,6 +586,57 @@
             "string",
             "null"
           ]
+        },
+        "source_ref": {
+          "$ref": "common.schema.json#/$defs/sourceRef"
+        },
+        "inferred_fields": {
+          "description": "Names of this record's own properties whose values the source did not establish. Only meaningful when stance is source_explicit: the record exists per the source, but these attributes were worked out by the importer. Consumers MUST fail closed on a listed field rather than trusting its value.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "actorGroup": {
+      "description": "An interchangeable body of creatures addressed as one thing. Owns its own composition so consumer state can say the group moved, fled, or was defeated without inventing a named actor per creature.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "type",
+        "stance",
+        "quantity",
+        "rules_ref",
+        "source_ref"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "type": {
+          "const": "actor_group"
+        },
+        "stance": {
+          "$ref": "common.schema.json#/$defs/contentStance"
+        },
+        "quantity": {
+          "oneOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "string",
+              "minLength": 1
+            }
+          ]
+        },
+        "rules_ref": {
+          "$ref": "common.schema.json#/$defs/id"
         },
         "source_ref": {
           "$ref": "common.schema.json#/$defs/sourceRef"

@@ -162,30 +162,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "role",
-        "quantity"
+        "role"
       ],
       "properties": {
         "role": {
           "type": "string",
           "minLength": 1
         },
-        "quantity": {
-          "oneOf": [
-            {
-              "type": "integer",
-              "minimum": 1
-            },
-            {
-              "type": "string",
-              "minLength": 1
-            }
-          ]
-        },
         "actor_ref": {
-          "$ref": "common.schema.json#/$defs/id"
-        },
-        "rules_ref": {
           "$ref": "common.schema.json#/$defs/id"
         },
         "group_ref": {
@@ -200,7 +184,6 @@
         },
         {
           "required": [
-            "rules_ref",
             "group_ref"
           ]
         }

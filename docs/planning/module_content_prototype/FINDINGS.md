@@ -53,6 +53,8 @@ campaign history.
 
 ### Anonymous actor groups need an explicit contract
 
+*Done. See "Groups became records, and the last exemption went away" below.*
+
 The fixture currently introduces `group:*` identity through situation participant
 recipes. That is sufficient for the experiment, but implicit declaration is too
 subtle for a production contract. Schema drafting should choose one explicit
@@ -262,6 +264,45 @@ across the files, which is now asserted rather than assumed.
 The lesson generalizes: assertions about *where* something is declared break
 under repackaging; assertions about *what* is declared survive it.
 
+### Groups became records, and the last exemption went away
+
+Of the three models sketched above, the fixture chose one on evidence rather than
+taste. `group:v4_occupants` is listed as a participant by the situation at its own
+location, and referenced from two others: the alarm response one room away sets
+its intent, and the neighbouring lair's reinforcement condition tests whether it
+is still alive. No single situation owns it, so it cannot be addressed as a child
+of one. Nesting was out; a first-class collection was in.
+
+The scene context had already reached the same conclusion without saying so: it
+lists groups in `dependency_closure.actor_groups` and keys `state_inputs` by group
+identity. The consumer view treated groups as addressable entities while the
+package still treated them as a shape implied by a recipe.
+
+An `actor_group` record now owns its own composition — quantity and the rules
+reference that says what its members are. Participants reference an occupant
+instead of declaring one, so a participant is a role plus exactly one of
+`actor_ref` or `group_ref`. Composition lives in one place, which is what lets
+consumer state say two of five were defeated without the recipe and the state
+disagreeing.
+
+`placement` was generalized rather than duplicated. It already modelled "who is
+where at baseline, with what presence modality and what warrant"; it now binds
+either a named actor or a group. Groups therefore get a baseline location to be
+moved away from, which is what the original requirement asked for, without a
+second placement concept.
+
+The payoff is a deletion. Reference integrity no longer carries a namespace
+exemption: the check asserts that every in-package reference resolves, full stop.
+A misspelled `group_ref` used to be silently legal because the namespace was
+excused and participant recipes declared their own referents. It now fails.
+
+Two follow-ons worth noting rather than acting on. `quantity` already accepts a
+dice string as well as an integer, so a source that says "2d4 goblins" is
+representable, but nothing yet exercises it. And a group has no display name: a
+consumer refers to it by role and by the creature its `rules_ref` resolves to,
+which is enough for this slice and may not be for a module with two distinct
+bands of the same creature in one location.
+
 ## Deferred: the information layer and R3
 
 There are no clue, revelation, or information-dependency entities, so R3 (trace
@@ -295,16 +336,18 @@ independently authored.
 
 The next schema pass should resolve only the decisions now supported by evidence:
 
-1. make anonymous actor-group identity explicit;
-2. define a small structured predicate shape and its evaluation owner;
-3. settle cross-bundle rules-reference syntax, including how the lens resolves a
+1. define a small structured predicate shape and its evaluation owner;
+2. settle cross-bundle rules-reference syntax, including how the lens resolves a
    creature name to the correct bundle namespace; and
-4. define the dependency-edge annotations used by scene-context assembly.
+3. define the dependency-edge annotations used by scene-context assembly.
 
 Settled since the first pass: stance unification and coverage (one vocabulary,
 warrant only, required on every normalized entity), attribute-level warrant
-(`inferred_fields`, failing closed), relationship views and vocabulary, and the
-schema split.
+(`inferred_fields`, failing closed), relationship views and vocabulary, the schema
+split, and explicit actor-group identity.
+
+Every in-package reference now resolves with no exemptions, so reference
+integrity is a closed property rather than a mostly-closed one.
 
 ### Warrant needed a second scale: the record and the attribute
 
