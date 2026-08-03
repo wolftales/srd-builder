@@ -98,6 +98,33 @@ is bare (`monster:...`). A consumer indexing by payload id - the natural thing,
 since that is what SRD records look like - silently overwrites one with the
 other.
 
+## The wider blindspot: single-source assumptions
+
+The id scheme is one instance of a larger gap. A producer with one source and one
+consumer never has to answer *does this compose with something else?* Identity,
+collision and uniqueness are not wrong in that world - they are simply never
+exercised. Approaching the same data as a producer of a SECOND source is what
+made the question visible.
+
+This is not a one-off. The same class of defect has already been hit once inside
+a single bundle: `index.json`'s `by_name` was first-write-wins, and 85 feature
+names and 17 rule names collided. `by_name_all` was added to expose every
+matching id. That was an assumption of uniqueness that held until it did not,
+found late, and fixed at the symptom.
+
+Worth auditing deliberately rather than waiting to be surprised again:
+
+| Assumption | Status |
+| --- | --- |
+| An id identifies one thing | **Broken.** This proposal. |
+| A display name identifies one thing | **Broken once already**, patched with `by_name_all`. Cross-source it is worse. |
+| One ruleset bundle is mounted | Untested. `rulesets/` already holds `srd_5_1` and `srd_5_2_1`; nothing says whether they can coexist. |
+| Indexes describe everything | Per-bundle by construction. A merged index is undefined. |
+| Provenance is implicit | `_meta.pdf_sha256` per dataset answers "from which build", not "which source asserted this" once several are mounted. |
+
+The general shape: anywhere the producer says "the", ask whether it survives
+"several".
+
 ## Where the habit may have come from
 
 Untested, but worth recording because it shapes where else to look: the producer
