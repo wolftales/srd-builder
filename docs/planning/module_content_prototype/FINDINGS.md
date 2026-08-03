@@ -149,13 +149,62 @@ This invariant is the machine substitute for review, and it should hold for ever
 entity type once `stance` is carried more widely — it is currently only on
 placements, adaptation points, and relationships.
 
-### Three stance vocabularies now exist
+### Stance was two different questions wearing one name
 
-`placement` uses `source_baseline`/`source_conditional`/`reviewer_proposed`,
-while `adaptationPoint` and `relationship` use
-`source_explicit`/`source_inferred`/`reviewer_proposed`, and the discovery
-document proposes a fourth set for runtime content stance. Unifying these is a
-schema-drafting decision, not something to settle silently.
+Three vocabularies had drifted apart: `placement` used
+`source_baseline`/`source_conditional`/`reviewer_proposed`, `adaptationPoint`
+and `relationship` used `source_explicit`/`source_inferred`/`reviewer_proposed`,
+and the discovery document proposed a fourth set.
+
+They could not be reconciled by choosing one list, because they were not all
+answering the same question. Two axes had been conflated:
+
+- **warrant** — did the source state this, did the importer work it out, or did
+  a reviewer add it; and
+- **modality** — is this baseline or conditional, open or bound.
+
+`placement` proved it. Its `stance` offered `source_baseline` versus
+`source_conditional` while its `presence` field already offered
+`usual`/`initial`/`conditional`. The same distinction was stored twice, and only
+one of the two fields was named for what it actually carried.
+
+`stance` now means warrant and nothing else. Modality stays on the field that
+names it: `presence` for placements, `state` for adaptation points. One
+`contentStance` definition is referenced everywhere, and a test rejects any
+definition that declares a stance-like vocabulary of its own.
+
+The vocabulary stays at three values. A fourth distinction between "reconstructed
+from source evidence" and "suggested by the compiler" is a confidence judgement,
+and D5 already assigns confidence to the review companion — which carries a
+`confidence` field today. Runtime warrant stays coarse; the sidecar owns nuance.
+
+`intentionally_open` was also rejected as a stance value. It is not warrant: it
+is what an `adaptation_point` is, and its `state` field already says so.
+
+### Warrant is required, on every normalized entity
+
+Eleven definitions carried no stance at all. All of them do now, and it is
+required rather than optional, because at unbounded module count an optional
+provenance field is an absent one — there is no review capacity to fill it in
+later. An importer must make a claim about every record it emits.
+
+### A generated summary was load-bearing on a location
+
+Extending stance surfaced a modelling error. Blocks of type `summary` are
+importer-generated abstracts, not the publication's own prose, so they are
+`source_inferred` — but they sat inside `location.content_refs` alongside real
+source blocks. Stripping inferred records therefore broke a location.
+
+The scene-context schema had already made the right distinction:
+`site_context.summary_ref` is its own field, separate from content refs. The
+package schema had not. Locations now carry an optional `summary_ref`, so
+dropping a generated abstract removes an optional reference instead of editing
+the list of the source's own prose.
+
+One consequence is worth stating plainly: the assembled scene context depends on
+a generated summary, so a consumer that refuses inferred content gets no site
+summary. That is a property of the generated view, not of the package, and the
+package remains fully runnable without it.
 
 ### Internal and cross-bundle references were indistinguishable
 
@@ -213,10 +262,30 @@ The next schema pass should resolve only the decisions now supported by evidence
 3. split the monolithic package schema into maintainable contracts;
 4. settle cross-bundle rules-reference syntax, including how the lens resolves a
    creature name to the correct bundle namespace;
-5. define the dependency-edge annotations used by scene-context assembly;
-6. unify the stance vocabularies and decide which entity types must carry one; and
-7. decide whether `stance` is required rather than optional — at unbounded module
-   count an optional provenance field is an absent one.
+5. define the dependency-edge annotations used by scene-context assembly; and
+6. decide whether warrant needs attribute-level granularity (see below).
+
+Stance unification and coverage are now settled: one vocabulary, warrant only,
+required on every normalized entity.
+
+### The open question stance did not answer
+
+Record-level warrant cannot express a record whose existence is stated but whose
+classification was guessed. A content block extracted verbatim from a shaded box
+is `source_explicit`, yet its `audience` value — read-aloud versus GM-only — is
+usually inferred from typography. Marking the whole block `source_inferred` would
+be both alarming and uninformative, and would strip real prose; marking it
+`source_explicit` overstates confidence in exactly the field whose failure leaks
+secrets to players.
+
+An `inferred_fields` list naming the attributes that were not source-warranted
+would close this, and would support a fail-closed rule: never serve a block to a
+player audience when its `audience` value was inferred. The counter-argument is
+D5 — attribute-level detail may belong in the review companion rather than the
+runtime package.
+
+This is deliberately left open. `stance` currently documents that it describes a
+record's existence and identity, not its individual attributes.
 
 Importer implementation should still wait until the revised schemas and the
 retrieval tests agree. The information layer and R3 are explicitly out of scope

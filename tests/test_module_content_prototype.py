@@ -349,22 +349,116 @@ def test_relationship_views_are_declared_and_vocabulary_is_closed_per_package() 
     assert all(len(views) == 1 for views in views_by_type.values())
 
 
-def test_inferred_relationships_are_not_load_bearing() -> None:
-    """Strip every relationship the importer inferred; the package must still run.
+def test_stance_vocabulary_is_unified_and_required() -> None:
+    """Exactly one stance vocabulary, applied by reference, required everywhere.
+
+    Three divergent vocabularies had drifted into the schema. This guards the
+    unification: a new definition cannot quietly introduce a fourth.
+    """
+    schema = _schema("module-package.schema.json")
+    defs = schema["$defs"]
+
+    # No definition may declare its own stance-like enum.
+    offenders: list[str] = []
+
+    def visit(node: Any, path: str) -> None:
+        if isinstance(node, dict):
+            enum = node.get("enum")
+            if isinstance(enum, list) and any(
+                isinstance(v, str) and v.startswith(("source_", "reviewer_", "compiler_"))
+                for v in enum
+            ):
+                if path != "contentStance":
+                    offenders.append(path)
+            for key, value in node.items():
+                visit(value, key if path == "" else path)
+        elif isinstance(node, list):
+            for item in node:
+                visit(item, path)
+
+    for name, definition in defs.items():
+        visit(definition, name)
+    assert offenders == [], f"definitions declaring their own stance vocabulary: {offenders}"
+
+    # Every definition that carries stance uses the shared vocabulary and requires it.
+    carriers = [name for name, d in defs.items() if "stance" in d.get("properties", {})]
+    assert len(carriers) >= 13
+    for name in carriers:
+        assert defs[name]["properties"]["stance"] == {"$ref": "#/$defs/contentStance"}, name
+        assert "stance" in defs[name]["required"], f"{name} does not require stance"
+
+    # Every top-level collection holds records that carry warrant.
+    for prop, subschema in schema["properties"].items():
+        item_ref = subschema.get("items", {}).get("$ref") if "items" in subschema else None
+        if item_ref:
+            assert item_ref.rsplit("/", 1)[-1] in carriers, f"{prop} records carry no stance"
+
+
+def _strip_inferred(package: dict[str, Any]) -> dict[str, Any]:
+    """Drop every record the source did not establish, plus optional refs to them.
+
+    Optional references to a dropped record are legitimately droppable. A REQUIRED
+    reference to one is precisely the failure this is built to surface.
+    """
+    stripped = json.loads(json.dumps(package))
+    removed = {
+        record["id"]
+        for record in _records(package)
+        if record.get("stance") not in (None, "source_explicit")
+    }
+
+    schema = _schema("module-package.schema.json")
+    internal, _ = _ref_fields(schema)
+    optional_refs = {
+        name
+        for definition in schema["$defs"].values()
+        for name in definition.get("properties", {})
+        if name in internal and name not in definition.get("required", [])
+    }
+
+    def prune(node: Any) -> Any:
+        if isinstance(node, dict):
+            out = {}
+            for key, value in node.items():
+                kept = value
+                if key in optional_refs:
+                    if isinstance(value, str) and value in removed:
+                        continue
+                    if isinstance(value, list):
+                        kept = [item for item in value if item not in removed]
+                out[key] = prune(kept)
+            return out
+        if isinstance(node, list):
+            return [prune(item) for item in node if not _is_removed(item, removed)]
+        return node
+
+    return prune(stripped)
+
+
+def _is_removed(item: Any, removed: set[str]) -> bool:
+    return isinstance(item, dict) and item.get("id") in removed
+
+
+def test_inferred_records_are_not_load_bearing() -> None:
+    """Strip everything the importer inferred; the package must still validate and run.
 
     This is the machine substitute for hand review. Module imports are unbounded,
-    so nothing that was inferred rather than stated can be required to run the
-    content — otherwise unreviewed inference silently becomes canon.
+    so nothing merely inferred can be required to run the content — otherwise
+    unreviewed inference silently becomes canon.
     """
     package = _load(PACKAGE_PATH)
-    explicit = [rel for rel in package["relationships"] if rel["stance"] == "source_explicit"]
-    assert len(explicit) < len(package["relationships"]), "fixture has no inferred edges to strip"
+    stripped = _strip_inferred(package)
+    assert len(_records(stripped)) < len(_records(package)), "nothing inferred to strip"
 
-    stripped = {**package, "relationships": explicit}
     _validator("module-package.schema.json").validate(stripped)
     assert (
         _internal_refs(stripped) - _declared_ids(stripped) - _declared_group_ids(stripped) == set()
     )
+
+    # No source prose was lost: only generated material and derived edges go.
+    prose_before = {location["id"]: location["content_refs"] for location in package["locations"]}
+    prose_after = {location["id"]: location["content_refs"] for location in stripped["locations"]}
+    assert prose_before == prose_after
 
     # R1 still answers, and site-scoped feature composition still resolves —
     # containment survives on location.parent_ref, not on the inferred edges.
@@ -377,6 +471,28 @@ def test_inferred_relationships_are_not_load_bearing() -> None:
     assert set(context["effective_active_features"]) == _effective_feature_ids(
         stripped, context["location"]["ref"]
     )
+
+
+def test_generated_summaries_are_inferred_and_never_mixed_into_source_prose() -> None:
+    """A generated abstract is not one of the publication's own blocks.
+
+    Recorded consequence: the assembled scene context DOES depend on a generated
+    site summary, so a consumer refusing inferred content gets no site summary.
+    That is a property of the generated view, not of the package.
+    """
+    package = _load(PACKAGE_PATH)
+    index = _index(package)
+    summaries = {block["id"] for block in package["blocks"] if block["type"] == "summary"}
+    assert summaries
+
+    assert all(index[summary]["stance"] == "source_inferred" for summary in summaries)
+    for location in package["locations"]:
+        assert not summaries & set(location["content_refs"]), location["id"]
+        if "summary_ref" in location:
+            assert location["summary_ref"] in summaries
+
+    context = _load(SCENE_CONTEXT_PATH)
+    assert context["site_context"]["summary_ref"] in summaries
 
 
 def test_scene_context_and_review_refs_resolve() -> None:
@@ -401,9 +517,18 @@ def test_fixture_files_are_stored_canonically() -> None:
 
     This reads the stored bytes deliberately: an in-memory round-trip would hold
     for any parseable JSON and would prove nothing about the fixture.
+
+    These files are kept ASCII-only on purpose. Two canonical forms exist in this
+    repo: the bundle uses ensure_ascii=False (see
+    tests/test_bundle_json_format_stability.py) and never meets pre-commit because
+    dist/ is gitignored, while pre-commit's pretty-format-json hook escapes
+    non-ASCII in every file it does see - including these. While the content stays
+    ASCII the two forms are identical bytes and cannot disagree; a single smart
+    quote or em dash would put the hook and this test in a rewrite loop.
     """
     for path in sorted(FIXTURES.glob("*.json")) + sorted(SCHEMAS.glob("*.json")):
         stored = path.read_text(encoding="utf-8")
+        assert stored.isascii(), f"{path.name} contains non-ASCII; see this test's docstring"
         canonical = json.dumps(json.loads(stored), indent=2, ensure_ascii=False) + "\n"
         assert stored == canonical, f"{path.name} is not canonically serialized"
 

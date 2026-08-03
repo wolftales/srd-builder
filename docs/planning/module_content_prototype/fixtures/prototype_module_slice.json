@@ -27,6 +27,7 @@
     {
       "id": "publication:steamvault_prototype",
       "type": "publication",
+      "stance": "source_explicit",
       "title": "Steamvault Prototype",
       "children": [
         "section:settlement",
@@ -40,6 +41,7 @@
     {
       "id": "section:settlement",
       "type": "section",
+      "stance": "source_explicit",
       "title": "Border Settlement",
       "parent_ref": "publication:steamvault_prototype",
       "children": [
@@ -53,6 +55,7 @@
     {
       "id": "section:vault",
       "type": "section",
+      "stance": "source_explicit",
       "title": "The Steamvault",
       "parent_ref": "publication:steamvault_prototype",
       "children": [
@@ -69,6 +72,7 @@
     {
       "id": "section:appendix",
       "type": "section",
+      "stance": "source_explicit",
       "title": "Prototype Creature Appendix",
       "parent_ref": "publication:steamvault_prototype",
       "children": [
@@ -84,6 +88,7 @@
     {
       "id": "block:settlement_summary",
       "type": "summary",
+      "stance": "source_inferred",
       "audience": "gm_only",
       "text": "A small border settlement that can serve as a recurring adventuring base.",
       "source_ref": {
@@ -93,6 +98,7 @@
     {
       "id": "block:steamvault_summary",
       "type": "summary",
+      "stance": "source_inferred",
       "audience": "gm_only",
       "text": "A connected underground site whose inhabitants react across room boundaries.",
       "source_ref": {
@@ -102,6 +108,7 @@
     {
       "id": "block:inn_read_aloud",
       "type": "read_aloud",
+      "stance": "source_explicit",
       "audience": "player_safe",
       "text": "A patched slate roof and painted walking-stick sign mark a busy roadside inn.",
       "source_ref": {
@@ -111,6 +118,7 @@
     {
       "id": "block:inn_gm_detail",
       "type": "gm_detail",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "The inn offers rooms, meals, and a common room and is usually operated by a proprietor and two relatives.",
       "source_ref": {
@@ -120,6 +128,7 @@
     {
       "id": "block:v1_summary",
       "type": "summary",
+      "stance": "source_inferred",
       "audience": "gm_only",
       "text": "An empty connector chamber used by occupants responding to the nearby alarm.",
       "source_ref": {
@@ -129,6 +138,7 @@
     {
       "id": "block:v2_read_aloud",
       "type": "read_aloud",
+      "stance": "source_explicit",
       "audience": "player_safe",
       "text": "A brass control box stands beside a closed storage coffer in the center of the room.",
       "source_ref": {
@@ -138,6 +148,7 @@
     {
       "id": "block:v2_gm_detail",
       "type": "gm_detail",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "The coffer carries a concealed alarm. Detecting and disabling it require separate checks; moving or opening it while armed sounds the alarm.",
       "source_ref": {
@@ -147,6 +158,7 @@
     {
       "id": "block:v2_alarm_procedure",
       "type": "procedure",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "When the alarm sounds, V-3 occupants prepare and V-4 occupants attempt to reach V-2 through V-1.",
       "source_ref": {
@@ -156,6 +168,7 @@
     {
       "id": "block:v3_read_aloud",
       "type": "read_aloud",
+      "stance": "source_explicit",
       "audience": "player_safe",
       "text": "Ash piles, three sleeping hollows, and a locked iron box fill the warm chamber.",
       "source_ref": {
@@ -165,6 +178,7 @@
     {
       "id": "block:v3_gm_detail",
       "type": "gm_detail",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "Three Ash Burrowers lair here. Combat can draw surviving V-4 occupants after a random delay. A concealed route connects the rooms.",
       "source_ref": {
@@ -174,6 +188,7 @@
     {
       "id": "block:v4_read_aloud",
       "type": "read_aloud",
+      "stance": "source_explicit",
       "audience": "player_safe",
       "text": "Five rough bedrolls surround a lidded stone bin.",
       "source_ref": {
@@ -183,6 +198,7 @@
     {
       "id": "block:v4_gm_detail",
       "type": "gm_detail",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "Five Changed Delvers occupy the chamber. Combat can draw surviving V-3 occupants after a random delay.",
       "source_ref": {
@@ -192,6 +208,7 @@
     {
       "id": "block:wandering_procedure",
       "type": "procedure",
+      "stance": "source_explicit",
       "audience": "gm_only",
       "text": "Check every thirty minutes of game time. A one-in-six result produces an encounter selected from the site table.",
       "source_ref": {
@@ -203,13 +220,12 @@
     {
       "id": "location:border_settlement",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "settlement",
         "proper": "Merewatch"
       },
-      "content_refs": [
-        "block:settlement_summary"
-      ],
+      "content_refs": [],
       "asset_refs": [
         "asset:settlement_map"
       ],
@@ -225,11 +241,13 @@
       },
       "source_ref": {
         "section": "Border Settlement"
-      }
+      },
+      "summary_ref": "block:settlement_summary"
     },
     {
       "id": "location:wayfarers_rest",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "inn",
         "proper": "Wayfarer's Rest"
@@ -267,12 +285,12 @@
     {
       "id": "location:steamvault",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "underground complex",
         "proper": "The Steamvault"
       },
       "content_refs": [
-        "block:steamvault_summary",
         "block:wandering_procedure"
       ],
       "asset_refs": [
@@ -294,19 +312,19 @@
       },
       "source_ref": {
         "section": "The Steamvault"
-      }
+      },
+      "summary_ref": "block:steamvault_summary"
     },
     {
       "id": "location:steamvault_v1",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "passage chamber",
         "proper": "Ash Passage"
       },
       "parent_ref": "location:steamvault",
-      "content_refs": [
-        "block:v1_summary"
-      ],
+      "content_refs": [],
       "asset_refs": [
         "asset:steamvault_map"
       ],
@@ -315,11 +333,13 @@
       },
       "source_ref": {
         "source_key": "V-1"
-      }
+      },
+      "summary_ref": "block:v1_summary"
     },
     {
       "id": "location:steamvault_v2",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "control chamber",
         "proper": "Alarm Chamber"
@@ -352,6 +372,7 @@
     {
       "id": "location:steamvault_v3",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "lair chamber",
         "proper": "Ash Burrower Nest"
@@ -380,6 +401,7 @@
     {
       "id": "location:steamvault_v4",
       "type": "location",
+      "stance": "source_explicit",
       "names": {
         "simple": "lair chamber",
         "proper": "Changed Delver Quarters"
@@ -410,6 +432,7 @@
     {
       "id": "actor:mara_voss",
       "type": "actor",
+      "stance": "source_explicit",
       "name": "Mara Voss",
       "identity": {
         "ancestry": "human",
@@ -432,6 +455,7 @@
     {
       "id": "actor:oren_voss",
       "type": "actor",
+      "stance": "source_explicit",
       "name": "Oren Voss",
       "identity": {
         "ancestry": "human",
@@ -454,6 +478,7 @@
     {
       "id": "actor:tess_voss",
       "type": "actor",
+      "stance": "source_explicit",
       "name": "Tess Voss",
       "identity": {
         "ancestry": "human",
@@ -480,7 +505,7 @@
       "type": "placement",
       "actor_ref": "actor:mara_voss",
       "location_ref": "location:wayfarers_rest",
-      "stance": "source_baseline",
+      "stance": "source_explicit",
       "presence": "usual"
     },
     {
@@ -488,7 +513,7 @@
       "type": "placement",
       "actor_ref": "actor:oren_voss",
       "location_ref": "location:wayfarers_rest",
-      "stance": "source_baseline",
+      "stance": "source_explicit",
       "presence": "usual"
     },
     {
@@ -496,7 +521,7 @@
       "type": "placement",
       "actor_ref": "actor:tess_voss",
       "location_ref": "location:wayfarers_rest",
-      "stance": "source_baseline",
+      "stance": "source_explicit",
       "presence": "usual"
     }
   ],
@@ -504,6 +529,7 @@
     {
       "id": "object:inn_lockbox",
       "type": "object",
+      "stance": "source_explicit",
       "name": "inn lockbox",
       "location_ref": "location:wayfarers_rest",
       "content_refs": [
@@ -523,6 +549,7 @@
     {
       "id": "object:v2_coffer",
       "type": "object",
+      "stance": "source_explicit",
       "name": "alarmed storage coffer",
       "location_ref": "location:steamvault_v2",
       "content_refs": [
@@ -550,6 +577,7 @@
     {
       "id": "object:v3_lockbox",
       "type": "object",
+      "stance": "source_explicit",
       "name": "locked iron box",
       "location_ref": "location:steamvault_v3",
       "content_refs": [
@@ -580,6 +608,7 @@
     {
       "id": "object:v4_bin",
       "type": "object",
+      "stance": "source_explicit",
       "name": "lidded stone bin",
       "location_ref": "location:steamvault_v4",
       "content_refs": [
@@ -600,6 +629,7 @@
     {
       "id": "table:steamvault_wandering_encounters",
       "type": "table",
+      "stance": "source_explicit",
       "name": "Steamvault Wandering Encounters",
       "dice": "1d6",
       "outcomes": [
@@ -637,6 +667,7 @@
     {
       "id": "active_feature:v2_alarm_coffer",
       "type": "active_feature",
+      "stance": "source_explicit",
       "name": "Concealed coffer alarm",
       "kinds": [
         "alarm",
@@ -682,6 +713,7 @@
     {
       "id": "active_feature:steamvault_wandering_checks",
       "type": "active_feature",
+      "stance": "source_explicit",
       "name": "Steamvault wandering encounter checks",
       "kinds": [
         "encounter_check",
@@ -718,6 +750,7 @@
     {
       "id": "situation:inn_service",
       "type": "situation",
+      "stance": "source_explicit",
       "name": "Wayfarer's Rest normal operation",
       "location_ref": "location:wayfarers_rest",
       "participants": [
@@ -751,6 +784,7 @@
     {
       "id": "situation:v2_alarm_response",
       "type": "situation",
+      "stance": "source_explicit",
       "name": "V-2 alarm response",
       "location_ref": "location:steamvault_v2",
       "trigger_ref": "active_feature:v2_alarm_coffer",
@@ -786,6 +820,7 @@
     {
       "id": "situation:v3_burrower_nest",
       "type": "situation",
+      "stance": "source_explicit",
       "name": "V-3 Ash Burrower nest",
       "location_ref": "location:steamvault_v3",
       "participants": [
@@ -826,6 +861,7 @@
     {
       "id": "situation:v4_changed_delvers",
       "type": "situation",
+      "stance": "source_explicit",
       "name": "V-4 Changed Delvers",
       "location_ref": "location:steamvault_v4",
       "participants": [
@@ -989,6 +1025,7 @@
     {
       "id": "asset:settlement_map",
       "type": "map",
+      "stance": "source_explicit",
       "audience": "gm",
       "source_ref": {
         "section": "Border Settlement Map"
@@ -1010,6 +1047,7 @@
     {
       "id": "asset:steamvault_map",
       "type": "map",
+      "stance": "source_explicit",
       "audience": "gm",
       "source_ref": {
         "section": "Steamvault Map"
@@ -1048,19 +1086,23 @@
     "references": [
       {
         "id": "rules_ref:prototype_veteran",
-        "target": "npc:veteran"
+        "target": "npc:veteran",
+        "stance": "source_explicit"
       },
       {
         "id": "rules_ref:prototype_commoner",
-        "target": "npc:commoner"
+        "target": "npc:commoner",
+        "stance": "source_explicit"
       },
       {
         "id": "rules_ref:prototype_giant_rat",
-        "target": "creature:giant_rat"
+        "target": "creature:giant_rat",
+        "stance": "source_explicit"
       },
       {
         "id": "rules_ref:healing_draught",
-        "target": "magic_item:potion_of_healing"
+        "target": "magic_item:potion_of_healing",
+        "stance": "source_explicit"
       }
     ],
     "supplements": [
@@ -1179,7 +1221,8 @@
         },
         "source_ref": {
           "section": "Prototype Creature Appendix"
-        }
+        },
+        "stance": "source_explicit"
       },
       {
         "id": "module_rules:steamvault_prototype:monster/changed_delver",
@@ -1275,7 +1318,8 @@
         },
         "source_ref": {
           "section": "Prototype Creature Appendix"
-        }
+        },
+        "stance": "source_explicit"
       }
     ],
     "procedures": [

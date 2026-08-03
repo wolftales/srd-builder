@@ -150,7 +150,7 @@
       "uniqueItems": true
     },
     "contentStance": {
-      "description": "Whether the source established this, the importer worked it out, or a reviewer proposed it.",
+      "description": "Warrant for this record: what established it. This is NOT modality - whether something is conditional, open, or baseline is carried by the record's own fields (presence, state), never by stance. Attribute-level warrant is not modelled; stance describes the record's existence and identity. Extraction confidence belongs in the review companion (D5).",
       "enum": [
         "source_explicit",
         "source_inferred",
@@ -307,7 +307,8 @@
         "id",
         "type",
         "title",
-        "children"
+        "children",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -331,6 +332,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -342,7 +346,8 @@
         "type",
         "audience",
         "text",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -370,6 +375,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -400,7 +408,8 @@
         "type",
         "names",
         "content_refs",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -456,6 +465,13 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
+        },
+        "summary_ref": {
+          "description": "Optional generated abstract. Kept out of content_refs so that stripping inferred records cannot dangle a reference to the source's own prose.",
+          "$ref": "#/$defs/id"
         }
       }
     },
@@ -469,7 +485,8 @@
         "identity",
         "presentation",
         "mechanics",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -540,6 +557,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -568,11 +588,7 @@
           "$ref": "#/$defs/id"
         },
         "stance": {
-          "enum": [
-            "source_baseline",
-            "source_conditional",
-            "reviewer_proposed"
-          ]
+          "$ref": "#/$defs/contentStance"
         },
         "presence": {
           "enum": [
@@ -628,7 +644,8 @@
         "name",
         "location_ref",
         "content_refs",
-        "state_defaults"
+        "state_defaults",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -670,6 +687,9 @@
           "items": {
             "$ref": "#/$defs/containedItem"
           }
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -715,7 +735,8 @@
         "name",
         "dice",
         "outcomes",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -741,6 +762,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -814,7 +838,8 @@
         "scope",
         "triggers",
         "effects",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -872,6 +897,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -965,7 +993,8 @@
         "preconditions",
         "on_events",
         "content_refs",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -1008,6 +1037,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -1084,11 +1116,7 @@
           ]
         },
         "stance": {
-          "enum": [
-            "source_explicit",
-            "source_inferred",
-            "reviewer_proposed"
-          ]
+          "$ref": "#/$defs/contentStance"
         },
         "purpose": {
           "type": "string",
@@ -1150,7 +1178,8 @@
         "type",
         "audience",
         "source_ref",
-        "regions"
+        "regions",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -1204,6 +1233,9 @@
           "items": {
             "$ref": "#/$defs/mapRegion"
           }
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -1212,7 +1244,8 @@
       "additionalProperties": false,
       "required": [
         "id",
-        "target"
+        "target",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -1220,6 +1253,9 @@
         },
         "target": {
           "$ref": "#/$defs/externalRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
@@ -1232,7 +1268,8 @@
         "ruleset",
         "ownership",
         "data",
-        "source_ref"
+        "source_ref",
+        "stance"
       ],
       "properties": {
         "id": {
@@ -1261,6 +1298,9 @@
         },
         "source_ref": {
           "$ref": "#/$defs/sourceRef"
+        },
+        "stance": {
+          "$ref": "#/$defs/contentStance"
         }
       }
     },
