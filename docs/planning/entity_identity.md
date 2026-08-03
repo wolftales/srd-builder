@@ -55,19 +55,50 @@ Genuinely structural, with their own distinct fields, and not to be touched:
 `spell` (level, school, casting, components), `condition`, `skill`, `ability`,
 `damage`, `weapon_property`, `class`, `lineage`.
 
-Deferred as granularity questions, deliberately not bundled into this change:
+### Two layers, two identity rules
 
-- `table:` is a presentation format rather than an entity kind. It carries
-  `columns`/`rows`, and 156 references from classes and lineages point at tables.
-  `table:draconic_ancestry` is really the ancestry data, rendered as a table.
-- `poison:` carries `cost`, which is an item property. Poisons resemble equipment
-  with a `poison_type` category.
-- `disease:` is thin - description and save - and overlaps `condition:`. Both are
-  states that afflict a creature.
+`table:` and `rule:` looked like the same defect. They are not. They belong to a
+different layer, and that layer has a different - legitimate - identity rule.
 
-Each may be worth revisiting, but none of them breaks a query today, and folding
-debatable churn into a change with a crisp justification weakens the case for
-both.
+| Layer | Examples | Identity rule |
+| --- | --- | --- |
+| **Entity** | creature, spell, item, class, lineage | Must survive reclassification. Never encodes document location. |
+| **Publication artifact** | tables, rules passages, content blocks | Position *is* the identity. Document location is correct here. |
+
+This is the same split the module-content work already makes between content
+blocks and normalized entities, and which the comparison document lists as
+finding 2: both are required, and neither substitutes for the other. Tables were
+built deliberately as a collection for consumers who want to reach any table
+readily - that is supporting material, in the sense that an appendix reference or
+a figure is supporting material. `rule:<section>/<subsection>` is a passage, and a
+passage is identified by where it sits, exactly as the importer identifies one
+with `pub:the_village/map_key`.
+
+So neither needs restructuring. The only change worth making is cosmetic: make
+the slug **opaque** rather than parseable, so nothing is tempted to split on `/`
+to recover the section. `table:` already carries `section` as a field, which is
+the pattern.
+
+The lesson generalizes: before calling an id defective, establish which layer the
+record belongs to. Document position in an entity id is a defect; document
+position in a publication-artifact id is the point.
+
+### Genuine granularity questions, deferred
+
+- `poison:` carries `cost`, which is an item property. A poison and a healing
+  potion are the same kind of thing - a consumable with an effect - differing on
+  an axis that is beneficial-versus-harmful. That is a field, like
+  magical-versus-mundane. Folding both into `item:` would make "every consumable"
+  a single query.
+- `disease:` looks mergeable into `condition:` and probably **is not**. In 5e a
+  *condition* is a term of art: a closed list with defined mechanical behaviour. A
+  disease is not a member of that list; it is an affliction that may impose
+  conditions. They are siblings, not subtype and supertype, and merging them would
+  flatten a real rules distinction to satisfy tidiness. Recorded so the split is
+  not "fixed" later by someone reading only the first half of this document.
+
+Neither breaks a query today. Folding debatable churn into a change with a crisp
+justification weakens the case for both.
 
 ### The test
 
