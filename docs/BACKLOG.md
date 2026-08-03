@@ -6,6 +6,38 @@ list; do not let it accumulate history.
 
 ---
 
+## Planned: Synthetic second source (composability fixture)
+
+> **Spec:**
+> [docs/planning/synthetic_second_source.md](planning/synthetic_second_source.md).
+> **To be built by someone other than the importer's author** — if the same
+> person writes both, the fixture encodes that person's assumptions and the
+> blind spots end up identical in both artifacts.
+
+A single-source producer cannot test whether its output **composes** with
+anything else. That gap is why ids encoding document position went unnoticed
+for the bundle's whole life. This fixture guards the assumptions we now know
+we make, in CI, with no commercial publication involved.
+
+Two synthetic artifacts that collide on purpose — a second ruleset bundle and a
+small publication — plus a manifest of expected outcomes authored **from the
+source, never from a run**. Output-derived expectations are a change detector,
+not a test.
+
+Covers: id and display-name collisions within and across bundles, unfamiliar id
+prefixes (local ids are opaque, or the claim is untested), and the structural
+cases behind every defect found so far — final entries, entries spanning pages,
+sections whose children sit on later pages, repeated outline titles,
+single-column pages, region-dependent font meaning, substring and
+irregular-plural creature names.
+
+Not a discovery tool: a synthetic fixture only contains problems its author
+already imagined. Real publications stay the instrument for finding unknown
+unknowns.
+
+
+---
+
 ## Planned: Entity id normalization (before SRD 5.2.1)
 
 > **Why now.** Doing this after a second ruleset ships means normalizing
